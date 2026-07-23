@@ -67,7 +67,7 @@ def test_setup_contextual_names(client, admin_user):
   - Persona: Administrador / Coordenador
   - Ação: Abrir detalhes de uma aplicação existente.
   - Resultado Esperado: O nome do caderno (truncado se maior que 50 chars) deve aparecer abaixo do título "Aplicação do dia..."
-- [ ] **Acessar Gerenciamento de Alunos (`application_add_del_students.html`)** `[Apenas Manual 👁]`
+- [x] **Acessar Gerenciamento de Alunos (`application_add_del_students.html`)** `[Apenas Manual 👁]`
   - Persona: Administrador / Coordenador
   - Ação: Abrir a tela de adicionar/remover alunos de uma aplicação.
   - Resultado Esperado: O nome do caderno (truncado) deve estar visível no topo, abaixo do título.
