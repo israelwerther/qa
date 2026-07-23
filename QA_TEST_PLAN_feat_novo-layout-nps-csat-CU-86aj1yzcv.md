@@ -168,7 +168,7 @@ nps = mixer.blend(
 > **4. Workaround QA / Status:** O componente se recupera sozinho após o carregamento da lista. Avaliado como um "Edge Case Visual" em conexões lentas. **Aceitável para produção**. Mapeado como débito técnico para melhoria futura.
 
 > [!BUG]
-> **1. Title:** [UX/UI] Tamanho da Modal In-App ("Pequeno" vs "Grande") é ignorado na renderização
+> **1. Title:** ~~[UX/UI] Tamanho da Modal In-App ("Pequeno" vs "Grande") é ignorado na renderização~~ **[RESOLVIDO]**
 > **2. Context/Root Cause:** No componente `vue-notifications.html`, a div `.modal-dialog` recebe dinamicamente a classe do Bootstrap referente ao tamanho escolhido (`:class="'modal-'+selectedNotification.notification.modalWidth"`). No entanto, foi adicionada uma classe estática do Tailwind `sm:tw-max-w-2xl` (max-width: 672px) na mesma div. Essa classe do Tailwind sobrepõe a configuração de tamanho, travando a modal para ser sempre "Grande", ignorando a escolha do usuário feita no Wizard (Passo 5).
 > **3. Expected Behavior:** O tamanho escolhido no Wizard (Pequeno, Médio, Grande) deve ser respeitado pela modal final. A classe Tailwind limitadora de largura não deve sobrepor a classe dinâmica.
 > **4. Workaround:** Nenhum do lado do usuário. O visual permanece elegante, mas não obedece ao parâmetro.
@@ -179,14 +179,17 @@ nps = mixer.blend(
 > [!NOTE]
 > **[UX/UI] Formatação de Data na Revisão**
 > No Passo 6 (Revisão) do Wizard, o campo "Período" exibe as datas no formato bruto ISO (ex: `2026-07-15T15:09`) ao invés do padrão amigável (DD/MM/AAAA) que já é usado na frase do preview de Disparo logo abaixo.
+> - *Observação:* Verificado e ainda não corrigido. A renderização bruta permanece no template. Ficará como débito técnico.
 
 > [!NOTE]
 > **[UX/UI] Sidebar perde o estado "Ativo" no Dashboard**
 > Na tela de Detalhes (`/feedbacks/`), o item "Pesquisas NPS/CSAT" do menu lateral perde a classe ativa (amarela), voltando ao estado cinza. Deve manter o destaque.
+> - *Observação:* Verificado e ainda não corrigido. Ficará como débito técnico.
 
 > [!NOTE]
 > **[UX/UI] Fechamento acidental da Modal descarta o voto**
 > Se o usuário seleciona uma nota (ex: 5) e acidentalmente clica fora da modal, ela se fecha. O sistema marca a notificação como "visualizada" (`viewed: true`) mas não envia a nota selecionada. O voto é perdido e a pesquisa não volta mais para o usuário. Como melhoria futura, o clique no backdrop deveria ser desabilitado (`backdrop="static"`) se a pesquisa for obrigatória ou se uma nota já estiver selecionada no state.
+> - *Observação:* Verificado e ainda não corrigido. Ficará como débito técnico.
 
 > [!NOTE]
 > **~~[UX/UI Interna] Erro gramatical na coluna de Disparo~~ [RESOLVIDO]**
@@ -201,11 +204,13 @@ nps = mixer.blend(
 > [!NOTE]
 > **[Feature Request] Funcionalidade de Excluir Pesquisas**
 > Faltou prever a funcionalidade de **Excluir** pesquisas no escopo original (OpenSpec/Tasks). A API só implementou GET/PUT/PATCH. É necessário um endpoint DELETE e um botão "Excluir" na UI para limpar pesquisas de teste.
+> - *Observação:* Verificado e ainda não implementado. Ficará como débito técnico.
 
 > [!NOTE]
 > **[UX/UI] Item do Menu Lateral perde o estado "Ativo" na tela de Detalhes**
 > Ao entrar na tela de Detalhes da pesquisa (`/notificacoes/feedback/<id>/`), o link "Pesquisas NPS/CSAT" no menu lateral esquerdo (sidebar) perde o realce em laranja e volta à cor cinza padrão.
 > - *Contexto:* A lógica de template (provavelmente no `base.html` ou `sidebar.html`) que aplica a classe ativa (ex: checando `request.path`) não está reconhecendo a rota de feedback como pertencente ao módulo. Fica como débito técnico visual.
+> - *Observação:* Verificado e ainda não corrigido. Continuará como débito técnico.
 
 ## 8.1. Anotações para o Acervo (Knowledge Base Notes)
 > Aqui guardamos IDs, seletores DOM e dicas estruturais importantes para que os próximos testes e a automação com Playwright funcionem sem fricção.
