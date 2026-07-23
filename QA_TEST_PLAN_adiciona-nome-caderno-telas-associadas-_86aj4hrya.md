@@ -92,7 +92,7 @@ def test_setup_contextual_names(client, admin_user):
   - Resultado Esperado: Nome do caderno como referência contextual no topo do form.
 
 ### Correção de Redação e Revisão de Questões
-- [ ] **Acessar Correção de Redação (`exam_essay_correction.html`)** `[Apenas Manual 👁]`
+- [x] **Acessar Correção de Redação (`exam_essay_correction.html`)** `[Apenas Manual 👁]`
   - Persona: Corretor / Professor
   - Ação: Acessar interface de correção de redações.
   - Resultado Esperado: Nome do caderno presente no topo da tela, no limite de 50 caracteres.
