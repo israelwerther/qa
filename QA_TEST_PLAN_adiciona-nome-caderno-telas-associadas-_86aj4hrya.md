@@ -78,15 +78,15 @@ def test_setup_contextual_names(client, admin_user):
   - Resultado Esperado (Criação): Ao selecionar o caderno no dropdown (Vue), o nome deve refletir corretamente na tela (se aplicável na UI).
 
 ### Telas do Professor (Elaboração)
-- [ ] **Acessar Tela "Opa! Hora de elaborar..." (`before_exam_request_teacher_subject_edit_v2.html`)** `[Apenas Manual 👁]`
+- [x] **Acessar Tela "Opa! Hora de elaborar..." (`before_exam_request_teacher_subject_edit_v2.html`)** `[Apenas Manual 👁]`
   - Persona: Professor
   - Ação: Abrir link de elaboração enviado para o professor.
   - Resultado Esperado: O nome do caderno aparece em texto cinza e subtítulo abaixo de "Opa! Hora de elaborar uma nova prova."
-- [ ] **Acessar Introdução Banco de Questões (`examteachersubject_questions_bank_introduction.html`)** `[Apenas Manual 👁]`
+- [x] **Acessar Introdução Banco de Questões (`examteachersubject_questions_bank_introduction.html`)** `[Apenas Manual 👁]`
   - Persona: Professor
   - Ação: Navegar para a tela de banco de questões da elaboração.
   - Resultado Esperado: O nome do caderno é exibido como contexto no bloco principal.
-- [ ] **Acessar Atualização de Disciplina (`examteachersubject_update_form.html`)** `[Apenas Manual 👁]`
+- [x] **Acessar Atualização de Disciplina (`examteachersubject_update_form.html`)** `[Apenas Manual 👁]`
   - Persona: Professor
   - Ação: Abrir formulário de edição de dados da disciplina do professor para a prova.
   - Resultado Esperado: Nome do caderno como referência contextual no topo do form.
@@ -115,6 +115,9 @@ def test_setup_contextual_names(client, admin_user):
 
 > [!NOTE]
 > **[UX/UI] Badge de Histórico:** Na tela de editar aplicação (`application_create_update.html`), o badge de histórico de alterações ficaria melhor posicionado se ficasse ao lado do botão "Salvar aplicação" no cabeçalho ou rodapé.
+
+> [!NOTE]
+> **[UX/UI] Sidebar de Elaboração:** Na tela de elaboração de questões do professor (`/editar/`), adicionar o nome do caderno logo acima do nome da disciplina (ex: acima de "Álgebra") na barra lateral direita para dar ainda mais contexto sem roubar espaço.
 
 ### 8.1. Mapeamento Contínuo de Usabilidade
 Não se aplica a criação de um novo mapeamento de tela exato aqui, visto que foram alterações de texto simples em múltiplas telas diferentes. Para automações E2E focadas nisso, a prioridade seria checar o innerText dos elementos `h1`/`h2`/`span` no topo do `.container`.
