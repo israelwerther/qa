@@ -96,7 +96,7 @@ def test_setup_contextual_names(client, admin_user):
   - Persona: Corretor / Professor
   - Ação: Acessar interface de correção de redações.
   - Resultado Esperado: Nome do caderno presente no topo da tela, no limite de 50 caracteres.
-- [ ] **Acessar Cadastro/Edição de Caderno (`exam_request_create_update_new.html`)** `[Automatizável ✅]`
+- [x] **Acessar Cadastro/Edição de Caderno (`exam_request_create_update_new.html`)** `[Automatizável ✅]`
   - Persona: Administrador / Coordenador
   - Ação: Acessar a tela grande de edição do caderno Vue.js.
   - Resultado Esperado: Nome do caderno (ex: "Editar caderno: NOME DO CADERNO") deve ser visível no header, seja em edição ou criação (após digitar o nome).
@@ -107,7 +107,7 @@ def test_setup_contextual_names(client, admin_user):
 - [ ] Tirar screenshot da tela de edição do Caderno em Vuejs (`exam_request_create_update_new.html`) para garantir que layout não quebrou com a inclusão.
 
 ## 7. Problemas Encontrados (Bugs and Observations)
-*(A ser preenchido pelo QA humano durante a execução)*
+- **[Bug Legado - Ignorado]** `NoReverseMatch` ao acessar `/aplicacoes/<uuid>/editar` sem caderno associado (`exam=None`). Ocorre devido ao snippet Vue tentar resolver a URL `exams:exam_api_detail` passando `pk=None`. Já existia na `master` e não é regressão desta branch.
 
 ## 8. Melhorias Futuras (Future Improvements & Tech Debt)
 > [!NOTE]
@@ -123,6 +123,5 @@ def test_setup_contextual_names(client, admin_user):
 Não se aplica a criação de um novo mapeamento de tela exato aqui, visto que foram alterações de texto simples em múltiplas telas diferentes. Para automações E2E focadas nisso, a prioridade seria checar o innerText dos elementos `h1`/`h2`/`span` no topo do `.container`.
 
 ## 9. Retrospectiva de QA
-*(A ser preenchido ao final da validação)*
-- **Bottleneck:** (Preencher depois)
-- **Reflexão:** As instruções foram diretas e claras. O OpenSpec eliminou o trabalho de procurar telas redundantes (ex: `inspector-new.html`), economizando tempo no escopo.
+- **Bottleneck:** A dependência de massa de dados válida (ex: cadernos sem aplicação/redações pendentes) exigiu navegação por URLs diretas em ambiente local.
+- **Reflexão:** As instruções foram diretas e claras. O OpenSpec eliminou o trabalho de procurar telas redundantes (ex: `inspector-new.html`), economizando tempo no escopo. Todas as telas mapeadas exibiram o identificador contextual corretamente.
