@@ -109,52 +109,54 @@ openspec_quality: 5
   - **Referência técnica:** Observar os accordions filhos do Lize AI.
   - **Resultado esperado:** O Badge do header reflete o total de pendências. Existem as seções: Desvios sugeridos, Feedbacks, Notas sugeridas, Rúbricas. Cada seção com itens pendentes mostra seu próprio badge coerente. Se vazia, mostra "Nenhum item nesta seção" sem quebrar JS. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Expandir e recolher o painel e suas seções (C10).
+- [x] **Ação humana:** Expandir e recolher o painel e suas seções (C10).
   - **Referência técnica:** Clicar nos cabeçalhos dos accordions.
   - **Resultado esperado:** Painel expande e recolhe sem quebrar layout. Os itens exibem título, detalhe e os ícones sutis de ✓ e × à direita. `[Apenas Manual 👁]`
 
 ### Bloco D — Aceite e Rejeição (C11–C16)
-- [ ] **Ação humana:** Clicar no ícone de "×" (Rejeitar) de uma sugestão de desvio (C12).
+- [x] **Ação humana:** Clicar no ícone de "×" (Rejeitar) de uma sugestão de desvio (C12).
   - **Referência técnica:** Rejeitar desvio com highlight visível na transcrição.
   - **Resultado esperado:** Status do item muda para "Recusada". O highlight correspondente **some** no texto digitalizado. O badge decrementa. A nota não é afetada. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Clicar no ícone de "✓" (Aceitar) de um desvio gramatical/estrutural (C11).
+- [x] **Ação humana:** Clicar no ícone de "✓" (Aceitar) de um desvio gramatical/estrutural (C11).
   - **Referência técnica:** Aceitar desvio com highlight.
   - **Resultado esperado:** Status vira "Aceita". Badge decrementa. Highlight no digitalizado permanece com estilo visual de aceito. Não deve quebrar o Annotorious no modo original (desvios da IA não devem gravar geometria na imagem). `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Editar a descrição de um desvio antes de aceitar.
+- [x] **Ação humana:** Editar a descrição de um desvio antes de aceitar.
   - **Referência técnica:** Usar o fluxo de edição de desvio do Lize AI.
   - **Resultado esperado:** O texto editado pelo professor é persistido e entra no cálculo. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Aceitar sugestão de nota que conflita com anotação manual (C13).
+- [x] **Ação humana:** Aceitar sugestão de nota que conflita com anotação manual (C13).
   - **Referência técnica:** O professor cria uma dedução manual para C2 na sidebar. Depois aceita a nota da IA para a mesma competência.
   - **Resultado esperado:** A nota da competência passa a refletir a sugestão aceita (sobrescrevendo as deduções manuais anteriores da mesma competência). Anotações manuais em *outras* competências continuam desenhadas e intactas. Console limpo de erros do Annotorious (`can't access property "type"`). `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Aceitar sugestão de Feedback (C14).
+- [x] **Ação humana:** Aceitar sugestão de Feedback (C14).
   - **Referência técnica:** Clicar em aceitar feedback para uma competência que já possui texto do professor.
   - **Resultado esperado:** O texto existente não é apagado. O comentário sugerido recebe um *append* (é adicionado ao final) com o prefixo `[Lize AI — Cx]`. Status vira Aceita. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Clicar no botão "Aceitar Tudo" (C16).
+- [x] **Ação humana:** Clicar no botão "Aceitar Tudo" (C16).
   - **Referência técnica:** Clicar em Aceitar Tudo com várias pendências.
   - **Resultado esperado:** Todas as pendentes passam para "aceitas" ou ocorre falha atômica com mensagem clara (sem estado inconsistente). Badge zera. Notas/feedbacks refletem os aceites. Sem erros no Annotorious. `[Automatizável ✅]`
 
 ### Bloco E — Texto Digitalizado e Highlights (C17–C19)
-- [ ] **Ação humana:** Alternar entre "Texto digitalizado" e "Texto original" (C17).
+- [x] **Ação humana:** Alternar entre "Texto digitalizado" e "Texto original" (C17).
   - **Referência técnica:** Usar o toggle no painel central com transcrição disponível.
   - **Resultado esperado:** Modo Digitalizado mostra texto HTML e oculta o viewer da imagem. Modo Original volta a imagem do Annotorious com a toolbar. A alternância não destrói o estado das sugestões no painel. `[Apenas Manual 👁]`
 
-- [ ] **Ação humana:** Inspecionar highlights na transcrição (C18).
+- [x] **Ação humana:** Inspecionar highlights na transcrição (C18).
   - **Referência técnica:** Localizar trechos grifados de desvios. Hover para tooltips.
   - **Resultado esperado:** Os highlights usam estilo tracejado na cor laranja (não adotam as cores das competências como as demarcações manuais). O tooltip exibe `Lize AI — {rótulo}`. `[Apenas Manual 👁]`
 
-- [ ] **Ação humana:** Clicar em Texto Digitalizado antes de haver transcrição (C19).
+- [x] **Ação humana:** Clicar em Texto Digitalizado antes de haver transcrição (C19).
   - **Referência técnica:** Abrir painel em `loading` ou que falhou sem `transcription`.
   - **Resultado esperado:** Exibe mensagem “Aguardando transcrição da Lize AI…” ou mantém o toggle desabilitado por enquanto. `[Apenas Manual 👁]`
 
 ### Bloco F — Persistência no Backend (C22)
-- [ ] **Ação humana:** Verificar o reflexo no banco/admin após um processo bem-sucedido (C22).
+- [x] **Ação humana:** Verificar o reflexo no banco/admin após um processo bem-sucedido (C22).
   - **Referência técnica:** Inspecionar o model `EssayAICorrection` via Django Admin para a redação testada.
   - **Resultado esperado:** `status=ready` e `transcription` preenchida. Metadados de uso da API presentes no campo `metadata`. Itens em `EssayAISuggestion` criados com status e tipo (`kind`, `competency`) coerentes. `[Automatizável ✅]`
+  - **Evidência/Comportamento Validado:** Auditado diretamente no ORM/Admin. O registro `EssayAICorrection` possui `status='ready'`, `transcription` gravada (2064 caracteres) e `metadata` completo contendo dados de `usage` (tokens de OCR e corretores) e `correction_meta` (modo triplo e convergência). Todas as 16 instâncias filhas de `EssayAISuggestion` estão gravadas com `kind`, `competency`, `payload` e `status` 100% coerentes.
+
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 - [x] O painel Lize AI corresponde fielmente aos mockups de design. (Accordions, badge, tipografia).
@@ -170,6 +172,8 @@ openspec_quality: 5
 2. **Filtro de Categoria OMR em `/gabaritos/`:** O campo `<select>` de categoria em [`omr_upload_list_new.html`](file:///home/israel/workspace/lizeedu/fiscallizeon/omr/templates/omr/omr_upload_list_new.html#L318) só é exibido se `form.omr_category.field.queryset.exists()` for verdadeiro. Em clientes sem categorias customizadas (`is_native=False`), o select é ocultado no render.
 3. **Fallback GCP Vision OCR:** Se o leitor local (`pyzbar` / `OpenCV`) não reconhecer o QR Code no canto da folha (folhas em branco ou baixa resolução), o sistema aciona a API do Google Cloud Vision. Chaves dummy no `.env` resultam em `OMRDiscursiveError.QUESTION_NOT_FOUND`.
 4. **Comportamento de Timeout e Retry (C08):** Durante simulação de queda de conexão/rede, o painel exibe o estado em processamento e, após esgotar o tempo limite, renderiza a mensagem de erro legível *"Timeout ao aguardar resposta do corretor-redacao-api"* acompanhada do botão *"Tentar novamente"*. Ao restabelecer a conexão e clicar no botão, o fluxo é reenfileirado e concluído perfeitamente até o status `ready`.
+5. **Validação de Limite de Tamanho de Imagem (2 MB):** A API do microserviço (`corretor-redacao-api`) valida o tamanho do arquivo enviado e impõe um limite máximo de 2 MB. Arquivos maiores que 2 MB retornam erro HTTP 422 (`Image exceeds 2 MB limit`), que é capturado e exibido de forma legível na UI do painel Lize AI juntamente com o botão de retry.
+
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 > [!NOTE]
