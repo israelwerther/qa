@@ -66,20 +66,20 @@ openspec_quality: 5
 ## 5. Execution Test Script (Roteiro de Testes com Checkboxes)
 
 ### Bloco A — Regressões de navegação (C01–C02, C20)
-- [ ] **Ação humana:** Selecionar uma turma e filtrar (C01).
-  - **Referência técnica:** Acessar `/provas/<exam_id>/redacoes/` e abrir o Console do browser.
+- [x] **Ação humana:** Selecionar uma turma e filtrar (C01).
+  - **Referência técnica:** Acessar `/provas/<exam_id>/redacoes/?school_class=<id_da_turma>` e abrir o Console do browser.
   - **Resultado esperado:** Cards dos alunos aparecem sem tela em branco. O Console não deve apresentar `TypeError: Cannot read properties of undefined (reading 'criterion')`. A pontuação exibida nos cards não deve quebrar o render, mesmo com anotações incompletas. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Clicar em um aluno da listagem para iniciar a correção (C02).
-  - **Referência técnica:** Observar o painel central ao carregar a página `/exams/<uuid>/redacoes/correcao/`.
+- [x] **Ação humana:** Clicar em um aluno da listagem para iniciar a correção (C02).
+  - **Referência técnica:** Observar o painel central ao carregar a página `/provas/<uuid>/redacoes/correcao/?application_student=<id_do_aluno>&school_class=<id_da_turma>`.
   - **Resultado esperado:** Imagem da redação carrega no OpenSeadragon (não fica travada no loading). O Console não deve apresentar `Cannot read properties of null (reading 'appendChild')`. Toolbar de zoom/home disponível no modo Texto original. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Com correção aberta, avançar para o próximo aluno (C20).
+- [x] **Ação humana:** Com correção aberta, avançar para o próximo aluno (C20).
   - **Referência técnica:** Clicar na seta de "Próximo" na navegação do corretor.
   - **Resultado esperado:** A imagem e as anotações do aluno anterior **não "vazam"** para o próximo. O Painel Lize AI reinicia para o novo FileAnswer. Sem erros no Console ao trocar rapidamente. `[Automatizável ✅]`
 
 ### Bloco B — Visibilidade e Disparo (C03–C08, C21)
-- [ ] **Ação humana:** Fazer login com um usuário pertencente a um cliente **sem** `has_essay_system` e tentar acessar o fluxo (C21).
+- [x] **Ação humana:** Fazer login com um usuário pertencente a um cliente **sem** `has_essay_system` e tentar acessar o fluxo (C21).
   - **Referência técnica:** Acessar URL `/exams/<uuid>/redacoes/correcao/`.
   - **Resultado esperado:** Acesso ao módulo de redação deve ser bloqueado (redirect ou aviso “Cliente não possui este módulo”). O painel "Lize AI" **não** deve estar visível/operacional. `[Automatizável ✅]`
 
