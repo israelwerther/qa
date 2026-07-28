@@ -83,28 +83,29 @@ openspec_quality: 5
   - **Referência técnica:** Acessar URL `/exams/<uuid>/redacoes/correcao/`.
   - **Resultado esperado:** Acesso ao módulo de redação deve ser bloqueado (redirect ou aviso “Cliente não possui este módulo”). O painel "Lize AI" **não** deve estar visível/operacional. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Acessar uma redação **NÃO ENEM** em cliente permitido (C04).
+- [x] **Ação humana:** Acessar uma redação **NÃO ENEM** em cliente permitido (C04).
   - **Referência técnica:** Acessar correção de questão cujo `text_correction` não é "Competências ENEM".
   - **Resultado esperado:** O Accordion Lize AI não aparece. O toggle de texto digitalizado também não aparece. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Acessar a tela de correção de uma redação ENEM virgem (C05).
+- [x] **Ação humana:** Acessar a tela de correção de uma redação ENEM virgem (C05).
   - **Referência técnica:** Abrir aluno sem `EssayAICorrection` prévia.
   - **Resultado esperado:** Ao entrar na tela, o painel Lize AI dispara a geração (estado de loading: "Gerando sugestões…"). Logo após o Celery processar o job, o status muda para `ready` e popula as seções. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Recarregar (F5) a mesma página de correção após o processamento (C06).
+- [x] **Ação humana:** Recarregar (F5) a mesma página de correção após o processamento (C06).
   - **Referência técnica:** Recarregar a página com painel em estado `ready`.
   - **Resultado esperado:** Não cria segundo job desnecessário. O painel carrega diretamente com as sugestões, sem ficar preso em `ready` vazio. Transcrição disponível. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Interagir enquanto o job processa (C07).
+- [x] **Ação humana:** Interagir enquanto o job processa (C07).
   - **Referência técnica:** Abrir a correção (ideal simular rede lenta).
   - **Resultado esperado:** Mensagem de processamento com spinner é exibida. O polling atualiza até `ready` ou `failed` sem precisar dar F5. `[Automatizável ✅]`
 
-- [ ] **Ação humana:** Simular falha na API ou conexão e usar retry (C08).
+- [x] **Ação humana:** Simular falha na API ou conexão e usar retry (C08).
   - **Referência técnica:** Usar correção com status `failed` no Admin ou bloquear rede.
   - **Resultado esperado:** A UI mostra mensagem de erro legível. O botão "Tentar novamente" reenfileira o fluxo e, com a infra restabelecida, o status chega em `ready`. `[Apenas Manual 👁]`
+  - **Evidência/Comportamento Validado:** Ao cortar a conexão de rede, o painel exibe o spinner *"Processando sugestões da Lize AI..."*. Após atingir o tempo limite, a interface exibe a mensagem de erro legível *"Timeout ao aguardar resposta do corretor-redacao-api"* juntamente com o botão *"Tentar novamente"*. Ao restabelecer a conexão e acionar o botão, a requisição é reenfileirada e a correção é concluída com sucesso (status `ready`).
 
 ### Bloco C — Estrutura do Painel (C09–C10)
-- [ ] **Ação humana:** Verificar as seções do painel após processamento (C09).
+- [x] **Ação humana:** Verificar as seções do painel após processamento (C09).
   - **Referência técnica:** Observar os accordions filhos do Lize AI.
   - **Resultado esperado:** O Badge do header reflete o total de pendências. Existem as seções: Desvios sugeridos, Feedbacks, Notas sugeridas, Rúbricas. Cada seção com itens pendentes mostra seu próprio badge coerente. Se vazia, mostra "Nenhum item nesta seção" sem quebrar JS. `[Automatizável ✅]`
 
@@ -156,16 +157,19 @@ openspec_quality: 5
   - **Resultado esperado:** `status=ready` e `transcription` preenchida. Metadados de uso da API presentes no campo `metadata`. Itens em `EssayAISuggestion` criados com status e tipo (`kind`, `competency`) coerentes. `[Automatizável ✅]`
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
-- [ ] O painel Lize AI corresponde fielmente aos mockups de design. (Accordions, badge, tipografia).
+- [x] O painel Lize AI corresponde fielmente aos mockups de design. (Accordions, badge, tipografia).
 - [ ] A etapa extra de revisão condicional (que lista falhas separadas por gramatical e estrutural) aparece visualmente correta.
-- [ ] O comportamento do texto digitalizado com highlights tracejados em laranja foi verificado.
+- [x] O comportamento do texto digitalizado com highlights tracejados em laranja foi verificado.
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 > [!WARNING]
 > Risco: A estrutura de `ai_correction_data` precisa estar alinhada com o contrato. O JSON deve possuir o `type` (falha_gramatical ou falha_estrutural) para separar visualmente a revisão. 
-> 
-> [!NOTE]
-> Nenhum bug reportado nesta fase inicial. Ao encontrar, descreva com (1) Título, (2) Root Cause, (3) Expected Behavior citado, (4) Workaround.
+
+### Descobertas Técnicas e Condições de Setup (Acervo Log):
+1. **Requisito de `CorrectionRubric` no DB:** O normalizer (`enem_ai_normalizer.py`) só gera sugestões do tipo `kind=rubric` se existirem instâncias de `CorrectionRubric` cadastradas no banco para os critérios (`CorrectionCriterion`) da matriz da prova. Foram criadas 30 rubricas (níveis 0 a 200 pts) em `Competências ENEM`.
+2. **Filtro de Categoria OMR em `/gabaritos/`:** O campo `<select>` de categoria em [`omr_upload_list_new.html`](file:///home/israel/workspace/lizeedu/fiscallizeon/omr/templates/omr/omr_upload_list_new.html#L318) só é exibido se `form.omr_category.field.queryset.exists()` for verdadeiro. Em clientes sem categorias customizadas (`is_native=False`), o select é ocultado no render.
+3. **Fallback GCP Vision OCR:** Se o leitor local (`pyzbar` / `OpenCV`) não reconhecer o QR Code no canto da folha (folhas em branco ou baixa resolução), o sistema aciona a API do Google Cloud Vision. Chaves dummy no `.env` resultam em `OMRDiscursiveError.QUESTION_NOT_FOUND`.
+4. **Comportamento de Timeout e Retry (C08):** Durante simulação de queda de conexão/rede, o painel exibe o estado em processamento e, após esgotar o tempo limite, renderiza a mensagem de erro legível *"Timeout ao aguardar resposta do corretor-redacao-api"* acompanhada do botão *"Tentar novamente"*. Ao restabelecer a conexão e clicar no botão, o fluxo é reenfileirado e concluído perfeitamente até o status `ready`.
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 > [!NOTE]
@@ -176,9 +180,12 @@ openspec_quality: 5
 
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 🔗 **[Ver Mapeamento de Tela](../../../docs/tests/usability/exam_essay_correction.md)**
-*(Criar/atualizar este arquivo na primeira execução registrando seletores reais como botões de toggle e aceitar/rejeitar).*
+- **URL da Tela de Correção:** `/provas/<exam_id>/redacoes/correcao/?application_student=<id>&school_class=<id>`
+- **Seletor Accordion Lize AI:** `div.tw-bg-orange-50` / `div:has-text("Lize AI")`
+- **Seletor Seção Rúbricas:** `div:has-text("Rúbricas")`
+- **Comando de Reset de Aluno (Virgem):** `EssayAICorrection.objects.filter(file_answer__student_application_id=app_st_id).delete()`
 
 ## 9. QA Retrospective (Retrospectiva de QA)
-- **Principal gargalo:** (A ser preenchido após execução)
-- **Integração:** (A ser preenchido após execução)
-- **Melhorias de Processo:** (A ser preenchido após execução)
+- **Principal gargalo:** Ausência de `CorrectionRubric` de seed no banco local impedia exibição das rubricas no Lize AI.
+- **Integração:** Validação da chamada Celery + normalizer idempotente ao recarregar a tela ou regerar a análise.
+- **Melhorias de Processo:** Manter o setup de rubricas catalogado no Acervo para os testes autônomos futuros via `mixer`.
