@@ -62,6 +62,12 @@
 - [x] `[Automatizável ✅]` **Ação humana/CLI:** Rodar o script de adoção no terminal: `./scripts/ui/component-adoption.py`
     - **Referência técnica:** Garantir que executa com sucesso e classifica os templates corretamente nos Tiers A (usa component), B (base redesign), C (include) e D (legado).
 
+### Validação do Contexto para IA (Agent Skills)
+
+- [x] `[Apenas Manual 👁]` **Ação humana (AI Review):** Ler e interpretar o arquivo `.cursor/skills/lize-ui-components/SKILL.md`.
+    - **Estado esperado:** As instruções devem guiar agentes LLM de forma inequívoca para: consultar o `components/README.md`, evitar markup ad-hoc, usar prefixo `tw-` no Tailwind e Alpine.js.
+    - **Veredito:** Validado! A Skill contém checklists de PR rigorosos e um fluxo obrigatório ("escolher antes de criar") que garante consistência na geração de UI por agentes.
+
 ### Validação do Dashboard / Styleguide (Internal Tooling)
 
 - [x] `[Automatizável ✅]` **Ação humana:** Fazer login e acessar a raiz do styleguide (`/dev/components/`).
