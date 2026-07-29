@@ -68,6 +68,12 @@
     - **Estado esperado:** As instruções devem guiar agentes LLM de forma inequívoca para: consultar o `components/README.md`, evitar markup ad-hoc, usar prefixo `tw-` no Tailwind e Alpine.js.
     - **Veredito:** Validado! A Skill contém checklists de PR rigorosos e um fluxo obrigatório ("escolher antes de criar") que garante consistência na geração de UI por agentes.
 
+### Validação do OpenSpec (Design System)
+
+- [x] `[Apenas Manual 👁]` **Ação humana:** Revisar `openspec/specs/ui-design-system/spec.md`.
+    - **Estado esperado:** O arquivo deve conter as regras de tokens atualizados e referências corretas aos templates (ex: `redesign/base_component.html`).
+    - **Veredito:** Validado! As regras editoriais, de layout e os tokens (como o `brand-600`) estão perfeitamente especificados.
+
 ### Validação do Dashboard / Styleguide (Internal Tooling)
 
 - [x] `[Automatizável ✅]` **Ação humana:** Fazer login e acessar a raiz do styleguide (`/dev/components/`).
