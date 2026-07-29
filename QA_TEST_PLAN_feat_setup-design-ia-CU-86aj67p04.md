@@ -69,12 +69,12 @@
 - [x] `[Apenas Manual 👁]` **Ação humana:** Clicar na aba ou link do Dashboard de Adoção (`/dev/components/adoption/`).
     - **Referência técnica:** Deve consultar `component_adoption_views.py`.
     - **Estado esperado:** Gráficos/tabelas exibindo a distribuição por Tiers (A, B, C, D) e componentes não usados.
-- [ ] `[Apenas Manual 👁]` **Ação humana:** Acessar a página de detalhes/demos de pelo menos 3 componentes (ex: Accordion, Card, Toggle).
+- [x] `[Apenas Manual 👁]` **Ação humana:** Acessar a página de detalhes/demos de pelo menos 3 componentes (ex: Accordion, Card, Toggle).
     - **Estado esperado:** A documentação renderizada a partir dos `.md` deve estar legível e a demonstração (`demos/*.html`) deve carregar e funcionar sem erros graves de console no navegador.
 
 ### Smoke Test de CSS Global (Regressão)
 
-- [ ] `[Apenas Manual 👁]` **Ação humana:** Navegar brevemente por uma tela principal de produção (ex: Listagem de Provas ou Turmas).
+- [x] `[Apenas Manual 👁]` **Ação humana:** Navegar brevemente por uma tela principal de produção (ex: Listagem de Provas ou Turmas).
     - **Estado esperado:** As adições ao `tw.css` não devem ter "vazado" ou quebrado layouts globais do sistema. Nenhuma quebra visual absurda é aceitável.
 
 ---
@@ -84,7 +84,14 @@
 *Note: Task Nature é `[Technical/Internal]`, portanto a validação visual foca na clareza dos dados apresentados (Information Architecture) e legibilidade da documentação dos componentes.*
 
 - [x] Tirar screenshot da tela do **Dashboard de Adoção**, validando se as tabelas (Usados vs Não Usados) estão claras e corretas.
-- [ ] Tirar screenshot de um **Componente Específico no Styleguide**, validando se a extração do `README.md` ficou bem renderizada para consulta do dev.
+- [x] Tirar screenshot de um **Componente Específico no Styleguide**, validando se a extração do `README.md` ficou bem renderizada para consulta do dev.
+
+### Validação de Edge Cases (Interatividade e Responsividade)
+
+- [x] `[Apenas Manual 👁]` **Ação humana:** Testar interatividade dos scripts Alpine.js nos Demos (ex: testar o abrir/fechar do Accordion, Dropdown e Modal).
+    - **Estado esperado:** Componentes reagem aos eventos (clicks, ESC) indicando que os JS globais estão injetados corretamente.
+- [x] `[Apenas Manual 👁]` **Ação humana:** Testar responsividade da tela do Dashboard de Adoção ao reduzir o tamanho da janela do navegador.
+    - **Estado esperado:** A estrutura de Grid (`tw-grid`) empilha as tabelas e gráficos adequadamente sem vazamento horizontal.
 
 ---
 
@@ -96,7 +103,24 @@
 > **Título:** Lista de "Refs desconhecidas" com bullet point desalinhado no final do Dashboard de Adoção.
 > **Context/Root Cause:** O bullet point (`li`) com o texto "nome" e a tag `{% endverbatim %}` quebrou o alinhamento da caixa amarela de alerta, provavelmente por falta de classes utilitárias de lista (como `tw-list-inside` ou `tw-ml-4`) no template.
 > **Expected Behavior:** `(inferência de UX — Spec Gap)` A lista de refs desconhecidas deve estar com recuo adequado, perfeitamente alinhada dentro do box amarelo, sem vazar a margem.
-> **Workaround:** Não bloqueia o uso, é apenas um glitch visual (`[UX/UI]`).
+> **Workaround:** Tarefa técnica para o desenvolvedor: Adicionar a classe `tw-list-none` no template `adoption.html`.
+
+> [!BUG]
+> **Título:** Lista de "Não usados" também com bullet points desalinhados vazando os containers.
+> **Context/Root Cause:** Semelhante ao bug acima, os itens da grade (ex: `chart_gauge`, `client_drop`) têm a bolinha da lista (`li`) renderizando fora do fundo cinza claro. Se esses itens foram estilizados para parecer "badges" ou cards curtos, a classe `tw-list-none` deveria ter sido aplicada para remover a bolinha padrão da `ul`/`li`, ou `tw-list-inside` para colocá-la dentro do padding.
+> **Workaround:** Tarefa técnica para o desenvolvedor: Adicionar `tw-list-none` no template `adoption.html` para todas as listas da página.
+
+> [!BUG]
+> **Título:** Componente `schedule_card` quebrado (sem CSS) na página de Demo.
+> **Context/Root Cause:** O template do componente (`components/schedule_card/schedule_card.html`) estava usando as classes originais do Tailwind (ex: `flex`, `items-center`, `bg-white`) sem o prefixo oficial do projeto (`tw-`). Como o compilador só extrai classes com prefixo para o `tw.css`, o componente estava sendo renderizado como texto puro e sem layout.
+> **Expected Behavior:** `(inferência de UX — Spec Gap)` O card deve apresentar formatação visual adequada (bordas, fundo branco, layout lado a lado), aplicando o prefixo `tw-` em todas as classes utilitárias.
+> **Workaround:** Tarefa técnica para o desenvolvedor: Inserir o prefixo `tw-` em todas as classes do `schedule_card.html`.
+
+> [!BUG]
+> **Título:** Componente `modal` aparenta estar sem espaçamento interno (padding/margins) no corpo e rodapé.
+> **Context/Root Cause:** Na visualização do demo, o texto principal do modal e os botões de ação ("Cancelar" e "Confirmar") encostam diretamente nas bordas do contêiner, sugerindo a ausência de classes de padding (ex: `tw-p-6` no corpo e `tw-p-4` no rodapé) na estrutura do template do componente.
+> **Expected Behavior:** `(inferência de UX — Spec Gap)` Modais geralmente possuem recuos internos para o conteúdo "respirar" e não grudar nas bordas. O desenvolvedor deve avaliar se o componente `modal.html` deve trazer esse padding por padrão ou se é responsabilidade de quem usa o `slot` injetá-lo (embora o padrão seja vir embutido).
+> **Workaround:** Tarefa técnica para o desenvolvedor: Revisar o layout base do `modal.html` e adicionar paddings internos caso seja o comportamento global esperado para o design system.
 
 ---
 
@@ -104,6 +128,15 @@
 
 > [!NOTE]
 > *(Adicionar ideias de melhorias futuras para a ferramenta de adoção aqui durante o teste)*
+
+---
+
+## 9. QA Sign-off (Conclusão)
+
+- **Status da Execução:** ✅ CONCLUÍDO
+- **Data de Finalização:** 29/07/2026
+- **Veredito:** A infraestrutura técnica e lógica do dashboard de componentes (incluindo os scripts CLI) estão funcionando perfeitamente, garantindo uma excelente visibilidade da adoção do design system. A validação revelou **4 Spec Gaps/Bugs visuais** de CSS/Tailwind que foram mapeados na seção 7 para correção técnica pelo desenvolvedor. O Smoke Test não acusou nenhuma regressão global no painel principal. 
+- **Próximos passos:** Desenvolvedor atuar na seção 7. Após correção, a ferramenta interna estará 100% pronta para guiar o time.
 
 ---
 
