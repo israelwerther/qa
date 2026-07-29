@@ -119,7 +119,8 @@ You must generate the markdown file strictly following the structure below:
 ## 0. Metadata (Metadados de QA)
 Generate a Markdown YAML block or Table at the very top of the document to catalog data for future aggregate analysis. Include:
 - **Date:** (Current date)
-- **Feature Area:** (e.g., Exams, Payments, Reports)
+- **Task Nature:** Classify the branch as one of: `[Business Feature]` (end-user focus), `[Technical/Internal]` (dev tools, scripts, dashboards), or `[Refactoring]` (CSS, global UI, tech debt). The chosen nature will slightly adapt how you approach the subsequent sections (e.g., Technical tasks focus more on data output and CLI than Figma validation).
+- **Feature Area:** (e.g., Exams, Payments, Reports, Internal Tooling)
 - **Risk Level:** (Low/Medium/High)
 - **OpenSpec Quality:** (1 to 5 stars - how clear and complete were the requirements?)
 
@@ -150,6 +151,7 @@ Write detailed, step-by-step test scenarios.
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 If the branch involves User Interface (UI) changes, you MUST include a dedicated checklist section requiring the QA to take screenshots/prints of the implemented screens, mandating a side-by-side comparison with Figma/OpenSpec mockups.
+*Note: If the Task Nature is `[Technical/Internal]` (e.g., internal dev dashboards without Figma), focus this section on Data Validation and clear Information Architecture rather than strict Figma comparison. If `[Refactoring]`, focus heavily on Smoke Tests to ensure existing UI was not broken.*
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 Reserve a dedicated section to document any bugs or UX issues. 
