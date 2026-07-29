@@ -13,11 +13,12 @@
 ## 1. Summary of Changes (Resumo das Alterações)
 
 *   **Backend & Scripts:**
-    *   Criação do script `scripts/ui/component-adoption.py` para gerar relatório de adoção de django-components.
-    *   Criação do módulo `fiscallizeon/core/component_catalog.py` e views `component_adoption_views.py` e `component_styleguide_views.py`.
+    *   Criação do script `./scripts/ui/component-adoption.py` para gerar relatório de adoção (JSON/Texto/MD) que classifica templates em Tiers (A, B, C, D).
+    *   Criação do script `./scripts/dev/generate-components-catalog.py` para regenerar o índice.
+    *   Criação do módulo `fiscallizeon/core/component_catalog.py` e views.
 *   **Frontend & Views:**
-    *   Adição de um novo dashboard interativo (`/styleguide/adoption/` ou similar) para acompanhar a adoção e listar componentes não usados.
-    *   Criação do `styleguide/index.html` e templates de demonstração de componentes (Accordion, Card, Charts, etc.).
+    *   Adição do Dashboard ao vivo (`/dev/components/adoption/`) listando componentes usados vs não usados.
+    *   Rotas do Styleguide interno (`/dev/components/`).
 *   **Documentação e CSS:**
     *   Adição de arquivos `README.md` detalhados dentro de todos os diretórios em `components/`.
     *   Criação de uma skill para IA em `.cursor/skills/lize-ui-components/SKILL.md`.
@@ -36,8 +37,8 @@
 
 | Destino | Rótulo real no menu UI | URL Django | View name |
 |---------|------------------------|------------|-----------|
-| Styleguide Home | (Sem Menu - Acesso Direto) [verificar] | `/styleguide/` [verificar] | `styleguide_index` [verificar] |
-| Dashboard Adoção | (Acesso via Home do Styleguide) [verificar] | `/styleguide/adoption/` [verificar] | `styleguide_adoption` [verificar] |
+| Styleguide Home | (Sem Menu - Acesso Direto) | `/dev/components/` | `styleguide_index` |
+| Dashboard Adoção | (Acesso via Home) | `/dev/components/adoption/` | `styleguide_adoption` |
 
 ---
 
@@ -56,17 +57,18 @@
 
 ### Configuração e Validação de Scripts CLI
 
-- [ ] `[Automatizável ✅]` **Ação humana/CLI:** Rodar o script de adoção no terminal: `python scripts/ui/component-adoption.py`
-    - **Referência técnica:** Garantir que o script executa do início ao fim com `exit_code 0`.
-    - **Estado esperado:** O terminal deve printar os relatórios ou gerar algum output sem stacktraces (Errors).
+- [x] `[Automatizável ✅]` **Ação humana/CLI:** Rodar o script gerador de catálogo: `./scripts/dev/generate-components-catalog.py`
+    - **Referência técnica:** Deve criar/atualizar os metadados do catálogo de componentes.
+- [x] `[Automatizável ✅]` **Ação humana/CLI:** Rodar o script de adoção no terminal: `./scripts/ui/component-adoption.py`
+    - **Referência técnica:** Garantir que executa com sucesso e classifica os templates corretamente nos Tiers A (usa component), B (base redesign), C (include) e D (legado).
 
 ### Validação do Dashboard / Styleguide (Internal Tooling)
 
-- [ ] `[Automatizável ✅]` **Ação humana:** Fazer login com usuário `superuser` e acessar a URL raiz do styleguide (`/styleguide/`).
-    - **Estado esperado:** A tela deve renderizar corretamente o `index.html` com a listagem de componentes disponíveis no projeto, lendo os novos READMEs e documentações geradas.
-- [ ] `[Apenas Manual 👁]` **Ação humana:** Clicar na aba ou link do Dashboard de Adoção (`/styleguide/adoption/`).
+- [x] `[Automatizável ✅]` **Ação humana:** Fazer login e acessar a raiz do styleguide (`/dev/components/`).
+    - **Estado esperado:** Renderização correta com a listagem de componentes, lendo os READMEs dinamicamente.
+- [x] `[Apenas Manual 👁]` **Ação humana:** Clicar na aba ou link do Dashboard de Adoção (`/dev/components/adoption/`).
     - **Referência técnica:** Deve consultar `component_adoption_views.py`.
-    - **Estado esperado:** Os gráficos ou tabelas devem mostrar quais componentes são usados, quais não são, conforme os dados gerados em tempo real, validando o output no UI (Data Validation).
+    - **Estado esperado:** Gráficos/tabelas exibindo a distribuição por Tiers (A, B, C, D) e componentes não usados.
 - [ ] `[Apenas Manual 👁]` **Ação humana:** Acessar a página de detalhes/demos de pelo menos 3 componentes (ex: Accordion, Card, Toggle).
     - **Estado esperado:** A documentação renderizada a partir dos `.md` deve estar legível e a demonstração (`demos/*.html`) deve carregar e funcionar sem erros graves de console no navegador.
 
@@ -81,7 +83,7 @@
 
 *Note: Task Nature é `[Technical/Internal]`, portanto a validação visual foca na clareza dos dados apresentados (Information Architecture) e legibilidade da documentação dos componentes.*
 
-- [ ] Tirar screenshot da tela do **Dashboard de Adoção**, validando se as tabelas (Usados vs Não Usados) estão claras e corretas.
+- [x] Tirar screenshot da tela do **Dashboard de Adoção**, validando se as tabelas (Usados vs Não Usados) estão claras e corretas.
 - [ ] Tirar screenshot de um **Componente Específico no Styleguide**, validando se a extração do `README.md` ficou bem renderizada para consulta do dev.
 
 ---
@@ -90,10 +92,11 @@
 
 *(Preencher durante a execução)*
 
-> [!WARNING] (Exemplo)
-> **Título:** O script de adoção não considera templates na pasta `X`
-> **Root Cause:** Regex não pega tags customizadas
-> **Expected Behavior:** `(inferência de UX — Spec Gap)` O script deveria contabilizar todos os diretórios mapeados no settings.
+> [!BUG]
+> **Título:** Lista de "Refs desconhecidas" com bullet point desalinhado no final do Dashboard de Adoção.
+> **Context/Root Cause:** O bullet point (`li`) com o texto "nome" e a tag `{% endverbatim %}` quebrou o alinhamento da caixa amarela de alerta, provavelmente por falta de classes utilitárias de lista (como `tw-list-inside` ou `tw-ml-4`) no template.
+> **Expected Behavior:** `(inferência de UX — Spec Gap)` A lista de refs desconhecidas deve estar com recuo adequado, perfeitamente alinhada dentro do box amarelo, sem vazar a margem.
+> **Workaround:** Não bloqueia o uso, é apenas um glitch visual (`[UX/UI]`).
 
 ---
 
