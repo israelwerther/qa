@@ -164,8 +164,13 @@ openspec_quality: 5
 - [x] O comportamento do texto digitalizado com highlights tracejados em laranja foi verificado.
 
 ## 7. Bugs and Observations (Problemas Encontrados)
+
 > [!WARNING]
-> Risco: A estrutura de `ai_correction_data` precisa estar alinhada com o contrato. O JSON deve possuir o `type` (falha_gramatical ou falha_estrutural) para separar visualmente a revisão. 
+> Risco: A estrutura de `ai_correction_data` precisa estar alinhada com o contrato. O JSON deve possuir o `type` (falha_gramatical ou falha_estrutural) para separar visualmente a revisão. *(Atualização: Bug confirmado! O frontend apenas lista todos sob 'Desvios sugeridos' pois o backend (`enem_ai_normalizer.py`) unifica todos como `KIND_DEVIATION` descartando o field `type` no payload)*.
+
+> [!WARNING]
+> **[UX/Bug de Arredondamento] Inconsistência visual na Nota Sugerida:**
+> O painel da Lize AI exibe o valor bruto retornado pela IA (ex: Competência 1 sugerindo `140 pts`), mas ao aceitar a sugestão, a função `_round_to_step` do backend arredonda a nota para o degrau mais próximo (ex: `160 pts`). Consequentemente, a anotação gerada na aba 'Desvios' exibe 160 pts, quebrando a expectativa do usuário. O Painel Lize AI já deveria exibir o valor arredondado.
 
 ### Descobertas Técnicas e Condições de Setup (Acervo Log):
 1. **Requisito de `CorrectionRubric` no DB:** O normalizer (`enem_ai_normalizer.py`) só gera sugestões do tipo `kind=rubric` se existirem instâncias de `CorrectionRubric` cadastradas no banco para os critérios (`CorrectionCriterion`) da matriz da prova. Foram criadas 30 rubricas (níveis 0 a 200 pts) em `Competências ENEM`.
