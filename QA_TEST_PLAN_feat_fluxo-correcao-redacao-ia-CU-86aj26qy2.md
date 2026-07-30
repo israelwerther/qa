@@ -38,7 +38,7 @@ openspec_quality: 5
 | Destino | Rótulo real no menu UI | URL Django | View name |
 |---------|------------------------|------------|-----------|
 | Listagem de Redações | Turmas [verificar] -> Filtrar Turma | `/provas/<exam_id>/redacoes/` | `exam_answers_list` |
-| Correção de Redação | Clicar em um aluno na lista | `/exams/<uuid>/redacoes/correcao/` | `exam_answers_correction` |
+| Correção de Redação | Clicar em um aluno na lista | `/provas/<uuid>/redacoes/correcao/` | `exam_answers_correction` |
 
 ## 4. Automated Tests & Fixtures (Testes Automatizados e Setup de Dados)
 - **Execução:** 
@@ -183,10 +183,8 @@ openspec_quality: 5
 > Avaliar comportamento de pendências se o professor salvar a correção sem terminar a revisão dos desvios.
 
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
+- [x] O arquivo de mapeamento foi nomeado refletindo exatamente o nome do template HTML, e não a View.
 🔗 **[Ver Mapeamento de Tela](../../../docs/tests/usability/exam_essay_correction.md)**
-- **URL da Tela de Correção:** `/provas/<exam_id>/redacoes/correcao/?application_student=<id>&school_class=<id>`
-- **Seletor Accordion Lize AI:** `div.tw-bg-orange-50` / `div:has-text("Lize AI")`
-- **Seletor Seção Rúbricas:** `div:has-text("Rúbricas")`
 - **Comando de Reset de Aluno (Virgem):** `EssayAICorrection.objects.filter(file_answer__student_application_id=app_st_id).delete()`
 
 ## 9. QA Retrospective (Retrospectiva de QA)
