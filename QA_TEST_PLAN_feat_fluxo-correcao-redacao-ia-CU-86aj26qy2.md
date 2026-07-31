@@ -172,6 +172,11 @@ openspec_quality: 5
 > **[UX/Bug de Arredondamento] Inconsistência visual na Nota Sugerida:**
 > O painel da Lize AI exibe o valor bruto retornado pela IA (ex: Competência 1 sugerindo `140 pts`), mas ao aceitar a sugestão, a função `_round_to_step` do backend arredonda a nota para o degrau mais próximo (ex: `160 pts`). Consequentemente, a anotação gerada na aba 'Desvios' exibe 160 pts, quebrando a expectativa do usuário. O Painel Lize AI já deveria exibir o valor arredondado.
 
+> [!WARNING]
+> **[UX/Bug de Renderização] O 'Texto Digitalizado' perde as quebras de linha da redação:**
+> A aba de "Texto Digitalizado" não respeita as quebras de linha físicas escritas pelo aluno no papel. O texto flui e quebra linha de acordo com a largura da tela/container. Como a correção do ENEM usa o número das linhas como referência espacial para o professor, a perda dessa formatação original prejudica muito a experiência de correção (UX).
+> **Solução Técnica Proposta ao Front:** A API devolve o texto com os caracteres de quebra (`\n`). O ideal é aplicar a propriedade `white-space: pre-wrap;` para respeitar as quebras originais, mas equilibrando com ajustes de largura do container e do tamanho da fonte. O objetivo deve ser encontrar um denominador comum para que, em resoluções e zoom padrão (100%), as linhas originais caibam sem quebras secundárias indesejadas (compreendendo que em níveis de zoom muito altos ou telas pequenas, alguma quebra extra será inevitável).
+
 ### Descobertas Técnicas e Condições de Setup (Acervo Log):
 1. **Requisito de `CorrectionRubric` no DB:** O normalizer (`enem_ai_normalizer.py`) só gera sugestões do tipo `kind=rubric` se existirem instâncias de `CorrectionRubric` cadastradas no banco para os critérios (`CorrectionCriterion`) da matriz da prova. Foram criadas 30 rubricas (níveis 0 a 200 pts) em `Competências ENEM`.
 2. **Filtro de Categoria OMR em `/gabaritos/`:** O campo `<select>` de categoria em [`omr_upload_list_new.html`](file:///home/israel/workspace/lizeedu/fiscallizeon/omr/templates/omr/omr_upload_list_new.html#L318) só é exibido se `form.omr_category.field.queryset.exists()` for verdadeiro. Em clientes sem categorias customizadas (`is_native=False`), o select é ocultado no render.
