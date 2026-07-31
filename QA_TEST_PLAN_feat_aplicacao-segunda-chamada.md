@@ -155,7 +155,7 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 - [x] Acessar `/aplicacoes/cadastrar/` e confirmar que o toggle `#is_second_call_toggle` está **desmarcado** por padrão.
 - [x] Confirmar que o campo oculto `input[name="is_second_call"]` tem valor `False`.
-- [ ] Confirmar que o container `div[v-show="isSecondCall"]` **não é exibido** (estilo `display: none`).
+- [x] Confirmar que o container `div[v-show="isSecondCall"]` **não é exibido** (estilo `display: none`).
 
 #### Cenário 2 — Toggle ativado exibe CTA de seleção [Automatizável ✅]
 
@@ -538,6 +538,12 @@ _Reserve este espaço durante a execução do plano._
 > - **Comportamento Esperado:** A query deveria comparar com `now = timezone.now()` para que exames liberados no dia de hoje já fiquem disponíveis na mesma hora, ou usar `.date()` na anotação, garantindo que o exame liberado hoje apareça.
 > - **Workaround:** Para testar a listagem, defina a data de liberação do resultado no Admin para *ontem*.
 > - **Tags:** `[Backend Logic]`
+
+> [!WARNING]
+> **Bug 2: Inconsistência visual no Toggle de "Prova de 2ª chamada"**
+> - **Contexto:** O switch implementado usa uma estrutura customizada (`toggle-switch` com `span.slider`), que difere visualmente do padrão predominante no sistema (como o toggle "É avaliação do tipo PAS?").
+> - **Comportamento Esperado:** Utilizar a classe padrão do projeto (`custom-control custom-switch`) para manter a uniformidade visual da interface.
+> - **Tags:** `[UX/UI]` 
 
 ---
 
