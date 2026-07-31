@@ -159,8 +159,8 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 2 — Toggle ativado exibe CTA de seleção [Automatizável ✅]
 
-- [ ] Clicar no toggle `#is_second_call_toggle`.
-- [ ] Confirmar que o container `div[v-show="isSecondCall"]` **fica visível**.
+- [x] Clicar no toggle `#is_second_call_toggle`.
+- [x] Confirmar que o container `div[v-show="isSecondCall"]` **fica visível**.
 - [ ] Confirmar que o campo oculto `input[name="is_second_call"]` tem valor `True`.
 - [ ] Confirmar que o texto "Prova de 2ª chamada" aparece no rótulo `label[for="is_second_call_toggle"]`.
 - [ ] Confirmar que o CTA de seleção de prova anterior aparece (sem caderno selecionado ainda).
