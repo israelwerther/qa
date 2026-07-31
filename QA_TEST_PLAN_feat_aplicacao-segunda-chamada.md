@@ -161,17 +161,17 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 - [x] Clicar no toggle `#is_second_call_toggle`.
 - [x] Confirmar que o container `div[v-show="isSecondCall"]` **fica visível**.
-- [ ] Confirmar que o campo oculto `input[name="is_second_call"]` tem valor `True`.
-- [ ] Confirmar que o texto "Prova de 2ª chamada" aparece no rótulo `label[for="is_second_call_toggle"]`.
-- [ ] Confirmar que o CTA de seleção de prova anterior aparece (sem caderno selecionado ainda).
+- [x] Confirmar que o campo oculto `input[name="is_second_call"]` tem valor `True`.
+- [x] Confirmar que o texto "Prova de 2ª chamada" aparece no rótulo `label[for="is_second_call_toggle"]`.
+- [x] Confirmar que o CTA de seleção de prova anterior aparece (sem caderno selecionado ainda).
 
 > **⚠️ Screenshot solicitado:** Como o CTA de seleção de prova anterior é exibido quando o toggle está ativo e nenhum caderno foi selecionado ainda?
 
 #### Cenário 3 — Toggle desativado esconde elementos [Automatizável ✅]
 
-- [ ] Com toggle ativo, clicar novamente para desativar.
-- [ ] Confirmar que o container `div[v-show="isSecondCall"]` some.
-- [ ] Confirmar que o campo oculto retorna ao valor `False`.
+- [x] Com toggle ativo, clicar novamente para desativar.
+- [x] Confirmar que o container `div[v-show="isSecondCall"]` some.
+- [x] Confirmar que o campo oculto retorna ao valor `False`.
 
 ---
 
@@ -181,24 +181,24 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 4 — Modal abre via CTA [Automatizável ✅]
 
-- [ ] Com toggle ativo, clicar no CTA de seleção de prova anterior.
-- [ ] Confirmar que o modal `#selectPreviousExamModal` fica visível (classe `.show` ou `display: block`).
-- [ ] Confirmar que o header exibe botões de Voltar e Fechar (X).
-- [ ] Confirmar que a coluna esquerda exibe "Cadernos" e o input de busca.
-- [ ] Confirmar que a coluna direita exibe "Ausentes" sem caderno selecionado.
-- [ ] Confirmar que o fetch inicial de cadernos acontece com a URL `exams:exams_api_second_call_list`.
+- [x] Com toggle ativo, clicar no CTA de seleção de prova anterior.
+- [x] Confirmar que o modal `#selectPreviousExamModal` fica visível (classe `.show` ou `display: block`).
+- [x] Confirmar que o header exibe botões de Voltar e Fechar (X).
+- [x] Confirmar que a coluna esquerda exibe "Cadernos" e o input de busca.
+- [x] Confirmar que a coluna direita exibe "Ausentes" sem caderno selecionado.
+- [x] Confirmar que o fetch inicial de cadernos acontece com a URL `exams:exams_api_second_call_list`.
 
 #### Cenário 5 — Lista de cadernos carrega [Automatizável ✅]
 
-- [ ] Aguardar o carregamento e confirmar que cadernos com ausentes elegíveis aparecem na lista.
-- [ ] Confirmar que o estado de loading (`secondCallModal.loadingExams`) desaparece após o fetch.
+- [x] Aguardar o carregamento e confirmar que cadernos com ausentes elegíveis aparecem na lista.
+- [x] Confirmar que o estado de loading (`secondCallModal.loadingExams`) desaparece após o fetch.
 
 #### Cenário 6 — Busca por nome de caderno [Automatizável ✅]
 
-- [ ] Digitar parte do nome de um caderno existente no input `input[v-model="secondCallModal.searchTerm"]`.
-- [ ] Confirmar que o fetch é disparado com debounce (não instantâneo).
-- [ ] Confirmar que os resultados filtrados aparecem na lista.
-- [ ] Limpar o campo e confirmar que a lista retorna ao estado default.
+- [x] Digitar parte do nome de um caderno existente no input `input[v-model="secondCallModal.searchTerm"]`.
+- [x] Confirmar que o fetch é disparado com debounce (não instantâneo).
+- [x] Confirmar que os resultados filtrados aparecem na lista.
+- [x] Limpar o campo e confirmar que a lista retorna ao estado default.
 
 #### Cenário 7 — Nenhum caderno disponível [Apenas Manual 👁]
 
