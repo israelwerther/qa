@@ -202,8 +202,8 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 7 — Nenhum caderno disponível [Apenas Manual 👁]
 
-- [ ] Com banco sem cadernos elegíveis (sem `student_stats_permission_date` liberado ou sem ausentes no ano atual), abrir o modal.
-- [ ] Confirmar mensagem: **"Nenhum caderno com ausentes elegíveis no ano atual."**
+- [x] Com banco sem cadernos elegíveis (sem `student_stats_permission_date` liberado ou sem ausentes no ano atual), abrir o modal.
+- [x] Confirmar mensagem: **"Nenhum caderno com ausentes elegíveis no ano atual."**
 
 ---
 
@@ -213,13 +213,13 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 8 — Selecionar caderno carrega ausentes
 
-- [ ] Clicar em um caderno da lista.
-- [ ] Confirmar que o caderno clicado recebe destaque visual (classe `tw-bg-[#FFF4EC]`).
-- [ ] Confirmar que `"Caderno selecionado: <nome>"` aparece na coluna direita.
-- [ ] Confirmar que o estado de loading de ausentes aparece (`"Carregando ausentes…"`).
-- [ ] Aguardar o fetch para `/aplicacoes/api/application-students/missed-at-exam/<exam_id>/`.
-- [ ] Confirmar que a lista de ausentes é preenchida com nome, matrícula e, quando disponível, turma/unidade.
-- [ ] **Confirmar que o aluno PRESENTE da fixture NÃO aparece na lista.**
+- [x] Clicar em um caderno da lista.
+- [x] Confirmar que o caderno clicado recebe destaque visual (classe `tw-bg-[#FFF4EC]`).
+- [x] Confirmar que `"Caderno selecionado: <nome>"` aparece na coluna direita.
+- [x] Confirmar que o estado de loading de ausentes aparece (`"Carregando ausentes…"`).
+- [x] Aguardar o fetch para `/aplicacoes/api/application-students/missed-at-exam/<exam_id>/`.
+- [x] Confirmar que a lista de ausentes é preenchida com nome, matrícula e, quando disponível, turma/unidade.
+- [x] **Confirmar que o aluno PRESENTE da fixture NÃO aparece na lista.**
 
 #### Cenário 9 — Filtro por unidade/turma [Automatizável ✅]
 
