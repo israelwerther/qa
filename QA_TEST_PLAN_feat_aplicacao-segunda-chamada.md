@@ -153,8 +153,8 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 1 — Toggle desligado por padrão
 
-- [ ] Acessar `/aplicacoes/cadastrar/` e confirmar que o toggle `#is_second_call_toggle` está **desmarcado** por padrão.
-- [ ] Confirmar que o campo oculto `input[name="is_second_call"]` tem valor `False`.
+- [x] Acessar `/aplicacoes/cadastrar/` e confirmar que o toggle `#is_second_call_toggle` está **desmarcado** por padrão.
+- [x] Confirmar que o campo oculto `input[name="is_second_call"]` tem valor `False`.
 - [ ] Confirmar que o container `div[v-show="isSecondCall"]` **não é exibido** (estilo `display: none`).
 
 #### Cenário 2 — Toggle ativado exibe CTA de seleção [Automatizável ✅]
@@ -531,6 +531,13 @@ mixer.blend(ApplicationStudent, application=app_b, student=student_dup, missed=T
 > Categorize com tags: `[UX/UI]`, `[Backend Logic]`, `[Database]`, `[Spec Gap]`.
 
 _Reserve este espaço durante a execução do plano._
+
+> [!WARNING]
+> **Bug 1: Filtro de data de liberação falha no mesmo dia devido a comparação de `Date` com `DateTime`**
+> - **Contexto/Root Cause:** O campo `student_stats_permission_date` é um `DateTimeField`. Em `ExamSecondCallListView` (linha 229), a query usa `today = timezone.localdate()` (`Date`). Quando o Django compara o `DateTimeField` `<= today`, ele assume `today` às `00:00:00`. Logo, qualquer aplicação cuja liberação ocorra no próprio dia atual após meia-noite (ex: 13:20) não aparece na listagem, pois 13:20 não é `<= 00:00:00`.
+> - **Comportamento Esperado:** A query deveria comparar com `now = timezone.now()` para que exames liberados no dia de hoje já fiquem disponíveis na mesma hora, ou usar `.date()` na anotação, garantindo que o exame liberado hoje apareça.
+> - **Workaround:** Para testar a listagem, defina a data de liberação do resultado no Admin para *ontem*.
+> - **Tags:** `[Backend Logic]`
 
 ---
 
