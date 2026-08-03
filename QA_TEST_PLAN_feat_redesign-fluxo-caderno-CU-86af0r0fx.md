@@ -58,11 +58,11 @@ from fiscallizeon.accounts.models import CustomUser
 ## 5. Roteiro de Testes (Execution Test Script)
 
 ### 5.1. Acesso à Nova Superfície
-- [ ] **Ação humana (Coordenador):** Acessar "Instrumentos Avaliativos", buscar uma prova, e clicar no ícone/link de "Visualizar". [Automatizável ✅]
+- [x] **Ação humana (Coordenador):** Acessar "Instrumentos Avaliativos", buscar uma prova, e clicar no ícone/link de "Visualizar". [Automatizável ✅]
   - *Camada Técnica:* 
     - URL inicial: `/provas/?category=exam`
     - URL destino: `/provas/<uuid>/visualizar/v2`
-- [ ] **Ação humana (Professor):** Acessar "Listas de exercícios" ou "Todos os cadernos" e clicar em "Visualizar lista/prova". [Automatizável ✅]
+- [x] **Ação humana (Professor):** Acessar "Listas de exercícios" ou "Todos os cadernos" e clicar em "Visualizar lista/prova". [Automatizável ✅]
 - [ ] **Ação humana (Professor - Extra ClickUp):** Acessar "Cadernos > Listas de exercícios > Editar lista > Adicionar questão", e tentar visualizar uma questão por ali (pelo fluxo de editar caderno). Validar se o padrão visual foi mantido. [Automatizável ✅]
 
 ### 5.2. Visualização de Cards e Tabs (Read-only vs Ações)
@@ -87,10 +87,17 @@ from fiscallizeon.accounts.models import CustomUser
 ## 7. Problemas Encontrados (Bugs)
 
 > [!BUG]
-> **Título:** [Frontend Logic] Alpine Expression Error: Unexpected token '}' no filtro de tags do Sidebar
-> **Causa Raiz:** Erro de escape de aspas duplas no atributo HTML ao renderizar a lista de UUIDs. O Django renderizou `@click="$store.examPreview.toggleEtsGroup(["uuid"...])"`. O Alpine.js interpreta o fechamento das aspas antes da hora e falha o parse.
-> **Comportamento Esperado:** (inferência de UX — Spec Gap) O botão de filtro na sidebar deve poder ser clicado sem disparar erros de parse no Alpine.js. O payload de UUIDs deveria usar aspas simples no HTML ou ser parseado como JSON injetado via `<script id="...">`.
-> **Workaround:** Atualizar o template que gera essa tag (provavelmente no `exam_preview_sidebar.html`) para usar aspas simples ao redor da expressão Alpine ou injetar a lista diretamente no estado em vez de inline.
+> **Título:** [UX/UI] Ícone de Nível de Dificuldade não reflete a cor correta (Figma)
+> **Causa Raiz:** O componente que renderiza o nível de dificuldade (ex: "Nível Difícil") está aplicando a cor verde padrão para o ícone de gráfico de barras, independentemente do nível de dificuldade real.
+> **Comportamento Esperado:** (conforme Figma de referência) A cor do ícone deve mudar dinamicamente conforme a dificuldade. Para "Nível Difícil", o ícone deve ser vermelho, assim como estipulado no layout.
+> **Workaround:** Nenhum workaround necessário para os testes. Bug apenas visual.
+
+> [!WARNING]
+> **Título:** [Tech Debt / Frontend] Erro de Alpine no Console ao renderizar badge ETS (Filtro)
+> **Causa Raiz:** O Django renderiza `@click="$store.examPreview.toggleEtsGroup(["uuid"...])"`. O Alpine acusa `Unexpected token '}'` no console devido ao escape de aspas na diretiva `:class` ou `@click`.
+> **Comportamento Observado:** Apesar do erro ruidoso no console, o usuário (QA) reportou que a funcionalidade de clicar no filtro e selecionar o grupo **funciona perfeitamente** na prática.
+> **Comportamento Esperado:** O console deve estar limpo de erros de *parse* do Alpine. Recomenda-se corrigir o escape (ex: inverter aspas para simples no atributo) para evitar sujeira no log ou comportamentos inesperados em navegadores mais rígidos.
+> **Workaround:** Nenhum workaround funcional é necessário para testes, mas a correção técnica é recomendada (usar aspas simples no atributo HTML).
 
 ## 8. Melhorias Futuras
 > [!NOTE]
