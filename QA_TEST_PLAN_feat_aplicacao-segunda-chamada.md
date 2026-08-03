@@ -221,13 +221,14 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 - [x] Confirmar que a lista de ausentes é preenchida com nome, matrícula e, quando disponível, turma/unidade.
 - [x] **Confirmar que o aluno PRESENTE da fixture NÃO aparece na lista.**
 
-#### Cenário 9 — Filtro por unidade/turma [Automatizável ✅]
+#### Cenário 9 — Seleção em massa aditiva por Unidade/Turma [Automatizável ✅]
 
-- [ ] Com ausentes carregados, confirmar que os chips de unidade aparecem (se houver alunos com unidade).
-- [ ] Clicar em um chip de unidade.
-- [ ] Confirmar que apenas alunos daquela unidade ficam visíveis na lista `ul > li`.
-- [ ] Clicar novamente no chip (deselecionar) e confirmar que a lista retorna à exibição completa.
-- [ ] Repetir para filtro por turma.
+- [x] Com ausentes carregados, confirmar que os chips de unidade e turma aparecem.
+- [x] Clicar no chip de uma unidade (ex: Unidade A).
+- [x] Confirmar que os alunos da Unidade A são **marcados automaticamente** (Bulk Check) e que a lista completa continua visível.
+- [ ] Com a Unidade A ativa, clicar no chip de uma turma (ex: Turma B).
+- [ ] Confirmar que a seleção é aditiva (lógica OR): todos os alunos da Unidade A **mais** todos os alunos da Turma B devem ficar marcados.
+- [x] Clicar novamente nos chips para desativá-los e confirmar que é possível fazer marcação manual.
 
 #### Cenário 10 — Caderno sem ausentes elegíveis [Automatizável ✅]
 
@@ -532,18 +533,23 @@ mixer.blend(ApplicationStudent, application=app_b, student=student_dup, missed=T
 
 _Reserve este espaço durante a execução do plano._
 
-> [!WARNING]
-> **Bug 1: Filtro de data de liberação falha no mesmo dia devido a comparação de `Date` com `DateTime`**
-> - **Contexto/Root Cause:** O campo `student_stats_permission_date` é um `DateTimeField`. Em `ExamSecondCallListView` (linha 229), a query usa `today = timezone.localdate()` (`Date`). Quando o Django compara o `DateTimeField` `<= today`, ele assume `today` às `00:00:00`. Logo, qualquer aplicação cuja liberação ocorra no próprio dia atual após meia-noite (ex: 13:20) não aparece na listagem, pois 13:20 não é `<= 00:00:00`.
-> - **Comportamento Esperado:** A query deveria comparar com `now = timezone.now()` para que exames liberados no dia de hoje já fiquem disponíveis na mesma hora, ou usar `.date()` na anotação, garantindo que o exame liberado hoje apareça.
-> - **Workaround:** Para testar a listagem, defina a data de liberação do resultado no Admin para *ontem*.
+> [!NOTE]
+> **[RESOLVIDO] Bug 1: Filtro de data de liberação falha no mesmo dia devido a comparação de `Date` com `DateTime`**
+> - **Contexto/Root Cause:** O campo `student_stats_permission_date` é um `DateTimeField`. Em `ExamSecondCallListView`, a comparação ignorava as horas e considerava 00:00.
+> - **Resolução:** O desenvolvedor ajustou a query para comparar com `now = timezone.now()`, garantindo que exames liberados no dia de hoje já fiquem disponíveis na mesma hora.
 > - **Tags:** `[Backend Logic]`
 
+> [!NOTE]
+> **[RESOLVIDO] Bug 2: Inconsistência visual no Toggle de "Prova de 2ª chamada"**
+> - **Contexto:** O switch implementado usava uma estrutura customizada (`toggle-switch` com `span.slider`), que diferia visualmente do padrão predominante.
+> - **Resolução:** O desenvolvedor ajustou a interface para utilizar a classe padrão do projeto (`custom-control custom-switch`).
+> - **Tags:** `[UX/UI]`
+>
 > [!WARNING]
-> **Bug 2: Inconsistência visual no Toggle de "Prova de 2ª chamada"**
-> - **Contexto:** O switch implementado usa uma estrutura customizada (`toggle-switch` com `span.slider`), que difere visualmente do padrão predominante no sistema (como o toggle "É avaliação do tipo PAS?").
-> - **Comportamento Esperado:** Utilizar a classe padrão do projeto (`custom-control custom-switch`) para manter a uniformidade visual da interface.
-> - **Tags:** `[UX/UI]` 
+> **Bug 3: Seleção múltipla de chips anula os checkboxes (Lógica AND contraintuitiva)**
+> - **Contexto:** Ao selecionar chips de categorias diferentes (ex: Unidade GRU + Turma F1TA), o sistema tenta encontrar a interseção (AND). Como não há alunos nos dois grupos simultaneamente, a tela desmarca todos os alunos, contrariando a expectativa visual de "somar" as seleções.
+> - **Comportamento Esperado:** Múltiplas seleções de chips devem atuar com lógica aditiva (União/OR). Clicar na Unidade A e na Turma B deve marcar todos os alunos da Unidade A **mais** todos os alunos da Turma B.
+> - **Tags:** `[UX/UI]`, `[Regra de Negócios]`
 
 ---
 
@@ -561,8 +567,6 @@ _Reserve este espaço durante a execução do plano._
 > - `test_application_second_call_api.py` — multi-tenant, exam fora do escopo
 > - `test_exam_second_call_list_view.py` — critérios de elegibilidade: `not_applicable`, `is_abstract`, `student_stats_permission_date`, ano atual, só-presentes, filtro por professor (cenários 23–28)
 
-> [!NOTE]
-> **[UX/UI]** O toggle "Prova de 2ª chamada" aparece na seção "Alunos que realizarão a prova" (L360), enquanto o redesign do Figma `13884:94433` o coloca na seção "Informações básicas". Verificar se houve decisão de produto para essa diferença de posicionamento ou se é divergência de implementação.
 
 > [!CAUTION]
 > **[Backend Logic — Risco 🔴 do Pitch]** O critério de ausência canônico (`annotate_is_present_with_subquery + is_present=False`) precisa ser validado **explicitamente** para provas online (`missed=True`) e presenciais (sem OMR/resposta). Se o Cenário 30 falhar, há risco de alunos incorretos na listagem de 2ª chamada. Ver cenários 29–32.
