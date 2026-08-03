@@ -465,17 +465,17 @@ student_online_absent = mixer.blend(Student, client=client, user__is_active=True
 mixer.blend(ApplicationStudent, application=app_online, student=student_online_absent, missed=True)
 ```
 
-- [ ] Chamar `GET /aplicacoes/api/application-students/missed-at-exam/<exam_online_id>/`.
-- [ ] Confirmar que `student_online_absent` **aparece** na lista de ausentes.
+- [x] Chamar `GET /aplicacoes/api/application-students/missed-at-exam/<exam_online_id>/`.
+- [x] Confirmar que `student_online_absent` **aparece** na lista de ausentes.
 
 #### Cenário 30 — Ausente em aplicação presencial (OMR não processado) aparece corretamente [Apenas Manual 👁]
 
 > Para provas presenciais, um aluno sem OMR processado pode ser marcado como ausente canonicamente mesmo que `missed=False`. O `annotate_is_present_with_subquery` avalia presença via respostas/OMR — não apenas pelo campo `missed`.
 
-- [ ] Criar aplicação presencial com aluno sem respostas submetidas (sem OMR, sem resposta corrigida).
-- [ ] Chamar a API de ausentes para o caderno.
-- [ ] Confirmar que o aluno sem resposta **aparece** na lista (ausente canônico, não apenas `missed=True`).
-- [ ] Confirmar que um aluno com respostas submetidas **não aparece** na lista.
+- [x] Criar aplicação presencial com aluno sem respostas submetidas (sem OMR, sem resposta corrigida).
+- [x] Chamar a API de ausentes para o caderno.
+- [x] Confirmar que o aluno sem resposta **aparece** na lista (ausente canônico, não apenas `missed=True`).
+- [x] Confirmar que um aluno com respostas submetidas **não aparece** na lista.
 
 > **⚠️ Atenção:** Se o Cenário 30 **falhar** (aluno sem OMR não aparece como ausente), indica bug no critério de ausência — a lógica de `annotate_is_present_with_subquery` precisa ser auditada. Documentar com `[Backend Logic]`.
 
@@ -486,7 +486,7 @@ student_inactive = mixer.blend(Student, client=client, user__is_active=False)
 mixer.blend(ApplicationStudent, application=application_1st, student=student_inactive, missed=True)
 ```
 
-- [ ] Confirmar que `student_inactive` (com `user__is_active=False`) **não aparece** na API de ausentes, mesmo com `missed=True`.
+- [x] Confirmar que `student_inactive` (com `user__is_active=False`) **não aparece** na API de ausentes, mesmo com `missed=True`.
 
 #### Cenário 32 — Aluno ausente em múltiplas aplicações do mesmo caderno aparece uma única vez [Automatizável ✅]
 
@@ -501,8 +501,8 @@ mixer.blend(ApplicationStudent, application=app_a, student=student_dup, missed=T
 mixer.blend(ApplicationStudent, application=app_b, student=student_dup, missed=True)
 ```
 
-- [ ] Chamar `GET /aplicacoes/api/application-students/missed-at-exam/<exam_1st_id>/`.
-- [ ] Confirmar que `student_dup` aparece **exatamente uma vez** na lista (dedupe funcionando).
+- [x] Chamar `GET /aplicacoes/api/application-students/missed-at-exam/<exam_1st_id>/`.
+- [x] Confirmar que `student_dup` aparece **exatamente uma vez** na lista (dedupe funcionando).
 
 ---
 
