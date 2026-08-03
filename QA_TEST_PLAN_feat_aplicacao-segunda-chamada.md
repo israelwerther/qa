@@ -401,7 +401,7 @@ mixer.blend(
 )
 ```
 
-- [ ] Confirmar que o caderno com aplicação de ano anterior **não aparece** na lista.
+- [x] Confirmar que o caderno com aplicação de ano anterior **não aparece** na lista.
 
 #### Cenário 27 — Caderno somente com alunos presentes não aparece [Automatizável ✅]
 
@@ -413,7 +413,7 @@ student_p = mixer.blend(Student, client=client, user__is_active=True)
 mixer.blend(ApplicationStudent, application=app_only_present, student=student_p, missed=False)
 ```
 
-- [ ] Confirmar que o caderno onde **todos** os alunos estão presentes **não aparece** na lista.
+- [x] Confirmar que o caderno onde **todos** os alunos estão presentes **não aparece** na lista.
 
 #### Cenário 28 — Usuário Professor só vê cadernos com vínculo a ele [Automatizável ✅]
 
