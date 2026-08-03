@@ -348,8 +348,15 @@ exam_not_applicable.coordinations.add(coordination)
 mixer.blend(Application, exam=exam_not_applicable, date=timezone.localdate(), student_stats_permission_date=timezone.localdate())
 ```
 
-- [ ] Chamar `GET /cadernos/api/listar/segunda-chamada/`.
-- [ ] Confirmar que o caderno com `not_applicable=True` **não** aparece na lista.
+- [x] Chamar `GET /provas/api/listar/segunda-chamada/`.
+- [x] Confirmar que o caderno com `not_applicable=True` **não** aparece na lista.
+
+#### Cenário 23.b — Cadernos e Aplicações "Soft-Deleted" não aparecem [Automatizável ✅]
+
+> **Dica E2E:** Como vimos nos testes manuais, o sistema exclui logicamente os registros (`deleted_at != None`). O E2E deve criar uma aplicação elegível, excluí-la e garantir que a API retorne vazio para ela.
+- [ ] Criar uma aplicação válida para segunda chamada.
+- [ ] Marcar a aplicação ou caderno como excluído (soft-delete).
+- [ ] Confirmar que o caderno correspondente **some** do endpoint `/provas/api/listar/segunda-chamada/`.
 
 #### Cenário 24 — Caderno abstrato (`is_abstract=True`) não aparece [Automatizável ✅]
 
@@ -358,7 +365,7 @@ exam_abstract = mixer.blend(Exam, not_applicable=False, is_abstract=True)
 exam_abstract.coordinations.add(coordination)
 ```
 
-- [ ] Confirmar que o caderno abstrato **não** aparece na lista.
+- [ ] Confirmar que o caderno abstrato **não** aparece na lista de `/provas/api/listar/segunda-chamada/`.
 
 #### Cenário 25 — Caderno sem `student_stats_permission_date` liberado não aparece [Automatizável ✅]
 
