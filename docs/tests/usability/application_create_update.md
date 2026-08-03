@@ -227,3 +227,26 @@ def test_second_call_modal_opens(page: Page, live_server, coord_with_second_call
     page.wait_for_selector('div[class*="tw-cursor-pointer"]')
     assert data['exam'].name in page.content()
 ```
+
+---
+
+## 6. Regras de Negócio e Casos de Borda (QA Knowledge Base)
+
+Durante a exploração QA desta interface e das suas integrações (API), mapeamos as seguintes regras críticas de Backend que devem ser levadas em consideração ao construir testes E2E:
+
+1. **Acesso por Professores (Teacher Role):**
+   - O Backend (API) permite listar aplicações de 2ª chamada onde o usuário seja um professor (a query cruza `examteachersubject` para retornar apenas cadernos do professor).
+   - O botão/toggle na interface (`#is_second_call_toggle`) **deve ser visível para professores**. (Havia um bug histórico no HTML que bloqueava com `{% if not user.user_type == "teacher" %}`).
+
+2. **Ausência Canônica vs `missed=True`:**
+   - Para provas Online, a API baseia-se na flag `missed=True`.
+   - Para provas Presenciais, um aluno pode ter `missed=False`, mas se ele **não possui submissão de OMR**, a API (`has_missed_at_exam`) considerá-lo-á **Ausente Canônico** e ele DEVE aparecer na lista de alunos do Modal. Testes E2E devem cobrir alunos sem resposta.
+
+3. **Deduplicação de Alunos (Dedupe):**
+   - Se o mesmo aluno esteve ausente em **múltiplas** aplicações da 1ª chamada de um caderno, ele deve aparecer **exatamente uma vez** na lista do Modal de seleção. O endpoint realiza deduplicação (`rule 2.6 do service`).
+
+4. **Alunos Inativos:**
+   - Alunos com `user__is_active=False` na conta, mesmo que tenham faltado na prova (com `missed=True`), **NÃO devem aparecer** na lista do Modal (query filtra por `student__user__is_active=True`).
+
+5. **Lógica de Filtros no Modal (Unidade/Turma):**
+   - A seleção múltipla de chips deve atuar como lógica aditiva (União/OR). Ao selecionar `Unidade A` e `Turma B`, a lista deve renderizar a união de ambos. (Histórico de bug: implementação anterior usava lógica AND).
