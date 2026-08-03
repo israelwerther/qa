@@ -226,15 +226,15 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 - [x] Com ausentes carregados, confirmar que os chips de unidade e turma aparecem.
 - [x] Clicar no chip de uma unidade (ex: Unidade A).
 - [x] Confirmar que os alunos da Unidade A são **marcados automaticamente** (Bulk Check) e que a lista completa continua visível.
-- [ ] Com a Unidade A ativa, clicar no chip de uma turma (ex: Turma B).
-- [ ] Confirmar que a seleção é aditiva (lógica OR): todos os alunos da Unidade A **mais** todos os alunos da Turma B devem ficar marcados.
+- [x] Com a Unidade A ativa, clicar no chip de uma turma (ex: Turma B).
+- [x] Confirmar que a seleção é aditiva (lógica OR): todos os alunos da Unidade A **mais** todos os alunos da Turma B devem ficar marcados.
 - [x] Clicar novamente nos chips para desativá-los e confirmar que é possível fazer marcação manual.
 
 #### Cenário 10 — Caderno sem ausentes elegíveis [Automatizável ✅]
 
-- [ ] Selecionar um caderno onde todos os alunos estão presentes.
-- [ ] Confirmar mensagem: **"Nenhum aluno ausente elegível neste caderno."**
-- [ ] Confirmar que o botão "Adicionar alunos não presentes" fica desabilitado (`:disabled`).
+- [x] Selecionar um caderno onde todos os alunos estão presentes.
+- [x] Confirmar mensagem: **"Nenhum aluno ausente elegível neste caderno."**
+- [x] Confirmar que o botão "Adicionar alunos não presentes" fica desabilitado (`:disabled`).
 
 ---
 
@@ -244,24 +244,24 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 11 — Confirmar ausentes preenche seção de alunos
 
-- [ ] Com ausentes carregados e pelo menos um selecionado (checkbox marcado), clicar em **"Adicionar alunos não presentes"**.
-- [ ] Confirmar que o modal fecha.
-- [ ] Confirmar que o card de prova anterior (`template[v-if="previousExamSelection"]`) aparece com o nome do caderno selecionado.
-- [ ] Confirmar que a contagem de ausentes (`X alunos ausentes`) bate com os checkboxes selecionados.
-- [ ] Confirmar que os alunos aparecem na seção "Alunos que realizarão a prova" (hiddens `input[name="students"]`).
+- [x] Com ausentes carregados e pelo menos um selecionado (checkbox marcado), clicar em **"Adicionar alunos não presentes"**.
+- [x] Confirmar que o modal fecha.
+- [x] Confirmar que o card de prova anterior (`template[v-if="previousExamSelection"]`) aparece com o nome do caderno selecionado.
+- [x] Confirmar que a contagem de ausentes (`X alunos ausentes`) bate com os checkboxes selecionados.
+- [x] Confirmar que os alunos aparecem na seção "Alunos que realizarão a prova" (hiddens `input[name="students"]`).
 
 #### Cenário 12 — Desselecionar aluno antes de confirmar [Automatizável ✅]
 
-- [ ] No modal com ausentes carregados, desmarcar o checkbox de um aluno.
-- [ ] Confirmar que `secondCallModal.selectedStudentsIds` não contém mais o `student.id` deselecionado.
-- [ ] Confirmar que ao confirmar, esse aluno **não** aparece na seção de alunos do formulário.
+- [x] No modal com ausentes carregados, desmarcar o checkbox de um aluno.
+- [x] Confirmar que `secondCallModal.selectedStudentsIds` não contém mais o `student.id` deselecionado.
+- [x] Confirmar que ao confirmar, esse aluno **não** aparece na seção de alunos do formulário.
 
 #### Cenário 13 — Botão "Cancelar" fecha modal sem alterar estado [Automatizável ✅]
 
-- [ ] Abrir o modal, selecionar um caderno, não confirmar, clicar em **"Cancelar"**.
-- [ ] Confirmar que o modal fecha.
-- [ ] Confirmar que `previousExamSelection` permanece `null` (nenhum caderno foi salvo no card).
-- [ ] Confirmar que os alunos do formulário não foram alterados.
+- [x] Abrir o modal, selecionar um caderno, não confirmar, clicar em **"Cancelar"**.
+- [x] Confirmar que o modal fecha.
+- [x] Confirmar que `previousExamSelection` permanece `null` (nenhum caderno foi salvo no card).
+- [x] Confirmar que os alunos do formulário não foram alterados.
 
 #### Cenário 14 — Alterar prova anterior [Apenas Manual 👁]
 
