@@ -439,10 +439,10 @@ exam_without_teacher.coordinations.add(coordination)
 mixer.blend(Application, exam=exam_without_teacher, date=timezone.localdate(), student_stats_permission_date=timezone.localdate())
 ```
 
-- [ ] Autenticar como professor (`teacher_user`).
-- [ ] Chamar `GET /cadernos/api/listar/segunda-chamada/`.
-- [ ] Confirmar que `exam_with_teacher` **aparece** na lista.
-- [ ] Confirmar que `exam_without_teacher` (sem vínculo com o professor) **não aparece**.
+- [x] Autenticar como professor (`teacher_user`).
+- [x] Chamar `GET /provas/api/listar/segunda-chamada/`.
+- [x] Confirmar que `exam_with_teacher` **aparece** na lista.
+- [x] Confirmar que `exam_without_teacher` (sem vínculo com o professor) **não aparece**.
 
 > **⚠️ Verificar:** O model exato de vínculo professor–caderno (`ExamTeacherSubject`, `TeacherSubject`, `Inspector`) precisa ser confirmado no código para montar o fixture corretamente. O fixture acima está **marcado como [verificar]**.
 
@@ -548,11 +548,19 @@ _Reserve este espaço durante a execução do plano._
 > - **Resolução:** O desenvolvedor ajustou a interface para utilizar a classe padrão do projeto (`custom-control custom-switch`).
 > - **Tags:** `[UX/UI]`
 >
-> [!WARNING]
-> **Bug 3: Seleção múltipla de chips anula os checkboxes (Lógica AND contraintuitiva)**
+> [!NOTE]
+> **[RESOLVIDO] Bug 3: Seleção múltipla de chips anula os checkboxes (Lógica AND contraintuitiva)**
 > - **Contexto:** Ao selecionar chips de categorias diferentes (ex: Unidade GRU + Turma F1TA), o sistema tenta encontrar a interseção (AND). Como não há alunos nos dois grupos simultaneamente, a tela desmarca todos os alunos, contrariando a expectativa visual de "somar" as seleções.
 > - **Comportamento Esperado:** Múltiplas seleções de chips devem atuar com lógica aditiva (União/OR). Clicar na Unidade A e na Turma B deve marcar todos os alunos da Unidade A **mais** todos os alunos da Turma B.
+> - **Resolução:** A lógica de filtragem foi corrigida pelo desenvolvedor para adotar comportamento aditivo (OR).
 > - **Tags:** `[UX/UI]`, `[Regra de Negócios]`
+
+> [!WARNING]
+> **Bug 4: Professores estão sem acesso à feature de 2ª chamada na UI**
+> - **Contexto:** A API e o Backend possuem toda a lógica implementada e testada (Cenário 28) para permitir que Professores utilizem a 2ª chamada apenas com seus próprios cadernos. A especificação no ClickUp confirma: *"Se o usuário for professor: o caderno também precisa ter vínculo com ele"*.
+> - **Comportamento Atual:** O arquivo `application_create_update.html` (linha 367) possui um bloqueio direto na interface (`{% if not user.user_type == 'teacher' %}`) escondendo a feature dos professores.
+> - **Comportamento Esperado:** Professores devem visualizar o toggle "Prova de 2ª chamada" para gerarem aplicações dos seus próprios cadernos. A trava do front-end deve ser removida por um desenvolvedor.
+> - **Tags:** `[Bug]`, `[UX/UI]`, `[Regra de Negócios]`
 
 ---
 
