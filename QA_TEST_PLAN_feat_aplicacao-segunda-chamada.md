@@ -265,10 +265,10 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 14 — Alterar prova anterior [Apenas Manual 👁]
 
-- [ ] Com um caderno já confirmado (card visível), clicar no botão "Alterar…".
-- [ ] Confirmar que o modal abre **com estado limpo** (busca vazia, sem caderno selecionado, sem ausentes).
-- [ ] Selecionar um caderno diferente e confirmar.
-- [ ] Confirmar que o card atualiza com o novo caderno e a nova contagem de ausentes.
+- [x] Com um caderno já confirmado (card visível), clicar no botão "Alterar…".
+- [x] Confirmar que o modal abre **com estado limpo** (busca vazia, sem caderno selecionado, sem ausentes).
+- [x] Selecionar um caderno diferente e confirmar.
+- [x] Confirmar que o card atualiza com o novo caderno e a nova contagem de ausentes.
 
 ---
 
@@ -278,22 +278,18 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 15 — Salvar aplicação com toggle ativo persiste `is_second_call=True`
 
-- [ ] Preencher todos os campos obrigatórios do formulário.
-- [ ] Ativar toggle de 2ª chamada.
-- [ ] Submeter o formulário.
-- [ ] Confirmar via Django Admin ou `Application.objects.get(pk=...).is_second_call` que o campo é `True`.
-- [ ] Confirmar que os `ApplicationStudent` foram criados via fluxo normal do form (sem endpoint dedicado).
+- [x] Preencher todos os campos obrigatórios do formulário.
+- [x] Ativar toggle de 2ª chamada.
+- [x] Submeter o formulário.
+- [x] Confirmar via Django Admin ou `Application.objects.get(pk=...).is_second_call` que o campo é `True`.
+- [x] Confirmar que os `ApplicationStudent` foram criados via fluxo normal do form (sem endpoint dedicado).
 
 #### Cenário 16 — Salvar sem toggle ativo persiste `is_second_call=False`
 
-- [ ] Criar aplicação sem ativar o toggle.
-- [ ] Confirmar que `Application.is_second_call = False`.
+- [x] Criar aplicação sem ativar o toggle.
+- [x] Confirmar que `Application.is_second_call = False`.
 
-#### Cenário 17 — Editar aplicação existente com toggle ativo
 
-- [ ] Editar uma aplicação já existente (com `is_second_call=False`).
-- [ ] Ativar o toggle e salvar.
-- [ ] Confirmar que `is_second_call` foi atualizado para `True`.
 
 ---
 
@@ -303,28 +299,28 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 18 — API retorna apenas ausentes do escopo da coordenação
 
-- [ ] Como Coordenadora A, chamar `GET /aplicacoes/api/application-students/missed-at-exam/<exam_do_client_A>/`.
-- [ ] Confirmar resposta HTTP 200 com lista de ausentes somente do client A.
-- [ ] Confirmar que alunos de outras coordenações fora do escopo não aparecem.
+- [x] Como Coordenadora A, chamar `GET /aplicacoes/api/application-students/missed-at-exam/<exam_do_client_A>/`.
+- [x] Confirmar resposta HTTP 200 com lista de ausentes somente do client A.
+- [x] Confirmar que alunos de outras coordenações fora do escopo não aparecem.
 
 #### Cenário 19 — Exam fora do client retorna lista vazia (sem leak cross-tenant)
 
-- [ ] Como Coordenadora A, chamar a API com `exam_id` pertencente ao Client B.
-- [ ] Confirmar resposta HTTP 200 com lista **vazia** (ou 403/404 — verificar o comportamento real).
+- [x] Como Coordenadora A, chamar a API com `exam_id` pertencente ao Client B.
+- [x] Confirmar resposta HTTP 200 com lista **vazia** (ou 403/404 — verificar o comportamento real).
 
-> **⚠️ Screenshot/Resposta API solicitada:** Qual o HTTP status quando o exam não pertence ao client do usuário — 200 vazio, 403 ou 404?
+> **[RESOLVIDO] ⚠️ Screenshot/Resposta API solicitada:** O HTTP status quando o exam não pertence ao client do usuário é **200 OK com lista vazia** (`[]`). Sem vazamento de dados (cross-tenant leak).
 
 #### Cenário 20 — Endpoint não aceita chamadas não autenticadas
 
-- [ ] Sem sessão de login, chamar `GET /aplicacoes/api/application-students/missed-at-exam/<qualquer_id>/`.
-- [ ] Confirmar redirecionamento para login (302) ou HTTP 403.
+- [x] Sem sessão de login, chamar `GET /aplicacoes/api/application-students/missed-at-exam/<qualquer_id>/`.
+- [x] Confirmar redirecionamento para a tela de login (HTTP 302).
 
 #### Cenário 21 — API de cadernos 2ª chamada filtra corretamente
 
-- [ ] Chamar `GET /cadernos/api/listar/segunda-chamada/` como coordenadora autenticada.
-- [ ] Confirmar que apenas cadernos com `application.date__year = ano_atual`, `student_stats_permission_date <= hoje` e ≥1 ausente aparecem.
-- [ ] Confirmar que cadernos sem aplicações ou sem ausentes **não aparecem**.
-- [ ] Chamar com `?search=<nome>` e confirmar busca textual.
+- [x] Chamar `GET /provas/api/listar/segunda-chamada/` como coordenadora autenticada.
+- [x] Confirmar que apenas cadernos com `application.date__year = ano_atual`, `student_stats_permission_date <= hoje` e ≥1 ausente aparecem.
+- [x] Confirmar que cadernos sem aplicações ou sem ausentes **não aparecem**.
+- [x] Chamar com `?search=<nome>` e confirmar busca textual.
 
 ---
 
@@ -332,9 +328,9 @@ mixer.blend(ApplicationStudent, application=application_1st, student=student_pre
 
 #### Cenário 22 — Scroll carrega mais cadernos
 
-- [ ] Abrir o modal com muitos cadernos disponíveis.
-- [ ] Rolar a lista de cadernos até o final.
-- [ ] Confirmar que "Carregando mais…" aparece e novos cadernos são adicionados.
+- [x] Abrir o modal com muitos cadernos disponíveis.
+- [x] Rolar a lista de cadernos até o final.
+- [x] Confirmar que "Carregando mais…" aparece e novos cadernos são adicionados.
 
 ---
 
