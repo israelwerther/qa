@@ -118,6 +118,14 @@ status_q = mixer.blend(
 - `POST /dashboards/api/reviewer-production/export/`
 - `POST /dashboards/api/reviewer-production/reviewers/<uuid>/export/`
 
+### Valores Válidos para Filtro de Status (`StatusQuestion` Enum):
+- `APPROVED` (1 - "Aprovada")
+- `REPROVED` (2 - "Reprovada")
+- `CORRECTION_PENDING` (3 - "Aguardando correção")
+- `SEEN` (4 - "Visto")
+- `ANNULLED` (5 - "Anulada")
+- `USE_LATER` (6 - "Usar depois")
+
 ---
 
 ## 5. Exemplo de Snippet de Automação Playwright (Python)

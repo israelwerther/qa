@@ -165,7 +165,7 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 ---
 
-### 5.3 Filtros de Busca e Período [Automatizável ✅]
+### 5.3 Filtros de Busca, Período e Status [Automatizável ✅]
 
 #### Cenário 5 — Filtragem por nome do revisor
 - Persona: Coordenador Autorizado.
@@ -175,48 +175,60 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 6 — Filtragem por período (Data da Revisão)
 - Persona: Coordenador Autorizado.
-- [ ] Selecionar um intervalo de datas no filtro de Período onde sabidamente ocorreram revisões.
+- [ ] Selecionar um intervalo de datas no filtro de Período onde sabidamente ocorreram revisões (`StatusQuestion.created_at`).
 - [ ] Confirmar que a tabela e os KPIs recarregam refletindo apenas as revisões realizadas dentro do intervalo de datas.
 - [ ] Alterar o intervalo para um período sem revisões registradas e verificar o esvaziamento das contagens nos KPIs.
 
-#### Cenário 7 — Limpeza de Filtros
+#### Cenário 7 — Filtragem por status da revisão
 - Persona: Coordenador Autorizado.
-- [ ] Aplicar um filtro de nome e um filtro de status.
+- [ ] No dropdown de Status, selecionar individualmente as opções mapeadas: `Aprovada` (`APPROVED`), `Reprovada` (`REPROVED`), `Aguardando correção` (`CORRECTION_PENDING`), `Visto` (`SEEN`), `Anulada` (`ANNULLED`) e `Usar depois` (`USE_LATER`).
+- [ ] Confirmar que a tabela e as contagens dos revisores filtram adequadamente as questões de acordo com o status selecionado.
+
+#### Cenário 8 — Limpeza de Filtros
+- Persona: Coordenador Autorizado.
+- [ ] Aplicar um filtro de nome, período e status.
 - [ ] Confirmar que o botão "Limpar filtros" fica ativo.
 - [ ] Clicar em "Limpar filtros" e verificar se todos os filtros são resetados para o estado padrão ("Todo o período", busca vazia, todos os status) e a tabela é restaurada.
 
 ---
 
-### 5.4 Tabela de Revisores e Drill-Down Lazy [Automatizável ✅]
+### 5.4 Tabela de Revisores, Drill-Down e Paginação [Automatizável ✅]
 
-#### Cenário 8 — Expansão de cadernos por revisor (Nível 1)
+#### Cenário 9 — Expansão de cadernos por revisor (Nível 1)
 - Persona: Coordenador Autorizado.
 - [ ] Localizar uma linha de revisor na tabela.
 - [ ] Clicar exclusivamente no botão chevron posicionado na primeira coluna da linha do revisor.
 - [ ] Verificar se uma sub-linha é expandida logo abaixo exibindo a lista de cadernos avaliados por aquele revisor.
 - [ ] Clicar novamente no chevron do mesmo revisor e confirmar o recolhimento das sub-linhas.
 
-#### Cenário 9 — Drill-down de questões por caderno (Nível 2)
+#### Cenário 10 — Drill-down de questões por caderno (Nível 2)
 - Persona: Coordenador Autorizado.
 - [ ] Com a lista de cadernos expandida, clicar no chevron ao lado do nome de um caderno.
 - [ ] Verificar a exibição das questões associadas àquele caderno, identificadas com o rótulo (ex: Q1, Q2) e badges coloridos indicando a situação de cada questão.
+
+#### Cenário 11 — Paginação da listagem de revisores
+- Persona: Coordenador Autorizado (ambiente com mais de 10 revisores cadastrados).
+- [ ] Verificar a exibição do texto no rodapé ("Exibindo 1–10 de X revisores").
+- [ ] Clicar no botão da próxima página (`›` ou número `2`).
+- [ ] Confirmar que a tabela recarrega via API trazendo os revisores da página 2 e que os seletores numéricos acompanham a página ativa.
 
 ---
 
 ### 5.5 Ações por Revisor e Exportação CSV [Automatizável ✅]
 
-#### Cenário 10 — Abertura do Drawer de Estatísticas
+#### Cenário 12 — Abertura do Drawer de Estatísticas
 - Persona: Coordenador Autorizado.
 - [ ] Na coluna "Ações" da linha de um revisor, clicar no ícone de gráfico/estatísticas.
-- [ ] Confirmar a abertura do painel lateral (drawer) exibindo o nome do revisor no cabeçalho e a mensagem indicativa de métricas futuras.
+- [ ] Confirmar a abertura do painel lateral (drawer) exibindo o nome do revisor no cabeçalho e a mensagem indicativa de métricas futuras ("Métricas adicionais serão disponibilizadas em uma próxima versão.").
 - [ ] Clicar no botão de fechar ou pressionar a tecla ESC para encerrar o drawer.
 
-#### Cenário 11 — Exportação CSV Global e Individual
+#### Cenário 13 — Exportação CSV Global e Individual
 - Persona: Coordenador Autorizado.
 - [ ] Clicar no botão "Exportar CSV" localizado no topo da página.
 - [ ] Observar a mudança de estado do botão para "Gerando CSV..." com indicador de carregamento animado.
-- [ ] Confirmar o download do arquivo CSV consolidado com os dados filtrados.
-- [ ] Na tabela, clicar no ícone de download da linha de um revisor específico e confirmar o download do relatório CSV filtrado individualmente para aquele revisor.
+- [ ] Confirmar o download do arquivo CSV consolidado com os dados filtrados e abri-lo no Excel/Calc.
+- [ ] Na tabela, clicar no ícone de download da linha de um revisor específico e baixar o CSV individual.
+- [ ] Validar se ambos os arquivos CSV contêm o cabeçalho com as 5 colunas obrigatórias: `data_hora`, `revisor`, `status`, `caderno`, `questao`.
 
 ---
 
