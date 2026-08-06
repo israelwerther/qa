@@ -128,9 +128,9 @@ exam_ts = mixer.blend(
 
 #### Cenário 2 — Resumo de estatísticas e scroll por pílula
 
-- [ ] Confirmar que a sidebar exibe o total de questões, quantidade de válidas e barras de progresso.
-- [ ] Clicar na pílula numerada de uma questão (ex: `02` ou `03`) na sidebar.
-- [ ] Confirmar que a página rola suavemente (*smooth scroll*) até a questão correspondente.
+- [x] Confirmar que a sidebar exibe o total de questões, quantidade de válidas e barras de progresso.
+- [x] Clicar na pílula numerada de uma questão (ex: `02` ou `03`) na sidebar.
+- [x] Confirmar que a página rola suavemente (*smooth scroll*) até a questão correspondente.
 
 ---
 
@@ -138,10 +138,10 @@ exam_ts = mixer.blend(
 
 #### Cenário 3 — Atualização do gabarito e reordenação de questões
 
-- [ ] Em uma questão objetiva, clicar em outra alternativa para alterar o gabarito.
-- [ ] Confirmar que a resposta selecionada é marcada como correta imediatamente.
-- [ ] Clicar nos botões de seta **"Subir"** ou **"Descer"** no card da questão.
-- [ ] Confirmar que as posições das questões são trocadas na lista.
+- [x] Em uma questão objetiva, clicar em outra alternativa para alterar o gabarito.
+- [x] Confirmar que a resposta selecionada é marcada como correta imediatamente.
+- [x] Clicar nos botões de seta **"Subir"** ou **"Descer"** no card da questão.
+- [x] Confirmar que as posições das questões são trocadas na lista.
 
 ---
 
@@ -149,10 +149,10 @@ exam_ts = mixer.blend(
 
 #### Cenário 4 — Exclusão com confirmação em modal
 
-- [ ] Clicar no botão/ícone de lixeira **"Remover"** em uma das questões.
-- [ ] Confirmar que um modal de confirmação é exibido.
-- [ ] Clicar em **"Remover"** no modal.
-- [ ] Confirmar que a questão é excluída da lista e que os contadores da sidebar atualizam imediatamente.
+- [x] Clicar no botão/ícone de lixeira **"Remover"** em uma das questões.
+- [x] Confirmar que um modal de confirmação é exibido.
+- [x] Clicar em **"Remover"** no modal.
+- [x] Confirmar que a questão é excluída da lista e que os contadores da sidebar atualizam imediatamente.
 
 ---
 
