@@ -117,10 +117,10 @@ exam_ts = mixer.blend(
 
 #### Cenário 1 — Upload de arquivo e abertura do modal fullscreen
 
-- [ ] Na tela de edição do caderno, clicar em **"Importar via DOCX"**.
-- [ ] Selecionar um arquivo `.docx` válido e clicar em **"Enviar arquivo"**.
-- [ ] Confirmar que durante a leitura é exibida a indicação de carregamento **"Validando questões..."**.
-- [ ] Confirmar que a tela de pré-visualização abre em **tela cheia** (fullscreen), com lista de questões e sidebar.
+- [x] Na tela de edição do caderno, clicar em **"Importar via DOCX"**.
+- [x] Selecionar um arquivo `.docx` válido e clicar em **"Enviar arquivo"**.
+- [x] Confirmar que durante a leitura é exibida a indicação de carregamento **"Validando questões..."**.
+- [x] Confirmar que a tela de pré-visualização abre em **tela cheia** (fullscreen), com lista de questões e sidebar.
 
 ---
 
