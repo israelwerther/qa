@@ -117,18 +117,25 @@ You must be proactively attentive to the enrichment of this very prompt/skill. I
 You must generate the markdown file strictly following the structure below:
 
 ## 0. Metadata (Metadados de QA)
-Generate a Markdown YAML block or Table at the very top of the document to catalog data for future aggregate analysis. Include:
-- **Date:** (Current date)
-- **Task Nature:** Classify the branch as one of: `[Business Feature]` (end-user focus), `[Technical/Internal]` (dev tools, scripts, dashboards), or `[Refactoring]` (CSS, global UI, tech debt). The chosen nature will slightly adapt how you approach the subsequent sections (e.g., Technical tasks focus more on data output and CLI than Figma validation).
-- **Feature Area:** (e.g., Exams, Payments, Reports, Internal Tooling)
-- **Risk Level:** (Low/Medium/High)
-- **OpenSpec Quality:** (1 to 5 stars - how clear and complete were the requirements?)
+**STRICT MANDATE:** You MUST ALWAYS generate a Markdown Table at the top under `## 0. Metadata (Metadados de QA)` using the exact format below. NEVER generate a YAML frontmatter block (`---`).
+
+```markdown
+## 0. Metadata (Metadados de QA)
+
+| Campo | Valor |
+|---|---|
+| **Data:** | (Current date: YYYY-MM-DD) |
+| **Natureza da Tarefa:** | `[Business Feature]`, `[Technical/Internal]`, or `[Refactoring]` |
+| **Área da Feature:** | (e.g., Exams, Payments, Reports, Internal Tooling) |
+| **Nível de Risco:** | (Baixo/Médio/Alto) |
+| **Qualidade da OpenSpec:** | ⭐⭐⭐⭐⭐ (1 a 5 estrelas) |
+```
 
 ## 1. Summary of Changes (Resumo das Alterações)
 Provide a clear, bulleted summary of everything that was implemented in this branch compared to `master`. Group the topics logically (e.g., Backend, Frontend, Permissions, Services).
 
 ## 2. Scope Boundaries (Diferenças de Escopo)
-Explicitly state what is IN SCOPE and what is OUT OF SCOPE for this QA validation. This is crucial to prevent unnecessary regression testing. Highlight behaviors or features that were intentionally excluded from this specific branch based on the OpenSpec files.
+Explicitly state what is IN SCOPE and what is OUT OF SCOPE for this QA validation using standard bullet points (`- `), NOT checkboxes. This is crucial to prevent unnecessary regression testing. Highlight behaviors or features that were intentionally excluded from this specific branch based on the OpenSpec files. Reserve checkboxes (`- [ ]`) exclusively for Section 5 (Execution Test Script).
 
 ## 3. Navegação e Camada Técnica (Navigation and Technical Layer)
 **CRITICAL:** Create a Canonical Navigation Map table. If you inferred a URL, View, or UI Menu Label from the code (`urls.py`, `views.py`) and are not 100% certain it matches the visual UI text, you MUST mark it with a `[verificar]` tag. This helps train the AI's internal map later.
@@ -172,7 +179,7 @@ Reserve a separate section (independent from critical bugs) to document items th
 
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 **CRITICAL RULE:** Do NOT bloat the QA Test Plan with endless DOM selectors. The mapping of DOM elements, URLs, and API Routes specifically designed for future Playwright automation must be **centralized and incremental**.
-- **Centralized Map File:** For every screen tested, you MUST first check if a file already exists in `docs/tests/usability/<template_name>.md`. 
+- **Centralized Map File:** For every screen tested, you MUST first check if a file already exists in `.ai_qa_acervo/docs/tests/usability/<template_name>.md`. 
     - **Naming Rule:** The `<template_name>.md` MUST exactly match the underlying HTML template name (e.g., `exam_essay_correction.md` for `exam_essay_correction.html`), not the Django View name or URL.
     - If it exists, read it and **append/update** your new findings incrementally. 
     - If it does not exist, create it (e.g., `omr_upload_list_new.md`).
@@ -181,8 +188,8 @@ Reserve a separate section (independent from critical bugs) to document items th
         - **2. Pré-requisitos para Automação (Fixtures e Permissões):** Exact `mixer` setup snippets and required user permissions (e.g., `is_superuser = True`) to render the UI.
         - **3. Seletores DOM e Ações:** Categorized list of stable DOM selectors (IDs, `v-model` bindings), mapped section by section (e.g., step 1, step 2). Do NOT include troubleshooting or QA execution logs here.
 - **In the QA Test Plan:** You must include a checkbox to force the QA to validate the filename, followed by the link:
-  `- [ ] O arquivo de mapeamento foi nomeado refletindo exatamente o nome do template HTML, e não a View.`
-  `🔗 **[Ver Mapeamento de Tela](../../../docs/tests/usability/<template_name>.md)**`
+  `- [x] O arquivo de mapeamento foi nomeado refletindo exatamente o nome do template HTML, e não a View.`
+  `🔗 **[Ver Mapeamento de Tela](docs/tests/usability/<template_name>.md)**`
 - **Selectors & Stable Identifiers (Inside the Map File):** Do not write superficial descriptions. You MUST read the source code to extract exact IDs, CSS classes, `v-model` bindings.
     - **Enforce Stable Identifiers:** The AI **MUST** demand that the developer refactor the HTML (or the AI must do it itself) to add unique identifiers (like `id` attributes) whenever robust selectors are missing. Automated tests cannot rely on generic design classes (e.g., `.tw-font-semibold`).
     - **The Gold Standard:** The AI must look for unique, semantically clear identifiers. A standard or dynamic `id` (like `:id="'upload-exam-name-' + omrUpload.id"` used by Vue) is the gold standard. The absolute focus is on stability, avoiding CSS utility classes (Tailwind) or complex DOM hierarchies.
@@ -195,7 +202,9 @@ Reserve a section at the very end of the document for a brief post-mortem. Leave
 - What was the main bottleneck during testing?
 - Were there many back-and-forths with the developer?
 - How could the development or QA workflow for this specific task have been improved?
-```
+
+## 10. Sugestões de Melhorias para o Prompt V2 (Anotações para Discussão Futura)
+Include a placeholder at the very end of the file starting with `<!-- Anotações de melhorias -->` for recording prompt optimization ideas during QA execution.
 
 ## Objetivos da Sessão Atual de Teste (Validação do Prompt V2)
 

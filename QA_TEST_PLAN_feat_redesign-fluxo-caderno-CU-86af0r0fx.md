@@ -1,14 +1,22 @@
----
-Date: 2026-08-03
-Task Nature: "[Business Feature]"
-Feature Area: "Exams"
-Risk Level: "Medium"
-OpenSpec Quality: 4
+# Plano de Testes de QA: Redesign Fluxo de Visualização do Caderno
+
+> Branch: `feat/redesign-fluxo-caderno-CU-86af0r0fx`  
+> Tarefa ClickUp: `CU-86af0r0fx`  
+> Referências OpenSpec: `openspec/changes/redesign-fluxo-visualizacao-caderno/`
+
 ---
 
-# QA Test Plan: Redesign Fluxo de Visualização do Caderno
+## 0. Metadata (Metadados de QA)
 
-> Criado com base no OpenSpec da branch `feat/redesign-fluxo-caderno-CU-86af0r0fx`
+| Campo | Valor |
+|---|---|
+| **Data:** | 2026-08-03 |
+| **Natureza da Tarefa:** | `[Business Feature]` (Redesign do preview fullscreen de cadernos) |
+| **Área da Feature:** | Exams (Visualização de Provas/Cadernos) |
+| **Nível de Risco:** | Médio |
+| **Qualidade da OpenSpec:** | ⭐⭐⭐⭐ (4/5 estrelas) |
+
+---
 
 ## 1. Resumo das Alterações
 - Criação de componente shell genérico `fullscreen_layout` reutilizável, alinhado com o Figma.
