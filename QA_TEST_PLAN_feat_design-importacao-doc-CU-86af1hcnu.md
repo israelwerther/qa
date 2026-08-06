@@ -160,10 +160,10 @@ exam_ts = mixer.blend(
 
 #### Cenário 5 — Impedir confirmação quando houver questões com erros
 
-- [ ] Enviar um arquivo com questões incompletas (ex: sem gabarito).
-- [ ] Confirmar que o card da questão destaca o erro visualmente.
-- [ ] Confirmar que a sidebar exibe o alerta de pendências.
-- [ ] Confirmar que o botão **"Confirmar importação"** fica desabilitado (`disabled`).
+- [x] Enviar um arquivo com questões incompletas (ex: sem gabarito).
+- [x] Confirmar que o card da questão destaca o erro visualmente (*Nota: falha identificada — ver Seção 7*).
+- [x] Confirmar que a sidebar exibe o alerta de pendências (*Nota: falha identificada — ver Seção 7*).
+- [x] Confirmar que o botão **"Confirmar importação"** fica desabilitado (`disabled`) (*Nota: falha identificada — ver Seção 7*).
 
 ---
 
@@ -188,8 +188,11 @@ exam_ts = mixer.blend(
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-> [!NOTE]
-> Nenhum bug crítico identificado até o momento durante a análise estática e estruturação do componente. Registre abaixo eventuais inconsistências encontradas na execução manual.
+> [!WARNING]
+> **[BUG CRÍTICO — FEEDBACK OCULTO] Omissão de Alerta de Erro ao Confirmar Importação:**
+> - **Sintoma:** Quando uma questão objetiva sem resposta correta é submetida ao clicar em "Confirmar importação", a API backend (`/ai/import/`) rejeita a requisição e retorna `HTTP 400 Bad Request` (`"Questão inválida: Questão objetiva deve ter resposta correta"`). O erro é exibido apenas no console JS (`console.error`). A notificação visual (`alertTop`) é disparada no container da página pai, porém fica **oculta atrás da camada z-index do layout fullscreen** (`fullscreen_layout` com `z-[99990]`), deixando o modal aberto sem nenhum feedback para o usuário.
+> - **Causa Raiz:** O aviso de erro `alertTop` possui `z-index` inferior ao `fullscreen_layout`, e o preview não valida a obrigatoriedade da alternativa correta no client-side quando a regra do cliente (`clientTeacherObligation.template`) está desabilitada.
+> - **Ação Recomendada:** Elevar o `z-index` das notificações `alertTop` ou integrar a exibição de erros da API diretamente na interface do `import_preview` (ex: modal dialog/banner interno).
 
 ---
 
