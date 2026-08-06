@@ -60,9 +60,9 @@
 | Destino | Rótulo real no menu UI | URL Django | View Name |
 |---|---|---|---|
 | Minhas Elaborações | Elaboração de Cadernos [verificar] | `/exams/elaboracao/` | `exams:exam_request_list` |
-| Editar Questões do Caderno | Editar questões [verificar] | `/exams/prova/<uuid:pk>/editar/` | `exams:exam_teacher_subject_edit_questions` |
+| Editar Questões do Caderno | Editar questões [verificar] | `/provas/prova/<uuid:exam_teacher_subject_pk>/editar/` | `exams:exam_teacher_subject_edit_questions` |
 | Modal de Importação DOCX | Importar Questões via Arquivo [verificar] | Front-end Trigger (Alpine / Vue) | Componente `import_preview` |
-| Upload API DOCX | — | `/exams/prova/<uuid:pk>/importar-docx/` | `exams:exam_questions_import` |
+| Upload API DOCX | — | `/provas/prova/<uuid:exam_teacher_subject_pk>/importar-docx/` | `exams:exam_questions_import` |
 
 ---
 
@@ -114,7 +114,7 @@ exam_ts = mixer.blend(
 ### 5.1 Abertura e Carregamento do Preview `[Automatizável ✅]`
 - [ ] **Ação humana:** Na página de edição de questões do caderno, clicar em "Importar via DOCX" e selecionar um arquivo `.docx` válido.
   - **Referência técnica (para automação):**
-    - URL: `/exams/prova/<uuid:pk>/editar/`
+    - URL: `/provas/prova/<uuid:exam_teacher_subject_pk>/editar/`
     - Elemento DOM Trigger: `button:has-text("Importar via DOCX")`
     - Input de Arquivo: `input[type="file"][accept*=".docx"]`
     - Evento Disparado: `window.dispatchEvent(new CustomEvent('import-preview-open', { detail: { data: payload } }))`
@@ -216,7 +216,7 @@ def test_doc_import_preview_flow(page: Page, live_server):
     exam_ts = mixer.blend(ExamTeacherSubject, exam=exam)
 
     # Login e Navegação
-    page.goto(f"{live_server.url}/exams/prova/{exam_ts.pk}/editar/")
+    page.goto(f"{live_server.url}/provas/prova/{exam_ts.pk}/editar/")
     
     # Interação com a UI do Preview Redenhado
     page.click('button:has-text("Importar via DOCX")')
