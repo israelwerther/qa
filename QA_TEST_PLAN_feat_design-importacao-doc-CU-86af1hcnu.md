@@ -109,67 +109,72 @@ exam_ts = mixer.blend(
 
 ---
 
-## 5. Execution Test Script (Roteiro de Testes com Checkboxes)
+## 5. Roteiro de Testes com Checkboxes
 
-### 5.1 Abertura e Carregamento do Preview `[Automatizável ✅]`
-- [ ] **Ação humana:** Na página de edição de questões do caderno, clicar em "Importar via DOCX" e selecionar um arquivo `.docx` válido.
-  - **Referência técnica (para automação):**
-    - URL: `/provas/prova/<uuid:exam_teacher_subject_pk>/editar/`
-    - Elemento DOM Trigger: `button:has-text("Importar via DOCX")`
-    - Input de Arquivo: `input[type="file"][accept*=".docx"]`
-    - Evento Disparado: `window.dispatchEvent(new CustomEvent('import-preview-open', { detail: { data: payload } }))`
-    - Estado Esperado: O container `#import-preview` torna-se visível e `$store.importPreview.isOpen` fica `true`.
+**Persona:** Professor autor da disciplina (ou Coordenadora) na página de edição do caderno.
 
-- [ ] **Ação humana:** Verificar o estado de carregamento enquanto o parser valida o documento.
-  - **Referência técnica (para automação):**
-    - Estado DOM: `div[x-show="$store.importPreview.isLoading"]` visível com texto "Validando questões...".
+### 5.1 Abertura e Carregamento do Preview [Automatizável ✅]
 
-### 5.2 Validação da Sidebar e Navegação `[Automatizável ✅]`
-- [ ] **Ação humana:** Conferir as estatísticas de questões na sidebar (total de questões, válidas, avisos, erros e barra de progresso).
-  - **Referência técnica (para automação):**
-    - Elementos DOM: Componente `sidebar_progress` exibindo percentual `$store.importPreview.progressPercent()`.
-    - Resumo de contadores: `x-text="$store.importPreview.stats.total + ' Questões'"` e `x-text="$store.importPreview.stats.valid"`.
+#### Cenário 1 — Upload de arquivo e abertura do modal fullscreen
 
-- [ ] **Ação humana:** Clicar na pill do número da questão na sidebar para navegar até a questão correspondente.
-  - **Referência técnica (para automação):**
-    - Seletor DOM: `nav button.tw-rounded-full:has-text("02")`
-    - Comportamento: Rola suavemente até a questão com ID `#import-preview-question-1` (`$store.importPreview.goToQuestion(1)`).
+- [ ] Na tela de edição do caderno, clicar em **"Importar via DOCX"**.
+- [ ] Selecionar um arquivo `.docx` válido e clicar em **"Enviar arquivo"**.
+- [ ] Confirmar que durante a leitura é exibida a indicação de carregamento **"Validando questões..."**.
+- [ ] Confirmar que a tela de pré-visualização abre em **tela cheia** (fullscreen), com lista de questões e sidebar.
 
-### 5.3 Edição de Questões e Gabarito `[Automatizável ✅]`
-- [ ] **Ação humana:** Em uma questão objetiva, alterar a opção marcada como correta clicando no radio button de outra alternativa.
-  - **Referência técnica (para automação):**
-    - Seletor DOM: `input[type="radio"][name^="correct_choice_"]`
-    - Estado Esperado: `$store.importPreview.setCorrectChoice(question, choiceIndex)` atualiza a propriedade `is_correct` da alternativa e limpa erros de gabarito não preenchido.
+---
 
-- [ ] **Ação humana:** Clicar nos botões "Subir" e "Descer" no action rail da questão para alterar sua posição na lista.
-  - **Referência técnica (para automação):**
-    - Seletor DOM Subir: `button[title="Mover para cima"]`
-    - Seletor DOM Descer: `button[title="Mover para baixo"]`
-    - Estado Esperado: `$store.importPreview.moveQuestion(question, 'up')` troca as posições no array de questões e reordena os números visíveis.
+### 5.2 Validação da Sidebar e Navegação [Automatizável ✅]
 
-### 5.4 Remoção de Questão `[Automatizável ✅]`
-- [ ] **Ação humana:** Clicar no botão "Remover" de uma questão, visualizar o modal de confirmação e confirmar a remoção.
-  - **Referência técnica (para automação):**
-    - Seletor DOM Gatilho: `button[title="Remover questão"]`
-    - Modal Nativo: `dialog[x-ref="importPreviewRemoveDialog"]` abre (`showModal()`).
-    - Botão Confirmar Remoção: `button:has-text("Remover")` dentro do dialog.
-    - Estado Esperado: A questão é removida do array `$store.importPreview.questions`, o total de questões e o número das questões subsequentes são atualizados imediatamente.
+#### Cenário 2 — Resumo de estatísticas e scroll por pílula
 
-### 5.5 Validação de Bloqueio por Questões Inválidas `[Apenas Manual 👁]`
-- [ ] **Ação humana:** Tentar importar um arquivo contendo questões com erro (ex.: questão objetiva sem alternativa marcada como correta) e verificar se a importação fica bloqueada.
-  - **Referência técnica (para automação):**
-    - Mensagem de Alerta: `Importação bloqueada — corrija ou remova as questões com erros.` visível na sidebar.
-    - Botão Confirmar Importação: `button:has-text("Confirmar importação")` está no estado `disabled` (`!$store.importPreview.canConfirm()`).
-    - Fonte do requisito: `(conforme OpenSpec: spec.md L.27-32)`.
+- [ ] Confirmar que a sidebar exibe o total de questões, quantidade de válidas e barras de progresso.
+- [ ] Clicar na pílula numerada de uma questão (ex: `02` ou `03`) na sidebar.
+- [ ] Confirmar que a página rola suavemente (*smooth scroll*) até a questão correspondente.
 
-### 5.6 Confirmar Importação e Cutover `[Automatizável ✅]`
-- [ ] **Ação humana:** Com todas as questões válidas, clicar em "Confirmar importação", validar a caixa de diálogo e concluir o envio.
-  - **Referência técnica (para automação):**
-    - Seletor DOM: `button:has-text("Confirmar importação")`
-    - Modal Nativo: `dialog[x-ref="importPreviewConfirmDialog"]` exibe "Deseja realmente importar X questões?".
-    - Botão Confirmação Final: `button:has-text("Sim, importar")`
-    - Evento Disparado: `window.dispatchEvent(new CustomEvent('import-preview-confirm', { detail: { questions, stats } }))`
-    - Estado Esperado: O preview fullscreen é fechado e as questões são inseridas na página de elaboração do caderno.
+---
+
+### 5.3 Alteração de Gabarito e Reordenação [Automatizável ✅]
+
+#### Cenário 3 — Atualização do gabarito e reordenação de questões
+
+- [ ] Em uma questão objetiva, clicar em outra alternativa para alterar o gabarito.
+- [ ] Confirmar que a resposta selecionada é marcada como correta imediatamente.
+- [ ] Clicar nos botões de seta **"Subir"** ou **"Descer"** no card da questão.
+- [ ] Confirmar que as posições das questões são trocadas na lista.
+
+---
+
+### 5.4 Remoção de Questão [Automatizável ✅]
+
+#### Cenário 4 — Exclusão com confirmação em modal
+
+- [ ] Clicar no botão/ícone de lixeira **"Remover"** em uma das questões.
+- [ ] Confirmar que um modal de confirmação é exibido.
+- [ ] Clicar em **"Remover"** no modal.
+- [ ] Confirmar que a questão é excluída da lista e que os contadores da sidebar atualizam imediatamente.
+
+---
+
+### 5.5 Validação de Bloqueio por Erros [Apenas Manual 👁]
+
+#### Cenário 5 — Impedir confirmação quando houver questões com erros
+
+- [ ] Enviar um arquivo com questões incompletas (ex: sem gabarito).
+- [ ] Confirmar que o card da questão destaca o erro visualmente.
+- [ ] Confirmar que a sidebar exibe o alerta de pendências.
+- [ ] Confirmar que o botão **"Confirmar importação"** fica desabilitado (`disabled`).
+
+---
+
+### 5.6 Confirmação e Salvamento no Caderno [Automatizável ✅]
+
+#### Cenário 6 — Inserção das questões no caderno após confirmação
+
+- [ ] Com todas as questões válidas, clicar em **"Confirmar importação"**.
+- [ ] Confirmar a ação no modal final de confirmação (**"Sim, importar"**).
+- [ ] Confirmar que o preview em tela cheia é fechado.
+- [ ] Confirmar que as questões importadas são inseridas com sucesso no caderno de prova.
 
 ---
 

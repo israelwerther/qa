@@ -149,12 +149,15 @@ Provide the exact CLI command(s) needed to run the automated tests locally that 
 **CRITICAL RULE (Personas):** You MUST explicitly define the "Persona" executing the test (e.g., "Logged in as Coordinator of Unit X" or "Teacher of Class Y"). Tests without clear permission scopes are invalid.
 **CRITICAL RULE (Mixer):** If manual QA requires specific data setup, document the exact `mixer.blend()` Python snippet or database setup steps required to reach the initial state, *including creating the user persona with correct permissions*. This trains the AI on how to setup tests using the project's Mixer capabilities later.
 
-## 5. Execution Test Script (Roteiro de Testes com Checkboxes)
-Write detailed, step-by-step test scenarios. 
-- **CRITICAL RULE 1:** Every single test scenario and its execution steps (actions and expected results) MUST be a markdown checkbox (`- [ ]`). 
-- **CRITICAL RULE 2 (Double Layer):** Each manual step must gradually introduce a "Technical Layer" whenever possible. Include the exact DOM selector (e.g., `button#submit`), expected DOM state, or URL. Specify the Persona performing the action.
-- **CRITICAL RULE 3 (Automation Tags):** Classify each scenario block with either `[Automatizável ✅]` (clear functional paths, deterministic assertions) or `[Apenas Manual 👁]` (purely visual, complex layout, UX judgment).
-- **CRITICAL RULE 4 (Grouping):** Break them down logically using `###` markdown sub-headers (e.g., `### Configuração e Permissões`, `### Fluxo de Criação`, `### Validações de Erro`).
+## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
+Write detailed, step-by-step test scenarios focusing 100% on the human tester's perspective and visual confirmation.
+- **CRITICAL RULE 1 (Format Consistency):** Section 5 MUST use the exact scenario structure:
+  - `### 5.X Feature Area [Automatizável ✅ / Apenas Manual 👁]`
+  - `#### Cenário Y — Clear Scenario Description`
+  - `- [ ] Action or verification step written in clear, concise Portuguese.`
+- **CRITICAL RULE 2 (No Technical Noise):** NEVER inline DOM selectors, Alpine stores, CSS classes, or internal JS events inside Section 5 checkboxes. Keep the test script clean, intuitive, and readable at a glance for human QA.
+- **CRITICAL RULE 3 (Technical Layer Decoupling):** All technical references (DOM selectors, Playwright locators, Alpine stores, API intercepts) MUST be placed exclusively in **Section 4 (Fixtures/Mixer)** or **Section 8.1 (Usability Mapping / Knowledge Base)**.
+- **CRITICAL RULE 4 (Persona):** Declare the active Persona at the beginning of Section 5 or at the scenario level.
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 If the branch involves User Interface (UI) changes, you MUST include a dedicated checklist section requiring the QA to take screenshots/prints of the implemented screens, mandating a side-by-side comparison with Figma/OpenSpec mockups.
