@@ -171,18 +171,18 @@ exam_ts = mixer.blend(
 
 #### Cenário 6 — Inserção das questões no caderno após confirmação
 
-- [ ] Com todas as questões válidas, clicar em **"Confirmar importação"**.
-- [ ] Confirmar a ação no modal final de confirmação (**"Sim, importar"**).
-- [ ] Confirmar que o preview em tela cheia é fechado.
-- [ ] Confirmar que as questões importadas são inseridas com sucesso no caderno de prova.
+- [x] Com todas as questões válidas, clicar em **"Confirmar importação"**.
+- [x] Confirmar a ação no modal final de confirmação (**"Sim, importar"**).
+- [x] Confirmar que o preview em tela cheia é fechado.
+- [x] Confirmar que as questões importadas são inseridas com sucesso no caderno de prova.
 
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Captura de Tela — Layout Fullscreen:** Garantir que o preview ocupa toda a tela (`fullscreen_layout`), com header fixo, sidebar com `tw-w-[400px]` e área principal centralizada.
-- [ ] **Comparação com Visualizar Prova:** Verificar se o card da questão (`import_preview_question_card`) segue a mesma tipografia, badges e estilos de borda (válida/aviso/erro) que o `exam_preview_question_card` de Visualizar Prova.
-- [ ] **Comparação de Paridade:** Comparar lado a lado o novo preview em Alpine com o legado (`import_preview_modal.html`) para garantir que nenhuma informação ou controle essencial deixou de ser renderizado.
+- [x] **Captura de Tela — Layout Fullscreen:** Garantir que o preview ocupa toda a tela (`fullscreen_layout`), com header fixo, sidebar com `tw-w-[400px]` e área principal centralizada.
+- [x] **Comparação com Visualizar Prova:** Verificar se o card da questão (`import_preview_question_card`) segue a mesma tipografia, badges e estilos de borda (válida/aviso/erro) que o `exam_preview_question_card` de Visualizar Prova.
+- [x] **Comparação de Paridade:** Comparar lado a lado o novo preview em Alpine com o legado (`import_preview_modal.html`) para garantir que nenhuma informação ou controle essencial deixou de ser renderizado.
 
 ---
 
@@ -190,9 +190,9 @@ exam_ts = mixer.blend(
 
 > [!WARNING]
 > **[BUG CRÍTICO — FEEDBACK OCULTO] Omissão de Alerta de Erro ao Confirmar Importação:**
-> - **Sintoma:** Quando uma questão objetiva sem resposta correta é submetida ao clicar em "Confirmar importação", a API backend (`/ai/import/`) rejeita a requisição e retorna `HTTP 400 Bad Request` (`"Questão inválida: Questão objetiva deve ter resposta correta"`). O erro é exibido apenas no console JS (`console.error`). A notificação visual (`alertTop`) é disparada no container da página pai, porém fica **oculta atrás da camada z-index do layout fullscreen** (`fullscreen_layout` com `z-[99990]`), deixando o modal aberto sem nenhum feedback para o usuário.
-> - **Causa Raiz:** O aviso de erro `alertTop` possui `z-index` inferior ao `fullscreen_layout`, e o preview não valida a obrigatoriedade da alternativa correta no client-side quando a regra do cliente (`clientTeacherObligation.template`) está desabilitada.
-> - **Ação Recomendada:** Elevar o `z-index` das notificações `alertTop` ou integrar a exibição de erros da API diretamente na interface do `import_preview` (ex: modal dialog/banner interno).
+> - **Sintoma:** Sempre que a requisição de importação (`/ai/import/`) falha no backend com `HTTP 400 Bad Request` (ex: questão sem gabarito, tipo inválido ou estouro de cota), o erro é registrado no console JS, mas a notificação em tela (`alertTop`) é renderizada **atrás da camada z-index do modal fullscreen** (`fullscreen_layout` `z-[99990]`), deixando a tela travada sem feedback visual para o usuário.
+> - **Causa Raiz:** O componente `alertTop` possui `z-index` menor que a camada modal do `fullscreen_layout`.
+> - **Ação Recomendada:** Elevar o `z-index` do `alertTop` ou exibir erros de resposta da API em um banner/modal próprio dentro da interface do `import_preview`.
 
 ---
 

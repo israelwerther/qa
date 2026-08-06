@@ -105,9 +105,13 @@ exam_teacher_subject = mixer.blend(
 
 ---
 
-## 4. API Routes e Interceptação
+## 4. API Routes, Eventos e Comportamento de Lifecycle
 
-- `POST /exams/prova/<uuid:pk>/importar-docx/`: Envia o arquivo `.docx` multipart e retorna JSON das questões extraídas.
-- Custom Event Frontend (Vue ↔ Alpine):
+- **Upload/Parse API (DOCX):** `POST /exams/prova/<uuid:pk>/importar-docx/` — Envia o arquivo `.docx` multipart e retorna JSON das questões extraídas.
+- **Inserção de Questões (Backend API):** `POST /ai/import/` (`ai:import-questions-import`) — Submete cada questão para salvamento no caderno.
+  - *Bug Conhecido (UX/Z-Index):* Caso a API retorne `HTTP 400 Bad Request` (ex: questão sem resposta correta), o erro é capturado e chama `alertTop`, mas a notificação fica **oculta atrás da camada z-index** do `fullscreen_layout` (`z-[99990]`).
+- **Custom Events Frontend (Vue ↔ Alpine):**
   - Envio Vue → Alpine: `window.dispatchEvent(new CustomEvent('import-preview-open', { detail: { data: payload } }))`
   - Retorno Alpine → Vue: `window.addEventListener('import-preview-confirm', (e) => ...)`
+  - Remoção de Questão: `window.dispatchEvent(new CustomEvent('import-preview-question-removed', { detail: {} }))` (desencadeia `Alpine.nextTick()` para recalcular scroll e reposicionar foco na questão restante (`#import-preview-question-[TARGET_INDEX]`)).
+
