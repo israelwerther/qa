@@ -176,15 +176,15 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 5 — Filtragem por nome do revisor
 - Persona: Coordenador Autorizado.
-- [ ] No campo "Buscar revisor", digitar parte do nome de um revisor cadastrado (ex: "Ana").
-- [ ] Aguardar a atualização da tabela e confirmar que apenas o revisor correspondente é exibido.
-- [ ] Digitar um nome inexistente e verificar se a tabela exibe a mensagem "Nenhum revisor encontrado para os filtros selecionados."
+- [x] No campo "Buscar revisor", digitar parte do nome de um revisor cadastrado (ex: "Ana").
+- [x] Aguardar a atualização da tabela e confirmar que apenas o revisor correspondente é exibido.
+- [x] Digitar um nome inexistente e verificar se a tabela exibe a mensagem "Nenhum revisor encontrado para os filtros selecionados."
 
 #### Cenário 6 — Filtragem por período (Data da Revisão)
 - Persona: Coordenador Autorizado.
-- [ ] Selecionar um intervalo de datas no filtro de Período onde sabidamente ocorreram revisões (`StatusQuestion.created_at`).
-- [ ] Confirmar que a tabela e os KPIs recarregam refletindo apenas as revisões realizadas dentro do intervalo de datas.
-- [ ] Alterar o intervalo para um período sem revisões registradas e verificar o esvaziamento das contagens nos KPIs.
+- [x] Selecionar um intervalo de datas no filtro de Período onde sabidamente ocorreram revisões (`StatusQuestion.created_at`).
+- [x] Confirmar que a tabela e os KPIs recarregam refletindo apenas as revisões realizadas dentro do intervalo de datas.
+- [x] Alterar o intervalo para um período sem revisões registradas e verificar o esvaziamento das contagens nos KPIs.
 
 #### Cenário 7 — Filtragem por status da revisão
 - Persona: Coordenador Autorizado.
@@ -193,9 +193,9 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 8 — Limpeza de Filtros
 - Persona: Coordenador Autorizado.
-- [ ] Aplicar um filtro de nome, período e status.
-- [ ] Confirmar que o botão "Limpar filtros" fica ativo.
-- [ ] Clicar em "Limpar filtros" e verificar se todos os filtros são resetados para o estado padrão ("Todo o período", busca vazia, todos os status) e a tabela é restaurada.
+- [x] Aplicar um filtro de nome, período e status.
+- [x] Confirmar que o botão "Limpar filtros" fica ativo.
+- [x] Clicar em "Limpar filtros" e verificar se todos os filtros são resetados para o estado padrão ("Todo o período", busca vazia, todos os status) e a tabela é restaurada.
 
 ---
 
@@ -203,21 +203,21 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 9 — Expansão de cadernos por revisor (Nível 1)
 - Persona: Coordenador Autorizado.
-- [ ] Localizar uma linha de revisor na tabela.
-- [ ] Clicar exclusivamente no botão chevron posicionado na primeira coluna da linha do revisor.
-- [ ] Verificar se uma sub-linha é expandida logo abaixo exibindo a lista de cadernos avaliados por aquele revisor.
-- [ ] Clicar novamente no chevron do mesmo revisor e confirmar o recolhimento das sub-linhas.
+- [x] Localizar uma linha de revisor na tabela.
+- [x] Clicar exclusivamente no botão chevron posicionado na primeira coluna da linha do revisor.
+- [x] Verificar se uma sub-linha é expandida logo abaixo exibindo a lista de cadernos avaliados por aquele revisor.
+- [x] Clicar novamente no chevron do mesmo revisor e confirmar o recolhimento das sub-linhas.
 
 #### Cenário 10 — Drill-down de questões por caderno (Nível 2)
 - Persona: Coordenador Autorizado.
-- [ ] Com a lista de cadernos expandida, clicar no chevron ao lado do nome de um caderno.
-- [ ] Verificar a exibição das questões associadas àquele caderno, identificadas com o rótulo (ex: Q1, Q2) e badges coloridos indicando a situação de cada questão.
+- [x] Com a lista de cadernos expandida, clicar no chevron ao lado do nome de um caderno.
+- [x] Verificar a exibição das questões associadas àquele caderno, identificadas com o rótulo (ex: Q1, Q2) e badges coloridos indicando a situação de cada questão.
 
 #### Cenário 11 — Paginação da listagem de revisores
 - Persona: Coordenador Autorizado (ambiente com mais de 10 revisores cadastrados).
-- [ ] Verificar a exibição do texto no rodapé ("Exibindo 1–10 de X revisores").
-- [ ] Clicar no botão da próxima página (`›` ou número `2`).
-- [ ] Confirmar que a tabela recarrega via API trazendo os revisores da página 2 e que os seletores numéricos acompanham a página ativa.
+- [x] Verificar a exibição do texto no rodapé ("Exibindo 1–10 de X revisores").
+- [x] Clicar no botão da próxima página (`›` ou número `2`).
+- [x] Confirmar que a tabela recarrega via API trazendo os revisores da página 2 e que os seletores numéricos acompanham a página ativa.
 
 ---
 
@@ -225,17 +225,17 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 12 — Abertura do Drawer de Estatísticas
 - Persona: Coordenador Autorizado.
-- [ ] Na coluna "Ações" da linha de um revisor, clicar no ícone de gráfico/estatísticas.
-- [ ] Confirmar a abertura do painel lateral (drawer) exibindo o nome do revisor no cabeçalho e a mensagem indicativa de métricas futuras ("Métricas adicionais serão disponibilizadas em uma próxima versão.").
-- [ ] Clicar no botão de fechar ou pressionar a tecla ESC para encerrar o drawer.
+- [x] Na coluna "Ações" da linha de um revisor, clicar no ícone de gráfico/estatísticas.
+- [x] Confirmar a abertura do painel lateral (drawer) exibindo o nome do revisor no cabeçalho e a mensagem indicativa de métricas futuras ("Métricas adicionais serão disponibilizadas em uma próxima versão.").
+- [x] Clicar no botão de fechar ou pressionar a tecla ESC para encerrar o drawer.
 
 #### Cenário 13 — Exportação CSV Global e Individual
 - Persona: Coordenador Autorizado.
-- [ ] Clicar no botão "Exportar CSV" localizado no topo da página.
-- [ ] Observar a mudança de estado do botão para "Gerando CSV..." com indicador de carregamento animado.
-- [ ] Confirmar o download do arquivo CSV consolidado com os dados filtrados e abri-lo no Excel/Calc.
-- [ ] Na tabela, clicar no ícone de download da linha de um revisor específico e baixar o CSV individual.
-- [ ] Validar se ambos os arquivos CSV contêm o cabeçalho com as 5 colunas obrigatórias: `data_hora`, `revisor`, `status`, `caderno`, `questao`.
+- [x] Clicar no botão "Exportar CSV" localizado no topo da página.
+- [x] Observar a mudança de estado do botão para "Gerando CSV..." com indicador de carregamento animado.
+- [x] Confirmar o download do arquivo CSV consolidado com os dados filtrados e abri-lo no Excel/Calc.
+- [x] Na tabela, clicar no ícone de download da linha de um revisor específico e baixar o CSV individual.
+- [x] Validar se ambos os arquivos CSV contêm o cabeçalho com as 5 colunas obrigatórias: `data_hora`, `revisor`, `status`, `caderno`, `questao`.
 
 ---
 
@@ -257,6 +257,18 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 - **Descrição do Problema:** A função de cálculo de estilo `segmentStyle(value)` utiliza arredondamento inteiro `Math.round((value / total) * 100)` para definir a propriedade CSS `width` em porcentagem de cada segmento. Em cenários onde o total de itens resulta em arredondamentos para baixo (ex.: 60% + 1% + 10% + 28% = 99%), a soma da largura de todos os segmentos atinge 99% em vez de 100%. Isso deixa uma folga visual não preenchida de 1% no canto direito do contêiner da barra.
 - **Causa Raiz:** Uso de `Math.round` no valor da propriedade CSS `width` em vez de calcular o valor exato em ponto flutuante `((value / total) * 100) + '%'`.
 - **Impacto:** Baixo (problema puramente estético/visual, sem prejuízo no cálculo dos números ou no funcionamento dos KPIs e tabelas).
+
+### 🔴 BUG-02: Linha da Tabela com Nome de Revisor em Branco e Erro HTTP 404 ao Expandir (`user_id = None`)
+- **Tipo:** Bug de Regra de Negócio & API / Trata de Valores Nulos (Médio)
+- **Componente:** `list_reviewers` em `reviewer_production.py` / `reviewer_production_table.html` / `reviewer_production_table.js`.
+- **Descrição do Problema:** Quando existem registros históricos de `StatusQuestion` no banco de dados com `user_id = None` (transições automáticas do sistema ou registros sem usuário vinculado), o serviço de agregação agrupa esses dados e envia para a tabela uma linha com `user_id: null` e `name: null`.
+  - **Sintoma Visual:** A tabela renderiza uma linha com a coluna "Revisor" totalmente em branco (vazia) e com uma contagem expressiva (ex.: `13.868` questões).
+  - **Sintoma de Erro de Requisição:** Ao clicar no chevron para expandir essa linha em branco, o frontend tenta consultar `/dashboards/api/reviewer-production/reviewers/None/exams/`. O Django não reconhece a string `'None'` como um UUID (`<uuid:reviewer_id>`) e dispara um erro `HTTP 404 Page Not Found` visível no console.
+- **Log do Erro no Console:**
+  `[reviewer_production_table] exams error <!DOCTYPE html>`
+  `GET http://127.0.0.1:8000/dashboards/api/reviewer-production/reviewers/None/exams/?page=55&page_size=10 -> 404 Not Found`
+- **Causa Raiz:** Falta de filtragem `user__isnull=False` em `status_history_qs` (ou tratamento/rotulagem explícita para "Sistema / Sem Revisor com ID fictício ou sem expansão") no serviço `reviewer_production.py`.
+- **Impacto:** Médio (confunde a coordenação ao exibir uma linha sem nome com milhares de revisões e provoca falhas de requisição 404 ao tentar interagir com a linha).
 
 ---
 
