@@ -12,6 +12,10 @@
 
 ## 1. Summary of Changes (Resumo das Alterações)
 
+### Contexto de Negócio & Origem (ClickUp)
+- **Problema de Origem:** Clientes (ex.: Univar) remuneram revisores externos cadastrados como professores coordenadores. Anteriormente, a apuração da produção individual para cálculo de pagamento exigia acionar manualmente a equipe técnica (script ad-hoc executado no banco pelo Franklin).
+- **Solução Implementada:** Disponibilização de uma tela nativa no Hub de Relatórios acessível aos coordenadores com filtros por período/status, drill-down por revisor/caderno/questão e exportação assíncrona em CSV com BOM UTF-8 (compatível com Excel), eliminando a dependência técnica e permitindo acompanhamento em tempo real.
+
 Na branch `reviewer-production-report-86ahz1mq3`, foi implementado o novo relatório de **Produção de Revisores** para controle operacional e financeiro da revisão externa de questões:
 
 * **Backend & Serviço de Agregação (`reviewer_production.py`):**
@@ -51,18 +55,21 @@ Na branch `reviewer-production-report-86ahz1mq3`, foi implementado o novo relat�
 - **IN SCOPE:**
   - Exibição e comportamento interativo do card "Produção de Revisores" no Hub de Relatórios.
   - Filtro por intervalo de datas baseado na data da revisão (`StatusQuestion.created_at`).
-  - Filtros por nome do revisor e status da revisão.
+  - Filtros por nome do revisor e status da revisão (`APPROVED`, `REPROVED`, `CORRECTION_PENDING`, `SEEN`, `ANNULLED`, `USE_LATER`).
   - KPIs quantitativos de progresso e revisores em dia.
   - Tabela paginada com drill-down lazy de cadernos e questões.
-  - Disparo e acompanhamento do download de relatórios CSV via Celery.
+  - Disparo e acompanhamento do download de relatórios CSV via Celery (consolidação global ou individual por revisor).
   - Isolamento multi-tenant (garantir que um cliente nunca visualize revisões de outro cliente).
   - Controle de acesso (bloqueio para perfil Professor ou contas sem módulo de relatórios ativo).
 
-- **OUT OF SCOPE:**
+- **OUT OF SCOPE (Fora do Escopo de Negócio):**
+  - Integração direta com sistemas de pagamento, folha ou RH (ex.: Univar).
+  - Relatórios referentes à elaboração de questões (apenas revisão/validação de conteúdo).
+  - Acesso direto ao relatório pelos próprios revisores (visão restrita à coordenação).
+  - Configuração de metas, limites de SLA ou benchmark de produção por revisor.
+  - Notificações ou disparos de e-mails automáticos com relatórios de produção.
   - Preenchimento do conteúdo interno do drawer de Estatísticas (o drawer abre como shell/placeholder para futuras métricas).
   - Alterações nos fluxos operacionais de revisão de questões ou na persistência de `StatusQuestion`.
-  - Integrações financeiras, notificações por e-mail ou cálculo de valores a pagar.
-  - Acesso à funcionalidade por usuários do perfil Professor.
 
 ---
 
@@ -135,16 +142,16 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 1 — Acesso ao card no Hub de Relatórios como Coordenador
 - Persona: Coordenador Autorizado (`client_has_reports=True`).
-- [ ] Navegar até a URL `/dashboards/relatorios/`.
-- [ ] Confirmar que o card "Produção de Revisores" está visível na seção de Gestão.
-- [ ] Clicar no card "Produção de Revisores" e verificar o direcionamento para a página `/dashboards/relatorios/producao-revisores/`.
+- [x] Navegar até a URL `/dashboards/relatorios/`.
+- [x] Confirmar que o card "Produção de Revisores" está visível na seção de Gestão.
+- [x] Clicar no card "Produção de Revisores" e verificar o direcionamento para a página `/dashboards/relatorios/producao-revisores/`.
 
 #### Cenário 2 — Restrição de acesso para usuários não autorizados
 - Persona: Professor ou Coordenador sem módulo de relatórios (`client_has_reports=False`).
-- [ ] Fazer login com usuário do perfil Professor e tentar acessar `/dashboards/relatorios/producao-revisores/`.
-- [ ] Confirmar que o sistema redireciona o usuário para o dashboard inicial sem exibir o relatório.
-- [ ] Fazer chamada direta à API `/dashboards/api/reviewer-production/kpis/` sem estar logado como coordenação com relatório.
-- [ ] Confirmar que a API responde com status HTTP 403 Forbidden.
+- [x] Fazer login com usuário do perfil Professor e tentar acessar `/dashboards/relatorios/producao-revisores/`.
+- [x] Confirmar que o sistema redireciona o usuário para o dashboard inicial sem exibir o relatório.
+- [x] Fazer chamada direta à API `/dashboards/api/reviewer-production/kpis/` sem estar logado como coordenação com relatório.
+- [x] Confirmar que a API responde com status HTTP 403 Forbidden.
 
 ---
 
@@ -152,16 +159,16 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 #### Cenário 3 — Validação quantitativa dos KPIs
 - Persona: Coordenador Autorizado.
-- [ ] Acessar a tela de Produção de Revisores `/dashboards/relatorios/producao-revisores/`.
-- [ ] Verificar o KPI "Questões revisadas" e validar a contagem no formato `X/Y` (onde X é o total de aprovadas + reprovadas e Y é o total de questões no escopo).
-- [ ] Verificar o KPI "Revisores em dia" e validar se indica a proporção correta de revisores sem pendências.
-- [ ] Verificar o KPI "Aguardando revisão" e validar se lista as questões pendentes.
+- [x] Acessar a tela de Produção de Revisores `/dashboards/relatorios/producao-revisores/`.
+- [x] Verificar o KPI "Questões revisadas" e validar a contagem no formato `X/Y` (onde X é o total de aprovadas + reprovadas e Y é o total de questões no escopo).
+- [x] Verificar o KPI "Revisores em dia" e validar se indica a proporção correta de revisores sem pendências.
+- [x] Verificar o KPI "Aguardando revisão" e validar se lista as questões pendentes.
 
 #### Cenário 4 — Visualização da Barra de Distribuição
 - Persona: Coordenador Autorizado.
-- [ ] Observar a barra empilhada "Distribuição por status" abaixo dos KPIs.
-- [ ] Passar o ponteiro do mouse sobre o segmento verde (Aprovadas) e confirmar a exibição do tooltip informando o quantitativo.
-- [ ] Passar o mouse sobre o segmento vermelho (Reprovadas) e sobre o segmento âmbar (Pendente) e validar os tooltips.
+- [x] Observar a barra empilhada "Distribuição por status" abaixo dos KPIs.
+- [x] Passar o ponteiro do mouse sobre o segmento verde (Aprovadas) e confirmar a exibição do tooltip informando o quantitativo.
+- [x] Passar o mouse sobre o segmento vermelho (Reprovadas) e sobre o segmento âmbar (Pendente) e validar os tooltips.
 
 ---
 
@@ -244,8 +251,12 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-> [!NOTE]
-> Nenhum bug bloqueante ou inconformidade com a especificação OpenSpec foi identificado durante a análise de código e suíte automatizada de testes.
+### 🔴 BUG-01: Desalinhamento Visual / Folga de 1% no final da Barra de Distribuição por Status
+- **Tipo:** Bug de Interface / Layout Visual (Menor)
+- **Componente:** `reviewerDistribution` / Barra de distribuição por status em `reviewer_production_report.html`.
+- **Descrição do Problema:** A função de cálculo de estilo `segmentStyle(value)` utiliza arredondamento inteiro `Math.round((value / total) * 100)` para definir a propriedade CSS `width` em porcentagem de cada segmento. Em cenários onde o total de itens resulta em arredondamentos para baixo (ex.: 60% + 1% + 10% + 28% = 99%), a soma da largura de todos os segmentos atinge 99% em vez de 100%. Isso deixa uma folga visual não preenchida de 1% no canto direito do contêiner da barra.
+- **Causa Raiz:** Uso de `Math.round` no valor da propriedade CSS `width` em vez de calcular o valor exato em ponto flutuante `((value / total) * 100) + '%'`.
+- **Impacto:** Baixo (problema puramente estético/visual, sem prejuízo no cálculo dos números ou no funcionamento dos KPIs e tabelas).
 
 ---
 
