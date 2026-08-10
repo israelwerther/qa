@@ -270,6 +270,35 @@ mixer.blend(StatusQuestion, exam_question=eq3, user=reviewer_2, status=StatusQue
 - **Causa Raiz:** Falta de filtragem `user__isnull=False` em `status_history_qs` (ou tratamento/rotulagem explícita para "Sistema / Sem Revisor com ID fictício ou sem expansão") no serviço `reviewer_production.py`.
 - **Impacto:** Médio (confunde a coordenação ao exibir uma linha sem nome com milhares de revisões e provoca falhas de requisição 404 ao tentar interagir com a linha).
 
+### 🔴 BUG-03: Falta de Responsividade da Tela em Dispositivos Móveis e Tablets
+- **Tipo:** Bug de Layout e Responsividade (Médio)
+- **Componente:** `reviewer_production_report.html`, `date_filter.html`, `reviewer_production_table.html` e `kpi_reviewer.html`.
+- **Descrição do Problema:** A página de Produção de Revisores não se adapta adequadamente a viewports de menor largura (ex.: tablets e dispositivos móveis / < 1074px):
+  - O texto longo dentro do botão do filtro de intervalo de datas (ex.: `"25 de junho de 2026 - 9 de agosto de 2026"`) não possui tratamento de `min-width: 0` (`tw-min-w-0`), assumindo `min-width: max-content`. Isso força o botão a estourar a largura da coluna da grade do filtro (~200px), alargando o contêiner principal da página e causando rolagem horizontal indesejada com corte lateral do conteúdo no lado esquerdo.
+  - A grade dos 3 KPIs e os seletores de filtro da tabela não acompanham o padrão responsivo do Hub de Relatórios do projeto (`report.html`), onde os cards empilham verticalmente em 1 coluna em viewports mobile (`tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-px tw-bg-gray-200`).
+  - A tabela de revisores expandida não possui invólucro de scroll horizontal nativo (`tw-overflow-x-auto`), expandindo a largura da viewport ao carregar colunas extras.
+- **Sugestão de Correção ao Desenvolvedor:**
+  1. Adicionar utilitários `tw-min-w-0` nos botões de filtro flex/grid e células da tabela para impedir o estouro por texto longo.
+  2. Envolver a tabela em um elemento `<div class="tw-overflow-x-auto">`.
+  3. Alinhar o grid de KPIs com o padrão do projeto em `report.html`: `tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-px tw-bg-gray-200 tw-overflow-hidden`.
+
+### 🔴 BUG-04: Trava de Exportação Global Bloqueando Ações Concorrentes e Risco de Lock Órfão no Celery
+- **Tipo:** Bug de Regra de Negócio / UX / Resiliência de Tarefas em Segundo Plano (Médio/Alto)
+- **Componente:** `ReviewerProductionExportMixin` em `dashboards/views.py`, `export_reviewer_production.py` e `reviewer_production_export.js`.
+- **Descrição do Problema:**
+  1. **Bloqueio Indevido de Botões Concorrentes (UX):** Ao acionar a exportação CSV (seja a global no topo ou a individual de um revisor), o sistema cria um lock no cache escopado apenas pelo usuário (`reviewer_production_export_active:<user_id>`) com tempo de expiração de 3600 segundos (1 hora). Qualquer tentativa posterior de acionar outro botão de exportação durante esse tempo retorna `HTTP 409 Conflict: {"error": "Já existe uma exportação em andamento."}`. No frontend, `:disabled="exportStore.isExportActive()"` desabilita todos os botões de exportação da tela, impedindo que o usuário solicite exportações paralelas de revisores específicos enquanto um relatório está sendo gerado via Celery.
+  2. **Vulnerabilidade a Lock Órfão em Falhas do Celery:** O lock ativo era registrado no cache com TTL de 3600s (1 hora). Em cenários onde o worker do Celery falha, é encerrado abruptamente (`pkill -9` / restart de processo) ou dispara uma exceção sem bloco `try...finally` garantido, o lock ativo permanece preso no Redis por 1 hora, impedindo o usuário de gerar novos relatórios. Além disso, em ambientes onde o `CELERY_RESULT_BACKEND` não está ativado, a consulta por `AsyncResult.status` retorna sempre `'PENDING'`, impedindo a limpeza automática do lock.
+- **Sugestão de Correção ao Desenvolvedor:**
+  1. **Isolamento de Escopo por Item:** Alterar o lock ativo para considerar o escopo específico da solicitação (ex.: `reviewer_production_export_active:<user_id>:global` para o relatório geral e `reviewer_production_export_active:<user_id>:reviewer:<reviewer_id>` para a exportação por revisor).
+  2. **UX de Desabilitação Específica:** No frontend, alterar `:disabled` para checar apenas o estado do próprio botão clicado (`isGlobalProcessing()` / `isReviewerProcessing(reviewer.id)`), mantendo os outros botões ativos.
+  3. **Resiliência e Fallback no Cache:** Envolver a limpeza do lock ativo na task Celery dentro de um bloco `try...finally` (`clear_active_export`), reduzir o TTL do lock ativo para 60 segundos (`REVIEWER_PRODUCTION_EXPORT_ACTIVE_LOCK_TTL = 60`) e salvar os dados do resultado diretamente no cache por `export_id`.
+
+### 🔴 BUG-05: Inconsistência na Formatação e Capitalização dos Nomes dos Revisores
+- **Tipo:** Bug de Interface / Formatação de Texto (Menor)
+- **Componente:** `reviewer_production_table.html` e `reviewer_production.py`.
+- **Descrição do Problema:** Na coluna "Revisor" da tabela, os nomes dos revisores são renderizados diretamente como cadastrados no banco de dados (`User.name`), gerando uma mistura visual despadronizada na tabela onde alguns nomes surgem totalmente em Caixa Alta (ex.: `ADAUTO LUIS LORENZINI PESSOA`, `ADRIANA BETIN CRUDE`) e outros em Caixa Mista / Title Case (ex.: `Adenilson Souza Chaves Matos`, `Adriana Cristina Santos`).
+- **Sugestão de Correção ao Desenvolvedor:** Padronizar a exibição do nome do revisor (no serviço `reviewer_production.py` ou no template com filtros de string / `title()`), garantindo capitalização homogênea em toda a listagem.
+
 ---
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
