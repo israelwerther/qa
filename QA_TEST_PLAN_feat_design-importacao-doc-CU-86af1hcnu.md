@@ -186,11 +186,14 @@ exam_ts = mixer.blend(
 - [ ] Verificar se o seletor de unidade/rede (ex: "Rede Decisão") está funcional e altera o contexto do painel.
 - [ ] Confirmar que a barra de busca ("Pesquise por resultados e desempenho de provas, turmas e alunos") responde ao foco e envia os termos de busca.
 
-#### Cenário 8 — Cards de Atalho "Explore a nossa plataforma"
+#### Cenário 8 — Cards de Atalho "Explore a nossa plataforma" *(Novo Layout Figma)*
+
+> *Nota de QA:* O layout atual no código exibe `"Nenhuma tarefa pendente."` quando não há solicitações. Os 3 cards abaixo representam o **novo redesign do Figma (Pitch de Onboarding Contextual)** a ser implementado:
 
 - [ ] **Card Criar questões com IA:** Clicar no botão `Criar questão com IA` e verificar se redireciona para a ferramenta de IA.
 - [ ] **Card Banco de questões:** Clicar no botão `Acessar banco de questões` e verificar se abre a listagem do banco de questões (exibindo texto de acervo ~80.000 questões).
 - [ ] **Card Corrigir avaliações:** Clicar no botão `Iniciar correção` e verificar se abre a tela de correção.
+
 
 #### Cenário 9 — Abas de Demandas e Cards de Solicitação
 
