@@ -102,20 +102,20 @@ teacher.coordinations.add(coordination)
 - [X] Autenticar no sistema com a Persona Professor.
 - [X] Acessar o Painel do Professor (`/dashboard/`).
 - [X] Confirmar que a aba "Elaborar" vem selecionada como ativa por padrão.
-- [ ] Em uma conta sem solicitações pendentes, verificar se o componente de estado vazio é exibido com o ícone de prancheta, título "Não há questões para elaboração" e texto "Parabéns! Você não possui questões para serem elaboradas.".
+- [x] Em uma conta sem solicitações pendentes, verificar se o componente de estado vazio é exibido com o ícone de prancheta, título "Não há questões para elaboração" e texto "Parabéns! Você não possui questões para serem elaboradas.".
 
 #### Cenário 2 — Navegação para Abas 'Corrigir' e 'Revisar' em Estado Vazio
-- [ ] Na mesma tela do painel, clicar na aba "Corrigir".
-- [ ] Validar que a aba é aberta e exibe o estado vazio com o título "Não há questões para correção" e a mensagem "Parabéns! Você não possui questões para serem corrigidas.".
-- [ ] Clicar na aba "Revisar".
-- [ ] Validar que a aba abre e exibe o estado vazio com o título "Não há questões para revisão" e a mensagem "Parabéns! Você não possui questões para serem revisadas.".
+- [x] Na mesma tela do painel, clicar na aba "Corrigir".
+- [x] Validar que a aba é aberta e exibe o estado vazio com o título "Não há questões para correção" e a mensagem "Parabéns! Você não possui questões para serem corrigidas.".
+- [x] Clicar na aba "Revisar".
+- [x] Validar que a aba abre e exibe o estado vazio com o título "Não há questões para revisão" e a mensagem "Parabéns! Você não possui questões para serem revisadas.".
 
 ### 5.2 Renderização de Cards com Dados Pendentes [Automatizável ✅]
 
 #### Cenário 3 — Renderização de Cards em Elaborar quando existem pendências
-- [ ] Associar uma solicitação de elaboração de prova ao professor de teste.
-- [ ] Recarregar a página `/dashboard/` e confirmar que a aba "Elaborar" renderiza o card da solicitação com o botão "Continuar", ocultando o componente de estado vazio.
-- [ ] Confirmar que o contador numérico da aba reflete o número real de itens.
+- [x] Associar uma solicitação de elaboração de prova ao professor de teste.
+- [x] Recarregar a página `/dashboard/` e confirmar que a aba "Elaborar" renderiza o card da solicitação com o botão "Continuar", ocultando o componente de estado vazio.
+- [x] Confirmar que o contador numérico da aba reflete o número real de itens.
 
 ### 5.3 Redirecionamento dos Botões Globais de Listagem [Automatizável ✅]
 
