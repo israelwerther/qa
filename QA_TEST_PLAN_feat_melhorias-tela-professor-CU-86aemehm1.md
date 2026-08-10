@@ -120,9 +120,9 @@ teacher.coordinations.add(coordination)
 ### 5.3 Redirecionamento dos Botões Globais de Listagem [Automatizável ✅]
 
 #### Cenário 4 — Ações de Redirecionamento
-- [ ] Na aba "Elaborar", clicar no botão de rodapé "Todas as solicitações" e validar o direcionamento para a página de listagem de provas.
-- [ ] Na aba "Corrigir", clicar no botão de rodapé "Todas as correções" e validar o redirecionamento para a listagem de pendências.
-- [ ] Na aba "Revisar", clicar no botão "Todas as revisões" e validar o redirecionamento para a página de revisões.
+- [x] Na aba "Elaborar", clicar no botão de rodapé "Todas as solicitações" e validar o direcionamento para a página de listagem de provas.
+- [x] Na aba "Corrigir", clicar no botão de rodapé "Todas as correções" e validar o redirecionamento para a listagem de pendências.
+- [x] Na aba "Revisar", clicar no botão "Todas as revisões" e validar o redirecionamento para a página de revisões.
 
 ---
 
