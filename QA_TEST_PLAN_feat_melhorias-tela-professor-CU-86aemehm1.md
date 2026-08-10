@@ -137,8 +137,14 @@ teacher.coordinations.add(coordination)
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
+> [!BUG] **Omissão / Corte dos Cards de KPI do Cabeçalho em Telas Grandes (XL)**
+> - **Sintoma:** Em telas desktop/widescreen (telas com breakpoint XL, ~1280px+), o 5º card de KPI ("Correções") fica cortado na extremidade direita do container ("Corr..."), e o usuário não consegue arrastar nem rolar o conteúdo horizontalmente.
+> - **Causa Raiz Identificada:** No componente `dash_card.html` (linha 3), a classe `xl:tw-overflow-x-hidden` força o estouro horizontal a ser escondido (`overflow-x: hidden`) em telas XL. Como os 5 cards possuem `tw-min-w-[244px]` com `tw-gap-8` (soma total ~1348px), em telas de 1280px-1440px com a barra lateral expandida, o container de ~1040px corta o último card sem permitir rolagem.
+> - **Impacto:** Impossibilidade de visualizar os indicadores e a descrição da métrica "Correções" no cabeçalho do painel do professor em resoluções desktop padrão.
+> - **Solução Recomendada:** Remover `xl:tw-overflow-x-hidden` de `dash_card.html` para permitir rolagem horizontal suave (`tw-overflow-x-auto`) ou ajustar o leiaute flexível dos cards para telas maiores.
+
 > [!NOTE]
-> Nenhum bug impeditivo identificado até o momento no componente de estado vazio ou no chaveamento de abas.
+> **Identificadores Semânticos Recomendados**: Sugere-se adicionar `id`s explícitos nos botões e gatilhos de abas (ex: `id="tab-elaborate"`, `id="tab-corrections"`, `id="tab-review"`) no componente `teacher_tabs.html` para facilitar automação end-to-end (E2E) com Playwright sem depender de seletores Alpine/DOM.
 
 ---
 
