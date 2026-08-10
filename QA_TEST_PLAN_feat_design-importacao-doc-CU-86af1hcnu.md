@@ -178,11 +178,46 @@ exam_ts = mixer.blend(
 
 ---
 
+### 5.7 Validação da Tela Inicial do Professor (Novo Visual / Meu Painel) [Apenas Manual 👁]
+
+#### Cenário 7 — Cabeçalho e Pesquisa Global
+
+- [ ] Confirmar que o saudação inicial exibe o nome correto do professor ("Olá, [Nome]") e mensagem contextual de bom dia.
+- [ ] Verificar se o seletor de unidade/rede (ex: "Rede Decisão") está funcional e altera o contexto do painel.
+- [ ] Confirmar que a barra de busca ("Pesquise por resultados e desempenho de provas, turmas e alunos") responde ao foco e envia os termos de busca.
+
+#### Cenário 8 — Cards de Atalho "Explore a nossa plataforma"
+
+- [ ] **Card Criar questões com IA:** Clicar no botão `Criar questão com IA` e verificar se redireciona para a ferramenta de IA.
+- [ ] **Card Banco de questões:** Clicar no botão `Acessar banco de questões` e verificar se abre a listagem do banco de questões (exibindo texto de acervo ~80.000 questões).
+- [ ] **Card Corrigir avaliações:** Clicar no botão `Iniciar correção` e verificar se abre a tela de correção.
+
+#### Cenário 9 — Abas de Demandas e Cards de Solicitação
+
+- [ ] Verificar a exibição dos badges numéricos nas abas **Elaborar**, **Revisar** e **Corrigir** com as respectivas quantidades de pendências.
+- [ ] Alternar entre as abas e validar a renderização dos cards com tag de status (ex: "Elaborando"), contagem de dias restantes (ex: "Restam 10 dias"), disciplina, nome da prova e progresso ("X de Y questões").
+- [ ] No card da solicitação, testar a ação do botão `Continuar` (edita a prova) e do botão `Visualizar` (ícone de olho laranja).
+- [ ] Clicar no botão `Todas as solicitações ->` no rodapé e validar o redirecionamento para a listagem completa.
+
+#### Cenário 10 — Seção "Configure sua conta! 🚀" e LizeCoins
+
+- [ ] Confirmar a exibição do saldo de LizeCoins (ex: "3.000 LizeCoins") e avatares da equipe.
+- [ ] Validar a lista de missões de onboarding com checkmarks de conclusão e botões de ação (`Editar`, `Responder`).
+
+#### Cenário 11 — Sidebar de Navegação Lateral
+
+- [ ] Confirmar que o menu `Início` está ativo.
+- [ ] Verificar o submenu `Cadernos` com os itens `Todos os cadernos`, `Solicitações`, `Revisões` (com badge numérico de pendências) e `Correções`.
+- [ ] Testar a expansão/recolhimento dos accordions `Questões` e `Aplicações` e os links `Materiais de estudo` e `Relatórios`.
+
+---
+
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
 - [x] **Captura de Tela — Layout Fullscreen:** Garantir que o preview ocupa toda a tela (`fullscreen_layout`), com header fixo, sidebar com `tw-w-[400px]` e área principal centralizada.
 - [x] **Comparação com Visualizar Prova:** Verificar se o card da questão (`import_preview_question_card`) segue a mesma tipografia, badges e estilos de borda (válida/aviso/erro) que o `exam_preview_question_card` de Visualizar Prova.
 - [x] **Comparação de Paridade:** Comparar lado a lado o novo preview em Alpine com o legado (`import_preview_modal.html`) para garantir que nenhuma informação ou controle essencial deixou de ser renderizado.
+- [ ] **Comparação com o Layout "Meu Painel" (Figma):** Validar o alinhamento visual dos 3 cards superiores ("Explore a nossa plataforma"), das abas de demandas com badges vermelhos e do componente "Configure sua conta! 🚀" contra o layout mockado.
 
 ---
 
