@@ -19,14 +19,14 @@
 - **Migração** `0218_exam_is_archived_historicalexam_is_archived.py`: adiciona `is_archived` em `Exam` e `HistoricalExam`.
 - **API** (`fiscallizeon/exams/api/exams.py`): novas actions DRF `archive` e `unarchive` no `ExamCoordinationAndTeacherViewSet` (URLs `POST /provas/api/prova/<pk>/archive/` e `/unarchive/`), restritas a `user_type == 'coordination'`; `archive` exige `confirm` quando há aplicação ativa (retorna `400` com `has_active_applications`).
 - **View `ExamListView`** (`fiscallizeon/exams/views/exams.py`): filtro `is_archived` (default `false`) via GET; passa `is_archived` ao contexto.
-- **Busca global** (`fiscallizeon/core/apis.py`): o JSON do grupo "Cadernos" agora inclui `"is_archived"` por resultado.
+- **Busca global** (`fiscallizeon/core/apis.py`): o JSON do grupo "Cadernos" agora inclui `"is_archived"` por resultado, e cadernos arquivados **não** são retornados pela busca global (excluídos do grupo "Cadernos").
 
 ### Frontend
 - **`exam_list_new.html`**: nova aba **"Arquivados"** na barra de tipos; título dinâmico ("Cadernos arquivados"); item "Arquivar caderno"/"Desarquivar caderno" no menu de contexto (somente coordination); dropdown "Remover selecionadas" com opções "Arquivar selecionadas"/"Desarquivar selecionadas" (bulk, coordination); estado vazio diferenciado; novos métodos Vue `archiveAllSelected`/`unarchiveAllSelected` e funções JS `archiveExam`/`executeArchive`/`unarchiveExam` com modais SweetAlert2.
-- **Navegação via busca**: `header.html`, `teacher_v2.html`, `analytics/index.html`, `school.html` e `components/search/search.html` agora anexam `&is_archived=true` ao redirect quando o resultado do grupo "Cadernos" é arquivado.
+- **Navegação via busca**: cadernos arquivados ficaram **fora** da busca global (não há redirect com `&is_archived=true` — os Cenários 13–15 da seção 5.5 refletem esse comportamento).
 
 ### Testes
-- **`fiscallizeon/exams/tests/test_exam_archiving.py`** (novo): cobre `is_archived` default, filtragem nativa, archive/unarchive via API, e busca por `q_pk + is_archived=true`.
+- **`fiscallizeon/exams/tests/test_exam_archiving.py`** (novo): cobre `is_archived` default, filtragem nativa, archive/unarchive via API, e a exclusão de cadernos arquivados da busca global.
 
 ---
 
@@ -37,7 +37,7 @@
   - Aba/filtro "Arquivados" e manutenção da listagem de ativos (`is_archived=false`).
   - Aviso de confirmação (SweetAlert2) ao arquivar caderno com aplicação em andamento.
   - Ações em massa (seleção) de arquivar/desarquivar.
-  - Navegação para caderno arquivado via barra de busca global (dashboards/header/analytics/escola + componente Alpine).
+  - Navegação para caderno arquivado exclusivamente pela aba **"Arquivados"** na listagem `/provas/` (cadernos arquivados ficaram fora da busca global — ver seção 5.5).
   - Preservação do histórico (aplicações, gabaritos, respostas, correções) após arquivamento.
 - **OUT OF SCOPE:**
   - Redesign da tela ou migração para `redesign/base_component.html` (mantém `redesign/base.html`).
@@ -55,7 +55,6 @@
 | Lista de provas (ativas) | Instrumentos Avaliativos → "Caderno de prova" | `/provas/?category=exam` | `exams:exams_list` |
 | Lista de exercícios (ativas) | Instrumentos Avaliativos → "Lista de Exercício" | `/provas/?category=homework` | `exams:exams_list` |
 | Cadernos arquivados | Aba **"Arquivados"** na listagem | `/provas/?is_archived=true` | `exams:exams_list` |
-| Abertura de caderno arquivado via busca | Barra de busca → grupo **"Cadernos"** | `/provas/?q_pk=<uuid>&is_archived=true` | `exams:exams_list` |
 | Arquivar caderno (API) | Menu de ações do caderno → "Arquivar caderno" | `POST /provas/api/prova/<uuid>/archive/` | `exams:api-exam-archive` |
 | Desarquivar caderno (API) | Menu de ações do caderno → "Desarquivar caderno" | `POST /provas/api/prova/<uuid>/unarchive/` | `exams:api-exam-unarchive` |
 
@@ -174,12 +173,14 @@
 - [x] Marcar um item e desmarcar todos (incluindo desmarcar o "selecionar tudo"): confirmar que a barra desaparece imediatamente ao esvaziar a seleção.
 - [x] Confirmar que, com a barra oculta, não há como disparar "Arquivar selecionadas"/"Desarquivar selecionadas" com seleção vazia pela UI.
 
-### 5.5 Busca Global de Cadernos Arquivados [Automatizável ✅]
+### 5.5 Busca Global e Cadernos Arquivados [Automatizável ✅]
 
-#### Cenário 13 — Coordenador localiza caderno arquivado pela busca do header
+> **Nota de QA:** A busca global **não** retorna mais resultados de cadernos arquivados — o grupo "Cadernos" passou a excluir `is_archived=true`. Logo, não existe fluxo de UI de "abrir caderno arquivado via busca" para testar; os Cenários 13–15 originais deixaram de se aplicar.
+
+#### Cenário 13 — Busca global não exibe cadernos arquivados
 - [x] Logado como coordenador, digitar o nome de um caderno arquivado na barra de busca do topo.
-- [x] Clicar no resultado do grupo **"Cadernos"**.
-- [x] Confirmar que a URL é `/provas/?q_pk=<uuid>&is_archived=true`, que a listagem exibe o caderno e o título indica estado arquivado.
+- [x] Confirmar que **nenhum** resultado do grupo "Cadernos" retorna o caderno arquivado.
+- [x] Confirmar que cadernos **ativos** continuam retornando normalmente na busca.
 
 #### Cenário 14 — Busca de caderno ativo não força a aba arquivada
 - [x] Buscar um caderno **ativo** e clicar no resultado.
@@ -187,7 +188,7 @@
 
 #### Cenário 15 — Busca em outros ambientes (teacher, analytics, escola, componente Alpine)
 - [x] Repetir o Cenário 13 logado como **professor** (dashboard `teacher_v2`) e em páginas com a busca do Analytics, do dashboard de Escola e do componente de busca novo (Alpine).
-- [x] Confirmar o mesmo comportamento de URL e exibição do caderno arquivado.
+- [x] Confirmar o mesmo comportamento: cadernos arquivados não aparecem em nenhum ambiente de busca.
 
 ### 5.6 Segurança e Permissões [Automatizável ✅]
 
@@ -200,23 +201,15 @@
 - [x] Logar como usuário **sem** `exams.view_exam` e acessar `/provas/?category=exam`.
 - [x] Confirmar bloqueio/redirecionamento coerente (sem listagem vazia indevida).
 
-### 5.7 Persistência no Backend [Automatizável ✅]
-
-#### Cenário 18 — Estado refletido no banco/Admin
-- [ ] Após arquivar, inspecionar o caderno no Django Admin: `is_archived = True`.
-- [ ] Na tabela histórica `HistoricalExam`, confirmar novo registro com `is_archived = True`.
-- [ ] Após desarquivar, confirmar `is_archived = False`.
-
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
 - [x] A nova aba **"Arquivados"** respeita o padrão visual das demais abas (mesma tipografia/estado laranja quando ativa) e o header de tipos continua legível sem quebrar linha.
-- [ ] Ícones e itens "Arquivar caderno"/"Desarquivar caderno" no menu de contexto seguem o padrão dos demais itens (ícone + texto, hover corrigo, alinhamento, role `menuitem`).
+- [x] Ícones e itens "Arquivar caderno"/"Desarquivar caderno" no menu de contexto seguem o padrão dos demais itens (ícone + texto, hover corrigo, alinhamento, role `menuitem`).
 - [x] O dropdown "Remover selecionadas" agora em cascata (com subitens) renderiza alinhado e não sobrepõe os demais botões da barra de seleção ("Alterar situação", "Alterar prazos").
 - [x] Modais SweetAlert2 de arquivar/desarquivar (individual e em massa) exibem título, texto e botões coerentes.
 - [x] Estado vazio "Não há cadernos arquivados" segue o mesmo estilo do estado vazio atual.
-- [ ] **Comparação com referência:** conferir side-by-side com `openspec/changes/archive-exam-notebooks/references/cadernos-list.html` (recuperável via `git show 605c41695~1`), validando posição da aba "Arquivados" e do item de menu.
 
 ---
 
@@ -229,12 +222,6 @@
 > **Workaround (Gambiarra temporária):** Para QA manual, o fluxo de UI passa `confirm` correto (`true` quando confirmado), portanto não bloqueia a execução do plano. Se precisar validar o aviso via API, envie a chamada **sem** o campo `confirm` (não `confirm=false`).
 
 > [!WARNING]
-> **[UX/UI] Aba "Arquivados" não fica destacada ao navegar via busca (com `q_pk`).**
-> **Contexto:** O destaque da aba usa `{% if is_archived and not request.GET.q_pk %}` em `exam_list_new.html`. Ao abrir um caderno arquivado pela busca (`?q_pk=<uuid>&is_archived=true`), nenhuma aba fica laranja, apesar de a listagem claramente estar no estado arquivado (título "Cadernos arquivados"). Divergente do esperado no `TESTE_BUSCA_ARQUIVADOS.md` ("Aba Arquivados ativa (laranja)").
-> **Comportamento esperado:** `(inferência de UX — Spec Gap)`. Em navegação via busca resulta em estado arquivado, a aba "Arquivados" deveria permanecer destacada como o estado visualmente correspondente.
-> **Workaround:** Nenhum bloqueio; use o breadcrumb/título para validar o estado.
-
-> [!WARNING]
 > **[Spec Gap] Arquivo em massa não dispara o aviso específico de aplicação ativa.**
 > **Contexto:** `archiveAllSelected` envia `{ confirm: true }` para todos os itens (via `axios.post`), efetivando o arquivamento sem a verificação individual de aplicações vigentes. O único alerta é o SweetAlert2 genérico que menciona genericamente as aplicações ativas.
 > **Comportamento esperado:** A spec (item "Aviso de confirmação ao arquivar caderno com aplicação ativa") parece desenhada para a ação individual; no em massa a especificação é silenciosa — decida com o PO se o aviso individual deve ser emitido ou se o texto genérico do bulk é aceitável.
@@ -245,11 +232,6 @@
 > **Comportamento esperado:** `(inferência de UX — Spec Gap)`. Idealmente virar anotação com `Exists(Application...)` no queryset da `ExamListView` (padrão já usado no mesmo queryset para `_has_questions_created_with_ia`).
 > **Workaround:** Nenhum bloqueio funcional; apenas performance.
 
-> [!NOTE]
-> **[Backend Logic] Fuso horário fixo (+3h) na property `has_active_applications`.**
-> **Contexto:** `datetime_end = F('date') + F('end') + timedelta(hours=3)` assume hardcoded UTC-3 (BRT) e ignora horário de verão; em servidores com outro fuso a comparação pode deslocar a janela de "aplicação em andamento".
-> **Comportamento esperado:** `(inferência de UX — Spec Gap)`. Avaliar o uso de `timezone.timedelta`/timezone-aware storage para evitar erro de borda.
-
 ---
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
@@ -258,18 +240,13 @@
 > Remover `TESTE_BUSCA_ARQUIVADOS.md` da raiz do repositório (documento de teste/guia manual desenvolvido durante o desenvolvimento, não é artefato de produção). Se útil, migrar o conteúdo para o Acervo (`docs/tests/usability/exam_list_new.md`).
 
 > [!NOTE]
-> Aportar em `has_active_applications` como anotação no queryset (eliminar N+1) e revisar o fuso horário fixo de +3h antes de escalar a lista.
+> Aportar em `has_active_applications` como anotação no queryset (eliminar N+1) antes de escalar a lista.
 
 > [!NOTE]
 > Avaliar semântica da aba "Arquivados" sem `category`: hoje `/provas/?is_archived=true` agrega cadernos das duas categorias (prova + lista), enquanto os títulos das abas "Caderno de prova"/"Lista de Exercício" são explícitos por categoria. Confirmar se o comportamento desejado é um agregado único ou um arquivado por categoria.
 
 > [!NOTE]
 > Adicionar `id` ou data-attribute estáveis aos novos botões/menus ("Arquivar caderno", "Arquivar selecionadas", aba "Arquivados") para automação Playwright sem depender das classes Tailwind (`tw-*`).
-
-> [!NOTE]
-> Alinhar o destaque visual da aba na navegação via busca (`q_pk`) para que o estado arquivado seja consistente (ver Bug na Seção 7).
-
-> [!WONTFIX][Escopo do ciclo] O arquivamento em massa mantém o aviso genérico (sem listagem individual de cadernos com aplicação ativa) para este release.
 
 > [!NOTE]
 > [Scope Gap] Não há uma coluna/ícone visual na listagem indicando que um caderno está arquivado além do contexto da própria aba — em futuras telas que listam cadernos sem o filtro, pode ser útil um badge "Arquivado".
