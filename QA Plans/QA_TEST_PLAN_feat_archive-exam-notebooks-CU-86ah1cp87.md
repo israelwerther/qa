@@ -201,6 +201,16 @@
 - [x] Logar como usuário **sem** `exams.view_exam` e acessar `/provas/?category=exam`.
 - [x] Confirmar bloqueio/redirecionamento coerente (sem listagem vazia indevida).
 
+### 5.7 Caderno Arquivado no Seletor de Cadernos da Aplicação [Automatizável ✅]
+
+> **Nota de QA:** O seletor/busca de cadernos do fluxo de criação/edição de aplicação (`search-exams-component` → endpoints `exams_api_list` / `exams_template_api_list`) **exclui** cadernos arquivados (`is_archived=False` em `ExamListView`/`ExamTemplateListView`, conforme `AJUSTES_CADERNOS_ARQUIVADOS.md` ETAPA 2). Cadernos arquivados **não** podem ser vinculados a novas aplicações.
+
+#### Cenário 18 — Caderno arquivado NÃO retorna na busca de cadernos para uso na aplicação
+- [x] Acessar o fluxo de aplicação (criação/edição) e abrir a busca de cadernos para serem usados na aplicação.
+- [x] Buscar por um caderno previamente arquivado.
+- [x] Confirmar que o caderno arquivado **não aparece** nos resultados da busca de cadernos disponíveis para uso na aplicação.
+- [x] Confirmar que cadernos **ativos** continuam retornando normalmente e podem ser selecionados/vincuados à aplicação.
+
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
