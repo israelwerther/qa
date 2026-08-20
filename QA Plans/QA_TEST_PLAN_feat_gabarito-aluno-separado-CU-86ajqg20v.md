@@ -144,16 +144,11 @@ Para o cenário de geração de malote com alunos da mesma turma, reutilizar o p
 - [x] Reabrir a tela e confirmar que o select continua em "Arquivos separados" e o switch continua marcado.
 - [x] Desmarcar o switch, salvar, reabrir e confirmar que a configuração voltou ao estado desmarcado (persistência do default `False`).
 
-#### Cenário 4 — Restrição de acesso à tela (permissão)
-- [ ] Acessar `/membros/configuracao/malotes/<uuid>/` com um usuário de outro Client (ou sem permissão `clients.change_confignotification`).
-- [ ] Confirmar o redirecionamento/bloqueio sem expor a tela de configuração.
-- [ ] Registrar se o link "Malotes" aparecer no menu para um usuário SEM `clients.change_confignotification` (ver inconsistência na Seção 3).
-
 ---
 
 ### 5.2 Geração de Malote (Aplicação) — Pasta `gabaritos/` por aluno [Automatizável ✅]
 
-#### Cenário 5 — Malote com alunos da mesma turma gera pasta `gabaritos/`
+#### Cenário 4 — Malote com alunos da mesma turma gera pasta `gabaritos/`
 - [x] Persona: Coordenador de Aplicação. Cliente em `separated` + switch "Separar arquivos de gabaritos" **marcado**.
 - [x] Criar uma aplicação com pelo menos **2 alunos da mesma turma** e um caderno contendo questões objetivas e discursivas (com páginas customizadas, se houver).
 - [x] Gerar o malote e, no modal, marcar **"Incluir folhas de respostas discursivas"**.
@@ -163,61 +158,18 @@ Para o cenário de geração de malote com alunos da mesma turma, reutilizar o p
 - [x] Abrir o PDF de gabarito de um aluno e confirmar que contém **todas as folhas** na ordem: página(s) customizada(s) da objetiva, folha objetiva, página(s) customizada(s) da discursiva, folha discursiva e rascunho/redação (quando o caderno tiver).
 - [x] Confirmar que objetiva e discursiva estão **no mesmo arquivo** (não há PDFs separados por modalidade).
 
-#### Cenário 6 — Prova sem gabarito discursivo gera PDF só com a objetiva
+#### Cenário 5 — Prova sem gabarito discursivo gera PDF só com a objetiva
 - [x] Criar/generar malote para uma aplicação cujo caderno **não** possui questões discursivas (e sem marcar "Incluir folhas de respostas discursivas").
 - [x] Gerar o malote e confirmar que **não há erro** e **não há página em branco** no lugar do discursivo.
 - [x] Abrir o PDF individual e confirmar que contém apenas as folhas objetivas do aluno.
 
-#### Cenário 7 — Somente discursiva (sem folha objetiva exportável)
+#### Cenário 6 — Somente discursiva (sem folha objetiva exportável)
 - [ ] Gerar malote para um caderno que **não exporta folha objetiva** (modelo de folha sem objetiva) com discursivas incluídas.
 - [ ] Confirmar que o PDF individual contém apenas as folhas discursivas/redação daquele aluno, sem página em branco da objetiva.
 
-#### Cenário 8 — Aluno sem nenhuma folha de gabarito
+#### Cenário 7 — Aluno sem nenhuma folha de gabarito
 - [ ] Em uma turma com um aluno sem folha objetiva exportável e sem discursiva incluída.
 - [ ] Gerar o malote e confirmar que **não** existe arquivo vazio/inválido para esse aluno na pasta `gabaritos/` (o aluno simplesmente não aparece).
-
----
-
-### 5.3 Geração de Malote (Ensalamento) — mesma regra por sala [Automatizável ✅]
-
-#### Cenário 9 — Ensalamento com pasta `gabaritos/` por sala
-- [ ] Persona: Coordenador de Malotes. Cliente em `separated` + switch **marcado**.
-- [ ] Gerar o malote de ensalamento (`group_files`) para uma distribuição com alunos na mesma sala.
-- [ ] Abrir o ZIP e confirmar a estrutura: `{unidade}/{sala}/gabaritos/` com um PDF por aluno.
-- [ ] Confirmar a **ausência** do consolidado `gabaritos_{sala}.pdf`.
-- [ ] Conferir o conteúdo de um PDF individual (objetiva + discursiva no mesmo arquivo).
-
-#### Cenário 10 — Cadernos continuam sendo gerados como antes (regressão)
-- [x] No mesmo ZIP do Cenário 9, confirmar que a pasta `cadernos/` continua com um PDF por aluno (mesmo path/nomeação de antes).
-- [x] Confirmar que lista de presença, versões de randomização e páginas customizadas de sala continuam nos mesmos caminhos de antes.
-
----
-
-### 5.4 Regressão dos Modos Existentes [Automatizável ✅]
-
-#### Cenário 11 — `separated` com switch desmarcado mantém gabarito consolidado
-- [ ] Persona: Coordenador de Malotes. Cliente em `separated` + switch **desmarcado** (default `False`).
-- [ ] Gerar o malote de aplicação e de ensalamento.
-- [ ] Confirmar que o ZIP contém **`gabaritos_{turma|sala}.pdf`** consolidado e **não** existe a pasta `gabaritos/` com PDFs individuais.
-
-#### Cenário 12 — Modo "Padrão (Arquivos juntos)" ignora o boolean
-- [ ] Colocar o cliente em **"Padrão (Arquivos juntos)"** com o boolean persistido `True` (ou configurar e testar a combinação via mixer).
-- [ ] Gerar o malote e confirmar que o ZIP é **um PDF por unidade** (tudo concatenado), **sem** pastas `cadernos/` nem `gabaritos/`.
-- [ ] Confirmar que o switch não é exibido na tela de configuração nesse modo.
-
-#### Cenário 13 — Nome dos arquivos sem PK e homônimos
-- [ ] Gerar malote para um aluno cujo nome contenha acentos e espaços.
-- [ ] Confirmar que o arquivo em `gabaritos/` é `gabarito_{slug-do-nome}.pdf` (ex.: `gabarito_ana-clara-rocha.pdf`), sem sufixo de PK.
-- [ ] (Opcional) Se houver homônimos na mesma turma/sala, registrar o comportamento de colisão no ZIP — mesmo comportamento já existente para cadernos com páginas customizadas.
-
----
-
-### 5.5 Modelo `reduced` (A5) [Automatizável ✅]
-
-#### Cenário 14 — Modo individual não emparelha folhas A5 entre alunos
-- [ ] Cliente em `separated` + switch marcado, com aplicação usando modelo de folha **`reduced` (A5)** e 2 alunos na turma.
-- [ ] Gerar o malote e confirmar que cada PDF individual usa **apenas as folhas do próprio aluno** (sem a folha A5 do colega ao lado, que ocorre no modo consolidado).
-- [ ] Confirmar que não há erro de montagem e que o PDF do aluno abre normalmente.
 
 ---
 
@@ -239,7 +191,7 @@ Para o cenário de geração de malote com alunos da mesma turma, reutilizar o p
 > **BUG PENDENTE — Ausência de testes automatizados da feature:** As tasks 6.1–6.4 do OpenSpec (`fiscallizeon/distribution/tests/test_group_files.py`, `fiscallizeon/omr/tests/test_group_answer_sheet_files.py`, teste de `ClientForm`) ainda não foram implementadas. Sem eles, regressões futuras na pasta `gabaritos/` (filename sem PK, skip de paths vazios, `default` ignorando boolean) podem passar despercebidas. *(inferência de risco — Spec Gap)*
 > - **Contexto/Root Cause:** `tasks.md` mantém 6.1–6.4 sem `[x]`; `git log` da branch não traz commits de teste para a feature.
 > - **Expected Behavior:** Testes `CustomTransactionTestCase` + `mixer.blend()` cobrindo o contrato da Seção 4.1.
-> - **Workaround (Gambiarra temporária):** Validar manualmente os cenários 5–14 deste plano, especialmente filename sem PK e ausência de arquivo vazio.
+> - **Workaround (Gambiarra temporária):** Validar manualmente o contrato descrito na Seção 4.1 (filename sem PK e ausência de arquivo vazio).
 
 > [!WARNING]
 > **Ponto de atenção — Visibilidade do link "Malotes" vs. permissão da view:** O link "Malotes" no header de configurações depende de `clients.change_clientteacherobligationconfiguration`, enquanto a view exige `clients.change_confignotification`. Verificar se existe usuário com a primeira permissão mas sem a segunda → usuário veria o link e cairia em página de erro.
@@ -326,8 +278,8 @@ def test_malotes_config_switch_separated_only(page: Page, live_server):
 ## 9. QA Retrospective (Retrospectiva de QA)
 
 - **Principais gargalos durante os testes:** (a preencher) — Dependência de gerar malotes reais com cadernos contendo objetiva + discursiva + páginas customizadas para validar a ordem das folhas no PDF individual; download e inspeção do ZIP em cada combinação de `separated`/boolean.
-- **Interação com Desenvolvimento:** (a preencher) — A OpenSpec detalhou bem o contrato (path, filename sem PK, skip de paths vazios, comportamento do modelo `reduced`), reduzindo ambiguidades. Faltou a entrega dos testes automatizados junto com o código.
-- **Pontos de Melhoria:** (a preencher) — Recomenda-se que o QA valide principalmente os cenários de regressão (modo `default`, `separated` + `False`, cadernos inalterados), que concentram o maior risco de quebra para os 20+ clientes em `separated`.
+- **Interação com Desenvolvimento:** (a preencher) — A OpenSpec detalhou bem o contrato (path, filename sem PK, skip de paths vazios), reduzindo ambiguidades. Faltou a entrega dos testes automatizados junto com o código.
+- **Pontos de Melhoria:** (a preencher) — Recomenda-se que o QA rode a suíte de regressão de base (Seção 4.1) e valide os cenários mantidos na Seção 5, dado o risco de quebra para os 20+ clientes em `separated`.
 
 ---
 
