@@ -1,0 +1,55 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Django: Runserver",
+      "type": "shell",
+      "command": "./venv/bin/python ./manage.py runserver",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Celery: Worker",
+      "type": "shell",
+      "command": "./venv/bin/celery -A fiscallizeon worker -l info -Q celery,merge,answer-sheet-print,exam-print,omr-import,omr-export,celery-priority,celery-integration",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "PDF Service",
+      "type": "shell",
+      "command": "./.ai_qa_acervo/scripts/start-pdf-service.sh",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start All Services",
+      "dependsOn": [
+        "Django: Runserver",
+        "Celery: Worker",
+        "PDF Service"
+      ],
+      "dependsOrder": "parallel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
