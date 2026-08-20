@@ -154,19 +154,19 @@ Para o cenário de geração de malote com alunos da mesma turma, reutilizar o p
 ### 5.2 Geração de Malote (Aplicação) — Pasta `gabaritos/` por aluno [Automatizável ✅]
 
 #### Cenário 5 — Malote com alunos da mesma turma gera pasta `gabaritos/`
-- [ ] Persona: Coordenador de Aplicação. Cliente em `separated` + switch "Separar arquivos de gabaritos" **marcado**.
-- [ ] Criar uma aplicação com pelo menos **2 alunos da mesma turma** e um caderno contendo questões objetivas e discursivas (com páginas customizadas, se houver).
-- [ ] Gerar o malote e, no modal, marcar **"Incluir folhas de respostas discursivas"**.
-- [ ] Baixar/abrir o ZIP gerado.
-- [ ] Confirmar a estrutura: `{unidade}/{coordenação} - {turma}/gabaritos/` contendo **um arquivo `.pdf` por aluno** (ex.: `gabarito_joao-da-silva.pdf`).
-- [ ] Confirmar que **NÃO** existe o arquivo consolidado `gabaritos_{turma}.pdf` nesse modo.
-- [ ] Abrir o PDF de gabarito de um aluno e confirmar que contém **todas as folhas** na ordem: página(s) customizada(s) da objetiva, folha objetiva, página(s) customizada(s) da discursiva, folha discursiva e rascunho/redação (quando o caderno tiver).
-- [ ] Confirmar que objetiva e discursiva estão **no mesmo arquivo** (não há PDFs separados por modalidade).
+- [x] Persona: Coordenador de Aplicação. Cliente em `separated` + switch "Separar arquivos de gabaritos" **marcado**.
+- [x] Criar uma aplicação com pelo menos **2 alunos da mesma turma** e um caderno contendo questões objetivas e discursivas (com páginas customizadas, se houver).
+- [x] Gerar o malote e, no modal, marcar **"Incluir folhas de respostas discursivas"**.
+- [x] Baixar/abrir o ZIP gerado.
+- [x] Confirmar a estrutura: `{unidade}/{coordenação} - {turma}/gabaritos/` contendo **um arquivo `.pdf` por aluno** (ex.: `gabarito_joao-da-silva.pdf`).
+- [x] Confirmar que **NÃO** existe o arquivo consolidado `gabaritos_{turma}.pdf` nesse modo.
+- [x] Abrir o PDF de gabarito de um aluno e confirmar que contém **todas as folhas** na ordem: página(s) customizada(s) da objetiva, folha objetiva, página(s) customizada(s) da discursiva, folha discursiva e rascunho/redação (quando o caderno tiver).
+- [x] Confirmar que objetiva e discursiva estão **no mesmo arquivo** (não há PDFs separados por modalidade).
 
 #### Cenário 6 — Prova sem gabarito discursivo gera PDF só com a objetiva
-- [ ] Criar/generar malote para uma aplicação cujo caderno **não** possui questões discursivas (e sem marcar "Incluir folhas de respostas discursivas").
-- [ ] Gerar o malote e confirmar que **não há erro** e **não há página em branco** no lugar do discursivo.
-- [ ] Abrir o PDF individual e confirmar que contém apenas as folhas objetivas do aluno.
+- [x] Criar/generar malote para uma aplicação cujo caderno **não** possui questões discursivas (e sem marcar "Incluir folhas de respostas discursivas").
+- [x] Gerar o malote e confirmar que **não há erro** e **não há página em branco** no lugar do discursivo.
+- [x] Abrir o PDF individual e confirmar que contém apenas as folhas objetivas do aluno.
 
 #### Cenário 7 — Somente discursiva (sem folha objetiva exportável)
 - [ ] Gerar malote para um caderno que **não exporta folha objetiva** (modelo de folha sem objetiva) com discursivas incluídas.
@@ -188,8 +188,8 @@ Para o cenário de geração de malote com alunos da mesma turma, reutilizar o p
 - [ ] Conferir o conteúdo de um PDF individual (objetiva + discursiva no mesmo arquivo).
 
 #### Cenário 10 — Cadernos continuam sendo gerados como antes (regressão)
-- [ ] No mesmo ZIP do Cenário 9, confirmar que a pasta `cadernos/` continua com um PDF por aluno (mesmo path/nomeação de antes).
-- [ ] Confirmar que lista de presença, versões de randomização e páginas customizadas de sala continuam nos mesmos caminhos de antes.
+- [x] No mesmo ZIP do Cenário 9, confirmar que a pasta `cadernos/` continua com um PDF por aluno (mesmo path/nomeação de antes).
+- [x] Confirmar que lista de presença, versões de randomização e páginas customizadas de sala continuam nos mesmos caminhos de antes.
 
 ---
 
