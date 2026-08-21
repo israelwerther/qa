@@ -1,0 +1,4 @@
+# Arquivos temporários gerados pelo pdf-service
+files/
+bin/files/
+*.pdf
