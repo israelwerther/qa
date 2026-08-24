@@ -164,24 +164,22 @@ Para o cenário de geração de malote com alunos da mesma turma, reutilizar o p
 - [x] Abrir o PDF individual e confirmar que contém apenas as folhas objetivas do aluno.
 
 #### Cenário 6 — Somente discursiva (sem folha objetiva exportável)
-- [ ] Gerar malote para um caderno que **não exporta folha objetiva** (modelo de folha sem objetiva) com discursivas incluídas.
-- [ ] Confirmar que o PDF individual contém apenas as folhas discursivas/redação daquele aluno, sem página em branco da objetiva.
+- [x] Gerar malote para um caderno que **não exporta folha objetiva** (modelo de folha sem objetiva) com discursivas incluídas.
+- [x] Confirmar que o PDF individual contém apenas as folhas discursivas/redação daquele aluno, sem página em branco da objetiva.
 
 #### Cenário 7 — Aluno sem nenhuma folha de gabarito
-- [ ] Em uma turma com um aluno sem folha objetiva exportável e sem discursiva incluída.
-- [ ] Gerar o malote e confirmar que **não** existe arquivo vazio/inválido para esse aluno na pasta `gabaritos/` (o aluno simplesmente não aparece).
+- [x] Em uma turma com um aluno sem folha objetiva exportável e sem discursiva incluída.
+- [x] Gerar o malote e confirmar que **não** existe arquivo vazio/inválido para esse aluno na pasta `gabaritos/` (o aluno simplesmente não aparece).
 
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Tela Configurações → Malotes:** Capturar print com o select em "Arquivos separados" exibindo o switch "Separar arquivos de gabaritos" (estado marcado e desmarcado).
-- [ ] Capturar print com o select em "Padrão (Arquivos juntos)" confirmando que o switch está oculto.
-- [ ] Comparar o switch com o padrão visual do switch de "Incluir impressão do cartão resposta discursiva por padrão" (`print_essay_questions_default`) da mesma tela — mesmo estilo de `custom-switch`.
-- [ ] Comparar o layout com o mockup de referência `openspec/changes/malote-gabaritos-individuais/references/omr-print-separation-select.html` (estrutura do bloco de separação: select + switch + texto de apoio).
-- [ ] Verificar alinhamento, espaçamento e legibilidade do texto de apoio ("Ao marcar esta opção, cada aluno terá o seu arquivo de gabarito separado em uma pasta.").
-- [ ] **Estrutura do ZIP:** Capturar screenshot da árvore de arquivos do ZIP (pasta `gabaritos/` com N PDFs) para registro.
-- [ ] **PDF individual:** Capturar screenshot das páginas do PDF de um aluno com objetiva + discursiva (todas as folhas presentes, ordem correta).
+- [x] **Tela Configurações → Malotes:** Capturar print com o select em "Arquivos separados" exibindo o switch "Separar arquivos de gabaritos" (estado marcado e desmarcado).
+- [x] Capturar print com o select em "Padrão (Arquivos juntos)" confirmando que o switch está oculto.
+- [x] Comparar o switch com o padrão visual do switch de "Incluir impressão do cartão resposta discursiva por padrão" (`print_essay_questions_default`) da mesma tela — mesmo estilo de `custom-switch`.
+- [x] Comparar o layout com o mockup de referência `openspec/changes/malote-gabaritos-individuais/references/omr-print-separation-select.html` (estrutura do bloco de separação: select + switch + texto de apoio).
+- [x] Verificar alinhamento, espaçamento e legibilidade do texto de apoio ("Ao marcar esta opção, cada aluno terá o seu arquivo de gabarito separado em uma pasta.").
 
 ---
 
