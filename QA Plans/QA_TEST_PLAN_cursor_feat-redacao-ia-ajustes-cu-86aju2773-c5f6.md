@@ -239,11 +239,11 @@ mixer.blend(
 - [x] Confirmar que não aparece nenhuma sintaxe crua de template como `#{getLizeAISuggestionTitle(...)}` ou `#{...}`.
 
 #### Cenário 10 — Desfazer Decisão pelo Canvas e pelo Painel
-- [ ] Clicar em um item previamente aceito ou selecionar a opção no painel lateral.
-- [ ] Clicar no botão "Desfazer".
-- [ ] Confirmar que o item retorna ao estado de pendente.
-- [ ] Se o item havia sido recusado, confirmar que o grifo laranja reaparece no texto digitalizado.
-- [ ] Confirmar que o badge de itens pendentes no painel lateral é incrementado novamente.
+- [x] Clicar em um item previamente aceito ou selecionar a opção no painel lateral.
+- [x] Clicar no botão "Desfazer".
+- [x] Confirmar que o item retorna ao estado de pendente.
+- [x] Se o item havia sido recusado, confirmar que o grifo laranja reaparece no texto digitalizado.
+- [x] Confirmar que o badge de itens pendentes no painel lateral é incrementado novamente.
 
 ---
 
