@@ -161,18 +161,18 @@ mixer.blend(
 - [x] Acessar a tela de correção de uma redação ENEM que possua status de IA pronto.
 - [x] Localizar o ícone de estrela flutuante no canto inferior direito do canvas de correção.
 - [x] Clicar no ícone de estrela para ativar o Modo Correção de IA.
-- [ ] Confirmar que o ícone de estrela fica destacado com fundo alaranjado.
-- [ ] Confirmar que a visualização central do canvas alterna automaticamente para o Texto Digitalizado.
-- [ ] Confirmar que a barra lateral esquerda com a lista de alunos encolhe para dar mais espaço à correção.
-- [ ] Confirmar que o painel Lize AI permanece aberto e acessível na barra lateral direita.
-- [ ] Confirmar que nenhum erro de JavaScript ou Vue aparece no console do navegador.
+- [x] Confirmar que o ícone de estrela fica destacado com fundo alaranjado.
+- [x] Confirmar que a visualização central do canvas alterna automaticamente para o Texto Digitalizado.
+- [x] Confirmar que a barra lateral esquerda com a lista de alunos encolhe para dar mais espaço à correção.
+- [x] Confirmar que o painel Lize AI permanece aberto e acessível na barra lateral direita.
+- [x] Confirmar que nenhum erro de JavaScript ou Vue aparece no console do navegador.
 
 #### Cenário 2 — Sair do Modo Correção de IA
-- [ ] Estando com o Modo Correção de IA ativo, clicar novamente no ícone de estrela flutuante.
-- [ ] Confirmar que a visualização central retorna para o Texto Original (imagem da folha).
-- [ ] Confirmar que o card de revisão ou popovers abertos sobre o texto são fechados.
-- [ ] Confirmar que a barra de ferramentas de zoom e centralização da imagem reaparece no canto direito.
-- [ ] Confirmar que a barra lateral esquerda retorna à largura padrão.
+- [x] Estando com o Modo Correção de IA ativo, clicar novamente no ícone de estrela flutuante.
+- [x] Confirmar que a visualização central retorna para o Texto Original (imagem da folha).
+- [x] Confirmar que o card de revisão ou popovers abertos sobre o texto são fechados.
+- [x] Confirmar que a barra de ferramentas de zoom e centralização da imagem reaparece no canto direito.
+- [x] Confirmar que a barra lateral esquerda retorna à largura padrão.
 
 ---
 
