@@ -214,29 +214,29 @@ mixer.blend(
 ### 5.4 Revisão e Ações Diretamente no Canvas [Automatizável ✅]
 
 #### Cenário 7 — Aceitar e Recusar Desvio pelo Canvas
-- [ ] No texto digitalizado, clicar sobre uma palavra ou trecho grifado em laranja.
-- [ ] Confirmar que um card de revisão flutuante abre posicionado logo abaixo do trecho selecionado.
-- [ ] Confirmar que o card exibe as opções Aceitar, Recusar e Editar OCR.
-- [ ] Clicar em "Aceitar" no card.
-- [ ] Confirmar que o item é marcado como aceito no painel lateral, o badge de pendências decrementa e o grifo permanece visível no texto.
-- [ ] Clicar em outro trecho grifado e selecionar "Recusar".
-- [ ] Confirmar que o item é marcado como recusado e o grifo laranja desaparece imediatamente do texto digitalizado.
+- [x] No texto digitalizado, clicar sobre uma palavra ou trecho grifado em laranja.
+- [x] Confirmar que um card de revisão flutuante abre posicionado logo abaixo do trecho selecionado.
+- [x] Confirmar que o card exibe as opções Aceitar, Recusar e Editar OCR.
+- [x] Clicar em "Aceitar" no card.
+- [x] Confirmar que o item é marcado como aceito no painel lateral, o badge de pendências decrementa e o grifo permanece visível no texto.
+- [x] Clicar em outro trecho grifado e selecionar "Recusar".
+- [x] Confirmar que o item é marcado como recusado e o grifo laranja desaparece imediatamente do texto digitalizado.
 
 #### Cenário 8 — Edição do Texto do OCR e Persistência
-- [ ] Clicar em um trecho grifado com indicação de texto processado do OCR.
-- [ ] Clicar no botão "Editar OCR" no card de revisão.
-- [ ] Confirmar que uma caixa de texto editável surge com o conteúdo atual do trecho selecionado.
-- [ ] Alterar o texto e clicar em "Salvar".
-- [ ] Confirmar que o texto da folha digitalizada atualiza imediatamente com a nova grafia.
-- [ ] Recarregar a página (F5) e alternar novamente para o Texto Digitalizado.
-- [ ] Confirmar que a edição do texto persiste no banco de dados.
-- [ ] Confirmar que outros grifos posteriores no texto permanecem nas posições corretas sem deslocamento incorreto.
+- [x] Clicar em um trecho grifado com indicação de texto processado do OCR.
+- [x] Clicar no botão "Editar OCR" no card de revisão.
+- [x] Confirmar que uma caixa de texto editável surge com o conteúdo atual do trecho selecionado.
+- [x] Alterar o texto e clicar em "Salvar".
+- [x] Confirmar que o texto da folha digitalizada atualiza imediatamente com a nova grafia.
+- [x] Recarregar a página (F5) e alternar novamente para o Texto Digitalizado.
+- [x] Confirmar que a edição do texto persiste no banco de dados.
+- [x] Confirmar que outros grifos posteriores no texto permanecem nas posições corretas sem deslocamento incorreto.
 
 #### Cenário 9 — Título do Card de Revisão sem Tags Cruas
-- [ ] Clicar em qualquer trecho grifado no texto digitalizado para abrir o card de revisão.
-- [ ] Ler atentamente a primeira linha do cabeçalho do card.
-- [ ] Confirmar que o título exibe o formato limpo `Lize AI — <Nome da Sugestão>` (ex: `Lize AI — Acentuação gráfica`).
-- [ ] Confirmar que não aparece nenhuma sintaxe crua de template como `#{getLizeAISuggestionTitle(...)}` ou `#{...}`.
+- [x] Clicar em qualquer trecho grifado no texto digitalizado para abrir o card de revisão.
+- [x] Ler atentamente a primeira linha do cabeçalho do card.
+- [x] Confirmar que o título exibe o formato limpo `Lize AI — <Nome da Sugestão>` (ex: `Lize AI — Acentuação gráfica`).
+- [x] Confirmar que não aparece nenhuma sintaxe crua de template como `#{getLizeAISuggestionTitle(...)}` ou `#{...}`.
 
 #### Cenário 10 — Desfazer Decisão pelo Canvas e pelo Painel
 - [ ] Clicar em um item previamente aceito ou selecionar a opção no painel lateral.
