@@ -179,12 +179,12 @@ mixer.blend(
 ### 5.2 Agrupamento por Competências C1–C5 [Automatizável ✅]
 
 #### Cenário 3 — Estrutura de Seções C1 a C5
-- [ ] Expandir o painel Lize AI na barra lateral direita (aba Corrigir).
-- [ ] Inspecionar os cabeçalhos das seções disponíveis no painel.
-- [ ] Confirmar que as seções principais são nomeadas por competência (C1, C2, C3, C4, C5).
-- [ ] Confirmar que não existem mais seções principais separadas por tipo como "Desvios sugeridos", "Feedbacks" ou "Rúbricas".
-- [ ] Confirmar que cada cabeçalho de competência exibe um badge com o número exato de itens pendentes de decisão.
-- [ ] Confirmar que competências sem itens exibem a mensagem "Nenhum item nesta seção."
+- [x] Expandir o painel Lize AI na barra lateral direita (aba Corrigir).
+- [x] Inspecionar os cabeçalhos das seções disponíveis no painel.
+- [x] Confirmar que as seções principais são nomeadas por competência (C1, C2, C3, C4, C5).
+- [x] Confirmar que não existem mais seções principais separadas por tipo como "Desvios sugeridos", "Feedbacks" ou "Rúbricas".
+- [x] Confirmar que cada cabeçalho de competência exibe um badge com o número exato de itens pendentes de decisão.
+- [x] Confirmar que competências sem itens exibem a mensagem "Nenhum item nesta seção."
 
 #### Cenário 4 — Identificação do Tipo de Sugestão via Chips
 - [ ] Expandir uma competência que contenha mais de um item sugerido (ex: Desvio e Feedback).
