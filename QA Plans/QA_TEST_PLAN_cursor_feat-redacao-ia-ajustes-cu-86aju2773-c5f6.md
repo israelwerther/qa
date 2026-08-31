@@ -187,19 +187,19 @@ mixer.blend(
 - [x] Confirmar que competências sem itens exibem a mensagem "Nenhum item nesta seção."
 
 #### Cenário 4 — Identificação do Tipo de Sugestão via Chips
-- [ ] Expandir uma competência que contenha mais de um item sugerido (ex: Desvio e Feedback).
-- [ ] Confirmar que cada linha de sugestão exibe um chip legível com o tipo correspondente (Desvio, Feedback, Nota ou Rúbrica).
-- [ ] Confirmar que os botões de Aceitar (ícone de check) e Recusar (ícone de X) na linha da sugestão continuam funcionais.
-- [ ] Confirmar que o ponto colorido (dot) ao lado de cada item reflete a cor oficial da respectiva competência.
+- [x] Expandir uma competência que contenha mais de um item sugerido (ex: Desvio e Feedback).
+- [x] Confirmar que cada linha de sugestão exibe um chip legível com o tipo correspondente (Desvio, Feedback, Nota ou Rúbrica).
+- [x] Confirmar que os botões de Aceitar (ícone de check) e Recusar (ícone de X) na linha da sugestão continuam funcionais.
+- [x] Confirmar que o ponto colorido (dot) ao lado de cada item reflete a cor oficial da respectiva competência.
 
 ---
 
 ### 5.3 Layout da Folha OCR e Refluxo de Linhas [Automatizável ✅]
 
 #### Cenário 5 — Linhas Numeradas e Quebras de Parágrafo
-- [ ] Ativar o Texto Digitalizado ou entrar no Modo Correção de IA.
-- [ ] Observar a formatação da folha de texto digitalizado no canvas.
-- [ ] Confirmar que cada linha de texto possui uma numeração sequencial à esquerda (1, 2, 3...).
+- [x] Ativar o Texto Digitalizado ou entrar no Modo Correção de IA.
+- [x] Observar a formatação da folha de texto digitalizado no canvas.
+- [x] Confirmar que cada linha de texto possui uma numeração sequencial à esquerda (1, 2, 3...).
 - [ ] Confirmar que as quebras de linha da transcrição geram linhas separadas numeradas, preservando o ritmo da folha de redação.
 - [ ] Confirmar que nenhum caractere de controle (`\n` literal) é visível no texto.
 
@@ -264,8 +264,11 @@ mixer.blend(
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-> [!NOTE]
-> *(Nenhum bug impeditivo identificado na validação da branch. Casos de borda prevenidos durante o desenvolvimento registrados abaixo).*
+> [!BUG]
+> **[UX/UI / Backend Logic] Numeração e Quebras de Linha do OCR Divergindo da Folha Física**
+> - **Contexto/Causa Raiz:** O algoritmo de refluxo em `enem_ai_ocr_layout.py` (`ENEM_PAGE_LINE_WIDTH = 72`) e quebras de parágrafo da API (`\n\n`) dividem linhas da transcrição em múltiplas linhas visuais e inserem linhas em branco extras, fazendo com que a numeração do texto digitalizado não corresponda às linhas reais escritas pelo aluno na folha física.
+> - **Comportamento Esperado:** `(conforme escopo acordado com desenvolvimento)` A quebra e a numeração das linhas na folha digitalizada devem obedecer fielmente ao ritmo e às linhas físicas da folha de redação original.
+> - **Status / Encaminhamento:** Alinhado com o desenvolvedor responsável e repassado para ajuste no algoritmo de layout da transcrição.
 
 > [!WARNING]
 > **[UX/UI] Interpolação de Delimitadores no Vue Monolítico**
