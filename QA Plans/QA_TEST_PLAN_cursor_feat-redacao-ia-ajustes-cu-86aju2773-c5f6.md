@@ -294,7 +294,7 @@ mixer.blend(
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 
 - [x] O arquivo de mapeamento foi nomeado refletindo exatamente o nome do template HTML, e não a View.
-🔗 **[Ver Mapeamento de Tela](docs/tests/usability/exam_essay_correction.md)**
+🔗 **[Ver Mapeamento de Tela](../docs/tests/usability/exam_essay_correction.md)**
 
 ### Automation Snippet (Python / Playwright + Mixer Data Setup)
 
@@ -327,11 +327,16 @@ def test_essay_correction_ai_mode_and_canvas_review(page: Page, live_server):
     app_student = mixer.blend(ApplicationStudent, application=application, student=student, school_class=school_class)
     file_answer = mixer.blend(FileAnswer, student_application=app_student, question=question, arquivo="redacao.png")
     
+    # 2. Correção com duas linhas delimitadas por quebra física
+    transcription = (
+        "Linha um com mais de noventa caracteres sem sofrer fatiamento artificial pelo layout do OCR da folha.\n"
+        "Linha dois da redacao contendo a continuacao do texto do aluno."
+    )
     correction = mixer.blend(
         EssayAICorrection,
         file_answer=file_answer,
         status=EssayAICorrection.STATUS_READY,
-        transcription="O Brasil precisa valorizar a educacao de base.",
+        transcription=transcription,
         total_score=920,
     )
     suggestion = mixer.blend(
@@ -340,36 +345,41 @@ def test_essay_correction_ai_mode_and_canvas_review(page: Page, live_server):
         competency="c1",
         kind="deviation",
         status=EssayAISuggestion.STATUS_PENDING,
-        payload={"start": 27, "end": 35, "excerpt": "educacao", "label": "Acentuação (educação)", "match_status": "corrected"}
+        payload={"start": 0, "end": 9, "excerpt": "Linha um", "label": "Desvio lexical", "match_status": "corrected"}
     )
     
-    # 2. Autenticação e Navegação
+    # 3. Autenticação e Navegação
     page.goto(f"{live_server.url}/conta/login/")
     # ... autenticar usuário professor ...
     
-    url = f"{live_server.url}/provas/{exam.id}/correcao/?application_student={app_student.id}&school_class={school_class.id}"
+    url = f"{live_server.url}/provas/{exam.id}/redacoes/correcao/?application_student={app_student.id}&school_class={school_class.id}"
     page.goto(url)
     
-    # 3. Interação com o Modo Correção de IA
+    # 4. Ativar Modo Correção de IA via ícone estrela
     star_btn = page.locator("#ia")
     expect(star_btn).to_be_visible()
     star_btn.click()
     expect(star_btn).to_have_class(/activated/)
     
-    # 4. Validação do Layout OCR
-    expect(page.locator(".ocr-page-line")).to_be_visible()
-    expect(page.locator(".ocr-line-num").first).to_have_text("1")
+    # 5. Validação da Folha Digitalizada e Numeração 1:1
+    lines = page.locator(".ocr-page-line")
+    expect(lines).to_have_count(2)
+    expect(lines.nth(0).locator(".ocr-line-num")).to_have_text("1")
+    expect(lines.nth(1).locator(".ocr-line-num")).to_have_text("2")
     
-    # 5. Clique no Highlight e Ação de Aceite no Canvas
+    # 6. Validação das Seções C1 a C5 no Painel Lateral
+    expect(page.locator(".lize-ai-section-header")).to_contain_text(["C1", "C2", "C3", "C4", "C5"])
+    
+    # 7. Clique no Grifo e Interação com Card de Revisão no Canvas
     mark = page.locator(f'.lize-ai-mark[data-suggestion-id="{suggestion.id}"]')
     expect(mark).to_be_visible()
     mark.click()
     
     review_card = page.locator(".lize-ai-canvas-review")
     expect(review_card).to_be_visible()
-    expect(review_card.locator(".lize-ai-canvas-review-title")).to_contain_text("Lize AI — Acentuação (educação)")
+    expect(review_card.locator(".lize-ai-canvas-review-title")).to_contain_text("Lize AI — Desvio lexical")
     
-    # Aceitar sugestão pelo canvas
+    # 8. Aceitar Sugestão e Validar Estado
     review_card.locator("button.accept").click()
     expect(mark).to_have_class(/is-accepted/)
 ```
