@@ -200,14 +200,14 @@ mixer.blend(
 - [x] Ativar o Texto Digitalizado ou entrar no Modo Correção de IA.
 - [x] Observar a formatação da folha de texto digitalizado no canvas.
 - [x] Confirmar que cada linha de texto possui uma numeração sequencial à esquerda (1, 2, 3...).
-- [ ] Confirmar que as quebras de linha da transcrição geram linhas separadas numeradas, preservando o ritmo da folha de redação.
-- [ ] Confirmar que nenhum caractere de controle (`\n` literal) é visível no texto.
+- [x] Confirmar que as quebras de linha da transcrição geram linhas separadas numeradas, preservando o ritmo da folha de redação.
+- [x] Confirmar que nenhum caractere de controle (`\n` literal) é visível no texto.
 
 #### Cenário 6 — Refluxo de Linhas Longas sem Barra Horizontal
-- [ ] Inspecionar uma redação com parágrafos longos contínuos.
-- [ ] Confirmar que linhas de texto longas refluem naturalmente para a linha seguinte respeitando o limite de largura.
-- [ ] Confirmar que o painel de texto digitalizado não apresenta barra de rolagem horizontal indesejada.
-- [ ] Confirmar que trechos com grifos de desvio que ultrapassam a quebra de linha visual continuam destacados em ambas as linhas refluídas.
+- [x] Inspecionar uma redação com parágrafos longos contínuos.
+- [x] Confirmar que linhas de texto longas refluem naturalmente para a linha seguinte respeitando o limite de largura.
+- [x] Confirmar que o painel de texto digitalizado não apresenta barra de rolagem horizontal indesejada.
+- [x] Confirmar que trechos com grifos de desvio que ultrapassam a quebra de linha visual continuam destacados em ambas as linhas refluídas.
 
 ---
 
@@ -249,15 +249,15 @@ mixer.blend(
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Comparação de Layout do Painel Lateral:**
+- [x] **Comparação de Layout do Painel Lateral:**
   - Tirar screenshot do painel Lize AI aberto na aba *Corrigir*.
   - Validar hierarquia visual das seções C1 a C5, badges circulares de contagem e chips de tipo arredondados.
-- [ ] **Comparação do Card de Revisão no Canvas:**
+- [x] **Comparação do Card de Revisão no Canvas:**
   - Tirar screenshot do card flutuante `.lize-ai-canvas-review` aberto sobre o texto digitalizado.
   - Verificar espaçamento, bordas arredondadas (10px), sombra suave e tipografia dos botões Aceitar (verde `#12B76A`), Recusar e Editar OCR.
-- [ ] **Verificação de Responsividade e Refluxo:**
+- [x] **Verificação de Responsividade e Refluxo:**
   - Redimensionar a janela do navegador e verificar se o texto digitalizado reflui adequadamente em telas de diferentes larguras sem estourar o container.
-- [ ] **Destaque do Ícone de Modo IA:**
+- [x] **Destaque do Ícone de Modo IA:**
   - Confirmar que o botão flutuante `#ia` possui estados visuais distintos: branco com ícone cinza quando inativo, e fundo amarelo-claro com ícone laranja (`#FF8F3D`) e borda ativa quando ligado.
 
 ---
@@ -268,7 +268,8 @@ mixer.blend(
 > **[UX/UI / Backend Logic] Numeração e Quebras de Linha do OCR Divergindo da Folha Física**
 > - **Contexto/Causa Raiz:** O algoritmo de refluxo em `enem_ai_ocr_layout.py` (`ENEM_PAGE_LINE_WIDTH = 72`) e quebras de parágrafo da API (`\n\n`) dividem linhas da transcrição em múltiplas linhas visuais e inserem linhas em branco extras, fazendo com que a numeração do texto digitalizado não corresponda às linhas reais escritas pelo aluno na folha física.
 > - **Comportamento Esperado:** `(conforme escopo acordado com desenvolvimento)` A quebra e a numeração das linhas na folha digitalizada devem obedecer fielmente ao ritmo e às linhas físicas da folha de redação original.
-> - **Status / Encaminhamento:** Alinhado com o desenvolvedor responsável e repassado para ajuste no algoritmo de layout da transcrição.
+> - **Solução Aplicada:** Corrigido nos commits `b06fac99d` e `2c163780b`. O layout agora preserva as quebras naturais emitidas pelo OCR sem fatiamento artificial por contagem de caracteres (`width`), mantendo correspondência exata 1:1 com as linhas da folha manuscrita.
+
 
 > [!WARNING]
 > **[UX/UI] Interpolação de Delimitadores no Vue Monolítico**
