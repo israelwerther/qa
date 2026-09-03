@@ -283,15 +283,15 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 #### Cenário 5 — Criação com caderno contendo questões discursivas ou redação
 - [x] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
 - [x] Selecionar um caderno que contenha questões discursivas e proposta de redação.
-- [ ] Concluir o preenchimento dos campos e salvar.
-- [ ] Confirmar que a aplicação é salva com sucesso sem rejeição por conter questões não-objetivas.
+- [x] Concluir o preenchimento dos campos e salvar.
+- [x] Confirmar que a aplicação é salva com sucesso sem rejeição por conter questões não-objetivas.
 
 #### Cenário 6 — Bloqueio de alteração de categoria após malote pronto
-- [ ] Abrir uma aplicação Híbrida já existente que já teve malote gerado ou está marcada como pronta para impressão.
-- [ ] Acessar a tela de edição da aplicação.
-- [ ] Observar a seção de escolha de categoria.
-- [ ] Confirmar que as opções de categoria encontram-se desabilitadas para clique.
-- [ ] Verificar a presença da mensagem de alerta informando a impossibilidade de alteração da categoria por haver malote gerado.
+- [x] Abrir uma aplicação Híbrida já existente que já teve malote gerado ou está marcada como pronta para impressão.
+- [x] Acessar a tela de edição da aplicação.
+- [x] Observar a seção de escolha de categoria.
+- [x] Confirmar que as opções de categoria encontram-se desabilitadas para clique.
+- [x] Verificar a presença da mensagem de alerta informando a impossibilidade de alteração da categoria por haver malote gerado.
 
 ---
 

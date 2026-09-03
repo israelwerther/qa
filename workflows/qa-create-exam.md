@@ -25,6 +25,7 @@ Analise o texto fornecido pelo usuário e extraia os seguintes parâmetros:
 - **Quantidade de Discursivas (`-disc`)**: Número de questões discursivas padrão (default `0`).
 - **Quantidade de Redações (`-ess`)**: Número de propostas de redação (default `0`).
 - **Disciplina (`-s` / `--subject`)**: Nome ou parte do nome da matéria (ex.: "Matemática", "História").
+- **Professor (`-t` / `--teacher`)**: Nome ou login do professor (ex.: "Adriano", "barbara.brito"). Se omitido, o script prioriza automaticamente um professor com conta **ativa** no cliente e exibe seu login. Se a disciplina não tiver professores ativos, o script auto-vincula um professor ativo do cliente para permitir o acesso do QA.
 - **Cliente (`-c` / `--client`)**: Nome do cliente específico (ex.: "Rede Decisão"). **Se não especificado, o script detecta automaticamente o cliente da sessão ativa logada no navegador (localhost / runserver)**.
 - **Embaralhar Questões (`-rq`)**: `True` se o usuário mencionar "embaralhar questões", "questões aleatórias", "ordem diferente", etc.
 - **Embaralhar Alternativas (`-ra`)**: `True` se o usuário mencionar "embaralhar alternativas", "alternativas aleatórias", etc.

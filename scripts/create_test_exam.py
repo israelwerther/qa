@@ -101,6 +101,7 @@ def create_exam_with_questions(
     username=None,
     subject_name=None,
     client_name=None,
+    teacher_name=None,
 ):
     session_user, session_client = get_current_session_user_and_client()
 
@@ -149,13 +150,68 @@ def create_exam_with_questions(
     if not subject:
         subject = Subject.objects.filter(client=client).first() or Subject.objects.first()
     grade = Grade.objects.filter(schoolclass__coordination__in=coordinations).first() or Grade.objects.first()
+
     teacher_subject = None
+    teacher_warning = None
+
     if subject:
-        teacher_subject = (
-            TeacherSubject.objects.filter(subject=subject).first()
-            or TeacherSubject.objects.filter(subject__client=client).first()
-            or TeacherSubject.objects.first()
-        )
+        # 1. Se o QA especificou um professor nominalmente (-t / --teacher)
+        if teacher_name:
+            ts_match = (
+                TeacherSubject.objects.filter(
+                    subject=subject,
+                    teacher__name__icontains=teacher_name,
+                ).first()
+                or TeacherSubject.objects.filter(
+                    subject=subject,
+                    teacher__user__username__icontains=teacher_name,
+                ).first()
+                or TeacherSubject.objects.filter(
+                    teacher__name__icontains=teacher_name,
+                ).first()
+            )
+            if ts_match:
+                teacher_subject = ts_match
+                if not getattr(ts_match.teacher.user, 'is_active', False):
+                    teacher_warning = f"Professor '{ts_match.teacher.name}' está com a conta INATIVA no sistema."
+            else:
+                print(f"⚠️ Professor '{teacher_name}' não encontrado para a disciplina, buscando professor ativo padrão.")
+
+        # 2. Se não especificado ou não encontrado, prioriza professor ATIVO da disciplina
+        if not teacher_subject:
+            teacher_subject = TeacherSubject.objects.filter(
+                subject=subject,
+                teacher__user__isnull=False,
+                teacher__user__is_active=True,
+                teacher__is_abstract=False,
+                teacher__is_inspector_ia=False,
+            ).first()
+
+        # 3. Se a disciplina não tiver nenhum professor ativo:
+        if not teacher_subject:
+            # Buscar qualquer professor ativo do mesmo cliente para salvar o teste do QA
+            active_ts_client = TeacherSubject.objects.filter(
+                subject__client=client,
+                teacher__user__isnull=False,
+                teacher__user__is_active=True,
+                teacher__is_abstract=False,
+                teacher__is_inspector_ia=False,
+            ).first()
+
+            if active_ts_client:
+                teacher_subject, _ = TeacherSubject.objects.get_or_create(
+                    subject=subject,
+                    teacher=active_ts_client.teacher,
+                )
+                print(f"💡 [QA Auto-Fix] A disciplina '{subject.name}' não possuía professores ativos.")
+                print(f"   Vinculado automaticamente o professor ativo '{active_ts_client.teacher.name}' ({active_ts_client.teacher.user.username}) para permitir acesso.")
+            else:
+                teacher_subject = (
+                    TeacherSubject.objects.filter(subject=subject).first()
+                    or TeacherSubject.objects.filter(subject__client=client).first()
+                    or TeacherSubject.objects.first()
+                )
+                teacher_warning = f"Nenhum professor com conta ativa foi encontrado no cliente '{client.name if client else ''}'."
 
     timestamp_str = timezone.localtime().strftime('%d/%m %H:%M')
     total_q = objective_count + discursive_count + essay_count
@@ -174,6 +230,13 @@ def create_exam_with_questions(
         spec_str = " + ".join(tags) if tags else "Vazia"
         name = f"[QA] Caderno ({spec_str}) - {timestamp_str}"
 
+    teacher_obj = teacher_subject.teacher if teacher_subject else None
+    teacher_user = getattr(teacher_obj, 'user', None) if teacher_obj else None
+    teacher_login = teacher_user.username if teacher_user else 'SEM CONTA'
+    teacher_status_str = f"• Professor: {teacher_obj.name} (Login: {teacher_login})" if teacher_obj else "• Professor: Nenhum"
+    if teacher_user and not teacher_user.is_active:
+        teacher_status_str += " [⚠️ CONTA INATIVA]"
+
     print("\n" + "=" * 60)
     print("🚀 CRIANDO CADERNO DE TESTE PARA QA")
     print("=" * 60)
@@ -181,6 +244,9 @@ def create_exam_with_questions(
     print(f"• Usuário Criador: {user.username} (Client: {client.name if client else 'Nenhum'})")
     print(f"• Disciplina: {subject.name if subject else 'Nenhuma'}")
     print(f"• Série: {grade.name if grade else 'Nenhuma'}")
+    print(teacher_status_str)
+    if teacher_warning:
+        print(f"⚠️ [QA Alerta] {teacher_warning}")
     print(f"• Objetivas: {objective_count} | Discursivas: {discursive_count} | Redação: {essay_count}")
     print(f"• Embaralhar Questões: {'Sim' if random_questions else 'Não'}")
     print(f"• Embaralhar Alternativas: {'Sim' if random_alternatives else 'Não'}")
@@ -326,6 +392,8 @@ def create_exam_with_questions(
     print(f"• Total de questões vinculadas: {total_q}")
     print(f"• Coordenações vinculadas: {len(coordinations)}")
     print(f"• Disciplina: {subject.name if subject else 'N/A'}")
+    print(f"• Professor vinculado: {teacher_obj.name if teacher_obj else 'Nenhum'}")
+    print(f"• Login do Professor: {teacher_login}")
     print(f"• Diagramação V2: {'Pronta (config vinculada)' if exam.exam_print_config else 'Padrão'}")
     print("=" * 60)
     print("💡 Como usar agora:")
@@ -394,6 +462,12 @@ def parse_arguments():
         help="Nome ou filtro do cliente (ex: Rede Decisão)",
     )
     parser.add_argument(
+        '-t', '--teacher',
+        type=str,
+        default=None,
+        help="Nome ou login do professor desejado (ex: Adriano, barbara.brito)",
+    )
+    parser.add_argument(
         '-i', '--interactive',
         action='store_true',
         help="Forçar modo interativo para escolher as quantidades no terminal",
@@ -453,6 +527,7 @@ if __name__ == '__main__':
             username=args.user,
             subject_name=args.subject,
             client_name=args.client,
+            teacher_name=args.teacher,
         )
     else:
         create_exam_with_questions(
@@ -465,4 +540,5 @@ if __name__ == '__main__':
             username=args.user,
             subject_name=args.subject,
             client_name=args.client,
+            teacher_name=args.teacher,
         )
