@@ -247,27 +247,27 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ### 5.1 Sidebar e Listagem de Aplicações [Automatizável ✅]
 
 #### Cenário 1 — Visibilidade do item Híbridas na barra lateral de navegação
-- [ ] Acessar o menu lateral esquerdo como Coordenador.
-- [ ] Clicar sobre a opção "Aplicações" para expandir os submódulos.
-- [ ] Verificar se o item "Híbridas" está visível entre as opções (abaixo de "Presencial").
-- [ ] Confirmar que o ícone correspondente de livro com check é exibido ao lado do texto.
-- [ ] Clicar no item "Híbridas" e verificar se a URL é atualizada para `/aplicacoes/?category=hibrid`.
-- [ ] Verificar se o item "Híbridas" permanece com estilo destacado de ativo no menu.
+- [x] Acessar o menu lateral esquerdo como Coordenador.
+- [x] Clicar sobre a opção "Aplicações" para expandir os submódulos.
+- [x] Verificar se o item "Híbridas" está visível entre as opções (abaixo de "Presencial").
+- [x] Confirmar que o ícone correspondente de livro com check é exibido ao lado do texto.
+- [x] Clicar no item "Híbridas" e verificar se a URL é atualizada para `/aplicacoes/?category=hibrid`.
+- [x] Verificar se o item "Híbridas" permanece com estilo destacado de ativo no menu.
 
 #### Cenário 2 — Filtragem da listagem principal de aplicações
-- [ ] Estando na listagem de Híbridas, verificar as aplicações listadas na tabela.
-- [ ] Confirmar que apenas aplicações da categoria Híbrida são exibidas na tela.
-- [ ] Verificar se aplicações puramente presenciais ou online NÃO aparecem nesta listagem.
-- [ ] Limpar os filtros ou alternar para o submenu "Atividade Online" e confirmar a troca imediata das aplicações listadas.
+- [x] Estando na listagem de Híbridas, verificar as aplicações listadas na tabela.
+- [x] Confirmar que apenas aplicações da categoria Híbrida são exibidas na tela.
+- [x] Verificar se aplicações puramente presenciais ou online NÃO aparecem nesta listagem.
+- [x] Limpar os filtros ou alternar para o submenu "Atividade Online" e confirmar a troca imediata das aplicações listadas.
 
 ---
 
 ### 5.2 Criação e Edição de Aplicação Híbrida [Automatizável ✅]
 
 #### Cenário 3 — Criação de aplicação com seleção do card Híbrida
-- [ ] Na tela de listagem de Híbridas, clicar no botão azul "Agendar aplicação".
-- [ ] Verificar se a página de cadastro abre com o quarto card "Híbrida" selecionado por padrão.
-- [ ] Observar os textos do card: título "Híbrida" e subtítulo informativo "Geração de malote + Respostas cadastradas online."
+- [x] Na tela de listagem de Híbridas, clicar no botão azul "Agendar aplicação".
+- [x] Verificar se a página de cadastro abre com o quarto card "Híbrida" selecionado por padrão.
+- [x] Observar os textos do card: título "Híbrida" e subtítulo informativo "Geração de malote + Respostas cadastradas online."
 - [ ] Selecionar um caderno com parâmetros de randomização ativados (`is_randomized = True`).
 - [ ] Preencher as datas, horários (início e término) e vincular uma turma com alunos.
 - [ ] Clicar no botão para salvar a aplicação.
