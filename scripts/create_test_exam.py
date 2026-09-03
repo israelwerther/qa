@@ -63,6 +63,8 @@ def create_exam_with_questions(
     random_questions=False,
     random_alternatives=False,
     username=None,
+    subject_name=None,
+    client_name=None,
 ):
     user = get_default_user(username)
     if not user:
@@ -71,6 +73,11 @@ def create_exam_with_questions(
 
     # Identificar cliente e coordenações
     client = getattr(user, 'client', None)
+    if client_name:
+        found_client = Client.objects.filter(name__icontains=client_name).first()
+        if found_client:
+            client = found_client
+
     if not client:
         clients_cache = user.get_clients_cache()
         if clients_cache:
@@ -83,7 +90,14 @@ def create_exam_with_questions(
         coordinations = list(SchoolCoordination.objects.filter(unity__client=client).values_list('pk', flat=True))
 
     # Identificar dados pedagógicos do tenant (Disciplina, Série, Professor)
-    subject = Subject.objects.filter(client=client).first() or Subject.objects.first()
+    subject = None
+    if subject_name:
+        subject = Subject.objects.filter(client=client, name__icontains=subject_name).first()
+        if not subject:
+            subject = Subject.objects.filter(name__icontains=subject_name).first()
+
+    if not subject:
+        subject = Subject.objects.filter(client=client).first() or Subject.objects.first()
     grade = Grade.objects.filter(schoolclass__coordination__in=coordinations).first() or Grade.objects.first()
     teacher_subject = None
     if subject:
@@ -317,6 +331,18 @@ def parse_arguments():
         help="Username do usuário dono/criador (ex: fiscallize_geral)",
     )
     parser.add_argument(
+        '-s', '--subject',
+        type=str,
+        default=None,
+        help="Nome ou filtro da disciplina (ex: Matemática, Álgebra)",
+    )
+    parser.add_argument(
+        '-c', '--client',
+        type=str,
+        default=None,
+        help="Nome ou filtro do cliente (ex: Rede Decisão)",
+    )
+    parser.add_argument(
         '-i', '--interactive',
         action='store_true',
         help="Forçar modo interativo para escolher as quantidades no terminal",
@@ -374,6 +400,8 @@ if __name__ == '__main__':
             random_questions=config['random_questions'],
             random_alternatives=config['random_alternatives'],
             username=args.user,
+            subject_name=args.subject,
+            client_name=args.client,
         )
     else:
         create_exam_with_questions(
@@ -384,4 +412,6 @@ if __name__ == '__main__':
             random_questions=args.random_questions,
             random_alternatives=args.random_alternatives,
             username=args.user,
+            subject_name=args.subject,
+            client_name=args.client,
         )
