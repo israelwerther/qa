@@ -299,8 +299,8 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 
 #### Cenário 7 — Abertura do modal de impressão com controles adaptados
 - [x] Na listagem de aplicações, localizar uma aplicação Híbrida.
-- [ ] Na última coluna da linha da aplicação, clicar no botão "**Opções**" (botão branco com borda cinza).
-- [ ] No menu que se abre, localizar a seção com cabeçalho cinza "**IMPRESSÃO**" e clicar na opção "**Todos os alunos**" (ícone de usuários).
+- [x] Na última coluna da linha da aplicação, clicar no botão "**Opções**" (botão branco com borda cinza).
+- [x] No menu que se abre, localizar a seção com cabeçalho cinza "**IMPRESSÃO**" e clicar na opção "**Todos os alunos**" (ícone de usuários).
 - [ ] Verificar que o modal de configuração de impressão é aberto na tela.
 - [ ] Confirmar que a seção "Modelo da folhas de resposta objetivas" NÃO está visível no modal.
 - [ ] Confirmar que a opção "Foto oficial" NÃO está visível no modal.
