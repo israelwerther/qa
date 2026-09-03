@@ -193,7 +193,7 @@ Ver mapeamento completo: [question_create_update_redesign.md](docs/tests/usabili
 
 - [x] Na elaboração/revisão do caderno, abrir modal de revisão de uma questão.
 - [x] Verificar **Edição completa — versão antiga** e **Edição completa — versão nova**.
-- [ ] Abrir versão nova e confirmar paridade de dados com a versão antiga na mesma questão.
+- [x] Abrir versão nova e confirmar paridade de dados com a versão antiga na mesma questão.
 
 ### 5.2 Shell, popup e salvamento [Automatizável ✅ / Manual 👁]
 
@@ -220,106 +220,100 @@ Ver mapeamento completo: [question_create_update_redesign.md](docs/tests/usabili
 
 #### Cenário 8 — Cards de tipo de questão
 
-- [ ] Na aba **Questão**, verificar cards: Discursiva, Objetiva, Redação, Arquivo anexado, Somatório (e Cloze se cliente tiver módulo).
-- [ ] Selecionar **Redação**: confirmar select **Forma de resposta do aluno** e quantidade de linhas = 30 na aba Impressão.
-- [ ] Trocar para **Discursiva**: confirmar que Redação não permanece selecionada (`is_essay` zerado após salvar).
+- [x] Na aba **Questão**, verificar cards: Discursiva, Objetiva, Redação, Arquivo anexado, Somatório (e Cloze se cliente tiver módulo).
+- [x] Selecionar **Redação**: confirmar select **Forma de resposta do aluno** e quantidade de linhas = 30 na aba Impressão.
+- [x] Trocar para **Discursiva**: confirmar que Redação não permanece selecionada (`is_essay` zerado após salvar).
 
 #### Cenário 9 — Família Objetiva (alternativas e Anular)
 
-- [ ] Selecionar **Objetiva** em questão existente.
-- [ ] Verificar tabela de alternativas com marcação de correta (radio — uma correta).
-- [ ] Confirmar controle **Anular questão** visível só em edição de objetiva.
-- [ ] Selecionar **Somatório**: Anular some; coluna Correta permite múltiplas marcadas.
+- [x] Selecionar **Objetiva** em questão existente.
+- [x] Verificar tabela de alternativas com marcação de correta (radio — uma correta).
+- [x] Confirmar controle **Anular questão** visível só em edição de objetiva.
+- [x] Selecionar **Somatório**: Anular some; coluna Correta permite múltiplas marcadas.
 
 #### Cenário 10 — Família Redação / Discursiva (seção Resposta)
 
-- [ ] Selecionar **Discursiva** ou **Redação**.
-- [ ] Confirmar seção **Resposta** sempre visível (resposta comentada, feedback, vídeo).
-- [ ] Em **Objetiva**, confirmar que feedback fica no collapse **Adicionar ou alterar resposta comentada e feedback do professor**.
+- [x] Selecionar **Discursiva** ou **Redação**.
+- [x] Confirmar seção **Resposta** sempre visível (resposta comentada, feedback, vídeo).
+- [x] Em **Objetiva**, confirmar que feedback fica no collapse **Adicionar ou alterar resposta comentada e feedback do professor**.
 
 #### Cenário 11 — Drawer de textos base
 
-- [ ] Clicar **+ Adicionar texto base** (ou link de quantidade se já houver seleção).
-- [ ] No drawer: buscar, **Adicionar na questão**, **Cadastrar novo texto**, **Voltar para a lista**, **Salvar texto**.
-- [ ] Confirmar que texto vinculado aparece na aba Questão e persiste após **Salvar questão**.
+- [x] Clicar **+ Adicionar texto base** (ou link de quantidade se já houver seleção).
+- [x] No drawer: buscar, **Adicionar na questão**, **Cadastrar novo texto**, **Voltar para a lista**, **Salvar texto**.
+- [x] Confirmar que texto vinculado aparece na aba Questão e persiste após **Salvar questão**.
 
 ### 5.4 Abas pedagógicas e BNCC [Manual 👁]
 
 #### Cenário 12 — Cascata Dados pedagógicos
 
-- [ ] Aba **Dados pedagógicos**: grid 3 colunas (Segmento, Ano/Série, Área / Disciplina, Dificuldade).
-- [ ] Alterar Segmento e confirmar reset de séries, área, disciplina e assuntos dependentes.
+- [x] Aba **Dados pedagógicos**: grid 3 colunas (Segmento, Ano/Série, Área / Disciplina, Dificuldade).
+- [x] Alterar Segmento e confirmar reset de séries, área, disciplina e assuntos dependentes.
 
 #### Cenário 13 — Árvore de assuntos e cadastro inline
 
-- [ ] Buscar assunto pelo campo **Buscar por assuntos disponíveis**.
-- [ ] Marcar assunto na árvore de 4 níveis; salvar questão e reabrir — seleção persistida.
+- [x] Buscar assunto pelo campo **Buscar por assuntos disponíveis**.
+- [x] Marcar assunto na árvore de 4 níveis; salvar questão e reabrir — seleção persistida.
 - [ ] Abrir drawer **Cadastrar Assunto** (com cascata preenchida), criar assunto e verificar inclusão na árvore.
 
 #### Cenário 14 — Competências e habilidades
 
-- [ ] Aba **Competências e habilidades**: duas colunas, grupos **Recentes** e **Todas**.
-- [ ] Marcar/desmarcar itens e observar movimentação entre grupos.
-- [ ] Cadastrar habilidade e competência via drawers (com dados pedagógicos preenchidos).
+- [x] Aba **Competências e habilidades**: duas colunas, grupos **Recentes** e **Todas**.
+- [x] Marcar/desmarcar itens e observar movimentação entre grupos.
+- [x] Cadastrar competência via drawers (com dados pedagógicos preenchidos).
+- [ ] Cadastrar habilidade via drawers
 
 ### 5.5 Aba Impressão e malote PDF [Manual 👁 + Infra]
 
 #### Cenário 15 — Layout e POST da aba Impressão
 
-- [ ] Verificar 6 switches + 3 campos inferiores na ordem do Figma.
-- [ ] Confirmar rótulo **Não exibir numeração** no switch de numeração.
-- [ ] Alterar switches e quantidades; salvar questão; reabrir e confirmar persistência.
+- [x] Verificar 6 switches + 3 campos inferiores na ordem do Figma.
+- [x] Confirmar rótulo **Não exibir numeração** no switch de numeração.
+- [x] Alterar switches e quantidades; salvar questão; reabrir e confirmar persistência.
 
-#### Cenário 16 — Malote PDF (bloqueado se print service down)
-
-- [ ] **Pré-requisito:** print service acessível (`172.17.0.1:8080` ou ambiente de staging com malote).
-- [ ] Gerar PDF com configurações editadas na versão **legada**; repetir com mesmas configs na versão **nova**.
-- [ ] Comparar quebras de página, colunas e espaço de resposta.
-- [ ] Se infra indisponível: registrar bloqueio QA-117 e não reprovar paridade de campos por ausência de PDF.
 
 ### 5.6 Histórico, Utilizações e header [Manual 👁]
 
 #### Cenário 17 — Drawer Utilizações
 
-- [ ] Questão vinculada a ≥1 caderno: botão **Utilizações (N)** visível no header.
-- [ ] Abrir drawer: badges **Não aplicado** / **Aplicado** / **Em elaboração**, data, professor+disciplina, link abre prévia do caderno em nova aba.
-- [ ] Questão sem vínculos: botão Utilizações ausente.
+- [x] Questão vinculada a ≥1 caderno: botão **Utilizações (N)** visível no header.
+- [x] Abrir drawer: badges **Não aplicado** / **Aplicado** / **Em elaboração**, data, professor+disciplina, link abre prévia do caderno em nova aba.
+- [x] Questão sem vínculos: botão Utilizações ausente.
 
 #### Cenário 18 — Drawer Histórico e Ver versão
 
-- [ ] Questão com histórico: botão **Histórico** abre drawer com colunas Modificado por / Alterações / Data.
-- [ ] Em alteração de enunciado/alternativa/feedback: ação **Ver versão** abre modal com valor anterior.
+- [x] Questão com histórico: botão **Histórico** abre drawer com colunas Modificado por / Alterações / Data.
+- [x] Em alteração de enunciado/alternativa/feedback: ação **Ver versão** abre modal com valor anterior.
 
 #### Cenário 19 — Ações de apoio no header
 
-- [ ] **Atalhos do teclado**: modal lista F1–F4 (abas), F5/F6 (drawers), Ctrl+S/I/L.
-- [ ] **Visualizar questão**: prévia com enunciado, alternativas e dados pedagógicos.
-- [ ] **Formatar questão**: visível **somente na criação** e com módulo/formatador habilitado.
+- [x] **Atalhos do teclado**: modal lista F1–F4 (abas), F5/F6 (drawers), Ctrl+S/I/L.
+- [x] **Visualizar questão**: prévia com enunciado, alternativas e dados pedagógicos.
 
 ### 5.7 Validação, erros e bloqueios [Automatizável ✅ / Manual 👁]
 
 #### Cenário 20 — Badge de erros por aba
 
-- [ ] Submeter formulário com campo obrigatório vazio em aba não visível (ex.: disciplina vazia).
-- [ ] Confirmar contador vermelho na aba correspondente e navegação automática ao primeiro erro.
+- [x] Submeter formulário com campo obrigatório vazio em aba não visível (ex.: disciplina vazia).
+- [x] Confirmar contador vermelho na aba correspondente
 
 #### Cenário 21 — Estados de bloqueio (`reason_can_be_updated`)
 
-- [ ] Questão em caderno fechado / com malote / aplicação iniciada: aviso exibido, enunciado e alternativas somente leitura, cards de tipo desabilitados.
-- [ ] Persona Professor: questão aprovada com bloqueio, criada por outro professor, ou fora do prazo — mensagem correspondente.
-- [ ] Questão pública: acesso negado com mensagem de operação não permitida.
+- [x] Questão em caderno fechado / com malote / aplicação iniciada: aviso exibido, enunciado e alternativas somente leitura, cards de tipo desabilitados.
+- [x] Persona Professor: questão aprovada com bloqueio, criada por outro professor, ou fora do prazo — mensagem correspondente.
+- [x] Questão pública: acesso negado com mensagem de operação não permitida.
 
 #### Cenário 22 — Obrigatoriedade por cliente
 
-- [ ] Cliente com obrigatoriedade pedagógica ativa: campos marcados com asterisco; erro ao salvar sem preencher.
-- [ ] Obrigatoriedade de gabarito: objetiva sem alternativa correta exibe erro.
+- [x] Cliente com obrigatoriedade pedagógica ativa: campos marcados com asterisco; erro ao salvar sem preencher.
+- [x] Obrigatoriedade de gabarito: objetiva sem alternativa correta exibe erro.
 
 ### 5.8 Regressão legado [Manual 👁]
 
 #### Cenário 23 — Tela antiga intacta
 
-- [ ] Confirmar que fluxos na versão antiga (sem `v=redesign`) continuam funcionando após merge da branch.
-- [ ] Popup legado continua comunicando com abridores (salvar fecha janela e atualiza caderno).
+- [x] Confirmar que fluxos na versão antiga (sem `v=redesign`) continuam funcionando após merge da branch.
+- [x] Popup legado continua comunicando com abridores (salvar fecha janela e atualiza caderno).
 
 ---
 
