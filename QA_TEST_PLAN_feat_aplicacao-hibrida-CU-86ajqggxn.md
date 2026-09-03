@@ -309,8 +309,8 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [ ] Confirmar que as opções de diagramação e o checkbox de incluir folha com versões de randomização permanecem acessíveis.
 
 #### Cenário 8 — Geração do malote antes do início da prova
-- [ ] No modal de impressão de uma aplicação Híbrida cujo horário de início ainda não ocorreu, clicar em "Imprimir malote".
-- [ ] Confirmar o fechamento do modal e o disparo da geração.
+- [ ] No modal de impressão da aplicação Híbrida cujo horário de início ainda não ocorreu, clicar no botão "**Imprimir malote**" (botão primário azul no canto inferior direito do modal).
+- [ ] Confirmar o fechamento do modal e o disparo da geração em segundo plano.
 - [ ] Aguardar a conclusão da exportação do arquivo e efetuar o download do arquivo ZIP gerado.
 - [ ] Descompactar o arquivo ZIP e inspecionar os PDFs contidos:
   - Verificar a presença dos cadernos de prova de cada aluno da turma.
@@ -319,8 +319,8 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 
 #### Cenário 9 — Bloqueio de geração de malote após o início da prova
 - [ ] Localizar uma aplicação Híbrida cujo horário de início agendado já foi ultrapassado (data/hora atual superior à data e horário de início).
-- [ ] Abrir o menu de ações da aplicação e clicar para imprimir o malote.
-- [ ] Submeter a solicitação de impressão.
+- [ ] Na última coluna da linha da aplicação, clicar no botão "**Opções**" e selecionar "**Todos os alunos**" dentro da seção cinza "**IMPRESSÃO**".
+- [ ] No modal aberto, clicar no botão "**Imprimir malote**".
 - [ ] Verificar que o sistema recusa a solicitação, retornando mensagem informativa indicando que o malote não pode mais ser impresso após o início da aplicação.
 
 #### Cenário 10 — Vínculo de versão de randomização no malote
@@ -342,9 +342,9 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 #### Cenário 11 — Ensalamento contendo apenas aplicações Híbridas
 - [ ] Acessar o módulo de Ensalamento (`/ensalamento/`).
 - [ ] Criar ou localizar um ensalamento que possua apenas aplicações da categoria Híbrida.
-- [ ] Clicar na ação de imprimir malote do ensalamento.
-- [ ] Verificar que o modal não exibe controles de modelos de cartão OMR nem folhas discursivas.
-- [ ] Gerar o malote e baixar o arquivo final.
+- [ ] Na linha do ensalamento, clicar no botão de menu e selecionar "**Imprimir malote**".
+- [ ] No modal com título "**Configure a impressão do malote nesta exportação**", verificar que não são exibidos controles de modelos de cartão OMR nem folhas discursivas.
+- [ ] Clicar no botão "**Imprimir malote**", aguardar a conclusão e baixar o pacote pelo botão "**Baixar malote**".
 - [ ] Confirmar que o pacote final do ensalamento contém apenas os cadernos dos alunos, sem gerar erros de arquivo corrompido ou merge de PDFs vazios.
 
 #### Cenário 12 — Ensalamento misto (Presencial + Híbrida)

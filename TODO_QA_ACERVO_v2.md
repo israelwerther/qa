@@ -105,7 +105,9 @@ You must analyze the differences between the current branch and the `master` bra
 You must be proactively attentive to the enrichment of this very prompt/skill. If, during our interactions or while executing the QA test plan, you identify a new edge case, a missing step, or a situation that reveals a flaw or opportunity to improve these instructions, **you MUST explicitly stop and suggest the improvement to the user**. Your secondary goal is to help the user continuously refine this testing framework.
 
 ## Strict Anti-Hallucination & UI Mapping Rule
-**NEVER GUESS UI ELEMENTS.** If you need to instruct the user to interact with the UI (e.g., clicking a button, finding a filter) and you are not 100% certain of the exact wording, layout, or DOM structure from the source code, **DO NOT GUESS ("click on the button that says X or something similar")**. Instead, explicitly **ASK THE USER FOR A SCREENSHOT**. It is your responsibility to perfectly map the UI to the Acervo (Knowledge Base). A missed screenshot is a missed opportunity to map the screen accurately.
+**PROIBIÇÃO TOTAL DE INFERÊNCIAS NA UI:** A IA está estritamente proibida de "adivinhar" elementos visuais baseando-se em convenções comuns de mercado (ex: assumir "menu de três pontos", "botão Salvar", "menu Provas" sem verificar o template real). 
+- Se você for orientar o usuário a interagir com a interface, **consulte obrigatoriamente** o arquivo de mapeamento em `.ai_qa_acervo/docs/tests/usability/<template_name>.md` ou o template HTML/Vue real no código-fonte.
+- Se ainda houver dúvida sobre o texto real de um botão ou menu dinâmico, **peça um print de tela ao usuário**. Nunca chute nem use termos genéricos ("clique no botão que parece com X").
 
 # Output File Constraints
 - **Location:** The `.ai_qa_acervo/` directory of the project.
@@ -154,9 +156,13 @@ Write detailed, step-by-step test scenarios focusing 100% on the human tester's 
   - `### 5.X Feature Area [Automatizável ✅ / Apenas Manual 👁]`
   - `#### Cenário Y — Clear Scenario Description`
   - `- [ ] Action or verification step written in clear, concise Portuguese.`
-- **CRITICAL RULE 2 (No Technical Noise):** NEVER inline DOM selectors, Alpine stores, CSS classes, or internal JS events inside Section 5 checkboxes. Keep the test script clean, intuitive, and readable at a glance for human QA.
-- **CRITICAL RULE 3 (Technical Layer Decoupling):** All technical references (DOM selectors, Playwright locators, Alpine stores, API intercepts) MUST be placed exclusively in **Section 4 (Fixtures/Mixer)** or **Section 8.1 (Usability Mapping / Knowledge Base)**.
-- **CRITICAL RULE 4 (Persona):** Declare the active Persona at the beginning of Section 5 or at the scenario level.
+- **CRITICAL RULE 2 (Padrão de Destaque Visual Mandatório):** Todos os elementos clicáveis ou referências visuais devem ser descritos com destaque rigoroso:
+  - **Rótulo Literal:** Sempre em negrito e entre aspas duplas: `"**Rótulo Exato**"`.
+  - **Contexto Visual:** Detalhes de formato, cor, ícone ou agrupamento entre parênteses: `(botão branco com borda cinza e seta chevron-down)`, `(seção cinza "**IMPRESSÃO**" ➔ item "**Todos os alunos**" com ícone de usuários)`.
+  - **Sem inferências:** Proibido o uso de termos genéricos ("três pontos", "botão salvar", "ícone de engrenagem") a não ser que correspondam 100% ao DOM real.
+- **CRITICAL RULE 3 (No Technical Noise):** NEVER inline raw DOM selectors (e.g. `div > button.tw-bg-orange`), Alpine stores, or raw JS events inside Section 5 checkboxes. Keep the test script clean, intuitive, and visually precise for human QA.
+- **CRITICAL RULE 4 (Technical Layer Decoupling):** All technical references (DOM selectors, Playwright locators, Alpine stores, API intercepts) MUST be placed exclusively in **Section 4 (Fixtures/Mixer)** or **Section 8.1 (Usability Mapping / Knowledge Base)**.
+- **CRITICAL RULE 5 (Persona):** Declare the active Persona at the beginning of Section 5 or at the scenario level.
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 If the branch involves User Interface (UI) changes, you MUST include a dedicated checklist section requiring the QA to take screenshots/prints of the implemented screens, mandating a side-by-side comparison with Figma/OpenSpec mockups.
