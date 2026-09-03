@@ -273,6 +273,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [x] Clicar no botão para salvar a aplicação.
 - [ ] Confirmar o redirecionamento com mensagem de sucesso e verificar a aplicação recém-criada na listagem de Híbridas.
 
+
 #### Cenário 4 — Criação com caderno de prova não randomizado
 - [x] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
 - [x] Selecionar um caderno tradicional que NÃO possui randomização de questões nem de alternativas.
@@ -443,6 +444,21 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ---
 
 ## 7. Bugs and Observations (Problemas Encontrados)
+
+> [!BUG]
+> **Bug 1: Redirecionamento pós-cadastro de Aplicação Híbrida não preserva o filtro da categoria**  
+> **Categoria:** `[Backend Logic]` / `[UX/UI]`  
+> **Contexto / Root Cause:** Em `fiscallizeon/applications/views.py`, os métodos `get_success_url` das views `ApplicationCreateView` (linhas 716–726) e `ApplicationCreateMultipleView` (linhas 872–882) verificam apenas:
+> ```python
+> if self.object.category == Application.PRESENTIAL:
+>     url += '?category=presential'
+> elif self.object.category == Application.HOMEWORK:
+>     url += '?category=homework'
+> return url
+> ```
+> Para aplicações da categoria `Application.HYBRID` (`category = 5`), a condição cai no fallback padrão sem query parameters (`reverse('applications:applications_list')`). Como resultado, o usuário é redirecionado para a listagem geral (`/aplicacoes/`) em vez da listagem filtrada de Híbridas (`/aplicacoes/?category=hibrid`), desmarcando o item "Híbridas" ativo na sidebar.  
+> **Comportamento Esperado:** `(inferência de UX — Spec Gap)`: Ao cadastrar uma aplicação Híbrida (ou múltiplas), o sistema deve redirecionar para `/aplicacoes/?category=hibrid`, espelhando o comportamento das aplicações presenciais (`?category=presential`) e listas de exercício (`?category=homework`).  
+> **Workaround:** Clicar manualmente no menu lateral "Aplicações > Híbridas" após salvar o formulário para visualizar a aplicação recém-criada.
 
 > [!WARNING]
 > **Status de Implementação: Tratamento de Retorno HTTP 409 sem Malote Gerado**  
