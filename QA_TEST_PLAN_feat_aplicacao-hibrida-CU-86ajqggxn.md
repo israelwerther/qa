@@ -298,7 +298,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ### 5.3 Modal de Impressão e Geração de Malote da Aplicação [Automatizável ✅]
 
 #### Cenário 7 — Abertura do modal de impressão com controles adaptados
-- [ ] Na listagem de aplicações, localizar uma aplicação Híbrida.
+- [x] Na listagem de aplicações, localizar uma aplicação Híbrida.
 - [ ] Abrir o menu de ações de três pontos da linha e localizar o cabeçalho "Impressão".
 - [ ] Clicar na opção "Todos os alunos".
 - [ ] Verificar que o modal de configuração de impressão é aberto na tela.
