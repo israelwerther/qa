@@ -268,15 +268,15 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [x] Na tela de listagem de Híbridas, clicar no botão azul "Agendar aplicação".
 - [x] Verificar se a página de cadastro abre com o quarto card "Híbrida" selecionado por padrão.
 - [x] Observar os textos do card: título "Híbrida" e subtítulo informativo "Geração de malote + Respostas cadastradas online."
-- [ ] Selecionar um caderno com parâmetros de randomização ativados (`is_randomized = True`).
-- [ ] Preencher as datas, horários (início e término) e vincular uma turma com alunos.
-- [ ] Clicar no botão para salvar a aplicação.
+- [x] Selecionar um caderno com parâmetros de randomização ativados (`is_randomized = True`).
+- [x] Preencher as datas, horários (início e término) e vincular uma turma com alunos.
+- [x] Clicar no botão para salvar a aplicação.
 - [ ] Confirmar o redirecionamento com mensagem de sucesso e verificar a aplicação recém-criada na listagem de Híbridas.
 
 #### Cenário 4 — Criação com caderno de prova não randomizado
-- [ ] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
-- [ ] Selecionar um caderno tradicional que NÃO possui randomização de questões nem de alternativas.
-- [ ] Preencher as informações obrigatórias da aplicação e submeter o formulário.
+- [x] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
+- [x] Selecionar um caderno tradicional que NÃO possui randomização de questões nem de alternativas.
+- [x] Preencher as informações obrigatórias da aplicação e submeter o formulário.
 - [ ] Confirmar que o sistema grava a aplicação com sucesso sem disparar validações impeditivas de randomização.
 
 #### Cenário 5 — Criação com caderno contendo questões discursivas ou redação
