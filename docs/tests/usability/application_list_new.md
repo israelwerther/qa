@@ -120,9 +120,9 @@ mixer.blend(ApplicationStudent, application=application, student=student)
 
 | Elemento | Seletor / binding | Observação |
 |----------|-------------------|------------|
-| Gatilho do menu de ações | `button[id^="menu-button-"]` ou ícone de 3 pontos | Abre dropdown de ações da aplicação |
+| Gatilho do menu de ações | `button[id^="dropdownMenuButton-"]` (Texto visível: "**Opções**", com ícone chevron-down) | Abre dropdown de ações da aplicação (colunas de Ações e Impressão) |
 | Cabeçalho "IMPRESSÃO" | `p:has-text("Impressão")` | Renderizado se `application.category === 3 \|\| application.category === 5` |
-| Ação "Todos os alunos" (imprimir malote) | `a[@click="showPrintModal(application)"]` | Abre o modal `#configurePrintModal` |
+| Ação "Todos os alunos" (imprimir malote) | `a:has-text("Todos os alunos")` (`@click="showPrintModal(application)"`) | Abre o modal `#configurePrintModal` |
 | Ação "Detalhes" | `a[href*="/detalhes/"]` | Relatório e métricas da aplicação |
 | Ação "Editar" | `a[href*="/editar/"]` | Abre tela de edição da aplicação |
 
