@@ -29,6 +29,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fiscallizeon.settings')
 import django
 django.setup()
 
+from django.conf import settings
+settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
 from django.utils import timezone
 from fiscallizeon.accounts.models import User
 from fiscallizeon.clients.models import Client, SchoolCoordination
@@ -220,6 +223,7 @@ def create_exam_with_questions(
             grade=grade,
             quantity=total_q,
             order=1,
+            elaboration_email_sent=True,
         )
 
     current_order = 1

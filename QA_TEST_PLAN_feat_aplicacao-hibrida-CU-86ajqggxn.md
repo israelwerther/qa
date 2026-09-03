@@ -282,7 +282,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 
 #### Cenário 5 — Criação com caderno contendo questões discursivas ou redação
 - [x] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
-- [ ] Selecionar um caderno que contenha questões discursivas e proposta de redação.
+- [x] Selecionar um caderno que contenha questões discursivas e proposta de redação.
 - [ ] Concluir o preenchimento dos campos e salvar.
 - [ ] Confirmar que a aplicação é salva com sucesso sem rejeição por conter questões não-objetivas.
 
