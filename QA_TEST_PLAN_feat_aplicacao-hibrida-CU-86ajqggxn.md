@@ -301,27 +301,28 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [x] Na listagem de aplicações, localizar uma aplicação Híbrida.
 - [x] Na última coluna da linha da aplicação, clicar no botão "**Opções**" (botão branco com borda cinza).
 - [x] No menu que se abre, localizar a seção com cabeçalho cinza "**IMPRESSÃO**" e clicar na opção "**Todos os alunos**" (ícone de usuários).
-- [ ] Verificar que o modal de configuração de impressão é aberto na tela.
-- [ ] Confirmar que a seção "Modelo da folhas de resposta objetivas" NÃO está visível no modal.
-- [ ] Confirmar que a opção "Foto oficial" NÃO está visível no modal.
-- [ ] Confirmar que a opção "Incluir folhas de respostas discursivas" NÃO está visível no modal.
-- [ ] Confirmar que a opção "Incluir cadernos de prova" NÃO está visível (o caderno é obrigatório).
-- [ ] Confirmar que as opções de diagramação e o checkbox de incluir folha com versões de randomização permanecem acessíveis.
+- [x] Verificar que o modal de configuração de impressão é aberto na tela.
+- [x] Confirmar que a seção "Modelo da folhas de resposta objetivas" NÃO está visível no modal.
+- [x] Confirmar que a opção "Foto oficial" NÃO está visível no modal.
+- [x] Confirmar que a opção "Incluir folhas de respostas discursivas" NÃO está visível no modal.
+- [x] Confirmar que a opção "Incluir cadernos de prova" NÃO está visível (o caderno é obrigatório).
+- [x] Confirmar que as opções de diagramação e o checkbox de incluir folha com versões de randomização permanecem acessíveis.
 
 #### Cenário 8 — Geração do malote antes do início da prova
-- [ ] No modal de impressão da aplicação Híbrida cujo horário de início ainda não ocorreu, clicar no botão "**Imprimir malote**" (botão primário azul no canto inferior direito do modal).
-- [ ] Confirmar o fechamento do modal e o disparo da geração em segundo plano.
-- [ ] Aguardar a conclusão da exportação do arquivo e efetuar o download do arquivo ZIP gerado.
-- [ ] Descompactar o arquivo ZIP e inspecionar os PDFs contidos:
+- [x] No modal de impressão da aplicação Híbrida cujo horário de início ainda não ocorreu, clicar no botão "**Imprimir malote**" (botão primário azul no canto inferior direito do modal).
+- [x] Confirmar o fechamento do modal e o disparo da geração em segundo plano.
+- [x] Aguardar a conclusão da exportação do arquivo e efetuar o download do arquivo ZIP gerado.
+- [x] Descompactar o arquivo ZIP e inspecionar os PDFs contidos:
   - Verificar a presença dos cadernos de prova de cada aluno da turma.
   - Verificar a ausência total de arquivos de cartões-resposta (folhas OMR).
   - Verificar se a folha de presença está incluída (se configurada).
 
 #### Cenário 9 — Bloqueio de geração de malote após o início da prova
-- [ ] Localizar uma aplicação Híbrida cujo horário de início agendado já foi ultrapassado (data/hora atual superior à data e horário de início).
-- [ ] Na última coluna da linha da aplicação, clicar no botão "**Opções**" e selecionar "**Todos os alunos**" dentro da seção cinza "**IMPRESSÃO**".
-- [ ] No modal aberto, clicar no botão "**Imprimir malote**".
-- [ ] Verificar que o sistema recusa a solicitação, retornando mensagem informativa indicando que o malote não pode mais ser impresso após o início da aplicação.
+- [x] Localizar uma aplicação Híbrida cujo horário de início agendado já foi ultrapassado (data/hora atual superior à data e horário de início).
+- [x] Na última coluna da linha da aplicação, clicar no botão "**Opções**" (menu dropdown de ações) e selecionar "**Todos os alunos**" dentro da seção cinza "**IMPRESSÃO**".
+- [x] No modal com título "**Configure a impressão do malote nesta exportação**", clicar no botão primário azul "**Imprimir malote**" (canto inferior direito).
+- [x] Verificar que o sistema recusa a solicitação, retornando mensagem informativa indicando que o malote não pode mais ser impresso após o início da aplicação (*"O caderno não pode ser impresso porque a aplicação já iniciou."*).
+  > **Nota de QA:** Regra de negócio aprovada (API barrou a requisição com status 401). Porém, foi identificada anomalia visual na apresentação do alerta no frontend (ver **Bug 2** na Seção 7).
 
 #### Cenário 10 — Vínculo de versão de randomização no malote
 - [ ] Gerar o malote de uma aplicação Híbrida cujo caderno é randomizado.
@@ -459,6 +460,29 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 > Para aplicações da categoria `Application.HYBRID` (`category = 5`), a condição cai no fallback padrão sem query parameters (`reverse('applications:applications_list')`). Como resultado, o usuário é redirecionado para a listagem geral (`/aplicacoes/`) em vez da listagem filtrada de Híbridas (`/aplicacoes/?category=hibrid`), desmarcando o item "Híbridas" ativo na sidebar.  
 > **Comportamento Esperado:** `(inferência de UX — Spec Gap)`: Ao cadastrar uma aplicação Híbrida (ou múltiplas), o sistema deve redirecionar para `/aplicacoes/?category=hibrid`, espelhando o comportamento das aplicações presenciais (`?category=presential`) e listas de exercício (`?category=homework`).  
 > **Workaround:** Clicar manualmente no menu lateral "Aplicações > Híbridas" após salvar o formulário para visualizar a aplicação recém-criada.
+
+> [!BUG]
+> **Bug 2: Alerta de erro na geração de malote renderiza modal desconfigurado em vez de toast e não fecha modal de configuração**  
+> **Categoria:** `[Frontend / UI/UX]` / `[Dívida Técnica]`  
+> **Contexto / Root Cause:** No template `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (linhas 2311–2320), o método `generateExamsBag` trata a resposta de erro da API de malote disparando diretamente:
+> ```javascript
+> Swal.fire({
+>   position: 'top-end',
+>   icon: 'error',
+>   text: error.response.data,
+>   showConfirmButton: false,
+>   timer: 3000,
+>   backdrop: false,
+>   allowOutsideClick: false,
+>   timerProgressBar: true,
+> })
+> ```
+> Devido à ausência da propriedade `toast: true`, o SweetAlert2 renderiza o alerta no **modo modal clássico** (com ícone circular gigante de 80px × 80px com `(X)` e caixa pesada de diálogo), empurrado artificialmente para o canto superior direito (`position: 'top-end'`). Além disso, o modal Bootstrap `#configurePrintModal` não é fechado no `.catch()`, fazendo com que a caixa de erro flutue por cima da tela de configuração ainda aberta.  
+> Esse comportamento diverge do método utilitário `this.alertTop(text, icon)` existente na linha 2447 do próprio arquivo (que utiliza `toast: true` para renderizar uma barra discreta e compacta) e destoa fortemente dos alertas com Tailwind (`tw-*`) do Redesign do Lize.  
+> **Comportamento Esperado:** `(inferência de UX — Spec Gap)`:  
+> 1. O bloco `.catch()` deve fechar o modal de configuração (`$('#configurePrintModal').modal('hide')`) ou manter o erro integrado ao próprio formulário.  
+> 2. O alerta de erro deve utilizar `this.alertTop(error.response.data, 'error')` (garantindo o modo `toast: true`) ou os componentes nativos de notificação com Tailwind do Redesign.  
+> **Workaround:** Aguardar os 3 segundos do timer para o popup sumir e fechar manualmente o modal `#configurePrintModal` clicando no botão "X" no canto superior direito.
 
 > [!WARNING]
 > **Status de Implementação: Tratamento de Retorno HTTP 409 sem Malote Gerado**  
