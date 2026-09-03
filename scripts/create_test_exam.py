@@ -39,6 +39,39 @@ from fiscallizeon.exams.models import Exam, ExamQuestion, ExamTeacherSubject
 from fiscallizeon.questions.models import Question, QuestionOption
 
 
+from django.contrib.sessions.models import Session
+
+
+def get_current_session_user_and_client():
+    """
+    Detecta o usuário e o cliente da sessão ativa no localhost (runserver).
+    Se o runserver tiver acabado de fechar ou a sessão estiver expirada,
+    busca a última sessão registrada no banco como referência.
+    """
+    now = timezone.now()
+    sessions = Session.objects.filter(expire_date__gt=now).order_by('-expire_date')
+    if not sessions.exists():
+        sessions = Session.objects.order_by('-expire_date')
+
+    for session in sessions:
+        try:
+            data = session.get_decoded()
+            uid = data.get('_auth_user_id')
+            if uid:
+                user = User.objects.filter(pk=uid).first()
+                if user:
+                    client = getattr(user, 'client', None)
+                    if not client:
+                        clients = user.get_clients_cache()
+                        if clients:
+                            client = Client.objects.filter(pk__in=clients).first()
+                    if client:
+                        return user, client
+        except Exception:
+            continue
+    return None, None
+
+
 def get_default_user(username=None):
     if username:
         user = User.objects.filter(username=username).first()
@@ -66,24 +99,38 @@ def create_exam_with_questions(
     subject_name=None,
     client_name=None,
 ):
-    user = get_default_user(username)
+    session_user, session_client = get_current_session_user_and_client()
+
+    # 1. Identificar Usuário
+    user = None
+    if username:
+        user = User.objects.filter(username=username).first() or User.objects.filter(email=username).first()
+    if not user:
+        user = session_user or get_default_user()
+
     if not user:
         print("❌ Erro: Nenhum usuário válido encontrado no banco de dados.")
         sys.exit(1)
 
-    # Identificar cliente e coordenações
-    client = getattr(user, 'client', None)
+    # 2. Identificar Cliente
+    client = None
     if client_name:
-        found_client = Client.objects.filter(name__icontains=client_name).first()
-        if found_client:
-            client = found_client
+        client = Client.objects.filter(name__icontains=client_name).first()
+        if not client:
+            print(f"⚠️ Cliente '{client_name}' não encontrado pelo filtro, buscando alternativas.")
 
     if not client:
-        clients_cache = user.get_clients_cache()
-        if clients_cache:
-            client = Client.objects.filter(pk__in=clients_cache).first()
+        if session_client:
+            client = session_client
+            print(f"🔗 [Sessão ativa] Cliente detectado da sessão do navegador: {client.name}")
         else:
-            client = Client.objects.first()
+            client = getattr(user, 'client', None)
+            if not client:
+                clients_cache = user.get_clients_cache()
+                if clients_cache:
+                    client = Client.objects.filter(pk__in=clients_cache).first()
+                else:
+                    client = Client.objects.first()
 
     coordinations = list(user.get_coordinations_cache())
     if not coordinations and client:

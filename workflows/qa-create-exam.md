@@ -25,11 +25,11 @@ Analise o texto fornecido pelo usuário e extraia os seguintes parâmetros:
 - **Quantidade de Discursivas (`-disc`)**: Número de questões discursivas padrão (default `0`).
 - **Quantidade de Redações (`-ess`)**: Número de propostas de redação (default `0`).
 - **Disciplina (`-s` / `--subject`)**: Nome ou parte do nome da matéria (ex.: "Matemática", "História").
-- **Cliente (`-c` / `--client`)**: Nome do cliente específico (ex.: "Rede Decisão").
+- **Cliente (`-c` / `--client`)**: Nome do cliente específico (ex.: "Rede Decisão"). **Se não especificado, o script detecta automaticamente o cliente da sessão ativa logada no navegador (localhost / runserver)**.
 - **Embaralhar Questões (`-rq`)**: `True` se o usuário mencionar "embaralhar questões", "questões aleatórias", "ordem diferente", etc.
 - **Embaralhar Alternativas (`-ra`)**: `True` se o usuário mencionar "embaralhar alternativas", "alternativas aleatórias", etc.
 - **Nome do Caderno (`-n`)**: Se o usuário fornecer um nome específico (ex.: "Simulado PAS"), use-o. Caso contrário, deixe omitido para geração automática com timestamp.
-- **Usuário (`-u`)**: Por padrão `fiscallize_geral`, a menos que o usuário solicite outro.
+- **Usuário (`-u`)**: Se omitido, o script detecta o usuário da sessão ativa no localhost (ou usa `fiscallize_geral` como fallback).
 
 ### 2. Executar o Script de Criação
 Construa o comando chamando o script do acervo com os argumentos interpretados:
