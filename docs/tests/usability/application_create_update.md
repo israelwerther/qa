@@ -88,6 +88,13 @@ app_student_absent = mixer.blend(
 |----------|-------------------|------------|
 | Seção Informações Básicas | `[data-tg-title="Informações Básicas"]` | Container da seção redesenhada |
 | Campo oculto `is_second_call` | `input[name="is_second_call"]` | Binding `:value="isSecondCall ? 'True' : 'False'"` |
+| Radio Categoria Online | `input#category_id_online` | `:value="2"`, `v-model.number="selectedCategory"` |
+| Radio Categoria Presencial | `input#category_id_presential` | `:value="3"`, `v-model.number="selectedCategory"` |
+| Radio Categoria Lista | `input#category_id_homework` | `:value="4"`, `v-model.number="selectedCategory"` |
+| Radio Categoria Híbrida | `input#category_id_hybrid` | `:value="5"`, `v-model.number="selectedCategory"`, `:disabled="categoryChangeBlocked"` |
+| Card Categoria Híbrida | `label[for="category_id_hybrid"]` | Rótulo "Híbrida", subtítulo "Geração de malote + Respostas cadastradas online." |
+| Alerta bloqueio de categoria | `p[v-if="categoryChangeBlocked"]` | Exibido quando aplicação possui malote gerado ou pronta p/ impressão |
+
 
 ### Toggle "Prova de 2ª chamada" (dentro de "Alunos que realizarão a prova")
 

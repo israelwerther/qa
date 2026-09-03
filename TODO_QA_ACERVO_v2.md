@@ -78,7 +78,6 @@ Cada cenário classificado como:
 
 - [x] **1. Analisar os testes Playwright e Mixer:** Foi identificado que o projeto usa Playwright integrado ao Python/pytest (`tests/usability/`) e gera fixtures dinamicamente via `mixer.blend()` no banco de testes.
 - [x] **2. Elaborar Prompt V2:** O prompt inicial foi reescrito (V2) para incorporar a "Camada Técnica" e mapear o sistema de forma estruturada.
-- [ ] **3. Testar V2 na Prática:** Aguardar a próxima feature/branch do usuário para rodar a V2 do prompt, gerar o QA Test Plan e validar a utilidade prática no ambiente real.
 - [ ] **4. Destilação de Conhecimento (KIs):** Após validar os primeiros planos com a V2, extrair os caminhos de navegação confiáveis e fluxos validados para um Knowledge Item (KI) central (ex: `KI_Navegacao.md`), evitando contexto fragmentado.
   - *O que isso significa?* Em vez de mantermos dezenas de arquivos `QA_TEST_PLAN_...md` dispersos e isolados, cada vez que um QA for executado manualmente e as rotas reais forem confirmadas, nós vamos consolidar esses atalhos, seletores reais da UI (ex: `#submit-btn`) e nomes corretos num único repositório de conhecimento (o KI). O objetivo é ensinar a IA a navegar no projeto real, desviando das "telas mortas" ou nomes de sidebar que não batem com o código fonte.
 - [ ] **5. Conexão com Mixer e Automação (O "Santo Graal"):** Nos planos futuros, começar a mapear a "Camada Técnica" com comandos exatos de setup de banco (`mixer.blend(...)`), permitindo que a IA traduza cenários manuais em testes autônomos (Python Playwright) mais facilmente.
