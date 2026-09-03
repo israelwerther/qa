@@ -1,0 +1,43 @@
+schema: lize-spec-driven
+created: 2026-09-03
+complexity:
+  mode: a-priori
+  scoredAt: "2026-09-03"
+  ncc: 2.5
+  confidence: alta
+  dimensions:
+    d1:
+      grade: 2
+      justify: "Fluxo focado em scripts e CLI para automação de testes de QA no acervo."
+    d2:
+      grade: 3
+      justify: "Criação de Exam, Question (Choice/Textual/Essay) e ExamQuestion com validação de chaves estrangeiras."
+    d3:
+      grade: 2
+      justify: "Parâmetros diretos: quantidade por categoria, flags de embaralhamento e associação com coordenações."
+    d4:
+      grade: 2
+      justify: "Script autocontido no diretório .ai_qa_acervo/scripts/, sem alterar a base de produção."
+    d5:
+      grade: 2
+      justify: "Requisitos 100% definidos pelo fluxo repetitivo de testes de QA e automação."
+    d6:
+      grade: 2
+      justify: "Validação direta via execução do script e verificação no Django ORM."
+    d7:
+      grade: 3
+      justify: "Risco baixo; atenção a restrições de tabelas de banco em migrações entre branches."
+    d8:
+      grade: 3
+      justify: "Implementação de script Python com CLI interativa e wrapper Shell."
+  effort:
+    withoutAi:
+      hoursMin: 3
+      hoursMax: 6
+      confidence: alta
+    withAi:
+      hoursMin: 1
+      hoursMax: 2
+      confidence: alta
+    aiGainPercent: 67
+  summary: "Gerador de cadernos e questões sob demanda para agilizar a rotina repetitiva de QA e homologação de aplicações."
