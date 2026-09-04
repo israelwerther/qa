@@ -36,12 +36,12 @@ Analise o texto fornecido pelo usuário e extraia os seguintes parâmetros:
 Construa o comando chamando o script do acervo com os argumentos interpretados:
 
 ```bash
-./venv/bin/python .ai_qa_acervo/scripts/create_test_exam.py [FLAGS]
+./venv/bin/python .ai_qa_acervo/scripts/generators/create_exam.py [FLAGS]
 ```
 
 *Exemplo:*
 ```bash
-./venv/bin/python .ai_qa_acervo/scripts/create_test_exam.py -n "[QA] Simulado Híbrido" -obj 5 -disc 2 -ess 1 -rq -ra
+./venv/bin/python .ai_qa_acervo/scripts/generators/create_exam.py -n "[QA] Simulado Híbrido" -obj 5 -disc 2 -ess 1 -rq -ra
 ```
 
 Execute o comando usando `run_command`.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Gerador de Cadernos e Questões de Teste para QA (Lize Edu)
-Local: .ai_qa_acervo/scripts/create_test_exam.py
+Local: .ai_qa_acervo/scripts/generators/create_exam.py
 
 Cria sob demanda cadernos de prova (Exam) completos e 100% integrados:
 - Objetivas (Múltipla escolha A-E com QuestionOption)
@@ -20,7 +20,10 @@ import argparse
 from datetime import datetime
 
 # Setup do ambiente Django
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+while current_dir != '/' and not os.path.exists(os.path.join(current_dir, 'manage.py')):
+    current_dir = os.path.dirname(current_dir)
+BASE_DIR = current_dir
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
