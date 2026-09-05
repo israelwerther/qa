@@ -41,7 +41,7 @@ from fiscallizeon.clients.models import Client, SchoolCoordination
 from fiscallizeon.classes.models import Grade
 from fiscallizeon.subjects.models import Subject
 from fiscallizeon.inspectors.models import TeacherSubject
-from fiscallizeon.exams.models import Exam, ExamQuestion, ExamTeacherSubject
+from fiscallizeon.exams.models import Exam, ExamQuestion, ExamTeacherSubject, StatusQuestion
 from fiscallizeon.questions.models import Question, QuestionOption
 
 
@@ -105,6 +105,12 @@ def create_exam_with_questions(
     subject_name=None,
     client_name=None,
     teacher_name=None,
+    is_pas=False,
+    pas_type_a=None,
+    pas_type_b=None,
+    pas_type_c=None,
+    pas_type_d=None,
+    sum_count=0,
 ):
     session_user, session_client = get_current_session_user_and_client()
 
@@ -217,21 +223,35 @@ def create_exam_with_questions(
                 teacher_warning = f"Nenhum professor com conta ativa foi encontrado no cliente '{client.name if client else ''}'."
 
     timestamp_str = timezone.localtime().strftime('%d/%m %H:%M')
-    total_q = objective_count + discursive_count + essay_count
 
-    if not name:
-        tags = []
-        if objective_count:
-            tags.append(f"{objective_count} Obj")
-        if discursive_count:
-            tags.append(f"{discursive_count} Disc")
-        if essay_count:
-            tags.append(f"{essay_count} Redação")
-        if random_questions or random_alternatives:
-            tags.append("Random")
+    if is_pas or (name and 'pas' in name.lower()):
+        is_pas = True
+        if pas_type_a is None:
+            pas_type_a = 3
+        if pas_type_b is None:
+            pas_type_b = 2
+        if pas_type_c is None:
+            pas_type_c = 3
+        if pas_type_d is None:
+            pas_type_d = 1
+        total_q = pas_type_a + pas_type_b + pas_type_c + pas_type_d + essay_count
+        if not name:
+            name = f"[QA] Caderno Modelo PAS ({pas_type_a}A + {pas_type_b}B + {pas_type_c}C + {pas_type_d}D) - {timestamp_str}"
+    else:
+        total_q = objective_count + discursive_count + essay_count
+        if not name:
+            tags = []
+            if objective_count:
+                tags.append(f"{objective_count} Obj")
+            if discursive_count:
+                tags.append(f"{discursive_count} Disc")
+            if essay_count:
+                tags.append(f"{essay_count} Redação")
+            if random_questions or random_alternatives:
+                tags.append("Random")
 
-        spec_str = " + ".join(tags) if tags else "Vazia"
-        name = f"[QA] Caderno ({spec_str}) - {timestamp_str}"
+            spec_str = " + ".join(tags) if tags else "Vazia"
+            name = f"[QA] Caderno ({spec_str}) - {timestamp_str}"
 
     teacher_obj = teacher_subject.teacher if teacher_subject else None
     teacher_user = getattr(teacher_obj, 'user', None) if teacher_obj else None
@@ -244,13 +264,17 @@ def create_exam_with_questions(
     print("🚀 CRIANDO CADERNO DE TESTE PARA QA")
     print("=" * 60)
     print(f"• Nome: {name}")
+    print(f"• Formato / Modelo: {'Modelo PAS (UnB)' if is_pas else 'Padrão'}")
     print(f"• Usuário Criador: {user.username} (Client: {client.name if client else 'Nenhum'})")
     print(f"• Disciplina: {subject.name if subject else 'Nenhuma'}")
     print(f"• Série: {grade.name if grade else 'Nenhuma'}")
     print(teacher_status_str)
     if teacher_warning:
         print(f"⚠️ [QA Alerta] {teacher_warning}")
-    print(f"• Objetivas: {objective_count} | Discursivas: {discursive_count} | Redação: {essay_count}")
+    if is_pas:
+        print(f"• Composição PAS: {pas_type_a} Tipo A (C/E) | {pas_type_b} Tipo B (Num) | {pas_type_c} Tipo C (4 itens) | {pas_type_d} Tipo D (Disc)")
+    else:
+        print(f"• Objetivas: {objective_count} | Discursivas: {discursive_count} | Redação: {essay_count}")
     print(f"• Embaralhar Questões: {'Sim' if random_questions else 'Não'}")
     print(f"• Embaralhar Alternativas: {'Sim' if random_alternatives else 'Não'}")
 
@@ -276,7 +300,8 @@ def create_exam_with_questions(
         not_applicable=False,
         random_questions=random_questions,
         random_alternatives=random_alternatives,
-        quantity_alternatives=5,
+        quantity_alternatives=4 if is_pas else 5,
+        exam_format=Exam.PAS if is_pas else Exam.STANDARD,
         exam_print_config=exam_print_config,
     )
 
@@ -297,70 +322,169 @@ def create_exam_with_questions(
 
     current_order = 1
 
-    # 1. Questões Objetivas
-    for i in range(1, objective_count + 1):
-        q = Question.objects.create(
-            category=Question.CHOICE,
-            subject=subject,
-            grade=grade,
-            level=Question.MEDIUM,
-            is_public=False,
-            enunciation=(
-                f"<h4>Questão {current_order} — Objetiva (Teste QA)</h4>"
-                f"<p>Considere o enunciado da questão objetiva {current_order}. "
-                f"Qual das alternativas abaixo é a correta?</p>"
-            ),
-        )
-        if coordinations:
-            q.coordinations.set(coordinations)
-
-        # 5 alternativas (A, B, C, D, E) com A correta por padrão
-        for idx, letter in enumerate(['A', 'B', 'C', 'D', 'E']):
-            QuestionOption.objects.create(
-                question=q,
-                text=f"<p>Alternativa ({letter}) da questão {current_order}</p>",
-                is_correct=(idx == 0),
-                index=idx,
+    if is_pas:
+        # --- MATRIZ DO MODELO PAS ---
+        # 1. Tipo A: Itens Certo / Errado (binary_type = CERTAINTY)
+        for i in range(1, pas_type_a + 1):
+            q = Question.objects.create(
+                category=Question.CHOICE,
+                binary_type=Question.CERTAINTY,
+                subject=subject,
+                grade=grade,
+                level=Question.MEDIUM,
+                is_public=False,
+                enunciation=(
+                    f"<h4>Questão {current_order} — PAS Tipo A (Certo/Errado)</h4>"
+                    f"<p>Julgue o item {current_order} a seguir a respeito dos tópicos abordados como <strong>Certo (C)</strong> ou <strong>Errado (E)</strong>.</p>"
+                ),
             )
+            if coordinations:
+                q.coordinations.set(coordinations)
 
-        ExamQuestion.objects.create(
-            exam=exam,
-            question=q,
-            order=current_order,
-            weight=1.0,
-            exam_teacher_subject=ets,
-        )
-        current_order += 1
+            QuestionOption.objects.create(question=q, text="<p>Certo</p>", is_correct=(i % 2 == 1), index=0)
+            QuestionOption.objects.create(question=q, text="<p>Errado</p>", is_correct=(i % 2 == 0), index=1)
 
-    # 2. Questões Discursivas
-    for i in range(1, discursive_count + 1):
-        q = Question.objects.create(
-            category=Question.TEXTUAL,
-            is_essay=False,
-            quantity_lines=8,
-            subject=subject,
-            grade=grade,
-            level=Question.MEDIUM,
-            is_public=False,
-            enunciation=(
-                f"<h4>Questão {current_order} — Discursiva (Teste QA)</h4>"
-                f"<p>Explique detalhadamente a resolução do problema proposto nesta questão discursiva {current_order}. "
-                f"Utilize as linhas abaixo para fundamentar sua resposta.</p>"
-            ),
-        )
-        if coordinations:
-            q.coordinations.set(coordinations)
+            ExamQuestion.objects.create(exam=exam, question=q, order=current_order, weight=1.0, exam_teacher_subject=ets)
+            current_order += 1
 
-        ExamQuestion.objects.create(
-            exam=exam,
-            question=q,
-            order=current_order,
-            weight=1.0,
-            exam_teacher_subject=ets,
-        )
-        current_order += 1
+        # 2. Tipo B: Resposta Numérica de 000 a 999
+        for i in range(1, pas_type_b + 1):
+            expected_num = (current_order * 17 + 42) % 1000
+            q = Question.objects.create(
+                category=Question.TEXTUAL,
+                b_type_expected_answer=expected_num,
+                is_essay=False,
+                subject=subject,
+                grade=grade,
+                level=Question.MEDIUM,
+                is_public=False,
+                enunciation=(
+                    f"<h4>Questão {current_order} — PAS Tipo B (Numérica 000 a 999)</h4>"
+                    f"<p>Calcule o valor da expressão proposta no problema {current_order}. "
+                    f"Após efetuar os cálculos, desconsidere a parte fracionária se houver e marque o número inteiro obtido no cartão-resposta.</p>"
+                ),
+            )
+            if coordinations:
+                q.coordinations.set(coordinations)
 
-    # 3. Propostas de Redação
+            ExamQuestion.objects.create(exam=exam, question=q, order=current_order, weight=1.0, exam_teacher_subject=ets)
+            current_order += 1
+
+        # 3. Tipo C: Múltipla Escolha Tradicional com 4 Alternativas (A, B, C, D)
+        for i in range(1, pas_type_c + 1):
+            q = Question.objects.create(
+                category=Question.CHOICE,
+                binary_type=None,
+                subject=subject,
+                grade=grade,
+                level=Question.MEDIUM,
+                is_public=False,
+                enunciation=(
+                    f"<h4>Questão {current_order} — PAS Tipo C (Múltipla Escolha 4 itens)</h4>"
+                    f"<p>Com base nos conceitos fundamentais apresentados, assinale a única opção correta para a questão {current_order}:</p>"
+                ),
+            )
+            if coordinations:
+                q.coordinations.set(coordinations)
+
+            for idx, letter in enumerate(['A', 'B', 'C', 'D']):
+                QuestionOption.objects.create(
+                    question=q,
+                    text=f"<p>Alternativa ({letter}) da questão {current_order}</p>",
+                    is_correct=(idx == 0),
+                    index=idx,
+                )
+
+            ExamQuestion.objects.create(exam=exam, question=q, order=current_order, weight=1.0, exam_teacher_subject=ets)
+            current_order += 1
+
+        # 4. Tipo D: Discursiva com fundamentação
+        for i in range(1, pas_type_d + 1):
+            q = Question.objects.create(
+                category=Question.TEXTUAL,
+                b_type_expected_answer=None,
+                is_essay=False,
+                quantity_lines=10,
+                subject=subject,
+                grade=grade,
+                level=Question.MEDIUM,
+                is_public=False,
+                enunciation=(
+                    f"<h4>Questão {current_order} — PAS Tipo D (Discursiva)</h4>"
+                    f"<p>Apresente a fundamentação teórica completa e resolva a situação-problema {current_order} demonstrando os passos executados.</p>"
+                ),
+            )
+            if coordinations:
+                q.coordinations.set(coordinations)
+
+            ExamQuestion.objects.create(exam=exam, question=q, order=current_order, weight=1.0, exam_teacher_subject=ets)
+            current_order += 1
+
+    else:
+        # --- MODELO PADRÃO ---
+        # 1. Questões Objetivas
+        for i in range(1, objective_count + 1):
+            q = Question.objects.create(
+                category=Question.CHOICE,
+                subject=subject,
+                grade=grade,
+                level=Question.MEDIUM,
+                is_public=False,
+                enunciation=(
+                    f"<h4>Questão {current_order} — Objetiva (Teste QA)</h4>"
+                    f"<p>Considere o enunciado da questão objetiva {current_order}. "
+                    f"Qual das alternativas abaixo é a correta?</p>"
+                ),
+            )
+            if coordinations:
+                q.coordinations.set(coordinations)
+
+            for idx, letter in enumerate(['A', 'B', 'C', 'D', 'E']):
+                QuestionOption.objects.create(
+                    question=q,
+                    text=f"<p>Alternativa ({letter}) da questão {current_order}</p>",
+                    is_correct=(idx == 0),
+                    index=idx,
+                )
+
+            ExamQuestion.objects.create(
+                exam=exam,
+                question=q,
+                order=current_order,
+                weight=1.0,
+                exam_teacher_subject=ets,
+            )
+            current_order += 1
+
+        # 2. Questões Discursivas
+        for i in range(1, discursive_count + 1):
+            q = Question.objects.create(
+                category=Question.TEXTUAL,
+                is_essay=False,
+                quantity_lines=8,
+                subject=subject,
+                grade=grade,
+                level=Question.MEDIUM,
+                is_public=False,
+                enunciation=(
+                    f"<h4>Questão {current_order} — Discursiva (Teste QA)</h4>"
+                    f"<p>Explique detalhadamente a resolução do problema proposto nesta questão discursiva {current_order}. "
+                    f"Utilize as linhas abaixo para fundamentar sua resposta.</p>"
+                ),
+            )
+            if coordinations:
+                q.coordinations.set(coordinations)
+
+            ExamQuestion.objects.create(
+                exam=exam,
+                question=q,
+                order=current_order,
+                weight=1.0,
+                exam_teacher_subject=ets,
+            )
+            current_order += 1
+
+    # 3. Propostas de Redação (Comum a ambos os modelos se solicitado)
     for i in range(1, essay_count + 1):
         q = Question.objects.create(
             category=Question.TEXTUAL,
@@ -388,10 +512,58 @@ def create_exam_with_questions(
         )
         current_order += 1
 
+    # 4. Questões de Somatório (se solicitado)
+    for i in range(1, (sum_count or 0) + 1):
+        q = Question.objects.create(
+            category=Question.SUM_QUESTION,
+            subject=subject,
+            grade=grade,
+            level=Question.MEDIUM,
+            is_public=False,
+            enunciation=(
+                f"<h4>Questão {current_order} — Somatório (Teste QA)</h4>"
+                f"<p>Sobre os tópicos avaliados na questão {current_order}, assinale o que for correto e "
+                f"calcule a soma dos números associados às proposições verdadeiras:</p>"
+            ),
+        )
+        if coordinations:
+            q.coordinations.set(coordinations)
+
+        # Proposições binárias clássicas de somatório (01, 02, 04, 08, 16)
+        # Exemplo: 01 e 04 verdadeiras => Gabarito = 05
+        propositions = [
+            ("01", True),
+            ("02", False),
+            ("04", True),
+            ("08", False),
+            ("16", False),
+        ]
+        for idx, (label, is_corr) in enumerate(propositions):
+            QuestionOption.objects.create(
+                question=q,
+                text=f"<p>({label}) Proposição {label} da questão {current_order}</p>",
+                is_correct=is_corr,
+                index=idx,
+            )
+
+        ExamQuestion.objects.create(
+            exam=exam,
+            question=q,
+            order=current_order,
+            weight=1.0,
+            exam_teacher_subject=ets,
+        )
+        current_order += 1
+
+    # Garante que todas as questões da prova fiquem APROVADAS (evita que fiquem como DRAFT,
+    # permitindo que apareçam imediatamente em ExamQuestion.objects.availables(), no PDF e nas telas de realização/correção)
+    StatusQuestion.objects.filter(exam_question__exam=exam).update(status=StatusQuestion.APPROVED)
+
     print("-" * 60)
     print("✅ CADERNO CRIADO COM SUCESSO!")
     print(f"• ID do Exam: {exam.pk}")
     print(f"• Nome exato: {exam.name}")
+    print(f"• Formato: {'Modelo PAS (UnB)' if is_pas else 'Padrão'}")
     print(f"• Total de questões vinculadas: {total_q}")
     print(f"• Coordenações vinculadas: {len(coordinations)}")
     print(f"• Disciplina: {subject.name if subject else 'N/A'}")
@@ -471,6 +643,35 @@ def parse_arguments():
         help="Nome ou login do professor desejado (ex: Adriano, barbara.brito)",
     )
     parser.add_argument(
+        '--pas',
+        action='store_true',
+        help="Criar caderno no formato Modelo PAS (UnB) com questões tipos A, B, C e D",
+    )
+    parser.add_argument(
+        '--pas-a',
+        type=int,
+        default=None,
+        help="Quantidade de questões Tipo A (Certo/Errado) do PAS",
+    )
+    parser.add_argument(
+        '--pas-b',
+        type=int,
+        default=None,
+        help="Quantidade de questões Tipo B (Numérica 000-999) do PAS",
+    )
+    parser.add_argument(
+        '--pas-c',
+        type=int,
+        default=None,
+        help="Quantidade de questões Tipo C (Múltipla Escolha 4 itens) do PAS",
+    )
+    parser.add_argument(
+        '--pas-d',
+        type=int,
+        default=None,
+        help="Quantidade de questões Tipo D (Discursiva) do PAS",
+    )
+    parser.add_argument(
         '-i', '--interactive',
         action='store_true',
         help="Forçar modo interativo para escolher as quantidades no terminal",
@@ -516,7 +717,7 @@ def interactive_mode():
 if __name__ == '__main__':
     args = parse_arguments()
 
-    has_counts = any(x is not None for x in [args.objective, args.discursive, args.essay])
+    has_counts = any(x is not None for x in [args.objective, args.discursive, args.essay, args.pas_a, args.pas_b, args.pas_c, args.pas_d]) or args.pas
 
     if args.interactive or (not has_counts and sys.stdin.isatty()):
         config = interactive_mode()
@@ -531,6 +732,7 @@ if __name__ == '__main__':
             subject_name=args.subject,
             client_name=args.client,
             teacher_name=args.teacher,
+            is_pas=args.pas,
         )
     else:
         create_exam_with_questions(
@@ -544,4 +746,9 @@ if __name__ == '__main__':
             subject_name=args.subject,
             client_name=args.client,
             teacher_name=args.teacher,
+            is_pas=args.pas,
+            pas_type_a=args.pas_a,
+            pas_type_b=args.pas_b,
+            pas_type_c=args.pas_c,
+            pas_type_d=args.pas_d,
         )
