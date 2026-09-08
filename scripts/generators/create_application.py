@@ -13,7 +13,7 @@ Cria sob demanda aplicações (Application) completas e 100% integradas:
 import os
 import sys
 import argparse
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 # Setup do ambiente Django
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -34,8 +34,8 @@ settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 from django.utils import timezone
 from uuid import UUID
 from fiscallizeon.accounts.models import User
-from fiscallizeon.clients.models import Client, SchoolCoordination
-from fiscallizeon.classes.models import SchoolClass, Grade
+from fiscallizeon.clients.models import Client
+from fiscallizeon.classes.models import SchoolClass
 from fiscallizeon.students.models import Student
 from fiscallizeon.exams.models import Exam, ExamQuestion
 from fiscallizeon.questions.models import Question

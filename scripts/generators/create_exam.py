@@ -17,7 +17,6 @@ Cria sob demanda cadernos de prova (Exam) completos e 100% integrados:
 import os
 import sys
 import argparse
-from datetime import datetime
 
 # Setup do ambiente Django
 current_dir = os.path.dirname(os.path.abspath(__file__))
