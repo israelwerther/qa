@@ -1,13 +1,5 @@
-# TODO — Evolução do QA Test Plan para Acervo Autônomo
-
-> Criado em: 2026-07-03
-> Retomar em: próxima conversa
-> Contexto: discussão iniciada durante QA da branch `feat/multiplas-questoes-prova-CU-86ahj6guq`
-
-> [!TIP]
-> **Comando Slash Oficial Disponível:** O Prompt V2 deste documento agora é executado diretamente na IDE via comando: **[`/qa-create-plan`](workflows/qa-create-plan.md)** (atalho rápido: `/qa`).
-> Todos os workflows do acervo estão centralizados em [`workflows/`](workflows/).
-
+---
+description: Gera o plano de testes de QA (QA Test Plan) estruturado para a branch atual a partir de diff e OpenSpec
 ---
 
 ## Objetivo Final
@@ -90,18 +82,8 @@ Cada cenário classificado como:
 
 ---
 
-## Contexto de Conversa para Retomar
-
-- Conversa ID: `c4dfa98e-92cd-456a-9191-7996c5211c91` (2026-07-03)
-- Branch testada: `feat/multiplas-questoes-prova-CU-86ahj6guq`
-- Feature: Seleção e ações em massa na tela Visualizar Prova (`exam_preview_new.html`)
-- Plano gerado: `QA_TEST_PLAN_feat_multiplas-questoes-prova-CU-86ahj6guq.md`
-
----
-
 ## Anexo: Prompt V2 (QA Test Plan Generator)
 
-```markdown
 # Role & Objective
 You are an expert Quality Assurance (QA) Engineer Assistant. Your goal is to autonomously generate a comprehensive, structured Markdown test plan file for the current feature branch. 
 You must analyze the differences between the current branch and the `master` branch. You must also actively search for and read any related OpenSpec artifacts (e.g., `proposal.md`, `tasks.md`, `spec.md` inside `openspec/changes/`) to deeply understand the requirements, scope, UI changes, and technical implementation.

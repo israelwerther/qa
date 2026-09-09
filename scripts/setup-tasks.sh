@@ -11,16 +11,30 @@ mkdir -p "$VSCODE_DIR"
 cp "$TASKS_SOURCE" "$VSCODE_DIR/tasks.json"
 
 # 2. Limpa links legados ou obsoletos
-rm -f "$WORKSPACE_ROOT/.agent/workflows/qa.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-test-exam.md"
-rm -f "$WORKSPACE_ROOT/.cursor/commands/qa.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-test-exam.md"
+rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-create-test-exam.md"
+rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-create-test-exam.md"
 
 # 3. Configura slash commands nas IDEs (Antigravity e Cursor)
 mkdir -p "$WORKSPACE_ROOT/.agent/workflows"
 mkdir -p "$WORKSPACE_ROOT/.cursor/commands"
 
+# /qa-create-plan (Gerador oficial de QA Test Plans)
+ln -sf "../../.ai_qa_acervo/workflows/qa-create-plan.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-plan.md"
+ln -sf "../../.ai_qa_acervo/workflows/qa-create-plan.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-plan.md"
+
+# /qa (Atalho direto para /qa-create-plan)
+ln -sf "../../.ai_qa_acervo/workflows/qa-create-plan.md" "$WORKSPACE_ROOT/.agent/workflows/qa.md"
+ln -sf "../../.ai_qa_acervo/workflows/qa-create-plan.md" "$WORKSPACE_ROOT/.cursor/commands/qa.md"
+
+# /qa-create-application (Gerador de aplicações de teste e alunos)
+ln -sf "../../.ai_qa_acervo/workflows/qa-create-application.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-application.md"
+ln -sf "../../.ai_qa_acervo/workflows/qa-create-application.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-application.md"
+
+# /qa-create-exam (Gerador de cadernos e questões)
 ln -sf "../../.ai_qa_acervo/workflows/qa-create-exam.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-exam.md"
 ln -sf "../../.ai_qa_acervo/workflows/qa-create-exam.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-exam.md"
 
+# /qa-reset-passwords (Reset de senhas, 2FA e sessões)
 ln -sf "../../.ai_qa_acervo/workflows/qa-reset-passwords.md" "$WORKSPACE_ROOT/.agent/workflows/qa-reset-passwords.md"
 ln -sf "../../.ai_qa_acervo/workflows/qa-reset-passwords.md" "$WORKSPACE_ROOT/.cursor/commands/qa-reset-passwords.md"
 
@@ -31,8 +45,11 @@ if [ -f "$EXCLUDE_FILE" ]; then
     grep -q "qa\*.md" "$EXCLUDE_FILE" || echo -e ".agent/workflows/qa*.md\n.cursor/commands/qa*.md" >> "$EXCLUDE_FILE"
 fi
 
-echo "✅ Tasks do VS Code e Slash Commands (/qa-create-exam, /qa-reset-passwords) configurados com sucesso!"
+echo "✅ Tasks do VS Code e Slash Commands (/qa-create-plan, /qa-create-application, /qa-create-exam, /qa-reset-passwords) configurados com sucesso!"
 echo "👉 Pressione Ctrl+Shift+B para iniciar todos os serviços."
 echo "👉 Comandos disponíveis na IDE:"
-echo "   • /qa-create-exam        -> Cria cadernos e questões de teste"
+echo "   • /qa-create-plan        -> Gera o plano de testes de QA (QA Test Plan) da branch atual"
+echo "   • /qa-create-application -> Cria aplicações prontas com turmas/alunos (ou respondidas)"
+echo "   • /qa-create-exam        -> Cria cadernos e questões de teste sob medida"
 echo "   • /qa-reset-passwords    -> Reseta senhas, 2FA e sessões para login limpo"
+echo "   (Atalho rápido: /qa também aciona o /qa-create-plan)"

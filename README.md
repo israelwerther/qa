@@ -42,7 +42,9 @@ A pasta `scripts/` está organizada por domínios de responsabilidade:
 .ai_qa_acervo/scripts/
 ├── generators/                   # Geradores de massa de dados
 │   ├── create_exam.py            # Criação autônoma de cadernos, questões e amarrações
-│   └── create-exam.sh            # Wrapper executável com detecção de venv
+│   ├── create-exam.sh            # Wrapper executável com detecção de venv
+│   ├── create_application.py     # Criação de aplicações, turmas/alunos e respostas
+│   └── create-application.sh     # Wrapper executável com detecção de venv
 ├── maintenance/                  # Utilitários de banco e autenticação
 │   ├── reset_passwords.py        # Reset de senhas (123456), desativação de 2FA e limpeza de sessões
 │   └── reset-passwords.sh       # Wrapper executável com detecção de venv
@@ -54,7 +56,39 @@ A pasta `scripts/` está organizada por domínios de responsabilidade:
 
 ## ⚡ Comandos Disponíveis na IDE
 
-### 1. Criar Caderno de Prova (`/qa-create-exam`)
+### 1. Criar Plano de Testes (`/qa-create-plan`)
+Núcleo operacional do acervo. Analisa a branch ativa contra a `master`, consulta a OpenSpec e gera o plano estruturado com roteiro de testes e camada técnica para automação:
+- Tabela de navegação canônica baseada no `KI_Navegacao.md` (sem alucinações de UI)
+- Sugestão e amarração de comandos geradores do acervo para setup rápido
+- Roteiro humano focado em confirmações visuais e rótulos literais
+- Camada técnica desacoplada e atualização de mapeamentos em `docs/tests/usability/`
+
+**Como usar:**
+- **Slash Command na IDE:** `/qa-create-plan [opções]` *(ou pelo atalho rápido `/qa`)*
+  - *Exemplo:* `/qa-create-plan` (analisa a branch atual)
+  - *Exemplo:* `/qa-create-plan feat/minha-feature`
+
+---
+
+### 2. Criar Aplicação de Teste (`/qa-create-application`)
+Gera aplicações (`Application`) prontas para realização imediata por alunos e fiscais:
+- Vincula caderno existente ou encadeia a criação de um novo caderno sob medida
+- Matricula alunos com senha padrão `123456`
+- Suporte a aplicações 100% respondidas (`--answered`) para testes de correção e histórico de respostas
+- Suporte a modelo PAS (`--pas`) e diferentes modalidades (online, presencial, homework)
+
+**Como usar:**
+- **Slash Command na IDE:** `/qa-create-application <descrição em texto livre>`
+  - *Exemplo:* `/qa-create-application com 5 alunos respondida`
+  - *Exemplo:* `/qa-create-application criando caderno com 5 objetivas e 1 discursiva`
+- **Linha de comando:**
+  ```bash
+  ./.ai_qa_acervo/scripts/generators/create-application.sh --create-exam -obj 5 --answered -sc 3
+  ```
+
+---
+
+### 3. Criar Caderno de Prova (`/qa-create-exam`)
 Gera instantaneamente cadernos de prova (`Exam`) com paridade completa de produção:
 - Questões objetivas (múltipla escolha A-E) com gabarito definido
 - Questões discursivas e propostas de redação
@@ -72,7 +106,7 @@ Gera instantaneamente cadernos de prova (`Exam`) com paridade completa de produ�
 
 ---
 
-### 2. Resetar Senhas e Acessos (`/qa-reset-passwords`)
+### 4. Resetar Senhas e Acessos (`/qa-reset-passwords`)
 Reseta senhas de usuários para acesso em ambientes locais de teste:
 - Define senha padrão (`123456`) para todos os usuários ou usuário filtrado
 - Desativa flag de troca de senha obrigatória (`must_change_password=False`)
