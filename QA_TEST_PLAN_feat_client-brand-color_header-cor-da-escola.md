@@ -241,16 +241,18 @@ if aluno:
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-> [!NOTE]
-> Nenhum bug crítico impeditivo registrado até o momento. Utilize o modelo abaixo caso encontre divergências durante os testes:
-
-<!--
 > [!WARNING]
-> **[UX/UI] Título do Problema**
-> - **Causa / Contexto:** Detalhar se ocorreu no mobile ou desktop, e qual a cor configurada.
-> - **Comportamento Esperado:** `(conforme OpenSpec: header-brand-gradient/spec.md L.45)` ou `(inferência de UX — Spec Gap)`.
-> - **Workaround:** Como contornar para seguir testando.
--->
+> **[UI / Layout] Metadados e Ícones Esmagados/Sobrepostos no Card de Detalhes do Material**
+> - **Ambiente / Tela:** App do Aluno (`lize-student`), tela de detalhes do material (`/painel/materiais-de-estudo/$id`).
+> - **Arquivo Afetado:** [`src/components/study-materials/material-info.tsx`](file:///home/israel/Workspace/lize-student/src/components/study-materials/material-info.tsx) (linha 50).
+> - **Causa Raiz:** O card lateral de informações (`MaterialInfo`) ocupa uma coluna estreita de barra lateral (`lg:col-span-1`, ~320px de largura). O container dos metadados foi estilizado com a classe `md:grid-cols-3`. Em telas desktop (`>= 768px`), o Tailwind força os 3 blocos (*"Enviado por"*, *"Data de Upload"* e *"Etapa"*) a ficarem espremidos lado a lado em 3 colunas minúsculas (~90px cada), gerando colisão direta de textos longos sobre os ícones vizinhos.
+> - **Comportamento Esperado:** Em colunas laterais estreitas, os metadados devem ficar empilhados verticalmente (`flex flex-col gap-4` ou `grid-cols-1`), garantindo legibilidade e espaçamento adequados.
+> - **Evidência Visual:**
+>   <details open>
+>   <summary>📸 <b>Ver print da sobreposição visual</b></summary>
+>
+>   ![Metadados esmagados](./evidencias/bug_metadados_material_esmagados.png)
+>   </details>
 
 ---
 
