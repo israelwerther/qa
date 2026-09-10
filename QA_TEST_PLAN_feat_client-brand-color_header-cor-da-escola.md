@@ -216,7 +216,7 @@ if aluno:
   - [x] O botão de ação deve exibir obrigatoriamente `"**iniciar exercício**"` (e NÃO "iniciar avaliação").
   - [x] Se já realizado, deve exibir `"**exercício já realizado**"`.![alt text](evidencias/image-5.png)
   - [x] Ao clicar no modal de confirmação para refazer, o título deve ser `"**Deseja realmente refazer este exercício?**"`.![alt text](evidencias/image-4.png)
-- [ ] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.![alt text](evidencias/image-6.png)
+- [x] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.![alt text](evidencias/image-6.png)
 
 #### Cenário 8 — Usabilidade Mobile e Toque (Touch Check) [Manual 👁]
 - [x] 1. Em dispositivo móvel real ou simulador com Touch Emulation ativado no DevTools:
@@ -228,10 +228,10 @@ if aluno:
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Comparação de Cores e Gradiente:** Validar que o degradê no topo não cria faixas abruptas de cor (banding visual). A transição deve ser orgânica e suave.
-- [ ] **Simetria no Mobile:** O header mobile de 242px de altura não deve cortar a foto/avatar do aluno nem sobrepor o nome da escola.
-- [ ] **Leiturabilidade Textual:** Em nenhum momento deve ocorrer texto branco sobre fundo amarelo ou texto preto sobre fundo azul marinho.
-- [ ] **Captura de Evidências:** Anexar prints lado a lado demonstrando:
+- [x] **Comparação de Cores e Gradiente:** Validar que o degradê no topo não cria faixas abruptas de cor (banding visual). A transição deve ser orgânica e suave.
+- [x] **Simetria no Mobile:** O header mobile de 242px de altura não deve cortar a foto/avatar do aluno nem sobrepor o nome da escola.
+- [x] **Leiturabilidade Textual:** Em nenhum momento deve ocorrer texto branco sobre fundo amarelo ou texto preto sobre fundo azul marinho.
+- [x] **Captura de Evidências:** Anexar prints lado a lado demonstrando:
   1. Header com cor escura (`#1B4DB2`) ➔ Textos brancos.
   2. Header com cor clara (`#FFC700`) ➔ Textos escuros.
   3. Empty state de pasta vazia com botão de ação.
