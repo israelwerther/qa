@@ -189,15 +189,15 @@ if aluno:
 > **Escopo desta branch**: 5 variantes especializadas de Empty States, filtro por "Tipo de arquivo" em pastas de disciplinas, clique direto para abrir material e diferenciação de copy para Listas de Exercícios.
 
 #### Cenário 5 — Materiais de Estudo: Validação das Variantes de Empty States [Manual 👁]
-- [ ] 1. No app do aluno, clicar no item "**Materiais de estudo**" (`/painel/materiais-de-estudo`) na barra lateral de navegação.
-- [ ] 2. **Variante 1 (Pasta Vazia):** Clicar em uma pasta de disciplina que você sabe que não possui materiais cadastrados.
-- [ ] 3. Validar se a tela exibe o container pontilhado com ícone de pasta fechada, título `"Nenhum material nesta pasta"`, descrição explicativa e o botão `"**Voltar para o início**"`.
-- [ ] 4. Clicar no botão `"**Voltar para o início**"` e validar se a navegação retorna à raiz dos materiais.
-- [ ] 5. **Variante 2 (Busca sem Resultado):** Na barra de pesquisa de materiais, digitar um termo inexistente (ex.: `"qwertyxyz123"`).
-- [ ] 6. Validar se a tela exibe o empty state com ícone de lupa, título `"Nenhum resultado para "qwertyxyz123""` e o botão `"**Limpar busca**"`.
-- [ ] 7. Clicar no botão `"**Limpar busca**"` e confirmar que o campo é limpo e a listagem normal é restaurada.
-- [ ] 8. **Variante 3 (Sem Favoritos):** Ligar o filtro de "**Favoritos**" (ícone de estrela) quando nenhum material estiver favoritado.
-- [ ] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`.
+- [x] 1. No app do aluno, clicar no item "**Materiais de estudo**" (`/painel/materiais-de-estudo`) na barra lateral de navegação.
+- [x] 2. **Variante 1 (Pasta Vazia):** Clicar em uma pasta de disciplina que você sabe que não possui materiais cadastrados.
+- [x] 3. Validar se a tela exibe o container pontilhado com ícone de pasta fechada, título `"Nenhum material nesta pasta"`, descrição explicativa e o botão `"**Voltar para o início**"`.
+- [x] 4. Clicar no botão `"**Voltar para o início**"` e validar se a navegação retorna à raiz dos materiais.
+- [x] 5. **Variante 2 (Busca sem Resultado):** Na barra de pesquisa de materiais, digitar um termo inexistente (ex.: `"qwertyxyz123"`).
+- [x] 6. Validar se a tela exibe o empty state com ícone de lupa, título `"Nenhum resultado para "qwertyxyz123""` e o botão `"**Limpar busca**"`.
+- [x] 7. Clicar no botão `"**Limpar busca**"` e confirmar que o campo é limpo e a listagem normal é restaurada.
+- [x] 8. **Variante 3 (Sem Favoritos):** Ligar o filtro de "**Favoritos**" (ícone de estrela) quando nenhum material estiver favoritado.
+- [x] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`.
 
 #### Cenário 6 — Filtro "Tipo de arquivo" e Clique Direto [Manual 👁]
 - [ ] 1. Na listagem de materiais, entrar em uma pasta de disciplina que contenha arquivos (ex.: Matemática).
