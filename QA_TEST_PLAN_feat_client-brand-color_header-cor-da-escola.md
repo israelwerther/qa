@@ -175,7 +175,7 @@ if aluno:
 - [x] 4. No Django Admin, apagar a cor primária do cliente (deixar vazio e clicar em **Salvar**).
 - [x] 5. Atualizar o app do aluno (`F5`).
 - [x] 6. Confirmar que o header voltou a exibir o papel de parede clássico (foto/arte).
-- [x] 7. Clicar novamente no menu de temas do aluno e validar que o **seletor de papéis de parede reapareceu** normalmente.
+- [x] 7. Clicar novamente no menu de temas do aluno e validar que o **seletor de papéis de parede reapareceu** normalmente.![alt text](evidencias/image-1.png)
 
 ---
 
@@ -197,7 +197,7 @@ if aluno:
 - [x] 6. Validar se a tela exibe o empty state com ícone de lupa, título `"Nenhum resultado para "qwertyxyz123""` e o botão `"**Limpar busca**"`.
 - [x] 7. Clicar no botão `"**Limpar busca**"` e confirmar que o campo é limpo e a listagem normal é restaurada.
 - [x] 8. **Variante 3 (Sem Favoritos):** Ligar o filtro de "**Favoritos**" (ícone de estrela) quando nenhum material estiver favoritado.
-- [x] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`. ![alt text](image.png)
+- [x] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`. ![alt text](./evidencias/image.png)
 
 #### Cenário 6 — Filtro "Tipo de arquivo" e Clique Direto [Manual 👁]
 - [ ] 1. Na listagem de materiais, entrar em uma pasta de disciplina que contenha arquivos (ex.: Matemática).
