@@ -15,6 +15,7 @@
 | **#002** | 10/09/2026 | Materiais de Estudo (`/painel/materiais-de-estudo/$id`) | Metadados e ícones esmagados/sobrepostos no card lateral direito | **Média** | ⏳ Aguardando Pauta |
 | **#003** | 10/09/2026 | Materiais de Estudo (`/painel/materiais-de-estudo/$id`) | Ausência de visualização inline para arquivos de imagem (JPEG/PNG) | **Baixa** | ⏳ Aguardando Pauta |
 | **#004** | 10/09/2026 | Execução de Provas/Listas (`/provas/$id`) | Redirecionamento e toast incorretos ao finalizar Lista de Exercícios (manda para `/painel/minhas-provas`) | **Média** | ⏳ Aguardando Pauta |
+| **#005** | 10/09/2026 | Navegação Mobile (`AppSidebar`) | Menu lateral mobile não fecha automaticamente ao selecionar um item | **Média** | ⏳ Aguardando Pauta |
 
 ---
 
@@ -153,10 +154,64 @@ window.location.href = redirectUrl;
 
 ---
 
+### [APP-ALUNO #005] — Menu Lateral Mobile Não Fecha Automaticamente ao Selecionar Item
+
+* **Data de Identificação:** 10 de setembro de 2026
+* **Identificado durante:** QA da branch `feat/header-cor-da-escola` (Validação de Usabilidade Mobile - Cenário 8)
+* **Tipo:** Inconsistência de UX / Defeito de Interação Mobile
+* **Severidade:** **Média** (Fricção de usabilidade repetitiva para 100% dos usuários mobile)
+* **Arquivo Afetado:** [`src/components/layout/app-sidebar.tsx`](file:///home/israel/Workspace/lize-student/src/components/layout/app-sidebar.tsx)
+
+#### 📝 Descrição
+Ao navegar no App do Aluno em dispositivos móveis (ou simulador DevTools com largura mobile):
+1. O aluno toca no botão hambúrguer para abrir o menu lateral (`AppSidebar`).
+2. O aluno seleciona qualquer destino da lista (por exemplo, *"Materiais de estudo"*).
+3. A rota da página ao fundo é alterada com sucesso, **porém o menu lateral permanece 100% aberto na frente da tela**, cobrindo todo o conteúdo.
+4. O aluno é obrigado a realizar um toque extra no fundo escuro ou no botão de fechar para finalmente visualizar a tela que acabou de selecionar.
+
+**Impacto:** Quebra a expectativa básica de fluidez mobile (onde a gaveta de navegação deve recolher assim que um item é escolhido), gerando esforço cognitivo e toques repetitivos desnecessários.
+
+#### 🛠️ Causa Técnica
+O componente `AppSidebar` renderiza os itens usando o `<Link>` do TanStack Router sem invocar o fechamento do menu móvel:
+```typescript
+// app-sidebar.tsx
+const { state, toggleSidebar } = useSidebar();
+// ❌ Não consome 'isMobile' nem 'setOpenMobile' do contexto de useSidebar()
+```
+Como a navegação SPA ocorre no lado do cliente sem recarregar a página, o estado booleano `openMobile` no `SidebarProvider` (`src/components/ui/sidebar.tsx`) permanece `true`, mantendo o `Sheet` aberto sobre a tela.
+
+#### 💡 Sugestão de Correção
+Desestruturar `isMobile` e `setOpenMobile` do hook `useSidebar()` e fechar a gaveta ao navegar:
+
+```typescript
+// src/components/layout/app-sidebar.tsx
+const { state, toggleSidebar, isMobile, setOpenMobile } = useSidebar();
+
+// Opção recomendada: Fechar automaticamente sempre que a rota mudar
+useEffect(() => {
+    if (isMobile) {
+        setOpenMobile(false);
+    }
+}, [location.pathname, isMobile, setOpenMobile]);
+
+// Ou no próprio handler de clique dos Links de navegação:
+<Link
+    to={path}
+    onClick={() => {
+        if (isMobile) setOpenMobile(false);
+    }}
+>
+```
+
+#### 📸 Evidência Visual
+![Menu lateral cobrindo a tela após seleção de item no mobile](./evidencias/sidebar-mobile-not-closing.png)
+
+---
+
 ## ➕ Como Registrar Novos Bugs Futuros (Template Padrão)
 
 Este documento é um **registro contínuo e cumulativo**. Sempre que você ou outro membro da equipe identificar qualquer bug ou comportamento estranho fora de escopo durante os testes no App do Aluno:
-1. Adicione uma nova linha no **Índice de Ocorrências** no topo (incrementando o ID: `#005`, `#006`, etc.);
+1. Adicione uma nova linha no **Índice de Ocorrências** no topo (incrementando o ID: `#006`, `#007`, etc.);
 2. Cole e preencha o modelo abaixo na seção de **Detalhamento**:
 
 ```markdown
