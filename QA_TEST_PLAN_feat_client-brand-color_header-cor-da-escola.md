@@ -152,21 +152,21 @@ if aluno:
 > **Escopo desta branch**: Degradê dinâmico da instituição no header desktop e mobile, cálculo de contraste de texto/ícone (WCAG) e ocultação do seletor de wallpaper.
 
 #### Cenário 2 — Escola com Cor Escura (Ex.: Azul Escuro `#1B4DB2` ou Verde `#0A5C36`) [Manual 👁]
-- [ ] 1. No Admin (`http://localhost:8000/admin/`), definir a cor primária do cliente para `"#1B4DB2"` e clicar em **Salvar**.
-- [ ] 2. Abrir o app do aluno (`http://localhost:3000`) e fazer login com o aluno desse cliente (`enrico.a53143@aluno.decisaovirtual.com.br`).
-- [ ] 3. Observar a barra superior (Header) na tela de Início (Desktop).
-- [ ] 4. Validar se o header exibe um **degradê suave na tonalidade azul** no lugar da imagem genérica de papel de parede.
-- [ ] 5. Verificar o contraste: textos de boas-vindas, saudação e ícones do header devem estar em **branco / tom claro** legível.
-- [ ] 6. Abrir as ferramentas de desenvolvedor (F12) e alternar para a visão Mobile (ex.: iPhone 14 / 390px).
-- [ ] 7. Recarregar a página e confirmar que o cabeçalho mobile (`mobile-header`) também renderiza o degradê azul com textos brancos legíveis.
+- [x] 1. No Admin (`http://localhost:8000/admin/`), definir a cor primária do cliente para `"#1B4DB2"` e clicar em **Salvar**.
+- [x] 2. Abrir o app do aluno (`http://localhost:3000`) e fazer login com o aluno desse cliente (`enrico.a53143@aluno.decisaovirtual.com.br`).
+- [x] 3. Observar a barra superior (Header) na tela de Início (Desktop).
+- [x] 4. Validar se o header exibe um **degradê suave na tonalidade azul** no lugar da imagem genérica de papel de parede.
+- [x] 5. Verificar o contraste: textos de boas-vindas, saudação e ícones do header devem estar em **branco / tom claro** legível.
+- [x] 6. Abrir as ferramentas de desenvolvedor (F12) e alternar para a visão Mobile (ex.: iPhone 14 / 390px).
+- [x] 7. Recarregar a página e confirmar que o cabeçalho mobile (`mobile-header`) também renderiza o degradê azul com textos brancos legíveis.
 
 #### Cenário 3 — Escola com Cor Clara e Alto Brilho (Ex.: Amarelo Ouro `#FFC700` ou Lima `#C8E600`) [Manual 👁]
-- [ ] 1. No Admin, alterar a cor primária do cliente para `"#FFC700"` e clicar em **Salvar**.
-- [ ] 2. Voltar ao app do aluno (`http://localhost:3000`) e atualizar a página (`F5`).
-- [ ] 3. Confirmar que a mudança refletiu imediatamente (cache invalidado sem precisar esperar).
-- [ ] 4. Observar que o degradê do header agora é amarelo.
-- [ ] 5. Validar o cálculo de contraste automático: como o fundo é claro, os textos e ícones devem ter mudado automaticamente para **tom escuro / preto grafite**, mantendo leitura perfeita sem letras brancas ilegíveis.
-- [ ] 6. Confirmar o mesmo contraste no cabeçalho mobile (DevTools / Mobile).
+- [x] 1. No Admin, alterar a cor primária do cliente para `"#FFC700"` e clicar em **Salvar**.
+- [x] 2. Voltar ao app do aluno (`http://localhost:3000`) e atualizar a página (`F5`).
+- [x] 3. Confirmar que a mudança refletiu imediatamente (cache invalidado sem precisar esperar).
+- [x] 4. Observar que o degradê do header agora é amarelo.
+- [x] 5. Validar o cálculo de contraste automático: como o fundo é claro, os textos e ícones devem ter mudado automaticamente para **tom escuro / preto grafite**, mantendo leitura perfeita sem letras brancas ilegíveis.
+- [x] 6. Confirmar o mesmo contraste no cabeçalho mobile (DevTools / Mobile).
 
 #### Cenário 4 — Precedência de Marca vs Papel de Parede do Aluno [Manual 👁]
 - [ ] 1. Estando logado como aluno de cliente com cor definida (`#1B4DB2`), clicar no avatar / menu de perfil ou no botão de temas no canto superior direito do header.
