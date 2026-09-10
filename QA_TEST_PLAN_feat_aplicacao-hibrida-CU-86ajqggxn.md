@@ -2,13 +2,13 @@
 
 ## 0. Metadata (Metadados de QA)
 
-| Campo | Valor |
-|---|---|
-| **Data:** | 2026-09-03 |
-| **Natureza da Tarefa:** | `[Business Feature]` |
-| **Área da Feature:** | Applications, Exams, Distribution, OMR, Student App (API v3) |
-| **Nível de Risco:** | Alto |
-| **Qualidade da OpenSpec:** | ⭐⭐⭐⭐⭐ (5/5) |
+| Campo                      | Valor                                                        |
+| -------------------------- | ------------------------------------------------------------ |
+| **Data:**                  | 2026-09-03                                                   |
+| **Natureza da Tarefa:**    | `[Business Feature]`                                         |
+| **Área da Feature:**       | Applications, Exams, Distribution, OMR, Student App (API v3) |
+| **Nível de Risco:**        | Alto                                                         |
+| **Qualidade da OpenSpec:** | ⭐⭐⭐⭐⭐ (5/5)                                             |
 
 ---
 
@@ -17,6 +17,7 @@
 Esta branch implementa o tipo de aplicação **Híbrida** (`Application.HYBRID = 5`), atendendo a escolas que aplicam avaliações com cadernos de prova impressos (com ou sem randomização de questões/alternativas), mas onde os alunos realizam o registro de suas respostas no ambiente digital (aplicativo do aluno), dispensando o uso de cartões-resposta físicos e leitura por OMR.
 
 ### Backend & Modelos
+
 - **Novo Enum de Categoria:** Adicionado `Application.HYBRID = 5` em `CATEGORY_CHOICES` com rótulo "Híbrida" (`fiscallizeon/applications/models.py`).
 - **Camada de Serviço Centralizada:** Criada a classe `ApplicationCategoryRoles` (`fiscallizeon/applications/services/application_service.py`) com os métodos `prints_presential_bag()` (Presencial e Híbrida) e `uses_digital_answers()` (Online, Lista e Híbrida) para evitar dispersão de `if category == HYBRID`.
 - **Status e Ausências:** Atualizados `ApplicationStudent.get_status`, `missing_students_count` e `finish_students_count` para que aplicações Híbridas usem o critério digital (`start_time`/`end_time`) e não `is_omr`.
@@ -24,17 +25,20 @@ Esta branch implementa o tipo de aplicação **Híbrida** (`Application.HYBRID =
 - **Bloqueio de Malote Após Início:** Em `ExportApplicationExamsBagAPIView`, a geração de malote de Híbrida é recusada com `HTTP 401 UNAUTHORIZED` se o horário atual for maior ou igual ao início da aplicação (`timezone.localtime(timezone.now()) >= application.date_time_start_tz`).
 
 ### Malote da Aplicação e de Ensalamento (Tarefas Celery / OMR / Distribution)
+
 - **Malote sem Cartão-Resposta:** Em `omr/tasks/export_answer_sheet.py` e `distribution/tasks/export_exams_bag.py`, aplicações Híbridas não enfileiram cartões-resposta objetivos, discursivos ou folhas de redação. O cartão OMR é exclusivo para `Application.PRESENTIAL`.
 - **Exclusão de Páginas Customizadas de Folhas:** Como não há cartão-resposta gerado, qualquer página customizada do cliente posicionada antes ou depois da folha de respostas (`ClientCustomPage.OBJECTIVE_ANSWER_SHEET` e `ClientCustomPage.DISCURSIVE_ANSWER_SHEET`) é suprimida do malote. Páginas customizadas do caderno (`STUDENT_EXAM` e `AFTER_STUDENT_EXAM`) continuam sendo impressas normalmente.
 - **Caderno Obrigatório:** O backend força `include_exams = True` para aplicações Híbridas, garantindo a exportação do caderno e o disparo de `randomize_application()` quando o caderno for randomizado.
 - **Blindagem contra `PdfError` em Agrupamento:** Em `omr/tasks/group_answer_sheet_files.py` (`process_unity_separated_files` no modo BAG_SEPARATED_FILES) e `distribution/tasks/group_files.py`, o merge de `answer_full_urls` só é executado se houver paths de cartão-resposta e a aplicação for Presencial. Isso evita que listas vazias produzam arquivos corrompidos sem trailer.
 
 ### Interface de Coordenação
+
 - **Sidebar:** Adicionado o item **Híbridas** no submenu "Aplicações" de `components/sidebar/sidebar_coordination.html`, com filtro `?category=hibrid`, ícone dedicado (`lucide-book-open-check`), ativo via `application_hybrid_active` no `context_processors.py`.
 - **Criação/Edição de Aplicação:** Inserido o 4º card **Híbrida** na seleção de categoria em `application_create_update.html`, adaptando o grid para 4 colunas em telas médias/grandes (`lg:tw-grid-cols-4`).
 - **Modal de Impressão de Malote:** Em `application_list_new.html` e `distribution_list.html`, o modal `#configurePrintModal` oculta campos de folhas de resposta objetivas/discursivas e o checkbox de incluir caderno (já que o caderno é mandatório). As opções de diagramação e versões de randomização permanecem acessíveis.
 
 ### API v3 do Aluno (`fiscallizeon/app/students/`)
+
 - **Listagem e Acesso:** Aplicações Híbridas entram na listagem de `availables_today` e no queryset `is_online()` (que exclui apenas `PRESENTIAL`).
 - **Ordenação em `take_test` e `result`:** Se houver `RandomizationVersion` vinculada ao aluno, as questões e alternativas são ordenadas rigorosamente pelo `exam_json` persistido no malote. Se não houver versão e o caderno não for randomizado, segue a ordem padrão do caderno. O `shuffle_code` de prova online é ignorado em Híbridas.
 - **Higienização do Payload:** Em Híbridas, `enunciation`, `base_texts` e `alternatives[].text` são retornados vazios, permitindo que a interface do aluno funcione como folha de preenchimento de gabarito avulso sem expor os enunciados já impressos (o mesmo modelo visual de um gabarito avulso no `app.lizeedu`).
@@ -45,6 +49,7 @@ Esta branch implementa o tipo de aplicação **Híbrida** (`Application.HYBRID =
 ## 2. Scope Boundaries (Diferenças de Escopo)
 
 ### In Scope
+
 - Criação e edição de aplicações com categoria Híbrida por usuários do perfil Coordenação.
 - Exibição universal do item "Híbridas" na sidebar e dos cards na tela de cadastro para todos os clientes, sem necessidade de ativação de flag.
 - Filtro funcional de aplicações híbridas na listagem (`/aplicacoes/?category=hibrid`).
@@ -58,6 +63,7 @@ Esta branch implementa o tipo de aplicação **Híbrida** (`Application.HYBRID =
 - Cards e listagens de finalizados/ausentes (detalhes da aplicação, analytics de presença) tratando Híbrida como online. Quem finalizou o registro digital conta como presente (mesmo com `is_omr=False`); quem só tivesse leitura OMR não contaria como presente.
 
 ### Out of Scope
+
 - Implementação de telas dentro do SPA do aluno (o frontend do app do aluno reside em repositório externo separado; este PR entrega apenas o contrato da API v3).
 - Exibição de textos de enunciados, imagens ou textos de apoio no aplicativo do aluno durante a realização da prova.
 - Processamento, leitura óptica ou upload de cartões-resposta via OMR para aplicações Híbridas.
@@ -70,20 +76,20 @@ Esta branch implementa o tipo de aplicação **Híbrida** (`Application.HYBRID =
 
 ## 3. Navegação e Camada Técnica (Navigation and Technical Layer)
 
-| Destino | Rótulo real no menu UI | URL Django | View name |
-|---------|------------------------|------------|-----------|
-| Listagem de Aplicações Híbridas | Aplicações > Híbridas | `/aplicacoes/?category=hibrid` | `applications:applications_list` |
-| Agendar Aplicação Híbrida | Botão "Agendar aplicação" (na listagem com filtro) | `/aplicacoes/cadastrar/?category=hibrid` | `applications:applications_create` |
-| Agendar Várias Híbridas | Botão "Agendar várias aplicações" | `/aplicacoes/cadastrar-multiplas/?category=hibrid` | `applications:applications_create_multiple` |
-| Editar Aplicação | Ação "Editar" na linha da aplicação | `/aplicacoes/<uuid:pk>/editar/` | `applications:applications_update` |
-| Imprimir Malote da Aplicação | Linha da tabela > Ações > Impressão > "Todos os alunos" | `POST /aplicacoes/api/aplicacao/<uuid:pk>/imprimir-malote/` | `applications:applications_export_exams_bag` (API) |
-| Listagem de Ensalamento | Aplicações > Ensalamento | `/ensalamento/` | `distribution:distribution_list` |
-| Imprimir Malote de Ensalamento | Linha do ensalamento > Ações > "Imprimir malote" | `POST /ensalamento/api/ensalamentos/<uuid:pk>/gerar-malote/` | `distribution:export_distribution_exams_bag` (API) |
-| App Aluno: Aplicações Disponíveis | Home / Minhas Avaliações | `GET /api/v3/applications/availables_today/` | `app:applications-availables-today` |
-| App Aluno: Iniciar Prova / Registro | Card da Prova > "Iniciar Prova" | `GET /api/v3/applications/<uuid:pk>/take_test/` | `app:applications-take-test` |
-| App Aluno: Salvar Resposta | Marcar alternativa A–E | `POST /api/v3/applications/<uuid:pk>/create_answer/` | `app:applications-create-answer` |
-| App Aluno: Finalizar Prova | Botão "Finalizar Avaliação" | `POST /api/v3/applications/<uuid:pk>/finish/` | `app:applications-finish` |
-| App Aluno: Ver Resultado | Prova Concluída > "Ver resultado" | `GET /api/v3/applications/<uuid:pk>/result/` | `app:applications-result` |
+| Destino                             | Rótulo real no menu UI                                  | URL Django                                                   | View name                                          |
+| ----------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
+| Listagem de Aplicações Híbridas     | Aplicações > Híbridas                                   | `/aplicacoes/?category=hibrid`                               | `applications:applications_list`                   |
+| Agendar Aplicação Híbrida           | Botão "Agendar aplicação" (na listagem com filtro)      | `/aplicacoes/cadastrar/?category=hibrid`                     | `applications:applications_create`                 |
+| Agendar Várias Híbridas             | Botão "Agendar várias aplicações"                       | `/aplicacoes/cadastrar-multiplas/?category=hibrid`           | `applications:applications_create_multiple`        |
+| Editar Aplicação                    | Ação "Editar" na linha da aplicação                     | `/aplicacoes/<uuid:pk>/editar/`                              | `applications:applications_update`                 |
+| Imprimir Malote da Aplicação        | Linha da tabela > Ações > Impressão > "Todos os alunos" | `POST /aplicacoes/api/aplicacao/<uuid:pk>/imprimir-malote/`  | `applications:applications_export_exams_bag` (API) |
+| Listagem de Ensalamento             | Aplicações > Ensalamento                                | `/ensalamento/`                                              | `distribution:distribution_list`                   |
+| Imprimir Malote de Ensalamento      | Linha do ensalamento > Ações > "Imprimir malote"        | `POST /ensalamento/api/ensalamentos/<uuid:pk>/gerar-malote/` | `distribution:export_distribution_exams_bag` (API) |
+| App Aluno: Aplicações Disponíveis   | Home / Minhas Avaliações                                | `GET /api/v3/applications/availables_today/`                 | `app:applications-availables-today`                |
+| App Aluno: Iniciar Prova / Registro | Card da Prova > "Iniciar Prova"                         | `GET /api/v3/applications/<uuid:pk>/take_test/`              | `app:applications-take-test`                       |
+| App Aluno: Salvar Resposta          | Marcar alternativa A–E                                  | `POST /api/v3/applications/<uuid:pk>/create_answer/`         | `app:applications-create-answer`                   |
+| App Aluno: Finalizar Prova          | Botão "Finalizar Avaliação"                             | `POST /api/v3/applications/<uuid:pk>/finish/`                | `app:applications-finish`                          |
+| App Aluno: Ver Resultado            | Prova Concluída > "Ver resultado"                       | `GET /api/v3/applications/<uuid:pk>/result/`                 | `app:applications-result`                          |
 
 ---
 
@@ -102,6 +108,7 @@ Esta branch implementa o tipo de aplicação **Híbrida** (`Application.HYBRID =
 ```
 
 ### Personas Envolvidas
+
 - **Persona Coordenador:** Usuário membro de `SchoolCoordination` com permissões completas de gerenciar aplicações e gerar malotes (`applications.view_application`, `applications.add_application`, `applications.can_print_exams_bag`).
 - **Persona Aluno:** Usuário com perfil `Student` ativo, matriculado na `SchoolClass` vinculada à aplicação.
 
@@ -247,6 +254,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ### 5.1 Sidebar e Listagem de Aplicações [Automatizável ✅]
 
 #### Cenário 1 — Visibilidade do item Híbridas na barra lateral de navegação
+
 - [x] Acessar o menu lateral esquerdo como Coordenador.
 - [x] Clicar sobre a opção "Aplicações" para expandir os submódulos.
 - [x] Verificar se o item "Híbridas" está visível entre as opções (abaixo de "Presencial").
@@ -255,6 +263,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [x] Verificar se o item "Híbridas" permanece com estilo destacado de ativo no menu.
 
 #### Cenário 2 — Filtragem da listagem principal de aplicações
+
 - [x] Estando na listagem de Híbridas, verificar as aplicações listadas na tabela.
 - [x] Confirmar que apenas aplicações da categoria Híbrida são exibidas na tela.
 - [x] Verificar se aplicações puramente presenciais ou online NÃO aparecem nesta listagem.
@@ -265,6 +274,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ### 5.2 Criação e Edição de Aplicação Híbrida [Automatizável ✅]
 
 #### Cenário 3 — Criação de aplicação com seleção do card Híbrida
+
 - [x] Na tela de listagem de Híbridas, clicar no botão azul "Agendar aplicação".
 - [x] Verificar se a página de cadastro abre com o quarto card "Híbrida" selecionado por padrão.
 - [x] Observar os textos do card: título "Híbrida" e subtítulo informativo "Geração de malote + Respostas cadastradas online."
@@ -273,20 +283,22 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [x] Clicar no botão para salvar a aplicação.
 - [ ] Confirmar o redirecionamento com mensagem de sucesso e verificar a aplicação recém-criada na listagem de Híbridas.
 
-
 #### Cenário 4 — Criação com caderno de prova não randomizado
+
 - [x] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
 - [x] Selecionar um caderno tradicional que NÃO possui randomização de questões nem de alternativas.
 - [x] Preencher as informações obrigatórias da aplicação e submeter o formulário.
 - [x] Confirmar que o sistema grava a aplicação com sucesso sem disparar validações impeditivas de randomização.
 
 #### Cenário 5 — Criação com caderno contendo questões discursivas ou redação
+
 - [x] Iniciar um novo agendamento de aplicação selecionando a categoria Híbrida.
 - [x] Selecionar um caderno que contenha questões discursivas e proposta de redação.
 - [x] Concluir o preenchimento dos campos e salvar.
 - [x] Confirmar que a aplicação é salva com sucesso sem rejeição por conter questões não-objetivas.
 
 #### Cenário 6 — Bloqueio de alteração de categoria após malote pronto
+
 - [x] Abrir uma aplicação Híbrida já existente que já teve malote gerado ou está marcada como pronta para impressão.
 - [x] Acessar a tela de edição da aplicação.
 - [x] Observar a seção de escolha de categoria.
@@ -298,6 +310,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ### 5.3 Modal de Impressão e Geração de Malote da Aplicação [Automatizável ✅]
 
 #### Cenário 7 — Abertura do modal de impressão com controles adaptados
+
 - [x] Na listagem de aplicações, localizar uma aplicação Híbrida.
 - [x] Na última coluna da linha da aplicação, clicar no botão "**Opções**" (botão branco com borda cinza).
 - [x] No menu que se abre, localizar a seção com cabeçalho cinza "**IMPRESSÃO**" e clicar na opção "**Todos os alunos**" (ícone de usuários).
@@ -309,6 +322,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [x] Confirmar que as opções de diagramação e o checkbox de incluir folha com versões de randomização permanecem acessíveis.
 
 #### Cenário 8 — Geração do malote antes do início da prova
+
 - [x] No modal de impressão da aplicação Híbrida cujo horário de início ainda não ocorreu, clicar no botão "**Imprimir malote**" (botão primário azul no canto inferior direito do modal).
 - [x] Confirmar o fechamento do modal e o disparo da geração em segundo plano.
 - [x] Aguardar a conclusão da exportação do arquivo e efetuar o download do arquivo ZIP gerado.
@@ -318,29 +332,33 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
   - Verificar se a folha de presença está incluída (se configurada).
 
 #### Cenário 9 — Bloqueio de geração de malote após o início da prova
+
 - [x] Localizar uma aplicação Híbrida cujo horário de início agendado já foi ultrapassado (data/hora atual superior à data e horário de início).
 - [x] Na última coluna da linha da aplicação, clicar no botão "**Opções**" (menu dropdown de ações) e selecionar "**Todos os alunos**" dentro da seção cinza "**IMPRESSÃO**".
 - [x] No modal com título "**Configure a impressão do malote nesta exportação**", clicar no botão primário azul "**Imprimir malote**" (canto inferior direito).
-- [x] Verificar que o sistema recusa a solicitação, retornando mensagem informativa indicando que o malote não pode mais ser impresso após o início da aplicação (*"O caderno não pode ser impresso porque a aplicação já iniciou."*).
+- [x] Verificar que o sistema recusa a solicitação, retornando mensagem informativa indicando que o malote não pode mais ser impresso após o início da aplicação (_"O caderno não pode ser impresso porque a aplicação já iniciou."_).
   > **Nota de QA:** Regra de negócio aprovada (API barrou a requisição com status 401). Porém, foi identificada anomalia visual na apresentação do alerta no frontend (ver **Bug 2** na Seção 7).
 
 #### Cenário 10 — Vínculo de versão de randomização no malote
-- [ ] Gerar o malote de uma aplicação Híbrida cujo caderno é randomizado.
-- [ ] Abrir os cadernos impressos de dois alunos diferentes do mesmo pacote.
-- [ ] Comparar o caderno do Aluno 1 com o caderno do Aluno 2 e confirmar que a ordem das questões e alternativas é distinta entre eles.
-- [ ] Verificar no banco de dados se cada aluno recebeu uma versão registrada correspondente exatamente ao caderno impresso.
+
+- [x] Gerar o malote de uma aplicação Híbrida cujo caderno é randomizado.
+- [x] Abrir os cadernos impressos de dois alunos diferentes do mesmo pacote.
+- [x] Comparar o caderno do Aluno 1 com o caderno do Aluno 2 e confirmar que a ordem das questões e alternativas é distinta entre eles.
+- [x] Verificar no banco de dados se cada aluno recebeu uma versão registrada correspondente exatamente ao caderno impresso.
 
 #### Cenário 10.1 — Páginas customizadas associadas a cartão-resposta vs caderno
-- [ ] Configurar no caderno da aplicação páginas customizadas do cliente (`ClientCustomPage`) em diferentes posições: antes/depois da folha de resposta (`OBJECTIVE_ANSWER_SHEET` ou `DISCURSIVE_ANSWER_SHEET`) e páginas do caderno (`STUDENT_EXAM` ou `AFTER_STUDENT_EXAM`).
-- [ ] Gerar o malote da aplicação Híbrida e inspecionar o PDF resultante.
-- [ ] Confirmar que páginas customizadas de folhas de respostas NÃO são geradas nem incluídas no pacote (já que a folha OMR foi suprimida).
-- [ ] Confirmar que as páginas customizadas vinculadas ao caderno de prova continuam sendo geradas e anexadas perfeitamente ao caderno do aluno.
+
+- [x] Configurar no caderno da aplicação páginas customizadas do cliente (`ClientCustomPage`) em diferentes posições: antes/depois da folha de resposta (`OBJECTIVE_ANSWER_SHEET` ou `DISCURSIVE_ANSWER_SHEET`) e páginas do caderno (`STUDENT_EXAM` ou `AFTER_STUDENT_EXAM`).
+- [x] Gerar o malote da aplicação Híbrida e inspecionar o PDF resultante.
+- [x] Confirmar que páginas customizadas de folhas de respostas NÃO são geradas nem incluídas no pacote (já que a folha OMR foi suprimida).
+- [x] Confirmar que as páginas customizadas vinculadas ao caderno de prova continuam sendo geradas e anexadas perfeitamente ao caderno do aluno.
 
 ---
 
 ### 5.4 Malote no Ensalamento (Room Distribution) [Automatizável ✅]
 
 #### Cenário 11 — Ensalamento contendo apenas aplicações Híbridas
+
 - [ ] Acessar o módulo de Ensalamento (`/ensalamento/`).
 - [ ] Criar ou localizar um ensalamento que possua apenas aplicações da categoria Híbrida.
 - [ ] Na linha do ensalamento, clicar no botão de menu e selecionar "**Imprimir malote**".
@@ -349,14 +367,16 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 - [ ] Confirmar que o pacote final do ensalamento contém apenas os cadernos dos alunos, sem gerar erros de arquivo corrompido ou merge de PDFs vazios.
 
 #### Cenário 12 — Ensalamento misto (Presencial + Híbrida)
-- [ ] Montar um ensalamento que contenha na mesma sala uma aplicação Presencial e uma aplicação Híbrida.
-- [ ] Disparar a geração do malote completo do ensalamento.
+
+- [x] Montar um ensalamento que contenha na mesma sala uma aplicação Presencial e uma aplicação Híbrida.
+- [x] Disparar a geração do malote completo do ensalamento.
 - [ ] Baixar o pacote gerado e inspecionar os arquivos:
   - Confirmar que para os alunos da aplicação Presencial foram gerados cadernos E cartões-resposta OMR.
   - Confirmar que para os alunos da aplicação Híbrida foram gerados apenas os cadernos de prova, sem cartões OMR.
   - Confirmar que o processo finaliza com sucesso sem inconsistências de contagem de páginas.
 
 #### Cenário 12.1 — Restrição de seleção de tipos de aplicação no Ensalamento
+
 - [ ] Acessar a tela de criação de ensalamento (`/ensalamento/cadastrar/`).
 - [ ] Inspecionar a listagem de aplicações disponíveis para seleção no filtro de data/turma.
 - [ ] Verificar se o sistema impede a seleção conjunta de aplicações de categorias incompatíveis ou se isola aplicações Híbridas de Presenciais, conforme regra de negócio reforçada na especificação.
@@ -370,11 +390,13 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 > Caso deseje comparar com o comportamento esperado de uma prova sem exibição de enunciado e alternativas, acesse ou crie um caderno com gabarito avulso (`Exam.is_abstract = True`) no ambiente web antigo de alunos (`app.lizeedu`). O fluxo da aplicação Híbrida é análogo: o aluno visualiza apenas os identificadores numéricos das questões e as bolhas A–E para marcação rápida, acompanhando o caderno impresso físico em mãos.
 
 #### Cenário 13 — Visualização da avaliação na área do aluno
+
 - [ ] Autenticar-se no App do Aluno com as credenciais do Aluno 1.
 - [ ] Verificar se a aplicação Híbrida aparece listada no painel de avaliações disponíveis no dia.
 - [ ] Confirmar que o card da avaliação exibe o nome do caderno e o período de realização.
 
 #### Cenário 14 — Abertura da tela de preenchimento (Caderno Randomizado)
+
 - [ ] Com o Aluno 1, clicar no botão para iniciar a avaliação dentro da janela de tempo.
 - [ ] Observar o layout da tela:
   - Verificar a presença de aviso instruindo o aluno a acompanhar a numeração de acordo com seu caderno impresso.
@@ -385,11 +407,13 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
   - Confirmar que a ordem das alternativas (A até E) corresponde rigorosamente à ordem impressa no caderno dele.
 
 #### Cenário 15 — Comparação de ordem entre alunos distintos
+
 - [ ] Abrir simultaneamente a tela de realização no login do Aluno 2 (ou inspecionar o payload de `take_test`).
 - [ ] Comparar a tela do Aluno 1 com a tela do Aluno 2.
 - [ ] Confirmar que o ID interno e a correspondência das alternativas refletem a versão exclusiva de cada aluno, sem uso de embaralhamento dinâmico volátil.
 
 #### Cenário 16 — Envio e confirmação de respostas
+
 - [ ] Com o Aluno 1, selecionar as alternativas correspondentes no gabarito digital para todas as questões.
 - [ ] Confirmar o envio de cada questão e verificar o feedback visual de resposta registrada.
 - [ ] Clicar no botão para finalizar a avaliação.
@@ -400,11 +424,13 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ### 5.6 Correção Objetiva, Presença e Status da Aplicação [Automatizável ✅]
 
 #### Cenário 17 — Associação da resposta à questão correta e acerto
+
 - [ ] Acessar os dados da resposta gravada pelo Aluno 1.
 - [ ] Verificar se a resposta marcada na posição visual "Alternativa A" do caderno dele ficou associada à entidade `Question` correta no banco de dados.
 - [ ] Verificar se a rotina de correção atribuiu pontuação correta comparando a alternativa selecionada com o gabarito oficial daquela questão.
 
 #### Cenário 18 — Status do aluno na aplicação (Realizado e Realizando)
+
 - [ ] Criar um cenário onde o Aluno 1 concluiu o registro no app e o Aluno 3 iniciou a prova (`start_time` preenchido) mas ainda não finalizou (`end_time` nulo).
 - [ ] Acessar o painel da aplicação como Coordenador:
   - Verificar se o Aluno 1 consta com status "Realizado".
@@ -413,11 +439,13 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
   - Confirmar que a contagem de presentes nos cards da coordenação e no analytics de presença computa o Aluno 1 como concluído.
 
 #### Cenário 19 — Aluno ausente na aplicação Híbrida
+
 - [ ] Deixar o Aluno 2 sem preencher respostas até que o horário de término da aplicação expire.
 - [ ] Consultar o relatório e a listagem da aplicação na coordenação após o término.
 - [ ] Confirmar que o Aluno 2 figura com o status "Ausente", sem depender de ausência de leitura óptica de cartão OMR.
 
 #### Cenário 20 — Imunidade à leitura OMR para cálculo de presença
+
 - [ ] Em ambiente de teste/banco, forçar o atributo `is_omr = True` em um aluno de aplicação Híbrida que NÃO tenha registros de `start_time`/`end_time`.
 - [ ] Acessar o detalhe da aplicação e o analytics de presença.
 - [ ] Confirmar que o sistema NÃO considera o aluno como presente com base exclusivamente no `is_omr`. A presença em Híbridas deve depender estritamente do fluxo digital (`start_time`/`end_time`).
@@ -450,6 +478,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 > **Bug 1: Redirecionamento pós-cadastro de Aplicação Híbrida não preserva o filtro da categoria**  
 > **Categoria:** `[Backend Logic]` / `[UX/UI]`  
 > **Contexto / Root Cause:** Em `fiscallizeon/applications/views.py`, os métodos `get_success_url` das views `ApplicationCreateView` (linhas 716–726) e `ApplicationCreateMultipleView` (linhas 872–882) verificam apenas:
+>
 > ```python
 > if self.object.category == Application.PRESENTIAL:
 >     url += '?category=presential'
@@ -457,6 +486,7 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 >     url += '?category=homework'
 > return url
 > ```
+>
 > Para aplicações da categoria `Application.HYBRID` (`category = 5`), a condição cai no fallback padrão sem query parameters (`reverse('applications:applications_list')`). Como resultado, o usuário é redirecionado para a listagem geral (`/aplicacoes/`) em vez da listagem filtrada de Híbridas (`/aplicacoes/?category=hibrid`), desmarcando o item "Híbridas" ativo na sidebar.  
 > **Comportamento Esperado:** `(inferência de UX — Spec Gap)`: Ao cadastrar uma aplicação Híbrida (ou múltiplas), o sistema deve redirecionar para `/aplicacoes/?category=hibrid`, espelhando o comportamento das aplicações presenciais (`?category=presential`) e listas de exercício (`?category=homework`).  
 > **Workaround:** Clicar manualmente no menu lateral "Aplicações > Híbridas" após salvar o formulário para visualizar a aplicação recém-criada.
@@ -465,24 +495,27 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 > **Bug 2: Alerta de erro na geração de malote renderiza modal desconfigurado em vez de toast e não fecha modal de configuração**  
 > **Categoria:** `[Frontend / UI/UX]` / `[Dívida Técnica]`  
 > **Contexto / Root Cause:** No template `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (linhas 2311–2320), o método `generateExamsBag` trata a resposta de erro da API de malote disparando diretamente:
+>
 > ```javascript
 > Swal.fire({
->   position: 'top-end',
->   icon: 'error',
+>   position: "top-end",
+>   icon: "error",
 >   text: error.response.data,
 >   showConfirmButton: false,
 >   timer: 3000,
 >   backdrop: false,
 >   allowOutsideClick: false,
 >   timerProgressBar: true,
-> })
+> });
 > ```
+>
 > Devido à ausência da propriedade `toast: true`, o SweetAlert2 renderiza o alerta no **modo modal clássico** (com ícone circular gigante de 80px × 80px com `(X)` e caixa pesada de diálogo), empurrado artificialmente para o canto superior direito (`position: 'top-end'`). Além disso, o modal Bootstrap `#configurePrintModal` não é fechado no `.catch()`, fazendo com que a caixa de erro flutue por cima da tela de configuração ainda aberta.  
 > Esse comportamento diverge do método utilitário `this.alertTop(text, icon)` existente na linha 2447 do próprio arquivo (que utiliza `toast: true` para renderizar uma barra discreta e compacta) e destoa fortemente dos alertas com Tailwind (`tw-*`) do Redesign do Lize.  
-> **Comportamento Esperado:** `(inferência de UX — Spec Gap)`:  
-> 1. O bloco `.catch()` deve fechar o modal de configuração (`$('#configurePrintModal').modal('hide')`) ou manter o erro integrado ao próprio formulário.  
+> **Comportamento Esperado:** `(inferência de UX — Spec Gap)`:
+>
+> 1. O bloco `.catch()` deve fechar o modal de configuração (`$('#configurePrintModal').modal('hide')`) ou manter o erro integrado ao próprio formulário.
 > 2. O alerta de erro deve utilizar `this.alertTop(error.response.data, 'error')` (garantindo o modo `toast: true`) ou os componentes nativos de notificação com Tailwind do Redesign.  
-> **Workaround:** Aguardar os 3 segundos do timer para o popup sumir e fechar manualmente o modal `#configurePrintModal` clicando no botão "X" no canto superior direito.
+>    **Workaround:** Aguardar os 3 segundos do timer para o popup sumir e fechar manualmente o modal `#configurePrintModal` clicando no botão "X" no canto superior direito.
 
 > [!WARNING]
 > **Status de Implementação: Tratamento de Retorno HTTP 409 sem Malote Gerado**  
@@ -514,9 +547,9 @@ mixer.blend(ApplicationStudent, application=app_hybrid, student=student_2)
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 
 - [x] O arquivo de mapeamento foi nomeado refletindo exatamente o nome do template HTML, e não a View.  
-🔗 **[Ver Mapeamento de Tela — Cadastro de Aplicações](docs/tests/usability/application_create_update.md)**  
-🔗 **[Ver Mapeamento de Tela — Listagem e Malote](docs/tests/usability/application_list_new.md)**  
-🔗 **[Ver Mapeamento de Tela — Impressão de Ensalamento](docs/tests/usability/modal_print.md)**
+      🔗 **[Ver Mapeamento de Tela — Cadastro de Aplicações](docs/tests/usability/application_create_update.md)**  
+      🔗 **[Ver Mapeamento de Tela — Listagem e Malote](docs/tests/usability/application_list_new.md)**  
+      🔗 **[Ver Mapeamento de Tela — Impressão de Ensalamento](docs/tests/usability/modal_print.md)**
 
 ### Snippet de Automação (Playwright + Fixtures de Banco com Mixer)
 
@@ -619,16 +652,17 @@ def test_hybrid_application_print_modal_and_api(page: Page, live_server):
 ## 9. QA Retrospective (Retrospectiva de QA)
 
 - **Principal gargalo durante os testes:**  
-  *Aguardando execução do QA manual pelo time.*
+  _Aguardando execução do QA manual pelo time._
 - **Volume de idas e vindas com os desenvolvedores:**  
-  *Aguardando execução do QA manual pelo time.*
+  _Aguardando execução do QA manual pelo time._
 - **Oportunidades de melhoria no processo de desenvolvimento/QA:**  
-  *Aguardando execução do QA manual pelo time.*
+  _Aguardando execução do QA manual pelo time._
 
 ---
 
 ## 10. Sugestões de Melhorias para o Prompt V2 (Anotações para Discussão Futura)
 
 <!-- Anotações de melhorias -->
+
 - **Feedback sobre o mapeamento incremental:** A estrutura de arquivos de tela centralizados (`.ai_qa_acervo/docs/tests/usability/<template>.md`) provou-se altamente eficaz para desacoplar seletores DOM detalhados do roteiro de testes humano, mantendo a Seção 5 limpa e intuitiva para o testador manual.
 - **Detecção de Dependência SPA:** Adicionar no Prompt V2 uma diretriz explícita para casos em que o backend entrega contratos de API (como `/api/v3/`) para SPAs em repositórios separados, orientando a inclusão de chamadas diretas de validação de payload/JSON caso o frontend ainda esteja em homologação separada.
