@@ -169,13 +169,13 @@ if aluno:
 - [x] 6. Confirmar o mesmo contraste no cabeçalho mobile (DevTools / Mobile).
 
 #### Cenário 4 — Precedência de Marca vs Papel de Parede do Aluno [Manual 👁]
-- [ ] 1. Estando logado como aluno de cliente com cor definida (`#1B4DB2`), clicar no avatar / menu de perfil ou no botão de temas no canto superior direito do header.
-- [ ] 2. Observar as opções do menu dropdown.
-- [ ] 3. Validar que o **seletor de papéis de parede (galeria com miniaturas)** NÃO está visível (oculto para respeitar a identidade visual da escola).
-- [ ] 4. No Django Admin, apagar a cor primária do cliente (deixar vazio e clicar em **Salvar**).
-- [ ] 5. Atualizar o app do aluno (`F5`).
-- [ ] 6. Confirmar que o header voltou a exibir o papel de parede clássico (foto/arte).
-- [ ] 7. Clicar novamente no menu de temas do aluno e validar que o **seletor de papéis de parede reapareceu** normalmente.
+- [x] 1. Estando logado como aluno de cliente com cor definida (`#1B4DB2`), clicar no avatar / menu de perfil ou no botão de temas no canto superior direito do header.
+- [x] 2. Observar as opções do menu dropdown.
+- [x] 3. Validar que o **seletor de papéis de parede (galeria com miniaturas)** NÃO está visível (oculto para respeitar a identidade visual da escola).
+- [x] 4. No Django Admin, apagar a cor primária do cliente (deixar vazio e clicar em **Salvar**).
+- [x] 5. Atualizar o app do aluno (`F5`).
+- [x] 6. Confirmar que o header voltou a exibir o papel de parede clássico (foto/arte).
+- [x] 7. Clicar novamente no menu de temas do aluno e validar que o **seletor de papéis de parede reapareceu** normalmente.
 
 ---
 
