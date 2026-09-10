@@ -209,13 +209,13 @@ if aluno:
 
 #### Cenário 7 — App do Aluno: Ajuste de Copy ("Exercício" vs "Avaliação") [Manual 👁]
 - [x] 1. No app do aluno, acessar a tela "**Minhas provas**" (`/painel/minhas-provas`).
-- [ ] 2. Localizar um card de **Prova Regular** (Avaliação):
-  - [ ] O botão de ação deve dizer `"**iniciar avaliação**"` ou `"**Iniciar prova**"`.
-  - [ ] Caso já realizada, deve indicar `"**prova já realizada**"`.
-- [ ] 3. Localizar um card de **Lista de Exercícios** (Homework / Exercício):
-  - [ ] O botão de ação deve exibir obrigatoriamente `"**iniciar exercício**"` (e NÃO "iniciar avaliação").
-  - [ ] Se já realizado, deve exibir `"**exercício já realizado**"`.
-  - [ ] Ao clicar no modal de confirmação para refazer, o título deve ser `"**Deseja realmente refazer este exercício?**"`.
+- [x] 2. Localizar um card de **Prova Regular** (Avaliação):
+  - [x] O botão de ação deve dizer `"**iniciar avaliação**"` ou `"**Iniciar prova**"`.![alt text](evidencias/image-3.png)
+  - [x] Caso já realizada, deve indicar `"**prova já realizada**"`.
+- [x] 3. Localizar um card de **Lista de Exercícios** (Homework / Exercício):
+  - [x] O botão de ação deve exibir obrigatoriamente `"**iniciar exercício**"` (e NÃO "iniciar avaliação").
+  - [x] Se já realizado, deve exibir `"**exercício já realizado**"`.![alt text](evidencias/image-5.png)
+  - [x] Ao clicar no modal de confirmação para refazer, o título deve ser `"**Deseja realmente refazer este exercício?**"`.![alt text](evidencias/image-4.png)
 - [ ] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.
 
 #### Cenário 8 — Usabilidade Mobile e Toque (Touch Check) [Manual 👁]

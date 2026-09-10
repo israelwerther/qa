@@ -437,6 +437,7 @@ def create_application(
     application = Application.objects.create(
         exam=exam,
         date=target_date,
+        date_end=target_date,
         start=start_time,
         end=end_time,
         category=app_category,
@@ -446,6 +447,7 @@ def create_application(
         subject=exam.name[:150],
         min_time_finish=timedelta(minutes=5),
         max_time_tolerance=timedelta(hours=2),
+        allow_student_redo_list=(app_category == Application.HOMEWORK),
     )
 
     # Vincula a turma e os alunos

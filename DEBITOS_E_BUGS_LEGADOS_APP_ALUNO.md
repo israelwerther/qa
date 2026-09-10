@@ -14,6 +14,7 @@
 | **#001** | 10/09/2026 | Materiais de Estudo (`/painel/materiais-de-estudo/$id`) | Pré-visualização de PDFs inoperante (falha com URLs assinadas S3/Spaces) | **Alta** | ⏳ Aguardando Pauta |
 | **#002** | 10/09/2026 | Materiais de Estudo (`/painel/materiais-de-estudo/$id`) | Metadados e ícones esmagados/sobrepostos no card lateral direito | **Média** | ⏳ Aguardando Pauta |
 | **#003** | 10/09/2026 | Materiais de Estudo (`/painel/materiais-de-estudo/$id`) | Ausência de visualização inline para arquivos de imagem (JPEG/PNG) | **Baixa** | ⏳ Aguardando Pauta |
+| **#004** | 10/09/2026 | Execução de Provas/Listas (`/provas/$id`) | Redirecionamento e toast incorretos ao finalizar Lista de Exercícios (manda para `/painel/minhas-provas`) | **Média** | ⏳ Aguardando Pauta |
 
 ---
 
@@ -108,10 +109,54 @@ const isImage = /\.(jpg|jpeg|png|webp|gif)$/.test(cleanUrl);
 
 ---
 
+### [APP-ALUNO #004] — Redirecionamento e Feedback Incorretos ao Finalizar Lista de Exercícios
+
+* **Data de Identificação:** 10 de setembro de 2026
+* **Identificado durante:** QA da branch `feat/header-cor-da-escola` / `feat/materiais-empty-states` (Validação de Copy "Exercício" vs "Avaliação")
+* **Tipo:** Defeito de Navegação / Inconsistência de UX
+* **Severidade:** **Média**
+* **Arquivos Afetados:**
+  - [`src/hooks/use-finish-exam.ts`](file:///home/israel/Workspace/lize-student/src/hooks/use-finish-exam.ts) (linhas 21 e 33)
+  - [`src/components/test-execution/exam-finished-redirect.tsx`](file:///home/israel/Workspace/lize-student/src/components/test-execution/exam-finished-redirect.tsx) (linhas 12 e 19)
+
+#### 📝 Descrição
+Ao realizar uma **Lista de Exercícios** (iniciada a partir de `/painel/listas-de-exercicio`) e clicar em **"Finalizar"**:
+1. O aluno recebe uma notificação toast genérica: `toast.success("Prova finalizada com sucesso")` (usando o termo *"Prova"* em vez de *"Exercício"*).
+2. O sistema força o redirecionamento via `window.location.href = "/painel/minhas-provas"` (tela de Provas Oficiais).
+3. Como a tela `/painel/minhas-provas` filtra apenas avaliações com categorias 2 e 3 (`category__in: [2, 3]`), a lista recém-concluída **não aparece nessa tela**.
+4. Se o aluno tentar acessar a URL da lista já concluída, o componente `ExamFinishedRedirect` também exibe a mensagem `Prova já finalizada. Redirecionando...` e direciona para `/painel/minhas-provas/${applicationId}`.
+
+**Impacto:** O aluno tem a sensação de que suas respostas sumiram ou fica desorientado por ser levado para a tela de avaliações em vez de retornar para a listagem de onde veio (`/painel/listas-de-exercicio`).
+
+#### 🛠️ Causa Técnica
+O hook `useFinishExam` e o componente `ExamFinishedRedirect` possuem a URL `/painel/minhas-provas` e a mensagem de toast gravadas de forma rígida (*hardcoded*), sem consultar a categoria da aplicação (`category === 4` ou helper `isExerciseListCategory(category)`):
+
+```typescript
+// use-finish-exam.ts (linhas 20-22 e 32-34)
+await lifecycle.finishAttempt();
+toast.success("Prova finalizada com sucesso");
+window.location.href = "/painel/minhas-provas"; // ❌ Hardcoded
+```
+
+#### 💡 Sugestão de Correção
+No hook `useFinishExam` e no componente `ExamFinishedRedirect`, verificar a categoria da aplicação atual (já disponível no store de execução ou via helper `isExerciseListCategory` / `getApplicationCopy`):
+
+```typescript
+// Redirecionamento e mensagem dinâmicos conforme a categoria:
+const isExercise = isExerciseListCategory(category);
+const redirectUrl = isExercise ? "/painel/listas-de-exercicio" : "/painel/minhas-provas";
+const successMessage = isExercise ? "Exercício finalizado com sucesso" : "Prova finalizada com sucesso";
+
+toast.success(successMessage);
+window.location.href = redirectUrl;
+```
+
+---
+
 ## ➕ Como Registrar Novos Bugs Futuros (Template Padrão)
 
 Este documento é um **registro contínuo e cumulativo**. Sempre que você ou outro membro da equipe identificar qualquer bug ou comportamento estranho fora de escopo durante os testes no App do Aluno:
-1. Adicione uma nova linha no **Índice de Ocorrências** no topo (incrementando o ID: `#004`, `#005`, etc.);
+1. Adicione uma nova linha no **Índice de Ocorrências** no topo (incrementando o ID: `#005`, `#006`, etc.);
 2. Cole e preencha o modelo abaixo na seção de **Detalhamento**:
 
 ```markdown
