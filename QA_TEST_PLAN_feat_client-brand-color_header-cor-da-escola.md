@@ -67,10 +67,10 @@
 |---|---|---|---|
 | Admin: Edição do Cliente | Clientes ➔ [Nome do Cliente] | `/admin/clients/client/<uuid>/change/` | `lizeedu` (Django Admin) |
 | API: Dados do Aluno Logado | Payload `/api/v3/user/` | `http://localhost:8000/api/v3/user/` | `lizeedu` (DRF / Auth) |
-| App do Aluno: Home / Início | Início | `http://localhost:5173/painel` | `lize-student` (SPA) |
-| App do Aluno: Minhas Provas | Minhas provas | `http://localhost:5173/painel/minhas-provas` | `lize-student` (SPA) |
-| App do Aluno: Materiais de Estudo | Materiais de estudo | `http://localhost:5173/painel/materiais-de-estudo` | `lize-student` (SPA) |
-| App do Aluno: Pasta da Disciplina | [Nome da Disciplina] | `http://localhost:5173/painel/materiais-de-estudo?disciplineId=<id>` | `lize-student` (SPA) |
+| App do Aluno: Home / Início | Início | `http://localhost:3000/painel` | `lize-student` (SPA) |
+| App do Aluno: Minhas Provas | Minhas provas | `http://localhost:3000/painel/minhas-provas` | `lize-student` (SPA) |
+| App do Aluno: Materiais de Estudo | Materiais de estudo | `http://localhost:3000/painel/materiais-de-estudo` | `lize-student` (SPA) |
+| App do Aluno: Pasta da Disciplina | [Nome da Disciplina] | `http://localhost:3000/painel/materiais-de-estudo?disciplineId=<id>` | `lize-student` (SPA) |
 
 ---
 
@@ -121,12 +121,17 @@ if aluno:
 
 ---
 
-## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
+## 5. Roteiro de Testes com Checkboxes (Dividido por Repositório e Branch)
 
-### 5.1 Backend & Django Admin: Configuração da Cor da Instituição [Automatizável ✅]
-#### Cenário 1 — Validação e Persistência do Campo no Admin
+---
+
+### 🔹 PARTE 1: Backend (`LizeEdu/lizeedu` — Branch: `feat/client-brand-color`)
+> **Ambiente**: Backend rodando via `./manage.py runserver` (porta 8000).  
+> **Escopo desta branch**: Modelo `Client.primary_color`, validação no Django Admin, hook de invalidação de cache e entrega serializada no payload `/api/v3/user/`.
+
+#### Cenário 1 — Validação e Persistência do Campo no Admin [Automatizável ✅]
 - [x] 1. Fazer login no Django Admin (`http://localhost:8000/admin/`) como administrador.
-- [x] 2. Acessar a listagem de "**Clientes**" e clicar em um cliente de teste.
+- [x] 2. Acessar a listagem de "**Clientes**" e clicar em um cliente de teste (ex.: **Rede Decisão**).
 - [x] 3. Localizar o campo "**Cor primária**" na seção de dados gerais.
 - [x] 4. Testar validação com valor inválido: digitar `"azul"` ou `"#12345"` e clicar em "**Salvar**" (botão azul no rodapé).
 - [x] 5. Confirmar que o Django exibe mensagem de erro: `"Informe a cor no formato hexadecimal #RRGGBB (ex.: #1B4DB2)."`.
@@ -137,41 +142,54 @@ if aluno:
 
 ---
 
-### 5.2 App do Aluno — Header com Cor da Escola e Contraste (Desktop & Mobile) [Apenas Manual 👁]
-#### Cenário 2 — Escola com Cor Escura (Ex.: Azul Escuro `#1B4DB2` ou Verde `#0A5C36`)
-- [ ] 1. No Admin, definir a cor primária do cliente para `"#1B4DB2"`.
-- [ ] 2. Abrir o app do aluno (`http://localhost:5173`) e fazer login com o aluno desse cliente.
+### 🔹 PARTE 2: Frontend Header (`LizeEdu/lize-student` — Branch: `feat/header-cor-da-escola`)
+> **Instrução de Setup**: No terminal de `lize-student`, alterne para esta branch:
+> ```bash
+> git checkout feat/header-cor-da-escola
+> bun dev
+> ```
+> **Ambiente**: App do Aluno rodando em `http://localhost:3000`.  
+> **Escopo desta branch**: Degradê dinâmico da instituição no header desktop e mobile, cálculo de contraste de texto/ícone (WCAG) e ocultação do seletor de wallpaper.
+
+#### Cenário 2 — Escola com Cor Escura (Ex.: Azul Escuro `#1B4DB2` ou Verde `#0A5C36`) [Manual 👁]
+- [ ] 1. No Admin (`http://localhost:8000/admin/`), definir a cor primária do cliente para `"#1B4DB2"` e clicar em **Salvar**.
+- [ ] 2. Abrir o app do aluno (`http://localhost:3000`) e fazer login com o aluno desse cliente (`enrico.a53143@aluno.decisaovirtual.com.br`).
 - [ ] 3. Observar a barra superior (Header) na tela de Início (Desktop).
 - [ ] 4. Validar se o header exibe um **degradê suave na tonalidade azul** no lugar da imagem genérica de papel de parede.
 - [ ] 5. Verificar o contraste: textos de boas-vindas, saudação e ícones do header devem estar em **branco / tom claro** legível.
 - [ ] 6. Abrir as ferramentas de desenvolvedor (F12) e alternar para a visão Mobile (ex.: iPhone 14 / 390px).
 - [ ] 7. Recarregar a página e confirmar que o cabeçalho mobile (`mobile-header`) também renderiza o degradê azul com textos brancos legíveis.
 
-#### Cenário 3 — Escola com Cor Clara e Alto Brilho (Ex.: Amarelo Ouro `#FFC700` ou Lima `#C8E600`)
-- [ ] 1. No Admin, alterar a cor primária do cliente para `"#FFC700"`.
-- [ ] 2. Voltar ao app do aluno e atualizar a página (`F5`).
+#### Cenário 3 — Escola com Cor Clara e Alto Brilho (Ex.: Amarelo Ouro `#FFC700` ou Lima `#C8E600`) [Manual 👁]
+- [ ] 1. No Admin, alterar a cor primária do cliente para `"#FFC700"` e clicar em **Salvar**.
+- [ ] 2. Voltar ao app do aluno (`http://localhost:3000`) e atualizar a página (`F5`).
 - [ ] 3. Confirmar que a mudança refletiu imediatamente (cache invalidado sem precisar esperar).
 - [ ] 4. Observar que o degradê do header agora é amarelo.
 - [ ] 5. Validar o cálculo de contraste automático: como o fundo é claro, os textos e ícones devem ter mudado automaticamente para **tom escuro / preto grafite**, mantendo leitura perfeita sem letras brancas ilegíveis.
-- [ ] 6. Confirmar o mesmo contraste no cabeçalho mobile.
+- [ ] 6. Confirmar o mesmo contraste no cabeçalho mobile (DevTools / Mobile).
 
----
-
-### 5.3 App do Aluno — Precedência de Marca vs Papel de Parede do Aluno [Apenas Manual 👁]
-#### Cenário 4 — Ocultação do Seletor de Wallpapers
-- [ ] 1. Estando logado como aluno de cliente com cor definida (`#1B4DB2`), clicar no avatar / menu de perfil no canto superior direito do header.
+#### Cenário 4 — Precedência de Marca vs Papel de Parede do Aluno [Manual 👁]
+- [ ] 1. Estando logado como aluno de cliente com cor definida (`#1B4DB2`), clicar no avatar / menu de perfil ou no botão de temas no canto superior direito do header.
 - [ ] 2. Observar as opções do menu dropdown.
 - [ ] 3. Validar que o **seletor de papéis de parede (galeria com miniaturas)** NÃO está visível (oculto para respeitar a identidade visual da escola).
-- [ ] 4. No Django Admin, apagar a cor primária do cliente (salvar vazio).
+- [ ] 4. No Django Admin, apagar a cor primária do cliente (deixar vazio e clicar em **Salvar**).
 - [ ] 5. Atualizar o app do aluno (`F5`).
-- [ ] 6. Confirmar que o header voltou a exibir o papel de parede clássico (foto).
-- [ ] 7. Clicar novamente no menu de perfil do aluno e validar que o **seletor de papéis de parede reapareceu** normalmente.
+- [ ] 6. Confirmar que o header voltou a exibir o papel de parede clássico (foto/arte).
+- [ ] 7. Clicar novamente no menu de temas do aluno e validar que o **seletor de papéis de parede reapareceu** normalmente.
 
 ---
 
-### 5.4 App do Aluno — Materiais de Estudo: Empty States e Filtros [Apenas Manual 👁]
-#### Cenário 5 — Validação das Variantes de Empty States
-- [ ] 1. No app do aluno, clicar no item "**Materiais de estudo**" na barra lateral de navegação.
+### 🔹 PARTE 3: Frontend Materiais & Copy (`LizeEdu/lize-student` — Branch: `feat/materiais-empty-states`)
+> **Instrução de Setup**: No terminal de `lize-student`, você pode manter `feat/header-cor-da-escola` (que já herda todos os commits de materiais) ou alternar isoladamente para:
+> ```bash
+> git checkout feat/materiais-empty-states
+> bun dev
+> ```
+> **Ambiente**: App do Aluno rodando em `http://localhost:3000`.  
+> **Escopo desta branch**: 5 variantes especializadas de Empty States, filtro por "Tipo de arquivo" em pastas de disciplinas, clique direto para abrir material e diferenciação de copy para Listas de Exercícios.
+
+#### Cenário 5 — Materiais de Estudo: Validação das Variantes de Empty States [Manual 👁]
+- [ ] 1. No app do aluno, clicar no item "**Materiais de estudo**" (`/painel/materiais-de-estudo`) na barra lateral de navegação.
 - [ ] 2. **Variante 1 (Pasta Vazia):** Clicar em uma pasta de disciplina que você sabe que não possui materiais cadastrados.
 - [ ] 3. Validar se a tela exibe o container pontilhado com ícone de pasta fechada, título `"Nenhum material nesta pasta"`, descrição explicativa e o botão `"**Voltar para o início**"`.
 - [ ] 4. Clicar no botão `"**Voltar para o início**"` e validar se a navegação retorna à raiz dos materiais.
@@ -181,7 +199,7 @@ if aluno:
 - [ ] 8. **Variante 3 (Sem Favoritos):** Ligar o filtro de "**Favoritos**" (ícone de estrela) quando nenhum material estiver favoritado.
 - [ ] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`.
 
-#### Cenário 6 — Filtro "Tipo de arquivo" e Clique Direto
+#### Cenário 6 — Filtro "Tipo de arquivo" e Clique Direto [Manual 👁]
 - [ ] 1. Na listagem de materiais, entrar em uma pasta de disciplina que contenha arquivos (ex.: Matemática).
 - [ ] 2. Observar os filtros superiores da barra de ferramentas.
 - [ ] 3. Validar que o filtro de "**Disciplina**" sumiu e em seu lugar está o filtro "**Tipo de arquivo**" (com opções como Vídeo, Documento, Outro).
@@ -189,10 +207,7 @@ if aluno:
 - [ ] 5. Clicar diretamente sobre o título / nome de um material.
 - [ ] 6. Validar se o arquivo abre diretamente (download ou visualizador/modal de vídeo), sem etapas desnecessárias.
 
----
-
-### 5.5 App do Aluno — Ajuste de Copy ("Exercício" vs "Avaliação") [Apenas Manual 👁]
-#### Cenário 7 — Diferenciação de Vocabulário por Categoria
+#### Cenário 7 — App do Aluno: Ajuste de Copy ("Exercício" vs "Avaliação") [Manual 👁]
 - [ ] 1. No app do aluno, acessar a tela "**Minhas provas**" (`/painel/minhas-provas`).
 - [ ] 2. Localizar um card de **Prova Regular** (Avaliação):
   - [ ] O botão de ação deve dizer `"**iniciar avaliação**"` ou `"**Iniciar prova**"`.
@@ -203,10 +218,7 @@ if aluno:
   - [ ] Ao clicar no modal de confirmação para refazer, o título deve ser `"**Deseja realmente refazer este exercício?**"`.
 - [ ] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.
 
----
-
-### 5.6 Usabilidade Mobile e Toque (Touch Check) [Apenas Manual 👁]
-#### Cenário 8 — Comportamento de Toque sem "Hover Preso"
+#### Cenário 8 — Usabilidade Mobile e Toque (Touch Check) [Manual 👁]
 - [ ] 1. Em dispositivo móvel real ou simulador com Touch Emulation ativado no DevTools:
 - [ ] 2. Tocar nos cards de materiais de estudo e cards de provas.
 - [ ] 3. Validar que o toque dispara a ação imediatamente sem ficar com estado visual travado de "hover persistente" (bordas ou sombras presas que só desativam ao tocar fora).
