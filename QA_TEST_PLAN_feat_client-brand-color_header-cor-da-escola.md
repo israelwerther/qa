@@ -204,11 +204,11 @@ if aluno:
 - [x] 2. Observar os filtros superiores da barra de ferramentas.
 - [x] 3. Validar que o filtro de "**Disciplina**" sumiu e em seu lugar está o filtro "**Tipo de arquivo**" (com opções como Vídeo, Documento, Outro).![alt text](evidencias/image-2.png)
 - [x] 4. Selecionar um tipo específico (ex.: "Vídeo") e confirmar que a filtragem reage na hora.
-- [ ] 5. Clicar diretamente sobre o título / nome de um material.
-- [ ] 6. Validar se o arquivo abre diretamente (download ou visualizador/modal de vídeo), sem etapas desnecessárias.
+- [x] 5. Clicar diretamente sobre o título / nome de um material.
+- [x] 6. Validar se o arquivo abre diretamente (download ou visualizador/modal de vídeo), sem etapas desnecessárias.
 
 #### Cenário 7 — App do Aluno: Ajuste de Copy ("Exercício" vs "Avaliação") [Manual 👁]
-- [ ] 1. No app do aluno, acessar a tela "**Minhas provas**" (`/painel/minhas-provas`).
+- [x] 1. No app do aluno, acessar a tela "**Minhas provas**" (`/painel/minhas-provas`).
 - [ ] 2. Localizar um card de **Prova Regular** (Avaliação):
   - [ ] O botão de ação deve dizer `"**iniciar avaliação**"` ou `"**Iniciar prova**"`.
   - [ ] Caso já realizada, deve indicar `"**prova já realizada**"`.
