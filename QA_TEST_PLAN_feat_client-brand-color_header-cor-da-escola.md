@@ -200,10 +200,10 @@ if aluno:
 - [x] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`. ![alt text](./evidencias/image.png)
 
 #### Cenário 6 — Filtro "Tipo de arquivo" e Clique Direto [Manual 👁]
-- [ ] 1. Na listagem de materiais, entrar em uma pasta de disciplina que contenha arquivos (ex.: Matemática).
-- [ ] 2. Observar os filtros superiores da barra de ferramentas.
-- [ ] 3. Validar que o filtro de "**Disciplina**" sumiu e em seu lugar está o filtro "**Tipo de arquivo**" (com opções como Vídeo, Documento, Outro).
-- [ ] 4. Selecionar um tipo específico (ex.: "Vídeo") e confirmar que a filtragem reage na hora.
+- [x] 1. Na listagem de materiais, entrar em uma pasta de disciplina que contenha arquivos (ex.: Matemática).
+- [x] 2. Observar os filtros superiores da barra de ferramentas.
+- [x] 3. Validar que o filtro de "**Disciplina**" sumiu e em seu lugar está o filtro "**Tipo de arquivo**" (com opções como Vídeo, Documento, Outro).![alt text](evidencias/image-2.png)
+- [x] 4. Selecionar um tipo específico (ex.: "Vídeo") e confirmar que a filtragem reage na hora.
 - [ ] 5. Clicar diretamente sobre o título / nome de um material.
 - [ ] 6. Validar se o arquivo abre diretamente (download ou visualizador/modal de vídeo), sem etapas desnecessárias.
 
