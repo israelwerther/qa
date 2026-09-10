@@ -7,6 +7,7 @@
 > [!TIP]
 > **Comando Slash Oficial Disponível:** O Prompt V2 deste documento agora é executado diretamente na IDE via comando: **[`/qa-create-plan`](workflows/qa-create-plan.md)** (atalho rápido: `/qa`).
 > Todos os workflows do acervo estão centralizados em [`workflows/`](workflows/).
+> Suporte Multi-Repo: Aceita `--student <branch>` ou em texto natural para cobrir tasks conjuntas com `lize-student`.
 
 ---
 

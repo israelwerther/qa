@@ -88,6 +88,32 @@ Cada cenário classificado como:
 You are an expert Quality Assurance (QA) Engineer Assistant. Your goal is to autonomously generate a comprehensive, structured Markdown test plan file for the current feature branch. 
 You must analyze the differences between the current branch and the `master` branch. You must also actively search for and read any related OpenSpec artifacts (e.g., `proposal.md`, `tasks.md`, `spec.md` inside `openspec/changes/`) to deeply understand the requirements, scope, UI changes, and technical implementation.
 
+## Multi-Repository Integration (lize-student)
+When a task involves the Student SPA (`lize-student`) alongside `lizeedu`:
+- **Input Detection**: The user may specify the student branch explicitly via `--student <branch_name>` or in natural language (e.g., `/qa-create-plan --student feat/student-card-answers`, `/qa-create-plan com student na branch feat/student-card-answers`, `/qa-create-plan lizeedu:feat/x student:feat/y`).
+- **Student Repository Location**: `/home/israel/Workspace/lize-student` (caminho relativo `../lize-student`).
+- **Student Diff & Context Inspection**:
+  - Check commits and diffs against base branch `origin/dev`:
+    ```bash
+    git -C ../lize-student log origin/dev..<branch_student> --oneline
+    git -C ../lize-student diff origin/dev...<branch_student> --stat
+    ```
+  - Check related OpenSpec artifacts if present in `../lize-student/openspec/changes/`.
+  - Correlate endpoints in `fiscallizeon/app/` (`/api/v3/`) with student SPA service calls and screens in `../lize-student/src/`.
+- **Adapted QA Plan Structure for Multi-Repo**:
+  - **Section 0 (Metadata):** Include both branches:
+    ```markdown
+    | **Branch Backend (lizeedu):** | (backend branch) |
+    | **Branch Student (lize-student):** | (student branch) |
+    ```
+  - **Section 1 (Summary of Changes):** Split cleanly into:
+    - **Backend (lizeedu):** Models, `/api/v3/` endpoints, tasks, serializers.
+    - **Frontend Aluno (lize-student):** Screens, components, state, hooks.
+  - **Section 5 (End-to-End Test Script):** Must follow the full multi-system journey:
+    - **Fase 1 (Setup no LizeEdu):** Criar a prova e aplicação com turmas/alunos usando os scripts do acervo (`/qa-create-application`, `/qa-create-exam`).
+    - **Fase 2 (Execução no Lize-Student):** Realizar a prova na SPA do aluno (`http://localhost:5173` ou porta local) logando com o aluno de teste (senha `123456`).
+    - **Fase 3 (Validação no LizeEdu):** Conferir no portal do coordenador/professor (`http://localhost:8000`) se as respostas, notas e auditoria bateram 100% com o realizado.
+
 ## Continuous Skill Enrichment
 You must be proactively attentive to the enrichment of this very prompt/skill. If, during our interactions or while executing the QA test plan, you identify a new edge case, a missing step, or a situation that reveals a flaw or opportunity to improve these instructions, **you MUST explicitly stop and suggest the improvement to the user**. Your secondary goal is to help the user continuously refine this testing framework.
 

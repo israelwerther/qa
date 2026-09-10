@@ -62,11 +62,14 @@ Núcleo operacional do acervo. Analisa a branch ativa contra a `master`, consult
 - Sugestão e amarração de comandos geradores do acervo para setup rápido
 - Roteiro humano focado em confirmações visuais e rótulos literais
 - Camada técnica desacoplada e atualização de mapeamentos em `docs/tests/usability/`
+- **Suporte Multi-Repo (`lize-student`):** Analisa tarefas conjuntas entre o backend (`lizeedu`) e o app do aluno (`lize-student`), gerando roteiros End-to-End completos.
 
 **Como usar:**
 - **Slash Command na IDE:** `/qa-create-plan [opções]` *(ou pelo atalho rápido `/qa`)*
-  - *Exemplo:* `/qa-create-plan` (analisa a branch atual)
-  - *Exemplo:* `/qa-create-plan feat/minha-feature`
+  - *Exemplo (simples):* `/qa-create-plan` (analisa a branch atual)
+  - *Exemplo (branch específica):* `/qa-create-plan feat/minha-feature`
+  - *Exemplo (Multi-Repo via flag):* `/qa-create-plan --student feat/minha-feature-student`
+  - *Exemplo (Multi-Repo em texto livre):* `/qa-create-plan com student na branch feat/cartao-resposta`
 
 ---
 
