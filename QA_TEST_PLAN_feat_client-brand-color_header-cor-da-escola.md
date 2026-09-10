@@ -216,7 +216,7 @@ if aluno:
   - [x] O botão de ação deve exibir obrigatoriamente `"**iniciar exercício**"` (e NÃO "iniciar avaliação").
   - [x] Se já realizado, deve exibir `"**exercício já realizado**"`.![alt text](evidencias/image-5.png)
   - [x] Ao clicar no modal de confirmação para refazer, o título deve ser `"**Deseja realmente refazer este exercício?**"`.![alt text](evidencias/image-4.png)
-- [ ] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.
+- [ ] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.![alt text](evidencias/image-6.png)
 
 #### Cenário 8 — Usabilidade Mobile e Toque (Touch Check) [Manual 👁]
 - [ ] 1. Em dispositivo móvel real ou simulador com Touch Emulation ativado no DevTools:
