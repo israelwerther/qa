@@ -126,3 +126,22 @@ Reseta senhas de usuários para acesso em ambientes locais de teste:
   ```bash
   ./.ai_qa_acervo/scripts/maintenance/reset-passwords.sh
   ```
+
+---
+
+### 5. Exportar Plano com Evidências para PDF (`/qa-export-pdf`)
+Compila o plano de testes `.md` em um **relatório PDF consolidado** de alta qualidade, pronto para envio ao ClickUp:
+- **Colagem automática de prints:** Ao tirar um print da tela e pressionar `Ctrl + V` dentro de qualquer Markdown do acervo, a imagem é salva automaticamente dentro da pasta `evidencias/` e a tag Markdown é inserida na linha do cursor.
+- **Git limpo e imune a inchaço:** As pastas `evidencias/` e `exports/`, bem como arquivos binários (`*.png`, `*.jpg`, `*.pdf`), estão no `.gitignore` do acervo. O repositório Git versiona apenas texto leve.
+- **Imagens embutidas em Base64:** O script converte todas as capturas locais em dados Base64 autocontidos dentro do PDF. Quem abrir o PDF no ClickUp ou navegador vê todos os prints nítidos sem depender de links externos.
+- **Saída organizada em `exports/`:** O arquivo PDF final é gerado em `.ai_qa_acervo/exports/`, pronto para ser arrastado para a tarefa do ClickUp.
+
+**Como usar:**
+- **Slash Command na IDE:** `/qa-export-pdf [caminho-do-plano.md]` *(ou atalho rápido `/qa-export`)*
+  - *Exemplo:* `/qa-export-pdf` (detecta o plano aberto na IDE ou o mais recente)
+  - *Exemplo:* `/qa-export-pdf QA_TEST_PLAN_feat_minha-feature.md`
+- **Linha de comando:**
+  ```bash
+  ./.ai_qa_acervo/scripts/export-plan-pdf.sh QA_TEST_PLAN_feat_minha-feature.md
+  ```
+
