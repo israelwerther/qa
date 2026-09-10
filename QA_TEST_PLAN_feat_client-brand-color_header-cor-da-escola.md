@@ -219,10 +219,10 @@ if aluno:
 - [ ] 4. Na tela inicial (**Início**), se houver apenas listas de exercícios agendadas, o card de aviso deve exibir: `"**Você tem novas listas de exercício agendadas**"`.![alt text](evidencias/image-6.png)
 
 #### Cenário 8 — Usabilidade Mobile e Toque (Touch Check) [Manual 👁]
-- [ ] 1. Em dispositivo móvel real ou simulador com Touch Emulation ativado no DevTools:
-- [ ] 2. Tocar nos cards de materiais de estudo e cards de provas.
-- [ ] 3. Validar que o toque dispara a ação imediatamente sem ficar com estado visual travado de "hover persistente" (bordas ou sombras presas que só desativam ao tocar fora).
-- [ ] 4. Validar que a rolagem vertical da página inicial e da listagem de materiais flui suavemente sem quebras de layout.
+- [x] 1. Em dispositivo móvel real ou simulador com Touch Emulation ativado no DevTools:
+- [x] 2. Tocar nos cards de materiais de estudo e cards de provas.
+- [x] 3. Validar que o toque dispara a ação imediatamente sem ficar com estado visual travado de "hover persistente" (bordas ou sombras presas que só desativam ao tocar fora).
+- [x] 4. Validar que a rolagem vertical da página inicial e da listagem de materiais flui suavemente sem quebras de layout.
 
 ---
 

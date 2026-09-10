@@ -16,6 +16,7 @@
 | **#003** | 10/09/2026 | Materiais de Estudo (`/painel/materiais-de-estudo/$id`) | Ausência de visualização inline para arquivos de imagem (JPEG/PNG) | **Baixa** | ⏳ Aguardando Pauta |
 | **#004** | 10/09/2026 | Execução de Provas/Listas (`/provas/$id`) | Redirecionamento e toast incorretos ao finalizar Lista de Exercícios (manda para `/painel/minhas-provas`) | **Média** | ⏳ Aguardando Pauta |
 | **#005** | 10/09/2026 | Navegação Mobile (`AppSidebar`) | Menu lateral mobile não fecha automaticamente ao selecionar um item | **Média** | ⏳ Aguardando Pauta |
+| **#006** | 10/09/2026 | Listagens (`ExamTabs` / `minhas-provas` / `listas-de-exercicio`) | Alternar abas de status reseta o scroll para o topo da página (scroll jump forçado) | **Média** | ⏳ Aguardando Pauta |
 
 ---
 
@@ -208,10 +209,37 @@ useEffect(() => {
 
 ---
 
+### [APP-ALUNO #006] — Alternar Abas de Provas/Exercícios Reseta o Scroll para o Topo
+
+* **Data de Identificação:** 10 de setembro de 2026
+* **Identificado durante:** QA da branch `feat/header-cor-da-escola` (Cenário 8)
+* **Tipo:** Defeito de Usabilidade / Scroll
+* **Severidade:** **Média**
+* **Vídeo do Problema (Jam):** [https://jam.dev/c/2a39a37a-58d3-4386-94bb-f789b2640bf0](https://jam.dev/c/2a39a37a-58d3-4386-94bb-f789b2640bf0)
+* **Arquivos:** [`src/routes/_app/painel/listas-de-exercicio.tsx`](file:///home/israel/Workspace/lize-student/src/routes/_app/painel/listas-de-exercicio.tsx), [`src/routes/_app/painel/minhas-provas.index.tsx`](file:///home/israel/Workspace/lize-student/src/routes/_app/painel/minhas-provas.index.tsx)
+
+#### 📝 Descrição
+Ao clicar em qualquer aba (*"Disponíveis"*, *"Realizados"*, *"Agendados"*), a página reseta o scroll e salta imediatamente para o topo `(y: 0)`, obrigando o aluno a rolar tudo para baixo novamente para enxergar os cards.
+
+#### 💡 Sugestão de Correção
+Passar `resetScroll: false` na navegação de parâmetros de busca do TanStack Router:
+```typescript
+navigate({ search: updater, resetScroll: false })
+```
+
+#### 📸 Evidências
+* 🎬 **Gravação Jam:** [Assistir reprodução completa](https://jam.dev/c/2a39a37a-58d3-4386-94bb-f789b2640bf0)
+
+| Momento 1: Clicando na aba | Momento 2: Salto forçado para o topo |
+| :---: | :---: |
+| ![Momento 1: Clicando na aba](./evidencias/tab-scroll-reset-moment-1.png) | ![Momento 2: Salto forçado para o topo](./evidencias/tab-scroll-reset-moment-2.png) |
+
+---
+
 ## ➕ Como Registrar Novos Bugs Futuros (Template Padrão)
 
 Este documento é um **registro contínuo e cumulativo**. Sempre que você ou outro membro da equipe identificar qualquer bug ou comportamento estranho fora de escopo durante os testes no App do Aluno:
-1. Adicione uma nova linha no **Índice de Ocorrências** no topo (incrementando o ID: `#006`, `#007`, etc.);
+1. Adicione uma nova linha no **Índice de Ocorrências** no topo (incrementando o ID: `#007`, `#008`, etc.);
 2. Cole e preencha o modelo abaixo na seção de **Detalhamento**:
 
 ```markdown
