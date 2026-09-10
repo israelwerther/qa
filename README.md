@@ -66,7 +66,7 @@ Núcleo operacional do acervo. Analisa a branch ativa contra a `master`, consult
 - **Suporte Multi-Repo (`lize-student`):** Analisa tarefas conjuntas entre o backend (`lizeedu`) e o app do aluno (`lize-student`), gerando roteiros End-to-End completos.
 
 **Como usar:**
-- **Slash Command na IDE:** `/qa-create-plan [opções]` *(ou pelo atalho rápido `/qa`)*
+- **Slash Command na IDE:** `/qa-create-plan [opções]`
   - *Exemplo (simples):* `/qa-create-plan` (analisa a branch atual)
   - *Exemplo (branch específica):* `/qa-create-plan feat/minha-feature`
   - *Exemplo (Multi-Repo via flag):* `/qa-create-plan --student feat/minha-feature-student`
