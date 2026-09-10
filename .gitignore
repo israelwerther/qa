@@ -2,3 +2,12 @@
 files/
 bin/files/
 *.pdf
+
+# Evidências e capturas locais de testes (não versionar no Git para evitar inchaço)
+evidencias/
+exports/
+*.png
+*.jpg
+*.jpeg
+*.webp
+

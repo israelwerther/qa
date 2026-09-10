@@ -197,7 +197,7 @@ if aluno:
 - [x] 6. Validar se a tela exibe o empty state com ícone de lupa, título `"Nenhum resultado para "qwertyxyz123""` e o botão `"**Limpar busca**"`.
 - [x] 7. Clicar no botão `"**Limpar busca**"` e confirmar que o campo é limpo e a listagem normal é restaurada.
 - [x] 8. **Variante 3 (Sem Favoritos):** Ligar o filtro de "**Favoritos**" (ícone de estrela) quando nenhum material estiver favoritado.
-- [x] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`.
+- [x] 9. Validar a exibição da mensagem `"Você ainda não tem materiais favoritos"` e o botão `"**Ver todos os materiais**"`. ![alt text](image.png)
 
 #### Cenário 6 — Filtro "Tipo de arquivo" e Clique Direto [Manual 👁]
 - [ ] 1. Na listagem de materiais, entrar em uma pasta de disciplina que contenha arquivos (ex.: Matemática).

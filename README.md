@@ -49,7 +49,8 @@ A pasta `scripts/` está organizada por domínios de responsabilidade:
 │   ├── reset_passwords.py        # Reset de senhas (123456), desativação de 2FA e limpeza de sessões
 │   └── reset-passwords.sh       # Wrapper executável com detecção de venv
 ├── setup-tasks.sh                # Script de bootstrap do ambiente e slash commands
-└── start-pdf-service.sh          # Serviço local de PDF
+├── start-pdf-service.sh          # Serviço local de PDF
+└── export-plan-pdf.sh            # Exportação de plano de testes Markdown para PDF autocontido (em exports/)
 ```
 
 ---
