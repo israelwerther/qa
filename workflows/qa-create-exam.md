@@ -33,13 +33,31 @@ Analise o texto fornecido pelo usuário e extraia os seguintes parâmetros:
 - **Usuário (`-u`)**: Se omitido, o script detecta o usuário da sessão ativa no localhost (ou usa `fiscallize_geral` como fallback).
 
 ### 2. Executar o Script de Criação
-Construa o comando chamando o script do acervo com os argumentos interpretados:
+Construa o comando chamando o script do acervo com os argumentos interpretados.
 
+**Detecção automática do ambiente:** verifique se o container Docker `web` do projeto está em execução (`docker compose ps web`). Se estiver, execute dentro do container; caso contrário, execute via venv local.
+
+#### Opção A — Dentro do Docker (quando o container `web` está ativo)
+```bash
+docker compose exec web python /code/.ai_qa_acervo/scripts/generators/create_exam.py [FLAGS]
+```
+
+> **Agentes (sem TTY):** sempre passe `--no-tty` no wrapper, ou use `docker compose exec --no-TTY`:
+> ```bash
+> docker compose exec --no-TTY web python /code/.ai_qa_acervo/scripts/generators/create_exam.py [FLAGS]
+> ```
+
+*Exemplo (Docker):*
+```bash
+docker compose exec --no-TTY web python /code/.ai_qa_acervo/scripts/generators/create_exam.py -n "[QA] Simulado Híbrido" -obj 5 -disc 2 -ess 1 -rq -ra
+```
+
+#### Opção B — Local via venv (quando NÃO há container Docker)
 ```bash
 ./venv/bin/python .ai_qa_acervo/scripts/generators/create_exam.py [FLAGS]
 ```
 
-*Exemplo:*
+*Exemplo (local):*
 ```bash
 ./venv/bin/python .ai_qa_acervo/scripts/generators/create_exam.py -n "[QA] Simulado Híbrido" -obj 5 -disc 2 -ess 1 -rq -ra
 ```
