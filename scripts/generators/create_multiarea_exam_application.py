@@ -67,6 +67,7 @@ def create_multiarea_application():
 
     # 2. Seleciona ou cria Disciplinas em 3 Áreas distintas
     sub_bio = Subject.objects.filter(client=client, name__icontains='Biologia').first()
+    sub_qui = Subject.objects.filter(client=client, name__icontains='Química').first()
     sub_his = Subject.objects.filter(client=client, name__icontains='História').first()
     sub_mat = Subject.objects.filter(client=client, name__icontains='Aprofundamento de Matemática').first()
     if not sub_mat:
@@ -76,15 +77,19 @@ def create_multiarea_application():
         raise ValueError("Não foram encontradas disciplinas de Biologia, História e Matemática para o cliente.")
 
     area_bio = sub_bio.knowledge_area.name if sub_bio.knowledge_area else "Ciências da Natureza"
+    area_qui = sub_qui.knowledge_area.name if sub_qui and sub_qui.knowledge_area else area_bio
     area_his = sub_his.knowledge_area.name if sub_his.knowledge_area else "Ciências Humanas"
     area_mat = sub_mat.knowledge_area.name if sub_mat.knowledge_area else "Matemática e suas Tecnologias"
 
     print(f"🔬 Matéria 1: {sub_bio.name} ➔ Área: {area_bio}")
-    print(f"🏛️ Matéria 2: {sub_his.name} ➔ Área: {area_his}")
-    print(f"📐 Matéria 3: {sub_mat.name} ➔ Área: {area_mat}")
+    if sub_qui:
+        print(f"🧪 Matéria 2: {sub_qui.name} ➔ Área: {area_qui}")
+    print(f"🏛️ Matéria 3: {sub_his.name} ➔ Área: {area_his}")
+    print(f"📐 Matéria 4: {sub_mat.name} ➔ Área: {area_mat}")
 
     # TeacherSubjects já existentes para as matérias
     ts_bio = TeacherSubject.objects.filter(subject=sub_bio).first()
+    ts_qui = TeacherSubject.objects.filter(subject=sub_qui).first() if sub_qui else None
     ts_his = TeacherSubject.objects.filter(subject=sub_his).first()
     ts_mat = TeacherSubject.objects.filter(subject=sub_mat).first()
     teacher_user = (ts_bio.teacher.user if ts_bio and ts_bio.teacher else None) or User.objects.filter(is_superuser=True).first() or enrico_user
@@ -115,154 +120,122 @@ def create_multiarea_application():
     ets_bio = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_bio, grade=grade, order=1, quantity=3, subject_note=5.0)
     ets_his = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_his, grade=grade, order=2, quantity=3, subject_note=5.0)
     ets_mat = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_mat, grade=grade, order=3, quantity=3, subject_note=5.0)
+    ets_qui = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_qui or ts_bio, grade=grade, order=4, quantity=1, subject_note=5.0)
 
-    # 4. Questões
-    # Dados de 6 questões com enunciados limpos e didáticos
+    # ==============================================================================
+    # CATÁLOGO DE QUESTÕES DE REFERÊNCIA PARA CASOS EXTREMOS / FORMAS COMPLEXAS
+    # Diretriz de QA: É expressamente proibido criar questões mock/sintéticas via
+    # código para testes de visualização, cards, drawers e relatórios. Deve-se usar
+    # exclusivamente questões reais do banco para evitar viés (evita enviezamentos).
+    # ==============================================================================
+    REFERENCE_EDGE_CASE_QUESTIONS = {
+        "math_formulas_mathml": {
+            "id": "0d6f2abc-d76d-4cec-9481-fe757f0ce360",
+            "title": "Fórmulas matemáticas com MathML nativo",
+            "description": "Enunciado com tags <math> logo no início e alternativas com frações.",
+            "notes": "Valida se strip_tags limpa tags <math> gerando excerpt legível e se o Drawer renderiza as fórmulas.",
+        },
+        "chemistry_base64_image": {
+            "id": "3d124dcc-964e-4ed5-9a74-2c44fdd172e5",
+            "title": "Imagem inline em Base64 no início do enunciado",
+            "description": "Enunciado inicia com <img src='data:image/png;base64,...'>.",
+            "notes": "Valida se strip_tags descarta a cadeia Base64 do excerpt e se o Drawer renderiza a imagem inline.",
+        },
+        "chemistry_cdn_image": {
+            "id": "c0fa7391-d699-4ea2-b778-9dff6f30776c",
+            "title": "Imagem remota CDN no início do enunciado",
+            "description": "Enunciado com imagem hospedada no DigitalOcean Spaces.",
+            "notes": "Valida carregamento de asset externo remoto no Drawer e limpeza da tag <img> no card.",
+        },
+        "math_latex_legacy": {
+            "id": "444cfbcd-b2b2-4a5c-afa7-d7ce20fa6708",
+            "title": "LaTeX cru sem delimitadores MathJax (caso legado de banco)",
+            "description": "Enunciado com macros LaTeX puras sem delimitadores $ ou \\(.",
+            "notes": "Exemplo real de questão com LaTeX cru no banco de dados.",
+        },
+    }
+
+    # 4. Questões (100% REAIS DO BANCO DE DADOS - ZERO DADOS SINTÉTICOS)
     questions_config = [
-        # Biologia (Natureza)
+        # Biologia (Natureza) - 3 Questões Reais do Banco
         {
             "ets": ets_bio,
-            "subject": sub_bio,
-            "enunciation": "<p>Em uma população de borboletas da espécie <i>Heliconius</i>, a seleção natural atua na coloração das asas para mimetismo com espécies tóxicas.</p>",
-            "options": [
-                ("Mimetismo milleriano", True),
-                ("Deriva genética aleatória", False),
-                ("Efeito fundador populacional", False),
-                ("Seleção direcional artificial", False),
-            ],
+            "question_id": "5b15fe1e-cd9b-44ef-9343-b41aa56fd9a7", # Cobra-coral
             "enrico_hit": True, # Enrico Acerta (Q1)
         },
         {
             "ets": ets_bio,
-            "subject": sub_bio,
-            "enunciation": "<p>Durante a fase fotoquímica da fotossíntese nos tilacoides dos cloroplastos, a quebra de moléculas sob ação da luz gera oxigênio gasoso.</p>",
-            "options": [
-                ("Ciclo de Calvin-Benson", False),
-                ("Fotólise da água", True),
-                ("Fosforilação oxidativa mitocondrial", False),
-                ("Quimiossíntese bacteriana", False),
-            ],
+            "question_id": "321b93c2-1be2-4989-96cf-81ba18daf937", # Tico-tico
             "enrico_hit": False, # Enrico Erra (Q2) -> Vai para "Questões para revisar"!
         },
         {
             "ets": ets_bio,
-            "subject": sub_bio,
-            "enunciation": "<p>A membrana plasmática possui permeabilidade seletiva, estruturada pelo modelo do mosaico fluido composto de bicamada fosfolipídica.</p>",
-            "options": [
-                ("Fosfolipídios e proteínas integrais", True),
-                ("Parede celulósica impermeável", False),
-                ("Monocamada lipídica com quitina", False),
-                ("Rede glicídica exclusiva", False),
-            ],
+            "question_id": "ecc35735-0c1e-4ddf-81ce-5bbfe47da3d6", # Pássaros e nicho ecológico
             "enrico_hit": True, # Enrico Acerta (Q3)
         },
-        # História (Humanas)
+        # História (Humanas) - 3 Questões Reais do Banco
         {
             "ets": ets_his,
-            "subject": sub_his,
-            "enunciation": "<p>A Declaração dos Direitos do Homem e do Cidadão, promulgada em 1789, consagrou princípios fundamentais da Revolução Francesa.</p>",
-            "options": [
-                ("Liberdade, igualdade e soberania popular", True),
-                ("Manutenção dos privilégios do Primeiro Estado", False),
-                ("Restauração do absolutismo monárquico", False),
-                ("Divisão feudal das propriedades agrárias", False),
-            ],
+            "question_id": "e4122998-509a-4657-9fed-6c2f77595cbe", # República Anos 20
             "enrico_hit": True, # Enrico Acerta (Q4)
         },
         {
             "ets": ets_his,
-            "subject": sub_his,
-            "enunciation": "<p>Durante a Guerra Fria, a rivalidade geopolítica e ideológica entre EUA e URSS desencadeou alianças militares estratégicas.</p>",
-            "options": [
-                ("Tratado de Versalhes e Liga das Nações", False),
-                ("Pacto de Varsóvia e OTAN", True),
-                ("Conferência de Berlim e Santa Aliança", False),
-                ("Acordo de Bretton Woods e Mercosul", False),
-            ],
+            "question_id": "75a157b0-8cbb-4bc0-9ad2-f27106b73d6e", # Conceito de revolução
             "enrico_hit": False, # Enrico Erra (Q5) -> Vai para "Questões para revisar"!
         },
         {
             "ets": ets_his,
-            "subject": sub_his,
-            "enunciation": "<p>A crise de 1929 nos Estados Unidos teve como estopim o colapso da Bolsa de Valores de Nova York, impulsionada por superprodução e especulação.</p>",
-            "options": [
-                ("Quebra da Bolsa de Nova York e New Deal", True),
-                ("Início imediato da Guerra da Coreia", False),
-                ("Estatização completa dos meios de produção", False),
-                ("Fim do padrão-ouro na Europa no século XIX", False),
-            ],
+            "question_id": "7abecd4a-30a3-4f52-9f1c-65dcbbebdd58", # Fato histórico
             "enrico_hit": True, # Enrico Acerta (Q6)
         },
-        # Matemática (Exagerando em fórmulas LaTeX e tags HTML logo no início!)
+        # Matemática (Matemática) - Questão de Referência com Fórmulas MathML
         {
             "ets": ets_mat,
-            "subject": sub_mat,
-            "enunciation": "<p>$$\\lim_{x \\to 0} \\frac{\\sin(x)}{x} = 1$$ e $$\\int_{0}^{\\pi} \\cos(x) \\, dx = 0$$. Considerando o limite fundamental trigonométrico e o cálculo infinitesimal, determine o comportamento da função \\( f(x) = \\frac{\\sin(x)}{x} \\) nas vizinhanças da origem.</p>",
-            "options": [
-                ("O limite converge para 1 configurando ponto de descontinuidade removível", True),
-                ("A função diverge para o infinito positivo assintótico", False),
-                ("O valor do limite oscila de forma indeterminada entre -1 e +1", False),
-                ("A derivada primeira é identicamente nula em todos os pontos reais", False),
-            ],
-            "enrico_hit": True, # Enrico Acerta (Q7)
+            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["math_formulas_mathml"]["id"], # 0d6f2abc
+            "enrico_hit": False, # Enrico Erra (Q7) -> Vai para "Questões para revisar"!
         },
         {
             "ets": ets_mat,
-            "subject": sub_mat,
-            "enunciation": "<p><b>[Cálculo Diferencial]</b> Com base na fórmula quadrática $$x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$$ com discriminante \\(\\Delta = b^2 - 4ac < 0\\), determine o conjunto solução no corpo dos números complexos \\(\\mathbb{C}\\).</p>",
-            "options": [
-                ("O polinômio admite duas raízes complexas conjugadas da forma z = a + bi", True),
-                ("Existem duas raízes reais e estritamente distintas sobre o eixo das abscissas", False),
-                ("Existe uma única raiz real com multiplicidade algébrica dois", False),
-                ("O conjunto de autovalores é vazio no espaço vetorial euclidiano", False),
-            ],
-            "enrico_hit": False, # Enrico Erra (Q8) -> Vai para "Questões para revisar"!
+            "question_id": "00004611-f7e3-4073-ae64-63f9eb0ef0d3", # Equipe de cientistas (Matemática Real)
+            "enrico_hit": True, # Enrico Acerta (Q8)
         },
         {
             "ets": ets_mat,
-            "subject": sub_mat,
-            "enunciation": "<p><i>[Geometria Analítica]</i> Dada a equação canônica da elipse $$\\frac{(x - h)^2}{a^2} + \\frac{(y - k)^2}{b^2} = 1$$ com excentricidade \\( e = \\frac{c}{a} \\in (0, 1) \\), determine a relação métrica entre a distância focal e os semi-eixos.</p>",
-            "options": [
-                ("A distância inter-focal é dada por 2c = 2\\sqrt{a^2 - b^2} onde a^2 = b^2 + c^2", True),
-                ("A distância entre os focos é estritamente invariante e nula", False),
-                ("O semi-eixo focal coincide com a reta assíntota hiperbólica", False),
-                ("A excentricidade unitária determina uma curva parabólica degenerada", False),
-            ],
+            "question_id": "000062f4-b039-4415-afed-df81ade1d0fd", # Gangorra (Matemática Real)
             "enrico_hit": True, # Enrico Acerta (Q9)
+        },
+        # Química (Natureza) - Questão 10: Referência com Imagem Base64
+        {
+            "ets": ets_qui,
+            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["chemistry_base64_image"]["id"], # 3d124dcc
+            "enrico_hit": False, # Enrico Erra (Q10) -> Vai para "Questões para revisar"!
         },
     ]
 
     created_questions = []
+    ets_order_counter = {}
 
     for idx, cfg in enumerate(questions_config, 1):
-        q = Question.objects.create(
-            created_by=teacher_user,
-            subject=cfg["subject"],
-            grade=grade,
-            category=Question.CHOICE,
-            enunciation=cfg["enunciation"],
-        )
-        if coordination:
+        q = Question.objects.filter(id=cfg["question_id"]).first()
+        if not q:
+            raise ValueError(f"Questão real {cfg['question_id']} não encontrada no banco de dados!")
+
+        if coordination and not q.coordinations.filter(id=coordination.id).exists():
             q.coordinations.add(coordination)
 
-        correct_opt = None
-        wrong_opt = None
-        for opt_idx, (text, is_correct) in enumerate(cfg["options"]):
-            opt = QuestionOption.objects.create(
-                question=q,
-                text=text,
-                is_correct=is_correct,
-                index=opt_idx,
-            )
-            if is_correct:
-                correct_opt = opt
-            elif wrong_opt is None:
-                wrong_opt = opt
+        correct_opt = q.alternatives.filter(is_correct=True).first()
+        wrong_opt = q.alternatives.filter(is_correct=False).first()
+        if not correct_opt or not wrong_opt:
+            raise ValueError(f"Questão real {q.id} precisa ter pelo menos 1 alternativa correta e 1 incorreta!")
 
-        ets_order = (idx - 1) % 3 + 1
+        ets = cfg["ets"]
+        ets_order_counter[ets.id] = ets_order_counter.get(ets.id, 0) + 1
+        ets_order = ets_order_counter[ets.id]
+
         eq = ExamQuestion.objects.create(
             exam=exam,
-            exam_teacher_subject=cfg["ets"],
+            exam_teacher_subject=ets,
             question=q,
             order=ets_order,
             weight=1.66,
@@ -350,15 +323,15 @@ def create_multiarea_application():
                 created_by=st.user,
             )
 
-    enrico_app_student = ApplicationStudent.objects.filter(application=application, student=student).first()
+    enrico_app_student = ApplicationStudent.objects.get(id=TARGET_ENRICO_ID)
 
     print("\n" + "=" * 65)
     print("🎉 APLICAÇÃO MULTI-ÁREA CRIADA E FINALIZADA COM SUCESSO!")
     print("=" * 65)
     print(f"• Caderno: {exam.name}")
     print(f"• Áreas de Conhecimento: '{area_bio}', '{area_his}', '{area_mat}' (3 Áreas distintas!)")
-    print(f"• Total de Questões: 9 (3 de Biologia + 3 de História + 3 de Matemática com fórmulas!)")
-    print(f"• Gabarito Enrico: Q1, Q3, Q4, Q6, Q7, Q9 (ACERTO) | Q2, Q5, Q8 (ERRO)")
+    print(f"• Total de Questões: 10 (3 Biologia + 3 História + 3 Matemática + 1 Química com imagem Base64!)")
+    print(f"• Gabarito Enrico: Q1, Q3, Q4, Q6, Q8, Q9 (ACERTO) | Q2, Q5, Q7, Q10 (ERRO)")
     print(f"• ID da Aplicação Student: {enrico_app_student.id}")
     print("-" * 65)
     print("🔗 LINK DIRETO PARA O TESTE NO APP DO ALUNO:")

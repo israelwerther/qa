@@ -111,86 +111,25 @@ cd /home/israel/Workspace/lize-student
 npm test -- src/components/exam-result/ --run
 ```
 
-### Setup de Dados para Testes Manuais via Django Shell
+### Setup de Dados: Gerador Multi-Área 100% com Questões Reais do Banco
 
-Execute no terminal do backend para criar uma avaliação multi-área com respostas e notas preparadas:
+> [!IMPORTANT]
+> **Nova Diretriz Oficial de QA (2026)**: É expressamente proibido criar questões sintéticas ou mockadas via código para validações de layout, cards, drawers e relatórios. Todos os testes devem utilizar exclusivamente questões autênticas do banco de dados para evitar enviesamentos, garantindo que o sistema seja testado contra a diversidade real de formatações existentes (HTML do TinyMCE, MathML, imagens Base64, imagens externas de CDN e macros LaTeX).
 
-```python
-# python manage.py shell
-from mixer.backend.django import mixer
-from fiscallizeon.accounts.models import User
-from fiscallizeon.students.models import Student
-from fiscallizeon.clients.models import Client
-from fiscallizeon.subjects.models import KnowledgeArea, Subject
-from fiscallizeon.exams.models import Exam, ExamQuestion
-from fiscallizeon.questions.models import Question, Alternative
-from fiscallizeon.applications.models import Application, ApplicationStudent, ApplicationStudentAnswer
+#### Catálogo de Questões de Referência para Casos Extremos (Reference Edge Cases)
 
-# 1. Recuperar ou criar cliente e aluno de testes
-client = Client.objects.filter(can_access_app=True).first()
-if not client:
-    client = mixer.blend(Client, name="Colégio Exemplo", can_access_app=True)
+| Caso de Borda | ID no Banco | Disciplina / Área | Comportamento e Validação |
+| :--- | :--- | :--- | :--- |
+| **Fórmulas com MathML no Início** | `0d6f2abc-d76d-4cec-9481-fe757f0ce360` | (Geral) Matemática | O `strip_tags()` limpa as tags `<math>` gerando um trecho legível no card (`ax+b=0... a≠0`). No Drawer, renderiza as equações e frações via MathJax/MathML nativo. |
+| **Imagem Inline Base64 no Início** | `3d124dcc-964e-4ed5-9a74-2c44fdd172e5` | Química (Natureza) | O enunciado começa com `<img src="data:image/png;base64,...">`. Valida que o `strip_tags()` descarta a tag inteira, impedindo o vazamento de 50.000 caracteres Base64 no card. No Drawer, a imagem inline é renderizada. |
+| **Imagem Remota em CDN no Início** | `c0fa7391-d699-4ea2-b778-9dff6f30776c` | Química (Natureza) | Enunciado começa com `<p>UFU-MG</p><img src="https://fiscallizeremote.nyc3.cdn..."/>`. Valida a limpeza de tags no card e o carregamento correto de asset externo remoto no Drawer. |
+| **LaTeX Cru sem Delimitadores (Legado)** | `444cfbcd-b2b2-4a5c-afa7-d7ce20fa6708` | Matemática | Enunciado inicia com `{\log_{0,2}\frac{1}{25}} ...`. Caso legado que evidencia a necessidade de sanitização de macros LaTeX quando não há delimitadores MathJax. |
 
-user, _ = User.objects.get_or_create(
-    email="aluno.resultado@lize.local",
-    defaults={"username": "aluno.resultado", "can_access_app": True, "must_change_password": False}
-)
-user.set_password("123456")
-user.save()
-student, _ = Student.objects.get_or_create(user=user, defaults={"client": client, "name": "Aluno Resultado Multi-Área"})
+#### Execução do Gerador Multi-Área:
+Execute no terminal do backend para recriar a aplicação do Enrico (`b47ce1b3-4883-40b3-bf68-025ca3f2835e`) com 10 questões 100% reais do banco:
 
-# 2. Áreas do Conhecimento e Disciplinas
-area_natureza, _ = KnowledgeArea.objects.get_or_create(name="Ciências da Natureza e suas Tecnologias")
-area_humanas, _ = KnowledgeArea.objects.get_or_create(name="Ciências Humanas e suas Tecnologias")
-
-sub_bio, _ = Subject.objects.get_or_create(name="Biologia", defaults={"knowledge_area": area_natureza, "client": client})
-sub_his, _ = Subject.objects.get_or_create(name="História", defaults={"knowledge_area": area_humanas, "client": client})
-
-# 3. Caderno de Prova com 4 questões (2 de Biologia, 2 de História)
-exam = mixer.blend(Exam, name="Simulado Integrado Multi-Áreas", is_abstract=True, client=client)
-
-# Q1 (Biologia) - Acerto
-q1 = mixer.blend(Question, subject=sub_bio, enunciation="<p>Em uma população de borboletas da espécie <i>Heliconius</i>, a seleção natural atua na coloração das asas.</p>", client=client)
-alt1_correta = mixer.blend(Alternative, question=q1, is_correct=True, text="Seleção disruptiva")
-alt1_errada = mixer.blend(Alternative, question=q1, is_correct=False, text="Deriva genética")
-mixer.blend(ExamQuestion, exam=exam, question=q1, weight=2.5)
-
-# Q2 (Biologia) - Erro (para aparecer em questões para revisar)
-q2 = mixer.blend(Question, subject=sub_bio, enunciation="<p>Durante a fotossíntese, a fase clara ocorre nos tilacoides e depende de luz solar direta.</p>", client=client)
-alt2_correta = mixer.blend(Alternative, question=q2, is_correct=True, text="Fotólise da água")
-alt2_errada = mixer.blend(Alternative, question=q2, is_correct=False, text="Ciclo de Calvin")
-mixer.blend(ExamQuestion, exam=exam, question=q2, weight=2.5)
-
-# Q3 (História) - Acerto
-q3 = mixer.blend(Question, subject=sub_his, enunciation="<p>A Declaração dos Direitos do Homem e do Cidadão sintetizou os ideais da Revolução Francesa.</p>", client=client)
-alt3_correta = mixer.blend(Alternative, question=q3, is_correct=True, text="Liberdade e Igualdade")
-mixer.blend(ExamQuestion, exam=exam, question=q3, weight=2.5)
-
-# Q4 (História) - Erro (para aparecer em questões para revisar)
-q4 = mixer.blend(Question, subject=sub_his, enunciation="<p>O período da Guerra Fria caracterizou-se pela bipolarização ideológica entre EUA e URSS.</p>", client=client)
-alt4_correta = mixer.blend(Alternative, question=q4, is_correct=True, text="Doutrina Truman e Pacto de Varsóvia")
-alt4_errada = mixer.blend(Alternative, question=q4, is_correct=False, text="Tratado de Versalhes")
-mixer.blend(ExamQuestion, exam=exam, question=q4, weight=2.5)
-
-# 4. Aplicação Finalizada com Respostas Registradas
-from django.utils import timezone
-app = mixer.blend(Application, exam=exam, release_result_at_end=True)
-app_student = mixer.blend(
-    ApplicationStudent,
-    application=app,
-    student=student,
-    start_time=timezone.now() - timezone.timedelta(hours=2),
-    end_time=timezone.now() - timezone.timedelta(hours=1),
-)
-
-# Respostas: Q1 Acerto, Q2 Erro, Q3 Acerto, Q4 Erro
-mixer.blend(ApplicationStudentAnswer, application_student=app_student, question=q1, alternative=alt1_correta, is_correct=True, teacher_grade=2.5)
-mixer.blend(ApplicationStudentAnswer, application_student=app_student, question=q2, alternative=alt2_errada, is_correct=False, teacher_grade=0.0)
-mixer.blend(ApplicationStudentAnswer, application_student=app_student, question=q3, alternative=alt3_correta, is_correct=True, teacher_grade=2.5)
-mixer.blend(ApplicationStudentAnswer, application_student=app_student, question=q4, alternative=alt4_errada, is_correct=False, teacher_grade=0.0)
-
-print(f"Aplicação Student ID para teste: {app_student.id}")
-print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.id}")
+```bash
+python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 ```
 
 ---
@@ -214,9 +153,12 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 - [x] 3. Rolar a página até a seção de listagem de questões.
 - [x] 4. Confirmar que as antigas células circulares/quadradas numeradas foram substituídas por **cards retangulares estruturados**.
 - [ ] 5. Verificar se cada card exibe:
-  - [x] O número da questão em destaque (ex.: `"**Q1**"`, `"**Q2**"` ... `"**Q9**"`).
-  - [x] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1, 3, 4, 6, 7 e 9; `"**Errou**"` (rosa suave com texto vinho) nas questões 2, 5 e 8.
-  - [ ] ❌ **FALHOU (Bug Detectado)**: O trecho do enunciado em texto limpo (`excerpt`) vaza código LaTeX cru (`\lim_{x \to 0}`, `\frac{\sin(x)}{x}`) nos cards de questão. O backend apenas limpou os delimitadores (`$$`, `\[`), deixando comandos e macros LaTeX visíveis, e o frontend renderiza o trecho em texto plano sem KaTeX/MathJax (ver Bug 1 na Seção 7).
+  - [x] O número da questão em destaque (`"**Q1**"` até `"**Q10**"`).
+  - [x] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1, 3, 4, 6, 8 e 9; `"**Errou**"` (rosa suave com texto vinho) nas questões 2, 5, 7 e 10.
+  - [ ] ❌ **FALHOU PARCIALMENTE / ANÁLISE COMPARATIVA DE EXCERPT**:
+    - **Questão 10 (Química / Imagem Base64 - `3d124dcc-964e-4ed5-9a74-2c44fdd172e5`)**: **PASSOU**. O `strip_tags()` remove com sucesso a tag `<img src="data:image/png;base64,...">`, garantindo que o trecho do card fique perfeitamente legível (`"O esquema ilustra o aspecto energético..."`) sem vazar milhares de caracteres Base64 no card. No Drawer, a imagem é renderizada na íntegra.
+    - **Questão 7 (Matemática / MathML - `0d6f2abc-d76d-4cec-9481-fe757f0ce360`)**: **PASSOU**. As tags `<math>` são removidas deixando texto matemático limpo (`"ax+b=0 e ax2+bx+c=0... a≠0"`), e no Drawer as fórmulas são renderizadas com suporte nativo/MathJax.
+    - **Questões 8 e 9 (Fórmulas LaTeX cruas)**: **FALHOU (Bug 1 - Em Escopo)**: Quando a questão contém macros LaTeX puras (`\frac`, `\sqrt`), o backend apenas limpa delimitadores (`$$`, `\[`), vazando comandos LaTeX em texto puro nos cards de listagem e no carrossel de revisão (ver Seção 7).
   - [ ] O percentual médio de acertos da turma formatado (ex.: `"**75% de acertos**"`).
 
 #### Cenário 2 — Filtros por Categoria e Ordenação dos Cards
@@ -405,12 +347,16 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 > - **Classificação:** **Defeito em Escopo da Feature Atual** (Blocker para aprovação do PR da branch `feat/resultado-questoes-excerpt-disciplina`).
 > - **Tela / Componente:** App do Aluno (`lize-student`) — `/painel/minhas-provas/$id` (`QuestionsOverview` e `build_question_excerpt` no backend).
 > - **Severidade:** **Alta** (Afeta a legibilidade e estética de todas as questões de exatas no resultado).
-> - **Evidência Visual:** Verificado nas questões **Q7, Q8 e Q9** (onde a Q7 exibe `\lim_{x \to 0} \frac{\sin(x)}{x} = 1 e \int_{0}^{\pi} \cos(x) \, dx = 0 ....`).
+> - **Exemplo Real do Banco de Questões (Q7):** Questão autêntica da plataforma `444cfbcd-b2b2-4a5c-afa7-d7ce20fa6708` (Matemática - Ensino Médio), cujo enunciado se inicia diretamente por 5 cartões contendo fórmulas matemáticas de logaritmos e frações:
+>   - **Enunciado no Banco:** `<p><math ...>\log_{0,2}\frac{1}{25} ... \log_{2}5 ... \log_{\frac{1}{2}}8 ...</math></p><p>Observe os cinco cartões acima...</p>`
+>   - **Payload do Backend (`excerpt`):** `{\log_{0,2}\frac{1}{25} } {\log_{2}5 } {\log_{3}18 } {\log_{\frac{1}{2}}8 } {\log_{5}10 }Observe os cinco cartões acima...`
+>   - **Card na UI (`QuestionsOverview`):** O estudante visualiza os comandos LaTeX crus `\log`, `\frac`, `{` e `}` expostos no card sem renderização matemática.
+>   - **Gaveta Lateral (`QuestionReviewSheet`):** O MathJax renderiza a fórmula com formatação impecável, gerando incoerência direta entre a listagem e o detalhe.
 > - **Causa Raiz:**
->   1. **Backend (`fiscallizeon/questions/services/questions.py`):** O método `build_question_excerpt` (introduzido no commit `5a50df83a` da própria branch atual `feat/resultado-questoes-excerpt-disciplina`) apenas remove delimitadores matemáticos simples via regex (`\$\$?|\\\(|\\\)|\\\[|\\\]`), mas **não converte nem remove macros do LaTeX** (`\frac`, `\lim`, `\int`, `\sqrt`).
+>   1. **Backend (`fiscallizeon/questions/services/questions.py`):** O método `build_question_excerpt` (introduzido no commit `5a50df83a` da própria branch atual `feat/resultado-questoes-excerpt-disciplina`) apenas remove delimitadores matemáticos simples via regex (`\$\$?|\\\(|\\\)|\\\[|\\\]`), mas **não converte nem remove macros do LaTeX** (`\frac`, `\lim`, `\int`, `\sqrt`, `\log`).
 >   2. **Frontend (`questions-overview.tsx`):** Renderiza `{question.excerpt}` diretamente em uma tag `<span className="...">` de texto puro, sem passar por biblioteca de renderização matemática (KaTeX/MathJax), ao contrário do que faz na gaveta lateral (`QuestionReviewSheet`).
 > - **Comportamento Esperado:** Questões que iniciam com fórmulas matemáticas devem ter seu trecho textual limpo de macros LaTeX (exibindo texto inteligível ou usando renderizador inline) para não expor sintaxe crua de programação ao aluno.
-> - **Encaminhamento:** Apontar como correção obrigatória no PR para o desenvolvedor da branch antes da liberação para produção.
+> - **Encaminhamento:** Apontar como correção obrigatória no PR para o desenvolvedor da branch antes da liberação para produção (fornecendo o ID `444cfbcd-b2b2-4a5c-afa7-d7ce20fa6708` como caso de teste reproduzível).
 
 ---
 
