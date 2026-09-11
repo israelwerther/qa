@@ -347,7 +347,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 
 > [!NOTE]
 > ### Nenhum Bug Bloqueador Encontrado na Feature Atual
-> A validação completa com **100% de questões autênticas do banco de dados** confirmou que a entrega atende a todos os critérios de aceitação tanto no backend (`feat/resultado-questoes-excerpt-disciplina`) quanto no frontend (`feat/resultado-area-do-conhecimento`).
+> A validação completa com **100% de questões autênticas do banco de dados** confirmou que a entrega atende a todos os critérios de aceitação no frontend (`feat/resultado-area-do-conhecimento`) rodando sobre o backend padrão (`master`).
 >
 > #### 🔍 Análise de Falso Positivo (Retificação de QA):
 > 1. **Mocks Sintéticos Iniciais:** O apontamento anterior de "vazamento de LaTeX" ocorreu quando geramos questões mockadas via script com comandos manuais (`\frac`, `\sqrt`). No padrão real de produção da plataforma Lize (TinyMCE / MathType), as fórmulas matemáticas são salvas em **MathML** (`<math>`), cujo texto é preservado de forma limpa pelo `strip_tags()` do Django (`ax+b=0 e ax2+bx+c=0... a≠0`), sem comandos de código vazando no card.
