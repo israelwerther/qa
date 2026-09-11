@@ -188,12 +188,12 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
   - [x] Linha `"**Aprofundamento de Química 2**"` com 5 questões, 3 acertos, 0 parciais, 2 erros, desempenho 60.00% e nota 3.00/5.0.
   - [x] Confirmar que o cursor do mouse vira ponteiro (`cursor: pointer`) ao passar sobre a linha e o hover destaca a linha suavemente.
 - [x] 4. Clicar sobre a linha `"**Aprofundamento Biologia**"` e validar que o modal detalhado de desempenho da matéria (`SubjectPerformanceModal`) abre na tela com nota, histórico e tópicos. Fechar o modal no botão `(X)`.
-- [ ] 5. Clicar na aba `"**Área do conhecimento**"`.
-- [ ] 6. Validar a nova renderização da tabela:
-  - [ ] A primeira coluna agora se chama `"**Área do conhecimento**"`.
-  - [ ] Exibe a linha `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"` com 10 questões (Biologia + Química), 6 acertos, 4 erros, 0 parciais, desempenho 61.36% e nota 6.75/11.0.
-  - [ ] Exibe a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` com 5 questões (História), 4 acertos, 1 erro, 0 parciais, desempenho 79.17% e nota 4.75/6.0.
-  - [ ] Exibe a linha `"**Matemática e suas Tecnologias - Ensino Médio**"` com 5 questões (Matemática), 3 acertos, 2 erros, 0 parciais, desempenho 60.00% e nota 3.00/5.0.
+- [x] 5. Clicar na aba `"**Área do conhecimento**"`.
+- [x] 6. Validar a nova renderização da tabela:
+  - [x] A primeira coluna agora se chama `"**Área do conhecimento**"`.
+  - [x] Exibe a linha `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"` com 10 questões (Biologia + Química), 6 acertos, 4 erros, 0 parciais, desempenho 61.36% e nota 6.75/11.0.
+  - [x] Exibe a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` com 5 questões (História), 4 acertos, 1 erro, 0 parciais, desempenho 79.17% e nota 4.75/6.0.
+  - [x] Exibe a linha `"**Matemática e suas Tecnologias - Ensino Médio**"` com 5 questões (Matemática), 3 acertos, 2 erros, 0 parciais, desempenho 60.00% e nota 3.00/5.0.
   - [ ] Na extrema direita de cada linha de área, validar a presença da coluna com o botão `"**Visualizar**"` `(botão branco com contorno cinza e ícone de olho)`.
 
 ---
