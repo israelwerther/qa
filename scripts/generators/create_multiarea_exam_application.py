@@ -116,11 +116,11 @@ def create_multiarea_application():
     if coordination:
         exam.coordinations.add(coordination)
 
-    # Blocos de Matéria no Caderno
-    ets_bio = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_bio, grade=grade, order=1, quantity=3, subject_note=5.0)
-    ets_his = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_his, grade=grade, order=2, quantity=3, subject_note=5.0)
-    ets_mat = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_mat, grade=grade, order=3, quantity=3, subject_note=5.0)
-    ets_qui = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_qui or ts_bio, grade=grade, order=4, quantity=1, subject_note=5.0)
+    # Blocos de Matéria no Caderno (5 questões por matéria = 20 questões no total)
+    ets_bio = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_bio, grade=grade, order=1, quantity=5, subject_note=5.0)
+    ets_his = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_his, grade=grade, order=2, quantity=5, subject_note=5.0)
+    ets_mat = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_mat, grade=grade, order=3, quantity=5, subject_note=5.0)
+    ets_qui = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_qui or ts_bio, grade=grade, order=4, quantity=5, subject_note=5.0)
 
     # ==============================================================================
     # CATÁLOGO DE QUESTÕES DE REFERÊNCIA PARA CASOS EXTREMOS / FORMAS COMPLEXAS
@@ -156,8 +156,9 @@ def create_multiarea_application():
     }
 
     # 4. Questões (100% REAIS DO BANCO DE DADOS - ZERO DADOS SINTÉTICOS)
+    # Total de 20 questões: Página 1 = Q1 até Q15 (15 itens) | Página 2 = Q16 até Q20 (5 itens)
     questions_config = [
-        # Biologia (Natureza) - 3 Questões Reais do Banco
+        # --- Biologia (Natureza) - 5 Questões Reais do Banco ---
         {
             "ets": ets_bio,
             "question_id": "5b15fe1e-cd9b-44ef-9343-b41aa56fd9a7", # Cobra-coral
@@ -166,50 +167,104 @@ def create_multiarea_application():
         {
             "ets": ets_bio,
             "question_id": "321b93c2-1be2-4989-96cf-81ba18daf937", # Tico-tico
-            "enrico_hit": False, # Enrico Erra (Q2) -> Vai para "Questões para revisar"!
+            "enrico_hit": False, # Enrico Erra (Q2) -> Revisar
         },
         {
             "ets": ets_bio,
             "question_id": "ecc35735-0c1e-4ddf-81ce-5bbfe47da3d6", # Pássaros e nicho ecológico
             "enrico_hit": True, # Enrico Acerta (Q3)
         },
-        # História (Humanas) - 3 Questões Reais do Banco
+        {
+            "ets": ets_bio,
+            "question_id": "1c739c64-eb95-477b-aac0-b94900413669", # Vírus parasitas intracelulares
+            "enrico_hit": True, # Enrico Acerta (Q4)
+        },
+        {
+            "ets": ets_bio,
+            "question_id": "20c4bfca-d00f-4942-927f-488e3a68924c", # Florestas tropicais úmidas
+            "enrico_hit": False, # Enrico Erra (Q5) -> Revisar
+        },
+
+        # --- História (Humanas) - 5 Questões Reais do Banco ---
         {
             "ets": ets_his,
             "question_id": "e4122998-509a-4657-9fed-6c2f77595cbe", # República Anos 20
-            "enrico_hit": True, # Enrico Acerta (Q4)
+            "enrico_hit": True, # Enrico Acerta (Q6)
         },
         {
             "ets": ets_his,
             "question_id": "75a157b0-8cbb-4bc0-9ad2-f27106b73d6e", # Conceito de revolução
-            "enrico_hit": False, # Enrico Erra (Q5) -> Vai para "Questões para revisar"!
+            "enrico_hit": False, # Enrico Erra (Q7) -> Revisar
         },
         {
             "ets": ets_his,
             "question_id": "7abecd4a-30a3-4f52-9f1c-65dcbbebdd58", # Fato histórico
-            "enrico_hit": True, # Enrico Acerta (Q6)
-        },
-        # Matemática (Matemática) - Questão de Referência com Fórmulas MathML
-        {
-            "ets": ets_mat,
-            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["math_formulas_mathml"]["id"], # 0d6f2abc
-            "enrico_hit": False, # Enrico Erra (Q7) -> Vai para "Questões para revisar"!
-        },
-        {
-            "ets": ets_mat,
-            "question_id": "00004611-f7e3-4073-ae64-63f9eb0ef0d3", # Equipe de cientistas (Matemática Real)
             "enrico_hit": True, # Enrico Acerta (Q8)
         },
         {
-            "ets": ets_mat,
-            "question_id": "000062f4-b039-4415-afed-df81ade1d0fd", # Gangorra (Matemática Real)
+            "ets": ets_his,
+            "question_id": "000951bc-57f7-44db-b680-20f927d19425", # Península Arábica
             "enrico_hit": True, # Enrico Acerta (Q9)
         },
-        # Química (Natureza) - Questão 10: Referência com Imagem Base64
+        {
+            "ets": ets_his,
+            "question_id": "003d3a32-44ef-4e93-9434-9e06ce31e122", # Século XVIII e XIX
+            "enrico_hit": True, # Enrico Acerta (Q10)
+        },
+
+        # --- Matemática (Matemática) - 5 Questões Reais do Banco ---
+        {
+            "ets": ets_mat,
+            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["math_formulas_mathml"]["id"], # 0d6f2abc
+            "enrico_hit": False, # Enrico Erra (Q11) -> Revisar
+        },
+        {
+            "ets": ets_mat,
+            "question_id": "00004611-f7e3-4073-ae64-63f9eb0ef0d3", # Equipe de cientistas
+            "enrico_hit": True, # Enrico Acerta (Q12)
+        },
+        {
+            "ets": ets_mat,
+            "question_id": "000062f4-b039-4415-afed-df81ade1d0fd", # Gangorra
+            "enrico_hit": True, # Enrico Acerta (Q13)
+        },
+        {
+            "ets": ets_mat,
+            "question_id": "0051e9f5-df84-44fb-8723-540998cfd763", # Três amigos A, B e C
+            "enrico_hit": True, # Enrico Acerta (Q14)
+        },
+        {
+            "ets": ets_mat,
+            "question_id": "00878d35-351a-4401-b6ca-e52801f49191", # Piscina (Prefeitura de Surubim)
+            "enrico_hit": False, # Enrico Erra (Q15) -> Revisar
+        },
+
+        # --- Química (Natureza) - 5 Questões Reais do Banco ---
+        # (Obs: A partir daqui ficam na Página 2 da paginação!)
         {
             "ets": ets_qui,
-            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["chemistry_base64_image"]["id"], # 3d124dcc
-            "enrico_hit": False, # Enrico Erra (Q10) -> Vai para "Questões para revisar"!
+            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["chemistry_base64_image"]["id"], # 3d124dcc (Q16)
+            "enrico_hit": False, # Enrico Erra (Q16) -> Revisar
+        },
+        {
+            "ets": ets_qui,
+            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["chemistry_cdn_image"]["id"], # c0fa7391 (Q17)
+            "enrico_hit": True, # Enrico Acerta (Q17)
+        },
+        {
+            "ets": ets_qui,
+            "question_id": "06e05926-7fd8-4aac-824f-286bbad844b4", # Recém-nascido letargia (Q18)
+            "enrico_hit": True, # Enrico Acerta (Q18)
+        },
+        {
+            "ets": ets_qui,
+            "question_id": "08337f95-5b95-428d-b9a1-af4dd76c0dc2", # Degradação oxidativa (Q19)
+            "enrico_hit": True, # Enrico Acerta (Q19)
+        },
+        {
+            "ets": ets_qui,
+            "question_id": "325b8815-27f9-4fbf-9a9a-a867d8e8bb65", # Farmácia hospitalar (Q20)
+            "enrico_hit": False, # Enrico Erra (Q20) -> Revisar
         },
     ]
 
@@ -238,7 +293,7 @@ def create_multiarea_application():
             exam_teacher_subject=ets,
             question=q,
             order=ets_order,
-            weight=1.66,
+            weight=1.0,
         )
         StatusQuestion.objects.filter(exam_question=eq).update(
             status=StatusQuestion.APPROVED,
@@ -330,8 +385,10 @@ def create_multiarea_application():
     print("=" * 65)
     print(f"• Caderno: {exam.name}")
     print(f"• Áreas de Conhecimento: '{area_bio}', '{area_his}', '{area_mat}' (3 Áreas distintas!)")
-    print(f"• Total de Questões: 10 (3 Biologia + 3 História + 3 Matemática + 1 Química com imagem Base64!)")
-    print(f"• Gabarito Enrico: Q1, Q3, Q4, Q6, Q8, Q9 (ACERTO) | Q2, Q5, Q7, Q10 (ERRO)")
+    print(f"• Total de Questões: 20 (5 Biologia + 5 História + 5 Matemática + 5 Química) - HABILITA PAGINAÇÃO!")
+    print(f"  ↳ Página 1: Questões 1 até 15")
+    print(f"  ↳ Página 2: Questões 16 até 20")
+    print(f"• Gabarito Enrico: 13 Acertos (Q1,3,4,6,8,9,10,12,13,14,17,18,19) | 7 Erros (Q2,5,7,11,15,16,20)")
     print(f"• ID da Aplicação Student: {enrico_app_student.id}")
     print("-" * 65)
     print("🔗 LINK DIRETO PARA O TESTE NO APP DO ALUNO:")
