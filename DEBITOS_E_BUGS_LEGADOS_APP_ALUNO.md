@@ -17,6 +17,7 @@
 | **#004** | 10/09/2026 | Execução de Provas/Listas (`/provas/$id`) | Redirecionamento e toast incorretos ao finalizar Lista de Exercícios (manda para `/painel/minhas-provas`) | **Média** | ⏳ Aguardando Pauta |
 | **#005** | 10/09/2026 | Navegação Mobile (`AppSidebar`) | Menu lateral mobile não fecha automaticamente ao selecionar um item | **Média** | ⏳ Aguardando Pauta |
 | **#006** | 10/09/2026 | Listagens (`ExamTabs` / `minhas-provas` / `listas-de-exercicio`) | Alternar abas de status reseta o scroll para o topo da página (scroll jump forçado) | **Média** | ⏳ Aguardando Pauta |
+| **#007** | 11/09/2026 | Resultado da Prova (`/painel/minhas-provas/$id`) | Redundância visual: Legenda inferior de status torna-se desnecessária com o mapa de cores e labels nos cards | **Baixa** | ⏳ Aguardando Pauta |
 
 ---
 
@@ -233,6 +234,35 @@ navigate({ search: updater, resetScroll: false })
 | Momento 1: Clicando na aba | Momento 2: Salto forçado para o topo |
 | :---: | :---: |
 | ![Momento 1: Clicando na aba](./evidencias/tab-scroll-reset-moment-1.png) | ![Momento 2: Salto forçado para o topo](./evidencias/tab-scroll-reset-moment-2.png) |
+
+---
+
+### [APP-ALUNO #007] — Redundância Visual entre Legenda Inferior e Mapa de Cores / Labels nos Cards de Questões
+
+* **Data de Identificação:** 11 de setembro de 2026
+* **Identificado durante:** QA da branch `feat/resultado-area-do-conhecimento`
+* **Tipo:** Oportunidade de UX / Limpeza de Layout (*Declutter*)
+* **Severidade:** **Baixa**
+* **Tela / Rota:** `/painel/minhas-provas/$id` (Seção *"Todas as questões"*)
+* **Arquivo Afetado:** [`src/components/exam-result/questions-overview.tsx`](file:///home/israel/Workspace/lize-student/src/components/exam-result/questions-overview.tsx) (linhas 215 a 235)
+
+#### 📝 Descrição
+Na seção de listagem de questões da tela de resultado (`QuestionsOverview`):
+1. Cada card retangular já possui um duplo indicador claro de status:
+   - **Mapa de cores contextual**: Círculo com o número da questão em verde esmeralda para acertos (`1, 3, 4, 6`) e rosa/vermelho para erros (`2, 5`).
+   - **Label textual direto**: Texto explícito `"Acertou"` ou `"Errou"` logo acima do enunciado.
+2. Logo abaixo da grade de cards, a interface exibe uma barra de legenda horizontal estática repetindo:
+   `● Acertos   ● Erros   ● Parciais   ● Aguardando correção`.
+
+**Impacto:**  
+A legenda inferior torna-se redundante e desnecessária, uma vez que o próprio mapa de cores e o texto de cada card já comunicam o status imediatamente ao estudante. Isso gera ruído visual (*clutter*) e ocupa espaço vertical desnecessário na tela.
+
+#### 🛠️ Causa Técnica
+No componente `questions-overview.tsx`, o bloco de legenda foi mantido estático no rodapé do componente mesmo após a introdução dos novos cards estruturados com chips e labels textuais internos.
+
+#### 💡 Sugestão de Encaminhamento / Correção
+- **Opção A (Recomendada - *Declutter*):** Remover o container da legenda inferior (`<div className="flex flex-wrap gap-x-6 gap-y-2 items-center ...">`), deixando a interface mais limpa e focada no conteúdo.
+- **Opção B (Filtros interativos):** Caso a equipe de produto queira manter esses itens, transformá-los em chips clicáveis de filtro rápido por status (ex.: clicar em "Erros" para filtrar apenas as questões erradas na grade), conferindo utilidade prática ao elemento em vez de mera legenda estática redundante.
 
 ---
 

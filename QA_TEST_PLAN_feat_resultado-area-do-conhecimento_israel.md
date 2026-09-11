@@ -198,8 +198,9 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 ## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
 
 > **Ambiente Backend**: `lizeedu` (branch `feat/resultado-questoes-excerpt-disciplina`) rodando via `./manage.py runserver` (porta 8000).  
-> **Ambiente Frontend**: `lize-student` (branch `feat/resultado-area-do-conhecimento`) rodando via `npm run dev` ou `bun dev` (porta 5173 ou 3000).  
-> **Persona Ativa Principal**: `aluno.resultado@lize.local` (senha `123456`).
+> **Ambiente Frontend**: `lize-student` (branch `feat/resultado-area-do-conhecimento`) rodando via `npm run dev` ou `bun dev` (porta 5173).  
+> **Persona Ativa Principal**: `enrico.a53143@aluno.decisaovirtual.com.br` (senha `123456` / Turma `F4MA`).  
+> **Aplicação de Teste Ativa**: `b47ce1b3-4883-40b3-bf68-025ca3f2835e` (`Simulado Multi-Áreas (Natureza e Humanas) - QA`).
 
 ---
 
@@ -208,13 +209,13 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 > **Objetivo**: Garantir que as questões da avaliação são exibidas na nova interface de cards paginados com metadados corretos.
 
 #### Cenário 1 — Exibição dos Cards e Trechos de Enunciado
-- [ ] 1. Fazer login no app do aluno (`http://localhost:5173`) com o usuário de teste (`aluno.resultado@lize.local`).
-- [ ] 2. Na barra lateral, clicar em `"**Minhas provas**"` e acessar a tela de resultado da aplicação multi-área recém-concluída.
-- [ ] 3. Rolar a página até a seção de listagem de questões.
-- [ ] 4. Confirmar que as antigas células circulares/quadradas numeradas foram substituídas por **cards retangulares estruturados**.
+- [x] 1. Fazer login no app do aluno (`http://localhost:5173`) com o usuário de teste (`enrico.a53143@aluno.decisaovirtual.com.br` / senha `123456`).
+- [x] 2. Na barra lateral, clicar em `"**Minhas provas**"` e acessar a tela de resultado da aplicação multi-área recém-concluída (`Simulado Multi-Áreas (Natureza e Humanas) - QA`) ou abrir diretamente `http://localhost:5173/painel/minhas-provas/b47ce1b3-4883-40b3-bf68-025ca3f2835e`.
+- [x] 3. Rolar a página até a seção de listagem de questões.
+- [x] 4. Confirmar que as antigas células circulares/quadradas numeradas foram substituídas por **cards retangulares estruturados**.
 - [ ] 5. Verificar se cada card exibe:
-  - [ ] O número da questão em destaque (ex.: `"**Q1**"`, `"**Q2**"`).
-  - [ ] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1 e 3; `"**Errou**"` (rosa suave com texto vinho) nas questões 2 e 4.
+  - [x] O número da questão em destaque (ex.: `"**Q1**"`, `"**Q2**"`).
+  - [x] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1, 3, 4 e 6; `"**Errou**"` (rosa suave com texto vinho) nas questões 2 e 5.
   - [ ] O trecho do enunciado em texto limpo (`excerpt`), sem tags HTML aparentes (`<p>`, `<i>`) e sem caracteres crus de LaTeX (`$x^2$`).
   - [ ] O percentual médio de acertos da turma formatado (ex.: `"**75% de acertos**"`).
 
@@ -222,7 +223,7 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 - [ ] 1. Na barra de filtros acima dos cards de questão, observar as opções de categoria: `"**Todas**"`, `"**Objetivas**"`, `"**Discursivas**"`, `"**Somatório**"` e `"**Arquivo anexado**"`.
 - [ ] 2. Clicar no chip `"**Objetivas**"` e validar que a lista filtra apenas questões de múltipla escolha.
 - [ ] 3. Clicar no campo seletor de ordenação `(dropdown no canto direito com texto padrão "Número (crescente)")`.
-- [ ] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q4 para a Q1).
+- [ ] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q6 para a Q1).
 - [ ] 5. Selecionar `"**Acerto da turma (menor → maior)**"` e validar que as questões com menor índice de acerto aparecem no início da grade.
 - [ ] 6. Em provas com mais de 15 questões, validar que a paginação exibe no máximo 15 cards por página e os botões de seta `(‹ e ›)` transitam de página sem recarregar a tela.
 
@@ -236,15 +237,15 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 - [ ] 1. Na tela de resultados, rolar até o bloco analítico de desempenho (abaixo dos cards de questão).
 - [ ] 2. Observar a presença das abas de alternância de visão: `"**Disciplinas**"` e `"**Área do conhecimento**"`.
 - [ ] 3. Estando na aba ativa `"**Disciplinas**"`, validar as linhas da tabela:
-  - [ ] Linha `"**Biologia**"` com 2 questões, 1 acerto, 0 parciais, 1 erro, desempenho 50.00% e nota 2.5/5.0.
-  - [ ] Linha `"**História**"` com 2 questões, 1 acerto, 0 parciais, 1 erro, desempenho 50.00% e nota 2.5/5.0.
+  - [ ] Linha `"**Biologia**"` com 3 questões, 2 acertos, 0 parciais, 1 erro, desempenho 66.67% e nota 3.33/5.0.
+  - [ ] Linha `"**História**"` com 3 questões, 2 acertos, 0 parciais, 1 erro, desempenho 66.67% e nota 3.33/5.0.
   - [ ] Confirmar que o cursor do mouse vira ponteiro (`cursor: pointer`) ao passar sobre a linha e o hover destaca a linha suavemente.
 - [ ] 4. Clicar sobre a linha `"**Biologia**"` e validar que o modal detalhado de desempenho da matéria (`SubjectPerformanceModal`) abre na tela com nota, histórico e tópicos. Fechar o modal no botão `(X)`.
 - [ ] 5. Clicar na aba `"**Área do conhecimento**"`.
 - [ ] 6. Validar a nova renderização da tabela:
   - [ ] A primeira coluna agora se chama `"**Área do conhecimento**"`.
-  - [ ] Exibe a linha `"**Ciências da Natureza e suas Tecnologias**"` com 2 questões, 1 acerto, 1 erro e desempenho 50.00%.
-  - [ ] Exibe a linha `"**Ciências Humanas e suas Tecnologias**"` com 2 questões, 1 acerto, 1 erro e desempenho 50.00%.
+  - [ ] Exibe a linha `"**Ciências da Natureza e suas Tecnologias**"` com 3 questões, 2 acertos, 1 erro e desempenho 66.67%.
+  - [ ] Exibe a linha `"**Ciências Humanas e suas Tecnologias**"` com 3 questões, 2 acertos, 1 erro e desempenho 66.67%.
   - [ ] Na extrema direita de cada linha de área, validar a presença da coluna com o botão `"**Visualizar**"` `(botão branco com contorno cinza e ícone de olho)`.
 
 ---
@@ -261,10 +262,10 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
   - [ ] Deve exibir `"**Q1**"` (primeira questão de Biologia/Natureza).
   - [ ] O subtítulo deve exibir claramente `"**Biologia · Ciências da Natureza e suas Tecnologias**"`.
 - [ ] 5. Clicar no botão de próxima questão `(botão circular com ícone de seta ChevronRight)` ou pressionar a tecla `ArrowRight` no teclado.
-- [ ] 6. Confirmar que a gaveta transita para a `"**Q2**"` (segunda questão de Biologia/Natureza).
-- [ ] 7. Observar o botão de próxima questão na Q2:
+- [ ] 6. Confirmar que a gaveta transita para a `"**Q2**"` e depois para a `"**Q3**"` (todas de Biologia/Natureza).
+- [ ] 7. Observar o botão de próxima questão na Q3:
   - [ ] Validar que o botão de próxima questão fica **desabilitado** (opacidade reduzida e não clicável).
-  - [ ] Confirmar que **NÃO transita** para a Q3 de História (o escopo respeita estritamente as questões da área selecionada!).
+  - [ ] Confirmar que **NÃO transita** para a Q4 de História (o escopo respeita estritamente as 3 questões da área selecionada!).
 - [ ] 8. Fechar a gaveta lateral no botão de fechar `(X no canto superior direito)` ou clicando fora no backdrop escuro.
 
 ---
@@ -278,10 +279,10 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 - [ ] 2. Clicar na aba `"**Questões para revisar**"`.
 - [ ] 3. Validar a renderização da seção de `"**Biologia**"`:
   - [ ] Título `"**Biologia**"` com subtítulo `"**Ciências da Natureza e suas Tecnologias**"`.
-  - [ ] Indicador numérico `"**50%**"` acompanhado da legenda `"Desempenho na prova"`.
-  - [ ] Lista com marcadores: `"2 questões"`, `"1 acertos"`, `"1 erros"`.
-  - [ ] Card lateral de acertos com `"50%"`, barra de progresso preenchida pela metade e o emoji `"🚀"`.
-  - [ ] Resumo no rodapé: `"1/2 questões · nota 2.50/5.00"`.
+  - [ ] Indicador numérico correspondente a 2 acertos em 3 questões (`"**67%**"` ou similar) acompanhado da legenda `"Desempenho na prova"`.
+  - [ ] Lista com marcadores: `"3 questões"`, `"2 acertos"`, `"1 erros"`.
+  - [ ] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
+  - [ ] Resumo no rodapé: `"2/3 questões"`.
 - [ ] 4. No bloco `"**Grau de domínio**"`, testar o seletor `(dropdown com opção inicial "Assuntos")`:
   - [ ] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
   - [ ] Alternar para `"**Competências**"` e verificar a exibição correspondente.
