@@ -200,7 +200,7 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 > **Ambiente Backend**: `lizeedu` (branch `feat/resultado-questoes-excerpt-disciplina`) rodando via `./manage.py runserver` (porta 8000).  
 > **Ambiente Frontend**: `lize-student` (branch `feat/resultado-area-do-conhecimento`) rodando via `npm run dev` ou `bun dev` (porta 5173).  
 > **Persona Ativa Principal**: `enrico.a53143@aluno.decisaovirtual.com.br` (senha `123456` / Turma `F4MA`).  
-> **Aplicação de Teste Ativa**: `b47ce1b3-4883-40b3-bf68-025ca3f2835e` (`Simulado Multi-Áreas (Natureza e Humanas) - QA`).
+> **Aplicação de Teste Ativa**: `b47ce1b3-4883-40b3-bf68-025ca3f2835e` (`Simulado Multi-Áreas (Natureza, Humanas e Matemática) - QA`).
 
 ---
 
@@ -210,20 +210,20 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 
 #### Cenário 1 — Exibição dos Cards e Trechos de Enunciado
 - [x] 1. Fazer login no app do aluno (`http://localhost:5173`) com o usuário de teste (`enrico.a53143@aluno.decisaovirtual.com.br` / senha `123456`).
-- [x] 2. Na barra lateral, clicar em `"**Minhas provas**"` e acessar a tela de resultado da aplicação multi-área recém-concluída (`Simulado Multi-Áreas (Natureza e Humanas) - QA`) ou abrir diretamente `http://localhost:5173/painel/minhas-provas/b47ce1b3-4883-40b3-bf68-025ca3f2835e`.
+- [x] 2. Na barra lateral, clicar em `"**Minhas provas**"` e acessar a tela de resultado da aplicação multi-área recém-concluída (`Simulado Multi-Áreas (Natureza, Humanas e Matemática) - QA`) ou abrir diretamente `http://localhost:5173/painel/minhas-provas/b47ce1b3-4883-40b3-bf68-025ca3f2835e`.
 - [x] 3. Rolar a página até a seção de listagem de questões.
 - [x] 4. Confirmar que as antigas células circulares/quadradas numeradas foram substituídas por **cards retangulares estruturados**.
 - [ ] 5. Verificar se cada card exibe:
-  - [x] O número da questão em destaque (ex.: `"**Q1**"`, `"**Q2**"`).
-  - [x] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1, 3, 4 e 6; `"**Errou**"` (rosa suave com texto vinho) nas questões 2 e 5.
-  - [ ] O trecho do enunciado em texto limpo (`excerpt`), sem tags HTML aparentes (`<p>`, `<i>`) e sem caracteres crus de LaTeX (`$x^2$`).
+  - [x] O número da questão em destaque (ex.: `"**Q1**"`, `"**Q2**"` ... `"**Q9**"`).
+  - [x] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1, 3, 4, 6, 7 e 9; `"**Errou**"` (rosa suave com texto vinho) nas questões 2, 5 e 8.
+  - [ ] O trecho do enunciado em texto limpo (`excerpt`), sem tags HTML aparentes (`<p>`, `<i>`, `<b>`) e sem delimitadores crus de LaTeX (`$$`, `\(`, `\)`), com destaque para as questões **7, 8 e 9 de Matemática** que iniciam diretamente com fórmulas (`\lim_{x \to 0}`, `x = \frac{-b \pm \sqrt{\Delta}}{2a}`, `\frac{(x-h)^2}{a^2}`).
   - [ ] O percentual médio de acertos da turma formatado (ex.: `"**75% de acertos**"`).
 
 #### Cenário 2 — Filtros por Categoria e Ordenação dos Cards
 - [ ] 1. Na barra de filtros acima dos cards de questão, observar as opções de categoria: `"**Todas**"`, `"**Objetivas**"`, `"**Discursivas**"`, `"**Somatório**"` e `"**Arquivo anexado**"`.
 - [ ] 2. Clicar no chip `"**Objetivas**"` e validar que a lista filtra apenas questões de múltipla escolha.
 - [ ] 3. Clicar no campo seletor de ordenação `(dropdown no canto direito com texto padrão "Número (crescente)")`.
-- [ ] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q6 para a Q1).
+- [ ] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q9 para a Q1).
 - [ ] 5. Selecionar `"**Acerto da turma (menor → maior)**"` e validar que as questões com menor índice de acerto aparecem no início da grade.
 - [ ] 6. Em provas com mais de 15 questões, validar que a paginação exibe no máximo 15 cards por página e os botões de seta `(‹ e ›)` transitam de página sem recarregar a tela.
 

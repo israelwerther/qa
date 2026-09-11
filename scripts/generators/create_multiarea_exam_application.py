@@ -15,6 +15,7 @@ e simula respostas com acertos e erros calibrados para testar:
 import os
 import sys
 from datetime import timedelta
+import uuid
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 while current_dir != '/' and not os.path.exists(os.path.join(current_dir, 'manage.py')):
@@ -64,27 +65,39 @@ def create_multiarea_application():
     print(f"👤 Aluno: {student.name} ({enrico_user.email})")
     print(f"🎓 Turma: {school_class.name}")
 
-    # 2. Seleciona ou cria Disciplinas em 2 Áreas distintas
+    # 2. Seleciona ou cria Disciplinas em 3 Áreas distintas
     sub_bio = Subject.objects.filter(client=client, name__icontains='Biologia').first()
     sub_his = Subject.objects.filter(client=client, name__icontains='História').first()
+    sub_mat = Subject.objects.filter(client=client, name__icontains='Aprofundamento de Matemática').first()
+    if not sub_mat:
+        sub_mat = Subject.objects.filter(client=client, name__icontains='Matemática').first()
 
-    if not sub_bio or not sub_his:
-        raise ValueError("Não foram encontradas disciplinas de Biologia e História para o cliente.")
+    if not sub_bio or not sub_his or not sub_mat:
+        raise ValueError("Não foram encontradas disciplinas de Biologia, História e Matemática para o cliente.")
 
     area_bio = sub_bio.knowledge_area.name if sub_bio.knowledge_area else "Ciências da Natureza"
     area_his = sub_his.knowledge_area.name if sub_his.knowledge_area else "Ciências Humanas"
+    area_mat = sub_mat.knowledge_area.name if sub_mat.knowledge_area else "Matemática e suas Tecnologias"
 
     print(f"🔬 Matéria 1: {sub_bio.name} ➔ Área: {area_bio}")
     print(f"🏛️ Matéria 2: {sub_his.name} ➔ Área: {area_his}")
+    print(f"📐 Matéria 3: {sub_mat.name} ➔ Área: {area_mat}")
 
     # TeacherSubjects já existentes para as matérias
     ts_bio = TeacherSubject.objects.filter(subject=sub_bio).first()
     ts_his = TeacherSubject.objects.filter(subject=sub_his).first()
+    ts_mat = TeacherSubject.objects.filter(subject=sub_mat).first()
     teacher_user = (ts_bio.teacher.user if ts_bio and ts_bio.teacher else None) or User.objects.filter(is_superuser=True).first() or enrico_user
 
     # 3. Criação do Caderno de Prova
-    exam_name = "Simulado Multi-Áreas (Natureza e Humanas) - QA"
-    Exam.objects.filter(name=exam_name).delete()
+    exam_name = "Simulado Multi-Áreas (Natureza, Humanas e Matemática) - QA"
+    old_exams = Exam.objects.filter(name__in=[exam_name, "Simulado Multi-Áreas (Natureza e Humanas) - QA"])
+    old_apps = Application.objects.all_with_deleted().filter(exam__in=old_exams)
+    OptionAnswer.objects.filter(student_application__application__in=old_apps).delete()
+    ApplicationStudent.objects.filter(application__in=old_apps).delete()
+    old_apps.hard_delete()
+    old_exams.delete()
+
     exam = Exam.objects.create(
         name=exam_name,
         created_by=teacher_user,
@@ -101,6 +114,7 @@ def create_multiarea_application():
     # Blocos de Matéria no Caderno
     ets_bio = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_bio, grade=grade, order=1, quantity=3, subject_note=5.0)
     ets_his = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_his, grade=grade, order=2, quantity=3, subject_note=5.0)
+    ets_mat = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_mat, grade=grade, order=3, quantity=3, subject_note=5.0)
 
     # 4. Questões
     # Dados de 6 questões com enunciados limpos e didáticos
@@ -178,6 +192,43 @@ def create_multiarea_application():
                 ("Fim do padrão-ouro na Europa no século XIX", False),
             ],
             "enrico_hit": True, # Enrico Acerta (Q6)
+        },
+        # Matemática (Exagerando em fórmulas LaTeX e tags HTML logo no início!)
+        {
+            "ets": ets_mat,
+            "subject": sub_mat,
+            "enunciation": "<p>$$\\lim_{x \\to 0} \\frac{\\sin(x)}{x} = 1$$ e $$\\int_{0}^{\\pi} \\cos(x) \\, dx = 0$$. Considerando o limite fundamental trigonométrico e o cálculo infinitesimal, determine o comportamento da função \\( f(x) = \\frac{\\sin(x)}{x} \\) nas vizinhanças da origem.</p>",
+            "options": [
+                ("O limite converge para 1 configurando ponto de descontinuidade removível", True),
+                ("A função diverge para o infinito positivo assintótico", False),
+                ("O valor do limite oscila de forma indeterminada entre -1 e +1", False),
+                ("A derivada primeira é identicamente nula em todos os pontos reais", False),
+            ],
+            "enrico_hit": True, # Enrico Acerta (Q7)
+        },
+        {
+            "ets": ets_mat,
+            "subject": sub_mat,
+            "enunciation": "<p><b>[Cálculo Diferencial]</b> Com base na fórmula quadrática $$x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}$$ com discriminante \\(\\Delta = b^2 - 4ac < 0\\), determine o conjunto solução no corpo dos números complexos \\(\\mathbb{C}\\).</p>",
+            "options": [
+                ("O polinômio admite duas raízes complexas conjugadas da forma z = a + bi", True),
+                ("Existem duas raízes reais e estritamente distintas sobre o eixo das abscissas", False),
+                ("Existe uma única raiz real com multiplicidade algébrica dois", False),
+                ("O conjunto de autovalores é vazio no espaço vetorial euclidiano", False),
+            ],
+            "enrico_hit": False, # Enrico Erra (Q8) -> Vai para "Questões para revisar"!
+        },
+        {
+            "ets": ets_mat,
+            "subject": sub_mat,
+            "enunciation": "<p><i>[Geometria Analítica]</i> Dada a equação canônica da elipse $$\\frac{(x - h)^2}{a^2} + \\frac{(y - k)^2}{b^2} = 1$$ com excentricidade \\( e = \\frac{c}{a} \\in (0, 1) \\), determine a relação métrica entre a distância focal e os semi-eixos.</p>",
+            "options": [
+                ("A distância inter-focal é dada por 2c = 2\\sqrt{a^2 - b^2} onde a^2 = b^2 + c^2", True),
+                ("A distância entre os focos é estritamente invariante e nula", False),
+                ("O semi-eixo focal coincide com a reta assíntota hiperbólica", False),
+                ("A excentricidade unitária determina uma curva parabólica degenerada", False),
+            ],
+            "enrico_hit": True, # Enrico Acerta (Q9)
         },
     ]
 
@@ -263,17 +314,24 @@ def create_multiarea_application():
     application.students.add(*class_students)
 
     # 7. Simula respostas e finalização de prova
+    TARGET_ENRICO_ID = uuid.UUID('b47ce1b3-4883-40b3-bf68-025ca3f2835e')
     for st in class_students:
-        app_student, _ = ApplicationStudent.objects.get_or_create(
-            application=application,
-            student=st,
-        )
+        is_enrico = (st.id == student.id)
+        if is_enrico:
+            app_student = ApplicationStudent.objects.create(
+                id=TARGET_ENRICO_ID,
+                application=application,
+                student=st,
+            )
+        else:
+            app_student = ApplicationStudent.objects.create(
+                application=application,
+                student=st,
+            )
         # Finaliza a prova (1 hora atrás)
         app_student.start_time = now - timedelta(minutes=90)
         app_student.end_time = now - timedelta(minutes=30)
         app_student.save(update_fields=['start_time', 'end_time'])
-
-        is_enrico = (st.id == student.id)
 
         for item in created_questions:
             eq = item["exam_question"]
@@ -298,9 +356,9 @@ def create_multiarea_application():
     print("🎉 APLICAÇÃO MULTI-ÁREA CRIADA E FINALIZADA COM SUCESSO!")
     print("=" * 65)
     print(f"• Caderno: {exam.name}")
-    print(f"• Áreas de Conhecimento: '{area_bio}' E '{area_his}' (2 Áreas distintas!)")
-    print(f"• Total de Questões: 6 (3 de Biologia + 3 de História)")
-    print(f"• Gabarito Enrico: Q1, Q3, Q4, Q6 (ACERTO) | Q2, Q5 (ERRO)")
+    print(f"• Áreas de Conhecimento: '{area_bio}', '{area_his}', '{area_mat}' (3 Áreas distintas!)")
+    print(f"• Total de Questões: 9 (3 de Biologia + 3 de História + 3 de Matemática com fórmulas!)")
+    print(f"• Gabarito Enrico: Q1, Q3, Q4, Q6, Q7, Q9 (ACERTO) | Q2, Q5, Q8 (ERRO)")
     print(f"• ID da Aplicação Student: {enrico_app_student.id}")
     print("-" * 65)
     print("🔗 LINK DIRETO PARA O TESTE NO APP DO ALUNO:")
