@@ -51,12 +51,16 @@
 - Adaptação das frases de copy de "avaliação" para "exercício" em aplicações da categoria Lista de Exercícios.
 - Validação de usabilidade mobile (toque em cards, visualização sem hover preso e responsividade do header).
 
-### Fora do Escopo (OUT OF SCOPE — Conforme sinalização e verificação estrita do diff)
-- **NÃO IMPLEMENTADO NO DIFF:** *KPI de desempenho segmentado por provas e exercícios* (item desmarcado na task original, zero código ou endpoints entregues nesta entrega).
-- **NÃO IMPLEMENTADO NO DIFF:** *Considerar apenas atividades feitas quando o aluno estava presente no KPI* (item desmarcado na task original, zero código entregue).
-- **NÃO IMPLEMENTADO NO DIFF:** *Download da prova após realização* (depende de pitch separado da equipe de produto).
-- **NÃO IMPLEMENTADO NO DIFF:** *Agenda de estudos do estudante* (pitch separado).
-- **NÃO IMPLEMENTADO NO DIFF:** *Hierarquia de subpastas aninhadas dentro de disciplina* (fora do escopo da capability).
+### Validar Entregas Solicitadas que Já Estavam em Progresso (Concluídas / Validadas)
+- [x] **Lista de exercícios no Material de estudo:** Suporte e exibição de listas de exercício (`category=4`) vinculadas diretamente dentro de pastas de materiais via cards de ação (aguardando validação pitch 4.2026).
+- [x] **Embaralhamento de questões:** Suporte a provas com questões e alternativas randomizadas (`random_questions` / `random_alternatives`), ordenadas deterministicamente no backend sem dependência de banner legado no frontend.
+
+### Fora do Escopo (OUT OF SCOPE — Itens Descartados / Não Implementados)
+- **Hierarquia de pastas dentro de disciplina:** Subpastas aninhadas dentro de uma matéria (fora do escopo da capability).
+- **Download da prova após realização:** Baixar caderno de prova oficial finalizado (depende de pitch separado da equipe de produto).
+- **Agenda de estudos para o estudante:** Nova feature de cronograma de estudos (requer pitch separado).
+- **KPI de desempenho segmentado por provas e exercícios:** Item desmarcado na task original (depende de novos agregadores na API de relatórios).
+- **Considerar apenas presença no KPI:** Zero código entregue nesta release.
 - **PRESERVADO SEM ALTERAÇÃO:** O tema geral da sidebar e componentes internos (`user.colorModeTheme` / Dark Mode) não é afetado pela cor da escola; a cor da instituição afeta exclusivamente o Header.
 
 ---
@@ -223,6 +227,17 @@ if aluno:
 - [x] 2. Tocar nos cards de materiais de estudo e cards de provas.
 - [x] 3. Validar que o toque dispara a ação imediatamente sem ficar com estado visual travado de "hover persistente" (bordas ou sombras presas que só desativam ao tocar fora).
 - [x] 4. Validar que a rolagem vertical da página inicial e da listagem de materiais flui suavemente sem quebras de layout.
+
+#### Cenário 9 — Tela de Resultados: Revisão e Navegação entre Questões [Manual 👁]
+- [ ] 1. No app do aluno, acessar a tela de resultados de uma avaliação finalizada (`/painel/minhas-provas/$id`).
+- [ ] 2. Na seção "**Todas as questões**", tocar/clicar em um card de questão para abrir a gaveta lateral de revisão (`QuestionReviewSheet`).
+- [ ] 3. **Navegação entre questões (Avançar / Voltar):**
+  - [ ] Clicar no botão de **avançar** (`>` / "Próxima questão") e validar se transita imediatamente para a questão seguinte (atualizando número, enunciado e gabarito).
+  - [ ] Clicar no botão de **voltar** (`<` / "Questão anterior") e validar se retorna para a questão anterior.
+  - [ ] Validar se as setas desabilitam nos extremos (seta voltar desabilitada na Q1; seta avançar desabilitada na última questão).
+- [ ] 4. **Comportamento de Hover no Mobile / Touch:**
+  - [ ] Com Touch Emulation ativo, abrir e fechar a gaveta de revisão.
+  - [ ] Validar se o card da questão na listagem não fica travado com "hover persistente" (bordas coloridas ou setinha deslocada presas após fechar).
 
 ---
 
