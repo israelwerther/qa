@@ -216,7 +216,7 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 - [ ] 5. Verificar se cada card exibe:
   - [x] O número da questão em destaque (ex.: `"**Q1**"`, `"**Q2**"` ... `"**Q9**"`).
   - [x] A pílula de status visual com texto e cor corretos: `"**Acertou**"` (verde esmeralda) nas questões 1, 3, 4, 6, 7 e 9; `"**Errou**"` (rosa suave com texto vinho) nas questões 2, 5 e 8.
-  - [ ] O trecho do enunciado em texto limpo (`excerpt`), sem tags HTML aparentes (`<p>`, `<i>`, `<b>`) e sem delimitadores crus de LaTeX (`$$`, `\(`, `\)`), com destaque para as questões **7, 8 e 9 de Matemática** que iniciam diretamente com fórmulas (`\lim_{x \to 0}`, `x = \frac{-b \pm \sqrt{\Delta}}{2a}`, `\frac{(x-h)^2}{a^2}`).
+  - [ ] ❌ **FALHOU (Bug Detectado)**: O trecho do enunciado em texto limpo (`excerpt`) vaza código LaTeX cru (`\lim_{x \to 0}`, `\frac{\sin(x)}{x}`) nos cards de questão. O backend apenas limpou os delimitadores (`$$`, `\[`), deixando comandos e macros LaTeX visíveis, e o frontend renderiza o trecho em texto plano sem KaTeX/MathJax (ver Bug 1 na Seção 7).
   - [ ] O percentual médio de acertos da turma formatado (ex.: `"**75% de acertos**"`).
 
 #### Cenário 2 — Filtros por Categoria e Ordenação dos Cards
@@ -360,6 +360,29 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
   - [ ] `"Nada a revisar aqui — você não errou nenhuma questão desta disciplina."`
 - [ ] 4. Confirmar que nenhuma linha quebrada ou tabela vazia sem cabeçalho é desenhada.
 
+#### Cenário 11 — Mesma Disciplina com Múltiplos Professores no Caderno (Agregação Consolidada - Critério ClickUp)
+- [ ] 1. Configurar ou acessar um caderno de prova onde a mesma disciplina (ex.: `"Matemática"`) possui 2 ou mais professores vinculados (ex.: `"Prof. Carlos"` e `"Prof. João"` em `ExamTeacherSubject`).
+- [ ] 2. Concluir a avaliação com um aluno e acessar a tela de resultados (`/painel/minhas-provas/$id`).
+- [ ] 3. Rolar até a seção de desempenho por disciplina (`DisciplinesBreakdown`).
+- [ ] 4. **Validar o Critério de Aceite do ClickUp**:
+  - [ ] A tabela de disciplinas deve exibir um **único item consolidado** para a matéria (ex.: apenas `"Matemática"`).
+  - [ ] **NÃO** deve exibir subdivisão por professor (ex.: nunca exibir `"Matemática com Prof. Carlos"` ou linhas duplicadas para a mesma matéria).
+  - [ ] A contagem de questões, acertos, erros e percentual de acerto deve refletir a soma de todas as questões daquela matéria na prova.
+
+#### Cenário 12 — Prova de Disciplina Única (Omissão da Seção - Critério ClickUp)
+- [ ] 1. Criar ou acessar uma avaliação composta por apenas **uma única disciplina** (ex.: prova exclusiva de Redação ou apenas Matemática).
+- [ ] 2. Acessar a tela de resultados da avaliação como aluno.
+- [ ] 3. **Validar o Critério de Aceite do ClickUp**:
+  - [ ] *"Em caderno de disciplina única, a decomposição não agrega valor e é omitida. Cenário: Prova de disciplina única não exibe a seção."*
+  - [ ] Verificar se a seção inteira de desempenho por matéria (`DisciplinesBreakdown`) é ocultada da tela ou se o frontend desenha uma tabela de linha única (discrepância entre design/código e o critério do ClickUp).
+
+#### Cenário 13 — Prova com Resultado Não Liberado (Critério ClickUp)
+- [ ] 1. Acessar como aluno uma avaliação finalizada cujo resultado **ainda não foi liberado** pela coordenação (ex.: `student_stats_permission_date` em data futura ou `release_result_at_end=False`).
+- [ ] 2. Tentar abrir a rota direta de resultado (`/painel/minhas-provas/$id`).
+- [ ] 3. **Validar o Critério de Aceite do ClickUp**:
+  - [ ] A API `/api/v3/applications/<id>/result/` retorna `HTTP 401 Unauthorized` (`"Você não tem permissão para ver o resultado da avaliação"`).
+  - [ ] A tela do estudante não exibe nenhuma informação de nota, cards de questão ou seção de desempenho por disciplina (apresenta mensagem de `"Resultado não encontrado"` ou redireciona para a listagem).
+
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
@@ -377,14 +400,17 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-*(Espaço reservado para o QA registrar falhas durante a execução dos testes)*
-
-> [!WARNING]
-> **[Exemplo / Template de Bug]**
-> - **Título:** Falha na navegação restrita de questões por área.
-> - **Contexto / Causa Raiz:** O array `navScope` no componente `minhas-provas.$id.tsx` não filtrou as questões pelo campo `knowledgeArea`.
-> - **Comportamento Esperado:** *(conforme design system e PR #19)* A navegação deve conter exclusivamente questões da área selecionada.
-> - **Workaround:** Atualizar a página e utilizar a navegação geral de cards.
+> [!CAUTION]
+> ### Bug 1 (Em Escopo) — Vazamento de Código LaTeX Cru no Trecho (`excerpt`) dos Cards de Questão
+> - **Classificação:** **Defeito em Escopo da Feature Atual** (Blocker para aprovação do PR da branch `feat/resultado-questoes-excerpt-disciplina`).
+> - **Tela / Componente:** App do Aluno (`lize-student`) — `/painel/minhas-provas/$id` (`QuestionsOverview` e `build_question_excerpt` no backend).
+> - **Severidade:** **Alta** (Afeta a legibilidade e estética de todas as questões de exatas no resultado).
+> - **Evidência Visual:** Verificado nas questões **Q7, Q8 e Q9** (onde a Q7 exibe `\lim_{x \to 0} \frac{\sin(x)}{x} = 1 e \int_{0}^{\pi} \cos(x) \, dx = 0 ....`).
+> - **Causa Raiz:**
+>   1. **Backend (`fiscallizeon/questions/services/questions.py`):** O método `build_question_excerpt` (introduzido no commit `5a50df83a` da própria branch atual `feat/resultado-questoes-excerpt-disciplina`) apenas remove delimitadores matemáticos simples via regex (`\$\$?|\\\(|\\\)|\\\[|\\\]`), mas **não converte nem remove macros do LaTeX** (`\frac`, `\lim`, `\int`, `\sqrt`).
+>   2. **Frontend (`questions-overview.tsx`):** Renderiza `{question.excerpt}` diretamente em uma tag `<span className="...">` de texto puro, sem passar por biblioteca de renderização matemática (KaTeX/MathJax), ao contrário do que faz na gaveta lateral (`QuestionReviewSheet`).
+> - **Comportamento Esperado:** Questões que iniciam com fórmulas matemáticas devem ter seu trecho textual limpo de macros LaTeX (exibindo texto inteligível ou usando renderizador inline) para não expor sintaxe crua de programação ao aluno.
+> - **Encaminhamento:** Apontar como correção obrigatória no PR para o desenvolvedor da branch antes da liberação para produção.
 
 ---
 
@@ -392,6 +418,9 @@ print(f"URL de Acesso: http://localhost:5173/painel/minhas-provas/{app_student.i
 
 > [!NOTE]
 > **[Filtragem de Áreas sem Questões no Caderno]:** Em cadernos onde uma disciplina estiver associada a uma área diferente da questão avulsa, documentar a padronização no cadastro pedagógico para que a árvore curricular seja 100% coerente entre o cadastro da questão e o caderno da prova.
+
+> [!NOTE]
+> **[Shaping ClickUp — Disciplinas com Nomes Distintos (ex: Matemática I e II)]:** Confirmar com Produto e Design como tratar cadernos em que a mesma disciplina aparece com nomes distintos (ex.: *Matemática I* e *Matemática II*) — se a agregação deve unificar sob o nome genérico "Matemática" via vínculo de matéria-mãe ou manter em linhas separadas.
 
 > [!NOTE]
 > **[Paginação Assíncrona no Backend]:** Para provas com grande volume de questões (>90 itens, como ENEM), planejar paginação server-side dos dados de questões em futuras releases para reduzir o peso inicial do payload `/result/`.
