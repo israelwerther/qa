@@ -200,17 +200,20 @@ Reserve a separate section (independent from critical bugs) to document items th
 
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 **CRITICAL RULE:** Do NOT bloat the QA Test Plan with endless DOM selectors. The mapping of DOM elements, URLs, and API Routes specifically designed for future Playwright automation must be **centralized and incremental**.
-- **Centralized Map File:** For every screen tested, you MUST first check if a file already exists in `.ai_qa_acervo/docs/tests/usability/<template_name>.md`. 
-    - **Naming Rule:** The `<template_name>.md` MUST exactly match the underlying HTML template name (e.g., `exam_essay_correction.md` for `exam_essay_correction.html`), not the Django View name or URL.
+- **Centralized Map File:** For every screen tested, you MUST first check if a file already exists in `.ai_qa_acervo/docs/tests/usability/<screen_name>.md`. 
+    - **Naming Rule (Padrão Estrito de Nomenclatura 1:1 com o Código):**
+        - **1. Backend / Django Web (`lizeedu`):** O `<template_name>.md` DEVE bater EXATAMENTE com o nome do template HTML subjacente (ex.: `exam_essay_correction.md` para `exam_essay_correction.html`, `exam_list_new.md` para `exam_list_new.html`), e NÃO com o nome da View Django ou URL.
+        - **2. Frontend Aluno / SPA React (`lize-student`):** Como o app do aluno não usa templates HTML e sim rotas/componentes React (`.tsx`), o `<screen_name>.md` DEVE espelhar EXATAMENTE o arquivo de rota (TanStack Router) ou componente principal em `src/routes/` ou `src/components/`, convertendo caracteres especiais (`-`, `.`, `$`) para underscores `_` (ex.: rota `src/routes/_app/painel/minhas-provas.$id.tsx` vira obrigatoriamente `minhas_provas_id.md`; componente `src/components/study-materials/material-info.tsx` vira `material_info.md`).
+        - **3. PROIBIÇÃO TOTAL DE NOMES INVENTADOS / DESCRITIVOS:** É terminantemente proibido inventar nomes arbitrários (como `app_student_minhas_provas_result.md`). O arquivo `.md` DEVE permitir que qualquer pessoa localize o arquivo fonte correspondente no código pelo próprio nome.
     - If it exists, read it and **append/update** your new findings incrementally. 
-    - If it does not exist, create it (e.g., `omr_upload_list_new.md`).
+    - If it does not exist, create it (e.g., `omr_upload_list_new.md` ou `minhas_provas_id.md`).
     - **Map File Structure:** When creating a new map file, it MUST follow this exact structure to keep the knowledge categorized and ready for use:
         - **1. URLs e Navegação:** All exact URLs (create, list, details) and how to navigate to them.
         - **2. Pré-requisitos para Automação (Fixtures e Permissões):** Exact `mixer` setup snippets and required user permissions (e.g., `is_superuser = True`) to render the UI.
         - **3. Seletores DOM e Ações:** Categorized list of stable DOM selectors (IDs, `v-model` bindings), mapped section by section (e.g., step 1, step 2). Do NOT include troubleshooting or QA execution logs here.
 - **In the QA Test Plan:** You must include a checkbox to force the QA to validate the filename, followed by the link:
-  `- [x] O arquivo de mapeamento foi nomeado refletindo exatamente o nome do template HTML, e não a View.`
-  `🔗 **[Ver Mapeamento de Tela](docs/tests/usability/<template_name>.md)**`
+  `- [x] O arquivo de mapeamento foi nomeado refletindo exatamente o template HTML (Django) ou rota/componente (SPA Aluno), e não a View.`
+  `🔗 **[Ver Mapeamento de Tela](docs/tests/usability/<screen_name>.md)**`
 - **Selectors & Stable Identifiers (Inside the Map File):** Do not write superficial descriptions. You MUST read the source code to extract exact IDs, CSS classes, `v-model` bindings.
     - **Enforce Stable Identifiers:** The AI **MUST** demand that the developer refactor the HTML (or the AI must do it itself) to add unique identifiers (like `id` attributes) whenever robust selectors are missing. Automated tests cannot rely on generic design classes (e.g., `.tw-font-semibold`).
     - **The Gold Standard:** The AI must look for unique, semantically clear identifiers. A standard or dynamic `id` (like `:id="'upload-exam-name-' + omrUpload.id"` used by Vue) is the gold standard. The absolute focus is on stability, avoiding CSS utility classes (Tailwind) or complex DOM hierarchies.
