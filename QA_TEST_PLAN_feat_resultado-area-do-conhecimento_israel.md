@@ -165,12 +165,12 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
     - **Percentual da turma (`% da turma acertou`)**: O dado de acerto da turma por questão (`question.performance`) é utilizado primariamente para a ordenação dos cards (`"Acerto da turma (menor → maior)"`) e no Tooltip explicativo, servindo como fallback de texto no card apenas se a questão não possuir trecho de enunciado (`excerpt`).
 
 #### Cenário 2 — Filtros por Categoria e Ordenação dos Cards
-- [ ] 1. Na barra de filtros acima dos cards de questão, observar as opções de categoria: `"**Todas**"`, `"**Objetivas**"`, `"**Discursivas**"`, `"**Somatório**"` e `"**Arquivo anexado**"`.
-- [ ] 2. Clicar no chip `"**Objetivas**"` e validar que a lista filtra apenas questões de múltipla escolha.
-- [ ] 3. Clicar no campo seletor de ordenação `(dropdown no canto direito com texto padrão "Número (crescente)")`.
-- [ ] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q9 para a Q1).
+- [x] 1. Na barra de filtros acima dos cards de questão, observar as opções de categoria: `"**Todas**"`, `"**Objetivas**"`, `"**Discursivas**"`, `"**Somatório**"` e `"**Arquivo anexado**"`.
+- [x] 2. Clicar no chip `"**Objetivas**"` e validar que a lista filtra apenas questões de múltipla escolha.
+- [x] 3. Clicar no campo seletor de ordenação `(dropdown no canto direito com texto padrão "Número (crescente)")`.
+- [x] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q9 para a Q1).
 - [ ] 5. Selecionar `"**Acerto da turma (menor → maior)**"` e validar que as questões com menor índice de acerto aparecem no início da grade.
-- [ ] 6. Em provas com mais de 15 questões, validar que a paginação exibe no máximo 15 cards por página e os botões de seta `(‹ e ›)` transitam de página sem recarregar a tela.
+- [x] 6. Em provas com mais de 15 questões, validar que a paginação exibe no máximo 15 cards por página e os botões de seta `(‹ e ›)` transitam de página sem recarregar a tela.
 
 ---
 
@@ -179,18 +179,21 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Validar a alternância entre a visão analítica por matéria e a visão agregada por Área do Conhecimento.
 
 #### Cenário 3 — Presença e Funcionamento das Abas de Área
-- [ ] 1. Na tela de resultados, rolar até o bloco analítico de desempenho (abaixo dos cards de questão).
-- [ ] 2. Observar a presença das abas de alternância de visão: `"**Disciplinas**"` e `"**Área do conhecimento**"`.
-- [ ] 3. Estando na aba ativa `"**Disciplinas**"`, validar as linhas da tabela:
-  - [ ] Linha `"**Biologia**"` com 3 questões, 2 acertos, 0 parciais, 1 erro, desempenho 66.67% e nota 3.33/5.0.
-  - [ ] Linha `"**História**"` com 3 questões, 2 acertos, 0 parciais, 1 erro, desempenho 66.67% e nota 3.33/5.0.
-  - [ ] Confirmar que o cursor do mouse vira ponteiro (`cursor: pointer`) ao passar sobre a linha e o hover destaca a linha suavemente.
-- [ ] 4. Clicar sobre a linha `"**Biologia**"` e validar que o modal detalhado de desempenho da matéria (`SubjectPerformanceModal`) abre na tela com nota, histórico e tópicos. Fechar o modal no botão `(X)`.
+- [x] 1. Na tela de resultados, rolar até o bloco analítico de desempenho (abaixo dos cards de questão).
+- [x] 2. Observar a presença das abas de alternância de visão: `"**Disciplinas**"` e `"**Área do conhecimento**"`.
+- [x] 3. Estando na aba ativa `"**Disciplinas**"`, validar as linhas da tabela:
+  - [x] Linha `"**Aprofundamento Biologia**"` com 5 questões, 3 acertos, 0 parciais, 2 erros, desempenho 62.50% e nota 3.75/6.0.
+  - [x] Linha `"**Aprofundamento de História 2**"` com 5 questões, 4 acertos, 0 parciais, 1 erro, desempenho 79.17% e nota 4.75/6.0.
+  - [x] Linha `"**Aprofundamento de Matemática**"` com 5 questões, 3 acertos, 0 parciais, 2 erros, desempenho 60.00% e nota 3.00/5.0.
+  - [x] Linha `"**Aprofundamento de Química 2**"` com 5 questões, 3 acertos, 0 parciais, 2 erros, desempenho 60.00% e nota 3.00/5.0.
+  - [x] Confirmar que o cursor do mouse vira ponteiro (`cursor: pointer`) ao passar sobre a linha e o hover destaca a linha suavemente.
+- [ ] 4. Clicar sobre a linha `"**Aprofundamento Biologia**"` e validar que o modal detalhado de desempenho da matéria (`SubjectPerformanceModal`) abre na tela com nota, histórico e tópicos. Fechar o modal no botão `(X)`.
 - [ ] 5. Clicar na aba `"**Área do conhecimento**"`.
 - [ ] 6. Validar a nova renderização da tabela:
   - [ ] A primeira coluna agora se chama `"**Área do conhecimento**"`.
-  - [ ] Exibe a linha `"**Ciências da Natureza e suas Tecnologias**"` com 3 questões, 2 acertos, 1 erro e desempenho 66.67%.
-  - [ ] Exibe a linha `"**Ciências Humanas e suas Tecnologias**"` com 3 questões, 2 acertos, 1 erro e desempenho 66.67%.
+  - [ ] Exibe a linha `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"` com 10 questões (Biologia + Química), 6 acertos, 4 erros, 0 parciais, desempenho 61.36% e nota 6.75/11.0.
+  - [ ] Exibe a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` com 5 questões (História), 4 acertos, 1 erro, 0 parciais, desempenho 79.17% e nota 4.75/6.0.
+  - [ ] Exibe a linha `"**Matemática e suas Tecnologias - Ensino Médio**"` com 5 questões (Matemática), 3 acertos, 2 erros, 0 parciais, desempenho 60.00% e nota 3.00/5.0.
   - [ ] Na extrema direita de cada linha de área, validar a presença da coluna com o botão `"**Visualizar**"` `(botão branco com contorno cinza e ícone de olho)`.
 
 ---
@@ -200,17 +203,17 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Confirmar que o botão "Visualizar" abre o painel lateral com navegação restrita unicamente às questões daquela área.
 
 #### Cenário 4 — Escopo de Navegação na Área do Conhecimento
-- [ ] 1. Na tabela da aba `"**Área do conhecimento**"`, localizar a linha `"**Ciências da Natureza e suas Tecnologias**"`.
+- [ ] 1. Na tabela da aba `"**Área do conhecimento**"`, localizar a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` (ou `"**Ciências da Natureza...**"`).
 - [ ] 2. Clicar no botão `"**Visualizar**"` `(botão com ícone de olho)` correspondente a essa linha.
 - [ ] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda.
 - [ ] 4. Validar o cabeçalho da gaveta:
-  - [ ] Deve exibir `"**Q1**"` (primeira questão de Biologia/Natureza).
-  - [ ] O subtítulo deve exibir claramente `"**Biologia · Ciências da Natureza e suas Tecnologias**"`.
+  - [ ] Deve exibir o número da primeira questão da área selecionada (ex: `"**Q6**"` para Humanas ou `"**Q1**"` para Natureza).
+  - [ ] O subtítulo deve exibir claramente a disciplina e a área de conhecimento correspondente.
 - [ ] 5. Clicar no botão de próxima questão `(botão circular com ícone de seta ChevronRight)` ou pressionar a tecla `ArrowRight` no teclado.
-- [ ] 6. Confirmar que a gaveta transita para a `"**Q2**"` e depois para a `"**Q3**"` (todas de Biologia/Natureza).
-- [ ] 7. Observar o botão de próxima questão na Q3:
+- [ ] 6. Confirmar que a gaveta transita exclusivamente pelas questões daquela área.
+- [ ] 7. Observar o botão de próxima questão na última questão da área (ex: Q10 em Humanas):
   - [ ] Validar que o botão de próxima questão fica **desabilitado** (opacidade reduzida e não clicável).
-  - [ ] Confirmar que **NÃO transita** para a Q4 de História (o escopo respeita estritamente as 3 questões da área selecionada!).
+  - [ ] Confirmar que **NÃO transita** para questões de outras áreas fora do escopo selecionado.
 - [ ] 8. Fechar a gaveta lateral no botão de fechar `(X no canto superior direito)` ou clicando fora no backdrop escuro.
 
 ---
@@ -222,12 +225,12 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 #### Cenário 5 — Painel de Disciplinas e Grau de Domínio
 - [ ] 1. No topo da tela de resultados (abaixo do cabeçalho da prova), localizar as abas principais: `"**Informações Gerais**"` e `"**Questões para revisar**"`.
 - [ ] 2. Clicar na aba `"**Questões para revisar**"`.
-- [ ] 3. Validar a renderização da seção de `"**Biologia**"`:
-  - [ ] Título `"**Biologia**"` com subtítulo `"**Ciências da Natureza e suas Tecnologias**"`.
-  - [ ] Indicador numérico correspondente a 2 acertos em 3 questões (`"**67%**"` ou similar) acompanhado da legenda `"Desempenho na prova"`.
-  - [ ] Lista com marcadores: `"3 questões"`, `"2 acertos"`, `"1 erros"`.
+- [ ] 3. Validar a renderização da seção de `"**Aprofundamento Biologia**"`:
+  - [ ] Título `"**Aprofundamento Biologia**"` com subtítulo `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"`.
+  - [ ] Indicador numérico correspondente a 3 acertos em 5 questões (`"**62%**"` ou `"**63%**"`) acompanhado da legenda `"Desempenho na prova"`.
+  - [ ] Lista com marcadores: `"5 questões"`, `"3 acertos"`, `"2 erros"`.
   - [ ] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
-  - [ ] Resumo no rodapé: `"2/3 questões"`.
+  - [ ] Resumo no rodapé: `"3/5 questões · nota 3.75/6.0"`.
 - [ ] 4. No bloco `"**Grau de domínio**"`, testar o seletor `(dropdown com opção inicial "Assuntos")`:
   - [ ] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
   - [ ] Alternar para `"**Competências**"` e verificar a exibição correspondente.
@@ -235,16 +238,16 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 #### Cenário 6 — Tabela de Questões a Revisar e Botão "Revisar"
 - [ ] 1. Rolar até a tabela `"**Questões que você pode revisar**"` dentro do bloco de Biologia.
 - [ ] 2. Observar as questões listadas:
-  - [ ] Validar que apenas a `"**Q2**"` (questão que o aluno errou) está presente.
-  - [ ] Confirmar que a `"**Q1**"` (que o aluno acertou) **NÃO é exibida** na tabela de revisão.
+  - [ ] Validar que apenas `"**Q2**"` e `"**Q5**"` (questões que o aluno errou) estão presentes.
+  - [ ] Confirmar que `"**Q1**"`, `"**Q3**"` e `"**Q4**"` (que o aluno acertou) **NÃO são exibidas** na tabela de revisão.
 - [ ] 3. Validar os elementos da linha da Q2:
   - [ ] Círculo cinza com o número `"**2**"`.
-  - [ ] Trecho do enunciado: `"Durante a fotossíntese, a fase clara ocorre nos tilacoides e depende de luz solar direta..."`.
+  - [ ] Trecho do enunciado da questão Q2.
   - [ ] Selo colorido com o índice da turma: `"[X]% da turma acertou essa questão"`.
   - [ ] Botão `"**Revisar**"` `(botão branco com ícone de olho)`.
 - [ ] 4. Clicar no botão `"**Revisar**"` da Q2 de Biologia.
 - [ ] 5. Confirmar que a gaveta lateral abre exibindo a Q2.
-- [ ] 6. Verificar que como só havia 1 questão errada de Biologia, os botões de avançar e voltar ficam desabilitados (escopo restrito à lista de revisão da matéria).
+- [ ] 6. Clicar em avançar para a próxima questão e validar que transita para a Q5 (e desabilita o botão de próxima na Q5, pois o escopo se restringe às 2 questões erradas da matéria).
 - [ ] 7. Fechar a gaveta lateral.
 
 ---

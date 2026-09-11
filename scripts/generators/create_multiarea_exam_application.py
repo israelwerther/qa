@@ -29,6 +29,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fiscallizeon.settings')
 import django
 django.setup()
 
+from decimal import Decimal
 from django.core.cache import cache
 from django.utils import timezone
 from fiscallizeon.accounts.models import User
@@ -39,7 +40,14 @@ from fiscallizeon.subjects.models import Subject
 from fiscallizeon.inspectors.models import Inspector, TeacherSubject
 from fiscallizeon.exams.models import Exam, ExamQuestion, ExamTeacherSubject, StatusQuestion
 from fiscallizeon.questions.models import Question, QuestionOption
-from fiscallizeon.answers.models import OptionAnswer
+from fiscallizeon.answers.models import (
+    OptionAnswer,
+    TextualAnswer,
+    SumAnswer,
+    SumAnswerQuestionOption,
+    FileAnswer,
+)
+from fiscallizeon.omr.models import OMRStudents
 from fiscallizeon.applications.models import Application, ApplicationStudent
 
 
@@ -98,10 +106,24 @@ def create_multiarea_application():
     exam_name = "Simulado Multi-Áreas (Natureza, Humanas e Matemática) - QA"
     old_exams = Exam.objects.filter(name__in=[exam_name, "Simulado Multi-Áreas (Natureza e Humanas) - QA"])
     old_apps = Application.objects.all_with_deleted().filter(exam__in=old_exams)
+    OMRStudents.objects.filter(application_student__application__in=old_apps).delete()
+    SumAnswerQuestionOption.objects.filter(sum_answer__student_application__application__in=old_apps).delete()
+    SumAnswer.objects.filter(student_application__application__in=old_apps).delete()
+    TextualAnswer.objects.filter(student_application__application__in=old_apps).delete()
+    FileAnswer.objects.filter(student_application__application__in=old_apps).delete()
     OptionAnswer.objects.filter(student_application__application__in=old_apps).delete()
     ApplicationStudent.objects.filter(application__in=old_apps).delete()
     old_apps.hard_delete()
     old_exams.delete()
+
+    TARGET_ENRICO_ID = uuid.UUID('b47ce1b3-4883-40b3-bf68-025ca3f2835e')
+    OMRStudents.objects.filter(application_student_id=TARGET_ENRICO_ID).delete()
+    SumAnswerQuestionOption.objects.filter(sum_answer__student_application_id=TARGET_ENRICO_ID).delete()
+    SumAnswer.objects.filter(student_application_id=TARGET_ENRICO_ID).delete()
+    TextualAnswer.objects.filter(student_application_id=TARGET_ENRICO_ID).delete()
+    FileAnswer.objects.filter(student_application_id=TARGET_ENRICO_ID).delete()
+    OptionAnswer.objects.filter(student_application_id=TARGET_ENRICO_ID).delete()
+    ApplicationStudent.objects.filter(id=TARGET_ENRICO_ID).delete()
 
     exam = Exam.objects.create(
         name=exam_name,
@@ -117,10 +139,10 @@ def create_multiarea_application():
         exam.coordinations.add(coordination)
 
     # Blocos de Matéria no Caderno (5 questões por matéria = 20 questões no total)
-    ets_bio = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_bio, grade=grade, order=1, quantity=5, subject_note=5.0)
-    ets_his = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_his, grade=grade, order=2, quantity=5, subject_note=5.0)
-    ets_mat = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_mat, grade=grade, order=3, quantity=5, subject_note=5.0)
-    ets_qui = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_qui or ts_bio, grade=grade, order=4, quantity=5, subject_note=5.0)
+    ets_bio = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_bio, grade=grade, order=1, quantity=5, subject_note=Decimal('5.0'))
+    ets_his = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_his, grade=grade, order=2, quantity=5, subject_note=Decimal('5.0'))
+    ets_mat = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_mat, grade=grade, order=3, quantity=5, subject_note=Decimal('5.0'))
+    ets_qui = ExamTeacherSubject.objects.create(exam=exam, teacher_subject=ts_qui or ts_bio, grade=grade, order=4, quantity=5, subject_note=Decimal('5.0'))
 
     # ==============================================================================
     # CATÁLOGO DE QUESTÕES DE REFERÊNCIA PARA CASOS EXTREMOS / FORMAS COMPLEXAS
@@ -188,54 +210,54 @@ def create_multiarea_application():
         # --- História (Humanas) - 5 Questões Reais do Banco ---
         {
             "ets": ets_his,
-            "question_id": "e4122998-509a-4657-9fed-6c2f77595cbe", # República Anos 20
+            "question_id": "e4122998-509a-4657-9fed-6c2f77595cbe", # República Anos 20 (Q6 - Objetiva)
             "enrico_hit": True, # Enrico Acerta (Q6)
         },
         {
             "ets": ets_his,
-            "question_id": "75a157b0-8cbb-4bc0-9ad2-f27106b73d6e", # Conceito de revolução
+            "question_id": "75a157b0-8cbb-4bc0-9ad2-f27106b73d6e", # Conceito de revolução (Q7 - Objetiva)
             "enrico_hit": False, # Enrico Erra (Q7) -> Revisar
         },
         {
             "ets": ets_his,
-            "question_id": "7abecd4a-30a3-4f52-9f1c-65dcbbebdd58", # Fato histórico
+            "question_id": "7abecd4a-30a3-4f52-9f1c-65dcbbebdd58", # Fato histórico (Q8 - Objetiva)
             "enrico_hit": True, # Enrico Acerta (Q8)
         },
         {
             "ets": ets_his,
-            "question_id": "000951bc-57f7-44db-b680-20f927d19425", # Península Arábica
+            "question_id": "b3300eb0-7b86-4ca8-8ebf-8361784069a0", # Iluminismo (Q9 - Somatório / Categoria 3)
             "enrico_hit": True, # Enrico Acerta (Q9)
         },
         {
             "ets": ets_his,
-            "question_id": "003d3a32-44ef-4e93-9434-9e06ce31e122", # Século XVIII e XIX
+            "question_id": "ca93d24c-c95e-42cf-babe-b061a7adaab2", # História frases (Q10 - Arquivo Anexado / Categoria 2)
             "enrico_hit": True, # Enrico Acerta (Q10)
         },
 
         # --- Matemática (Matemática) - 5 Questões Reais do Banco ---
         {
             "ets": ets_mat,
-            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["math_formulas_mathml"]["id"], # 0d6f2abc
+            "question_id": REFERENCE_EDGE_CASE_QUESTIONS["math_formulas_mathml"]["id"], # 0d6f2abc (Q11 - Objetiva MathML)
             "enrico_hit": False, # Enrico Erra (Q11) -> Revisar
         },
         {
             "ets": ets_mat,
-            "question_id": "00004611-f7e3-4073-ae64-63f9eb0ef0d3", # Equipe de cientistas
+            "question_id": "00004611-f7e3-4073-ae64-63f9eb0ef0d3", # Equipe de cientistas (Q12 - Objetiva)
             "enrico_hit": True, # Enrico Acerta (Q12)
         },
         {
             "ets": ets_mat,
-            "question_id": "000062f4-b039-4415-afed-df81ade1d0fd", # Gangorra
+            "question_id": "000062f4-b039-4415-afed-df81ade1d0fd", # Gangorra (Q13 - Objetiva)
             "enrico_hit": True, # Enrico Acerta (Q13)
         },
         {
             "ets": ets_mat,
-            "question_id": "0051e9f5-df84-44fb-8723-540998cfd763", # Três amigos A, B e C
+            "question_id": "0051e9f5-df84-44fb-8723-540998cfd763", # Três amigos A, B e C (Q14 - Objetiva)
             "enrico_hit": True, # Enrico Acerta (Q14)
         },
         {
             "ets": ets_mat,
-            "question_id": "00878d35-351a-4401-b6ca-e52801f49191", # Piscina (Prefeitura de Surubim)
+            "question_id": "0f52c01f-747c-404e-9c26-1dc55c24b0a3", # Miniaturas de motos (Q15 - Discursiva / Categoria 0)
             "enrico_hit": False, # Enrico Erra (Q15) -> Revisar
         },
 
@@ -279,10 +301,13 @@ def create_multiarea_application():
         if coordination and not q.coordinations.filter(id=coordination.id).exists():
             q.coordinations.add(coordination)
 
-        correct_opt = q.alternatives.filter(is_correct=True).first()
-        wrong_opt = q.alternatives.filter(is_correct=False).first()
-        if not correct_opt or not wrong_opt:
-            raise ValueError(f"Questão real {q.id} precisa ter pelo menos 1 alternativa correta e 1 incorreta!")
+        correct_opt = None
+        wrong_opt = None
+        if q.category == Question.CHOICE:
+            correct_opt = q.alternatives.filter(is_correct=True).first()
+            wrong_opt = q.alternatives.filter(is_correct=False).first()
+            if not correct_opt or not wrong_opt:
+                raise ValueError(f"Questão objetiva real {q.id} precisa ter pelo menos 1 alternativa correta e 1 incorreta!")
 
         ets = cfg["ets"]
         ets_order_counter[ets.id] = ets_order_counter.get(ets.id, 0) + 1
@@ -293,7 +318,7 @@ def create_multiarea_application():
             exam_teacher_subject=ets,
             question=q,
             order=ets_order,
-            weight=1.0,
+            weight=Decimal('1.0'),
         )
         StatusQuestion.objects.filter(exam_question=eq).update(
             status=StatusQuestion.APPROVED,
@@ -366,27 +391,87 @@ def create_multiarea_application():
             q = item["question"]
 
             if is_enrico:
-                chosen_opt = item["correct_opt"] if item["enrico_hit"] else item["wrong_opt"]
+                hit = item["enrico_hit"]
             else:
                 # Outros alunos: 60% de chance de acerto para calibrar média da turma
-                chosen_opt = item["correct_opt"] if (st.id.int + eq.order) % 3 != 0 else item["wrong_opt"]
+                hit = (st.id.int + eq.order) % 3 != 0
 
-            OptionAnswer.objects.create(
-                student_application=app_student,
-                question_option=chosen_opt,
-                status=OptionAnswer.ACTIVE,
-                created_by=st.user,
-            )
+            if q.category == Question.CHOICE:
+                chosen_opt = item["correct_opt"] if hit else item["wrong_opt"]
+                OptionAnswer.objects.create(
+                    student_application=app_student,
+                    question_option=chosen_opt,
+                    status=OptionAnswer.ACTIVE,
+                    created_by=st.user,
+                )
+            elif q.category == Question.TEXTUAL:
+                grade_val = Decimal('1.0') if hit else Decimal('0.0')
+                TextualAnswer.objects.create(
+                    question=q,
+                    exam_question=eq,
+                    student_application=app_student,
+                    content="Resposta discursiva do aluno formulada durante a resolução da avaliação.",
+                    grade=grade_val,
+                    teacher_grade=grade_val,
+                    who_corrected=teacher_user,
+                    empty=False,
+                )
+            elif q.category == Question.SUM_QUESTION:
+                grade_val = Decimal('1.0') if hit else Decimal('0.0')
+                correct_sum = 0
+                for idx_opt, opt in enumerate(q.alternatives.all().order_by('index')):
+                    if opt.is_correct:
+                        correct_sum += (2 ** idx_opt)
+                chosen_sum = correct_sum if hit else (correct_sum + 1 if correct_sum > 0 else 2)
+
+                sum_ans = SumAnswer.objects.create(
+                    question=q,
+                    student_application=app_student,
+                    value=chosen_sum,
+                    grade=grade_val,
+                    created_by=st.user,
+                    empty=False,
+                )
+                for opt in q.alternatives.all():
+                    checked = opt.is_correct if hit else not opt.is_correct
+                    SumAnswerQuestionOption.objects.create(
+                        sum_answer=sum_ans,
+                        question_option=opt,
+                        checked=checked,
+                    )
+            elif q.category == Question.FILE:
+                grade_val = Decimal('1.0') if hit else Decimal('0.0')
+                FileAnswer.objects.create(
+                    question=q,
+                    exam_question=eq,
+                    student_application=app_student,
+                    arquivo="answers/file/sample_upload.pdf",
+                    grade=grade_val,
+                    teacher_grade=grade_val,
+                    who_corrected=teacher_user,
+                    empty=False,
+                )
 
     enrico_app_student = ApplicationStudent.objects.get(id=TARGET_ENRICO_ID)
+
+    # 8. Vincula scan OMR para preencher a tabela 'Arquivos enviados' no rodapé
+    existing_omr = OMRStudents.objects.exclude(scan_image='').first()
+    if existing_omr:
+        OMRStudents.objects.create(
+            application_student=enrico_app_student,
+            upload=existing_omr.upload,
+            scan_image=existing_omr.scan_image.name,
+            successful_questions_count=20,
+        )
 
     print("\n" + "=" * 65)
     print("🎉 APLICAÇÃO MULTI-ÁREA CRIADA E FINALIZADA COM SUCESSO!")
     print("=" * 65)
     print(f"• Caderno: {exam.name}")
     print(f"• Áreas de Conhecimento: '{area_bio}', '{area_his}', '{area_mat}' (3 Áreas distintas!)")
-    print(f"• Total de Questões: 20 (5 Biologia + 5 História + 5 Matemática + 5 Química) - HABILITA PAGINAÇÃO!")
-    print(f"  ↳ Página 1: Questões 1 até 15")
+    print(f"• Total de Questões: 20 (17 Objetivas, 1 Discursiva, 1 Somatório, 1 Arquivo Anexado) - HABILITA PAGINAÇÃO E FILTROS!")
+    print(f"  ↳ Categorias presentes: Objetivas (1), Discursivas (0), Somatório (3), Arquivo anexado (2)")
+    print(f"  ↳ Página 1: Questões 1 até 15 (inclui Somatório Q9, Arquivo Q10 e Discursiva Q15)")
     print(f"  ↳ Página 2: Questões 16 até 20")
     print(f"• Gabarito Enrico: 13 Acertos (Q1,3,4,6,8,9,10,12,13,14,17,18,19) | 7 Erros (Q2,5,7,11,15,16,20)")
     print(f"• ID da Aplicação Student: {enrico_app_student.id}")
