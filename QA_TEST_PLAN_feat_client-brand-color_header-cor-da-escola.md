@@ -229,12 +229,12 @@ if aluno:
 - [x] 4. Validar que a rolagem vertical da página inicial e da listagem de materiais flui suavemente sem quebras de layout.
 
 #### Cenário 9 — Tela de Resultados: Revisão e Navegação entre Questões [Manual 👁]
-- [ ] 1. No app do aluno, acessar a tela de resultados de uma avaliação finalizada (`/painel/minhas-provas/$id`).
-- [ ] 2. Na seção "**Todas as questões**", tocar/clicar em um card de questão para abrir a gaveta lateral de revisão (`QuestionReviewSheet`).
-- [ ] 3. **Navegação entre questões (Avançar / Voltar):**
-  - [ ] Clicar no botão de **avançar** (`>` / "Próxima questão") e validar se transita imediatamente para a questão seguinte (atualizando número, enunciado e gabarito).
-  - [ ] Clicar no botão de **voltar** (`<` / "Questão anterior") e validar se retorna para a questão anterior.
-  - [ ] Validar se as setas desabilitam nos extremos (seta voltar desabilitada na Q1; seta avançar desabilitada na última questão).
+- [x] 1. No app do aluno, acessar a tela de resultados de uma avaliação finalizada (`/painel/minhas-provas/$id`).
+- [x] 2. Na seção "**Todas as questões**", tocar/clicar em um card de questão para abrir a gaveta lateral de revisão (`QuestionReviewSheet`).
+- [x] 3. **Navegação entre questões (Avançar / Voltar):**
+  - [x] Clicar no botão de **avançar** (`>` / "Próxima questão") e validar se transita imediatamente para a questão seguinte (atualizando número, enunciado e gabarito).
+  - [x] Clicar no botão de **voltar** (`<` / "Questão anterior") e validar se retorna para a questão anterior.
+  - [x] Validar se as setas desabilitam nos extremos (seta voltar desabilitada na Q1; seta avançar desabilitada na última questão).
 - [ ] 4. **Comportamento de Hover no Mobile / Touch:**
   - [ ] Com Touch Emulation ativo, abrir e fechar a gaveta de revisão.
   - [ ] Validar se o card da questão na listagem não fica travado com "hover persistente" (bordas coloridas ou setinha deslocada presas após fechar).
