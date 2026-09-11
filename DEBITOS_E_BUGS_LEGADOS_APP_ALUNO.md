@@ -18,6 +18,7 @@
 | **#005** | 10/09/2026 | Navegação Mobile (`AppSidebar`) | Menu lateral mobile não fecha automaticamente ao selecionar um item | **Média** | ⏳ Aguardando Pauta |
 | **#006** | 10/09/2026 | Listagens (`ExamTabs` / `minhas-provas` / `listas-de-exercicio`) | Alternar abas de status reseta o scroll para o topo da página (scroll jump forçado) | **Média** | ⏳ Aguardando Pauta |
 | **#007** | 11/09/2026 | Resultado da Prova (`/painel/minhas-provas/$id`) | Redundância visual: Legenda inferior de status torna-se desnecessária com o mapa de cores e labels nos cards | **Baixa** | ⏳ Aguardando Pauta |
+| **#008** | 11/09/2026 | Modal de Disciplina (`SubjectPerformanceModal` / API `/result/subject/`) | Divergência no percentual por tópico para questões de Somatório (`SumAnswer`) vs alinhamento PO | **Média** | ⏳ Aguardando Alinhamento com PO |
 
 ---
 
@@ -263,6 +264,50 @@ No componente `questions-overview.tsx`, o bloco de legenda foi mantido estático
 #### 💡 Sugestão de Encaminhamento / Correção
 - **Opção A (Recomendada - *Declutter*):** Remover o container da legenda inferior (`<div className="flex flex-wrap gap-x-6 gap-y-2 items-center ...">`), deixando a interface mais limpa e focada no conteúdo.
 - **Opção B (Filtros interativos):** Caso a equipe de produto queira manter esses itens, transformá-los em chips clicáveis de filtro rápido por status (ex.: clicar em "Erros" para filtrar apenas as questões erradas na grade), conferindo utilidade prática ao elemento em vez de mera legenda estática redundante.
+
+---
+
+### [APP-ALUNO #008] — Divergência no Cálculo de Desempenho por Tópico para Questões de Somatório (`SumAnswer`)
+
+* **Data de Identificação:** 11 de setembro de 2026
+* **Identificado durante:** QA da branch `feat/resultado-area-do-conhecimento` (Cenário 3 - Validação de Modal de Desempenho por Disciplina)
+* **Tipo:** Inconsistência de Regra de Negócio / Omissão de Modelo no Backend (`lizeedu`)
+* **Severidade:** **Média**
+* **Tela / Rota:** `/painel/minhas-provas/$id` (Modal `SubjectPerformanceModal` consumindo `/api/v3/applications/<id>/result/subject/<subject_id>/`)
+* **Arquivo Afetado:** [`fiscallizeon/app/students/serializers.py`](file:///home/israel/Workspace/lizeedu/fiscallizeon/app/students/serializers.py) (linhas 420 a 503)
+
+#### 📝 Descrição e Contexto
+Ao abrir o modal de desempenho detalhado de uma disciplina (`SubjectPerformanceModal`), o valor do percentual exibido no cabeçalho (**"DESEMPENHO: 79,17%"**) diverge expressivamente do percentual exibido nas seções analíticas inferiores (**"Desempenho por assunto: 58%"**, **"por habilidade: 58%"** e **"por competência: 58%"**).
+
+* **Contexto de Negócio / Alinhamento com PO:**
+  * O PO pontuou recentemente que **não existe aplicação de prova online com questões de somatório** no modelo operacional da plataforma.
+  * Todavia, se um caderno contiver questões de somatório (por exemplo, simulados híbridos ou provas impressas com cartões-resposta OMR cujos resultados sejam liberados para consulta no App do Aluno), essa divergência matemática se manifesta diretamente no modal da disciplina.
+
+#### 🛠️ Causa Técnica (Backend)
+No método `SubjectPerformanceDetailSerializer._aggregate_performance_by`, a agregação calcula a pontuação (`score`) do aluno com subqueries que contemplam apenas `OptionAnswer` (objetiva), `TextualAnswer` (discursiva) e `FileAnswer` (anexo):
+```python
+score=Coalesce(
+    Sum(
+        'weight',
+        filter=Q(
+            Q(is_correct=True)
+            | Q(is_correct_textual=True)
+            | Q(is_correct_file=True)
+            # ❌ Ausência de verificação para SumAnswer (Question.SUM_QUESTION)
+        ),
+    ),
+    Decimal('0'),
+)
+```
+Como `SumAnswer` foi omitido:
+1. O peso da questão de somatório (ex: Q9, peso 1.25) é somado normalmente no denominador (`weight = Sum('weight')` = 6.00).
+2. O acerto do aluno não é computado no numerador, gerando nota 0.00 para a questão no agregador (totalizando 3.50 / 6.00 = 58.33% -> 58%).
+3. O cabeçalho do modal, por sua vez, consome `get_performance_v2()`, que calcula a nota real completa (4.75 / 6.00 = 79.17%), gerando a discrepância visual.
+
+#### 💡 Ponto de Pauta para Reunião com o PO
+1. **Dúvida para o PO:** O App do Aluno exibirá resultados de avaliações que tenham questões de somatório (ex.: simulados tradicionais estilo UFSC/UEM importados via OMR)?
+2. **Se SIM:** Devemos abrir uma tarefa técnica no backend `lizeedu` para adicionar a subquery de `SumAnswer` em `_aggregate_performance_by`.
+3. **Se NÃO (Não suportado por definição de produto):** O produto deve definir se cadernos com questões de somatório devem ter o modal bloqueado ou se é uma restrição de negócio que não requer suporte online.
 
 ---
 

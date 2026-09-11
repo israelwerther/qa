@@ -187,7 +187,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
   - [x] Linha `"**Aprofundamento de Matemática**"` com 5 questões, 3 acertos, 0 parciais, 2 erros, desempenho 60.00% e nota 3.00/5.0.
   - [x] Linha `"**Aprofundamento de Química 2**"` com 5 questões, 3 acertos, 0 parciais, 2 erros, desempenho 60.00% e nota 3.00/5.0.
   - [x] Confirmar que o cursor do mouse vira ponteiro (`cursor: pointer`) ao passar sobre a linha e o hover destaca a linha suavemente.
-- [ ] 4. Clicar sobre a linha `"**Aprofundamento Biologia**"` e validar que o modal detalhado de desempenho da matéria (`SubjectPerformanceModal`) abre na tela com nota, histórico e tópicos. Fechar o modal no botão `(X)`.
+- [x] 4. Clicar sobre a linha `"**Aprofundamento Biologia**"` e validar que o modal detalhado de desempenho da matéria (`SubjectPerformanceModal`) abre na tela com nota, histórico e tópicos. Fechar o modal no botão `(X)`.
 - [ ] 5. Clicar na aba `"**Área do conhecimento**"`.
 - [ ] 6. Validar a nova renderização da tabela:
   - [ ] A primeira coluna agora se chama `"**Área do conhecimento**"`.
@@ -349,10 +349,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 ## 7. Bugs and Observations (Problemas Encontrados)
 
 > [!NOTE]
-> ### Nenhum Bug Bloqueador Encontrado na Feature Atual
-> A validação completa com **100% de questões autênticas do banco de dados** confirmou que a entrega atende a todos os critérios de aceitação no frontend (`feat/resultado-area-do-conhecimento`) rodando sobre o backend padrão (`master`).
->
-> #### 🔍 Análise de Falso Positivo (Retificação de QA):
+> #### 🔍 Histórico de Análise de Falso Positivo (Retificação de QA):
 > 1. **Mocks Sintéticos Iniciais:** O apontamento anterior de "vazamento de LaTeX" ocorreu quando geramos questões mockadas via script com comandos manuais (`\frac`, `\sqrt`). No padrão real de produção da plataforma Lize (TinyMCE / MathType), as fórmulas matemáticas são salvas em **MathML** (`<math>`), cujo texto é preservado de forma limpa pelo `strip_tags()` do Django (`ax+b=0 e ax2+bx+c=0... a≠0`), sem comandos de código vazando no card.
 > 2. **Questão Legada Corrompida no Acervo (`444cfbcd`):** A questão antiga ESPCEX-1999 continha sintaxe LaTeX crua sem delimitadores cadastrada no próprio acervo histórico (aparecendo quebrada inclusive na busca do Banco de Questões no admin), tratando-se de falha isolada de cadastro legado e não de defeito na tela de resultados.
 > 3. **Melhoria Preventiva Não Bloqueante (Sugestão ao Dev):** Como reforço defensivo para o caso de o aluno realizar provas contendo itens legados do banco com LaTeX cru sem delimitadores, sugere-se que o método `build_question_excerpt` filtre também comandos iniciados por contra-barra (`\\[a-zA-Z]+`).
