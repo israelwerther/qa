@@ -312,31 +312,30 @@ Como `SumAnswer` foi omitido:
 
 ---
 
-### [APP-ALUNO #009] — Omissão de Questões na Gaveta "Visualizar" por Divergência de Área (`question.subject` vs `ExamTeacherSubject`)
+### [APP-ALUNO #009] — Omissão de Questões na Gaveta "Visualizar" por Filtro de Área do Conhecimento
 
 * **Data de Identificação:** 11 de setembro de 2026
 * **Identificado durante:** QA da branch `feat/resultado-area-do-conhecimento` (Cenário 4 - Navegação Restrita por Área)
-* **Tipo:** Defeito de Integração / Arquitetura de Dados entre Backend e Frontend
+* **Tipo:** Defeito de Frontend / Lógica de Filtragem e Exibição de Dados
 * **Severidade:** **Alta** (Impacta diretamente a experiência de navegação e revisão de questões do aluno)
 * **Tela / Rota:** `/painel/minhas-provas/$id` (Aba *"Área do conhecimento"* $\rightarrow$ Botão *"Visualizar"*)
 * **Vídeo do Problema (Jam):** [https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37](https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37)
-* **Arquivos Afetados:**
-  - Backend: [`fiscallizeon/app/students/views.py`](file:///home/israel/Workspace/lizeedu/fiscallizeon/app/students/views.py) (linhas 768-771)
-  - Frontend: `src/components/exam-result/disciplines-breakdown.tsx` (linhas 133-142 e 356)
 
 #### 📝 Descrição do Problema
-Ao navegar na aba **"Área do conhecimento"**, a tabela exibe o total de questões consolidado pelo caderno da prova (ex.: 5 questões em Ciências Humanas, 5 em Matemática, 10 em Natureza). Contudo, ao clicar no botão **"Visualizar"**, a gaveta lateral (`QuestionReviewSheet`):
-1. **Pula questões iniciais:** Em Matemática abre na Q12 (em vez de Q11); em Natureza abre na Q5 (em vez de Q1); em Humanas abre na Q9 (em vez de Q6).
-2. **Descarta questões:** As questões cujo cadastro original no banco não possuía a mesma string exata de área do caderno (ex.: cadastradas como "Ensino Fundamental" ou "Farmácia" inseridas em um caderno de "Ensino Médio") são descartadas, fazendo a gaveta entregar uma fração dos itens prometidos na tabela.
+Embora todas as questões da prova estejam carregadas na tela e exibidas na listagem geral, o botão **"Visualizar"** da tabela de Área do Conhecimento falha ao popular a gaveta lateral (`QuestionReviewSheet`):
+1. **Pula questões iniciais:** A navegação não começa na primeira questão da área na prova.
+2. **Descarta questões:** A gaveta omite itens daquela área e encerra a navegação precocemente, entregando ao aluno uma quantidade de questões inferior ao total exibido na linha da tabela.
 
-#### 🛠️ Causa Técnica
-- A tabela usa a área definida no caderno da avaliação (`ExamTeacherSubject.teacher_subject.subject.knowledge_area`).
-- O payload de questões `/result/` no backend usa `question.subject.knowledge_area` (origem estática do cadastro da questão no acervo).
-- O frontend faz a filtragem estrita `questions.filter(q => q.knowledgeArea === area)`. Havendo divergência de string, a questão é omitida da navegação da gaveta.
+#### 🛠️ Causa do Problema
+O componente aplica uma filtragem textual rígida para popular a gaveta lateral, buscando correspondência exata entre o título da área na tabela e o campo `knowledge_area` retornado na questão. Caso a questão possua qualquer divergência no nome da área em relação à área definida no caderno da avaliação, a lógica de exibição descarta a questão em vez de associá-la à área correspondente na prova, impedindo sua exibição na gaveta.
 
-#### 💡 Sugestões de Correção
-- **Opção Recomendada (Backend Contextual):** Em `fiscallizeon/app/students/views.py`, atribuir `knowledge_area` a partir do `ExamQuestion.exam_teacher_subject.teacher_subject.subject.knowledge_area` no contexto da avaliação.
-- **Opção Alternativa (Frontend):** Fazer fallback de mapeamento no frontend correlacionando `question.subject` com a lista `subjects` da prova.
+#### 📋 Passos para Reproduzir
+1. Acessar o resultado de uma avaliação no App do Aluno (`/painel/minhas-provas/<id>`).
+2. Confirmar que todas as questões da prova aparecem normalmente na listagem geral de cards.
+3. Rolar até a tabela e alternar para a aba **"Área do conhecimento"**.
+4. Observar o total de questões indicado na coluna "Questões" de uma determinada área (ex.: 5 questões).
+5. Clicar no botão **"Visualizar"** correspondente a essa área.
+6. Constatar que a gaveta lateral abre com quantidade inferior de questões à indicada na tabela (ex.: apenas 1 questão) e não permite navegar pelo restante dos itens daquela área.
 
 ---
 

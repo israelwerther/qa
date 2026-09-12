@@ -363,92 +363,38 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 
 ---
 
-### 🐛 BUG-02: Omissão de questões na gaveta "Visualizar" da Área do Conhecimento por divergência de origem taxonômica (`question.subject` vs `ExamTeacherSubject`)
+### 🐛 BUG-02: Omissão de questões na gaveta lateral ao clicar em "Visualizar" na visão por Área do Conhecimento
 
 | Atributo | Detalhe |
 |---|---|
 | **ID** | `BUG-02` |
-| **Severidade** | **Alta** (Quebra de integridade e usabilidade na navegação de questões por área) |
-| **Componentes** | Backend: `fiscallizeon/app/students/views.py` (`ApplicationStudentViewSet.result`, linhas 768-771)<br>Frontend: `src/components/exam-result/disciplines-breakdown.tsx` (`questionsOfArea`, linhas 133-142)<br>Frontend: `src/routes/_app/painel/minhas-provas.$id.tsx` (`onViewArea`, linhas 271-275) |
+| **Severidade** | **Alta** (Quebra de integridade e navegação na revisão de questões por área) |
+| **Componentes** | Frontend: `DisciplinesBreakdown` / `QuestionReviewSheet`<br>Backend: `/api/v3/applications/<id>/result/` |
 | **Tela / Rota** | `/painel/minhas-provas/<id>` (Aba *"Área do conhecimento"* $\rightarrow$ Botão *"Visualizar"*) |
-| **Evidência Oficial** | 🎬 **Gravação Jam:** [https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37](https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37) (Gravado em 11/09/2026) |
-| **Status** | **Identificado e Documentado (Aguardando Correção Arquitetural)** |
+| **Evidência Oficial** | 🎬 **Gravação Jam:** [https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37](https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37) |
+| **Status** | **Identificado e Documentado (Aguardando Correção)** |
 
-#### 1. Comportamento Atual (O que acontece na prática)
-Ao navegar na aba **"Área do conhecimento"**, a tabela exibe os totais agregados de questões de cada área baseando-se no caderno da avaliação. Porém, ao clicar no botão **"Visualizar"** para inspecionar as questões daquela área, a gaveta lateral (`QuestionReviewSheet`) **omite questões e pula o ponto de partida da navegação**:
+#### 1. Comportamento Atual
+Embora todas as questões da prova já estejam carregadas e disponíveis na tela (aparecendo normalmente na listagem geral e abrindo individualmente ao clicar nos cards), o botão **"Visualizar"** da tabela de Área do Conhecimento apresenta falha ao alimentar a gaveta lateral (`QuestionReviewSheet`):
+- A tabela indica a quantidade total de questões daquela área na avaliação (ex.: 5 questões).
+- Ao clicar no botão **"Visualizar"** dessa linha, a gaveta lateral abre omitindo questões daquela área (exibindo apenas 1 ou parte delas) e iniciando a navegação fora da primeira questão da área na prova.
+- As setas de navegação (`<` e `>`) ficam bloqueadas prematuramente ou não percorrem todas as questões prometidas na linha.
 
-1. **Ciências Humanas e Sociais Aplicadas:**
-   * A tabela indica **5 questões** (e nota 4.75/6).
-   * Ao clicar em *"Visualizar"*, a gaveta abre direto na **Q9** e exibe **apenas 1 questão no total**.
-   * As questões **Q6, Q7, Q8 e Q10 foram omitidas**, e os botões de navegação (`<` e `>`) ficam bloqueados.
-2. **Matemática e suas Tecnologias:**
-   * A tabela indica **5 questões** (e nota 3.0/5).
-   * Ao clicar em *"Visualizar"*, a gaveta abre na **Q12** (em vez da **Q11**), navegando apenas por 3 questões (Q12, Q13 e Q14). As questões **Q11 e Q15 foram omitidas**.
-3. **Ciências da Natureza e suas Tecnologias:**
-   * A tabela indica **10 questões** (Biologia + Química, nota 6.75/11).
-   * Ao clicar em *"Visualizar"*, a gaveta abre na **Q5** (em vez da **Q1**), omitindo a maior parte dos itens.
+#### 2. Comportamento Esperado
+Como todas as questões já estão disponíveis na tela e contabilizadas na tabela, ao clicar em **"Visualizar"** em uma linha com $N$ questões:
+- A gaveta lateral deve receber e listar a totalidade das $N$ questões que compõem aquela área na avaliação.
+- A navegação deve iniciar na primeira questão da área na prova e permitir avançar sequencialmente até a última questão daquela área sem descarte de itens.
 
-**Impacto no Estudante:**  
-Gera frustração imediata e a percepção de que a plataforma perdeu respostas ou "engoliu" questões, já que a tabela promete 5 ou 10 questões, mas a gaveta só entrega uma fração delas.
+#### 3. Causa do Problema
+O componente aplica uma filtragem textual rígida para popular a gaveta lateral, buscando correspondência exata entre o título da área na tabela e o campo `knowledge_area` retornado na questão. Caso a questão possua qualquer divergência no nome da área em relação à área definida no caderno da avaliação, a lógica de exibição descarta a questão em vez de associá-la à área correspondente na prova, impedindo sua exibição na gaveta.
 
-#### 2. Causa Raiz Técnica (Diagnóstico de Código)
-Existe um **descompasso arquitetural de origem** entre o que alimenta a tabela e o que alimenta o detalhe da questão:
-
-1. **Origem da Tabela (`groupByArea` / `subjects`):**
-   * A agregação da tabela é montada a partir dos dados de `ExamTeacherSubject` (o caderno de prova configurado pela coordenação/professor para a aplicação). No nosso simulado de Ensino Médio, as matérias foram vinculadas a áreas com sufixo `"- Ensino Médio"`.
-2. **Origem do Payload de Questões (`questions_data` em `views.py:L768-771`):**
-   ```python
-   # fiscallizeon/app/students/views.py
-   question_data['knowledge_area'] = (
-       question.subject.knowledge_area.name
-       if question.subject and question.subject.knowledge_area
-       else None
-   )
-   ```
-   O backend preenche `knowledge_area` consultando **a disciplina da questão avulsa no banco de dados** (`question.subject.knowledge_area`), ignorando o contexto em que a questão está inserida na prova.
-3. **Reaproveitamento de Questões Reais no Acervo:**
-   * Questões do banco de dados são frequentemente reaproveitadas entre séries (ex.: questões de História ou Biologia cadastradas com área de *"Ensino Fundamental"* ou *"Farmácia/Bioquímica"* inseridas em um caderno de *"Ensino Médio"*).
-4. **Filtro Estrito no Frontend (`disciplines-breakdown.tsx:L138-142`):**
-   ```typescript
-   export function questionsOfArea(questions: ResultQuestion[], area: string): ResultQuestion[] {
-       return questions.filter(
-           (question) => (normalizeArea(question.knowledgeArea) ?? UNKNOWN_AREA_LABEL) === area,
-       );
-   }
-   ```
-   O frontend compara strings de forma exata (`=== area`). Como `"Ciências Humanas e Sociais Aplicadas - Ensino Médio"` $\neq$ `"Ciências Humanas - Ensino Fundamental"`, o frontend descarta silenciosamente as questões discordantes, entregando à gaveta uma lista incompleta.
-
-> [!WARNING]
-> O próprio desenvolvedor do frontend antecipou esse risco em comentário de código (`disciplines-breakdown.tsx:L133-142`), confirmando que se trata de uma limitação do backend que precisava de tratamento estrutural.
-
-#### 3. Sugestões de Correção Apropriadas
-
-##### ✅ Opção 1: Correção Contextual no Backend (Recomendada)
-No endpoint `/api/v3/applications/<id>/result/` (`fiscallizeon/app/students/views.py`), a `knowledge_area` da questão deve herdar a área da disciplina **no contexto da avaliação** (`ExamTeacherSubject` / `ExamQuestion`), e não do cadastro isolado da questão:
-
-```python
-# fiscallizeon/app/students/views.py (dentro do loop de questions_data)
-# Mapear o ExamTeacherSubject correspondente à questão na avaliação atual:
-exam_question = eq_by_question_id.get(question.pk)
-if (
-    exam_question
-    and exam_question.exam_teacher_subject
-    and exam_question.exam_teacher_subject.teacher_subject.subject.knowledge_area
-):
-    question_area = exam_question.exam_teacher_subject.teacher_subject.subject.knowledge_area.name
-else:
-    question_area = (
-        question.subject.knowledge_area.name
-        if question.subject and question.subject.knowledge_area
-        else None
-    )
-
-question_data['knowledge_area'] = question_area
-```
-* **Por que é a melhor solução:** Garante consistência de dados (Single Source of Truth). Se uma questão compõe o caderno de História do Ensino Médio naquela prova, ela passa a pertencer a Ciências Humanas - Ensino Médio durante toda a experiência daquela avaliação.
-
-##### 🔄 Opção 2: Tratamento de Fallback no Frontend
-Caso o backend não possa ser ajustado de imediato, o frontend pode fazer o mapeamento da questão para a área cruzando o `question.subject` com o array `subjects` da avaliação (que já possui a `knowledgeArea` correta resolvida pelo caderno), em vez de depender exclusivamente da string crua `question.knowledgeArea`.
+#### 4. Passos para Reproduzir
+1. Acessar o resultado de uma avaliação no App do Aluno (`/painel/minhas-provas/<id>`).
+2. Confirmar que todas as questões da prova aparecem normalmente na listagem geral de cards.
+3. Rolar até a tabela e alternar para a aba **"Área do conhecimento"**.
+4. Observar o total de questões indicado na coluna "Questões" de uma determinada área (ex.: 5 questões).
+5. Clicar no botão **"Visualizar"** correspondente a essa área.
+6. Constatar que a gaveta lateral abre com quantidade inferior de questões à indicada na tabela (ex.: apenas 1 questão) e não permite navegar pelo restante dos itens daquela área.
 
 ---
 
