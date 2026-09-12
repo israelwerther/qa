@@ -225,12 +225,12 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 #### Cenário 5 — Painel de Disciplinas e Grau de Domínio
 - [x] 1. No topo da tela de resultados (abaixo do cabeçalho da prova), localizar as abas principais: `"**Informações Gerais**"` e `"**Questões para revisar**"`.
 - [x] 2. Clicar na aba `"**Questões para revisar**"`.
-- [ ] 3. Validar a renderização da seção de `"**Aprofundamento Biologia**"`:
-  - [ ] Título `"**Aprofundamento Biologia**"` com subtítulo `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"`.
-  - [ ] Indicador numérico correspondente a 3 acertos em 5 questões (`"**62%**"` ou `"**63%**"`) acompanhado da legenda `"Desempenho na prova"`.
+- [ ] 3. Validar a renderização da seção de disciplinas (ex.: `"**Aprofundamento Biologia**"` ou `"**Aprofundamento de Matemática**"`):
+  - [ ] Título da disciplina com subtítulo da área de conhecimento `(Nota: identificado defeito visual de quebra em 3 linhas e desalinhamento vertical — ver BUG-03)`.
+  - [ ] Indicador numérico correspondente aos acertos acompanhado da legenda `"Desempenho na prova"`.
   - [ ] Lista com marcadores: `"5 questões"`, `"3 acertos"`, `"2 erros"`.
   - [ ] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
-  - [ ] Resumo no rodapé: `"3/5 questões · nota 3.75/6.0"`.
+  - [ ] Resumo no rodapé: `"3/5 questões · nota X/Y"`.
 - [ ] 4. No bloco `"**Grau de domínio**"`, testar o seletor `(dropdown com opção inicial "Assuntos")`:
   - [ ] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
   - [ ] Alternar para `"**Competências**"` e verificar a exibição correspondente.
@@ -395,6 +395,29 @@ O componente aplica uma filtragem textual rígida para popular a gaveta lateral,
 4. Observar o total de questões indicado na coluna "Questões" de uma determinada área (ex.: 5 questões).
 5. Clicar no botão **"Visualizar"** correspondente a essa área.
 6. Constatar que a gaveta lateral abre com quantidade inferior de questões à indicada na tabela (ex.: apenas 1 questão) e não permite navegar pelo restante dos itens daquela área.
+
+---
+
+### 🎨 BUG-03: Desalinhamento visual e quebra excessiva no cabeçalho da disciplina
+
+| Atributo | Detalhe |
+|---|---|
+| **ID** | `BUG-03` |
+| **Severidade** | Baixa (Fidelidade Visual / UI / Alinhamento) |
+| **Componentes** | Frontend: `QuestionsToReview` / Cabeçalho da Disciplina (`lize-student`) |
+| **Tela / Rota** | `/painel/minhas-provas/<id>` (Aba *"Questões para revisar"*) |
+| **Status** | **Identificado e Documentado (Aguardando Ajuste Visual)** |
+
+#### 1. Comportamento Atual
+O container do nome da disciplina possui largura excessivamente restrita, forçando títulos compostos a quebrarem em até 3 linhas (ex.: "APROFUNDAMENTO / DE / MATEMÁTICA"). Essa quebra estica verticalmente o bloco de texto e gera um desalinhamento vertical entre os elementos vizinhos (o gráfico donut à esquerda, o bloco de título, a porcentagem de desempenho e a lista de métricas).
+
+#### 2. Comportamento Esperado (Figma)
+Conforme o design do Figma, o gráfico circular, o título/subtítulo da disciplina, a porcentagem de acertos e as métricas devem manter alinhamento harmônico no mesmo eixo, oferecendo largura adequada para o nome da matéria sem quebras excessivas de linha.
+
+#### 3. Passos para Reproduzir
+1. Acessar o resultado de uma avaliação no App do Aluno (`/painel/minhas-provas/<id>`).
+2. Alternar para a aba **"Questões para revisar"**.
+3. Observar o cabeçalho de uma disciplina com nome composto (ex.: *"Aprofundamento de Matemática"*).
 
 ---
 
