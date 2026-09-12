@@ -231,7 +231,8 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
   - [ ] Lista com marcadores: `"5 questões"`, `"3 acertos"`, `"2 erros"`.
   - [ ] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
   - [ ] Resumo no rodapé: `"3/5 questões · nota X/Y"`.
-- [ ] 4. No bloco `"**Grau de domínio**"`, testar o seletor `(dropdown com opção inicial "Assuntos")`:
+- [ ] 4. No bloco `"**Domínio dos temas**"` (ou `"**Grau de domínio**"`), testar o seletor `(dropdown com opção inicial "Assuntos")`:
+  - [ ] Validar a exibição dos cards de temas `(Nota: identificado desalinhamento vertical das barras de porcentagem quando o título varia em linhas — ver BUG-04)`.
   - [ ] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
   - [ ] Alternar para `"**Competências**"` e verificar a exibição correspondente.
 
@@ -418,6 +419,33 @@ Conforme o design do Figma, o gráfico circular, o título/subtítulo da discipl
 1. Acessar o resultado de uma avaliação no App do Aluno (`/painel/minhas-provas/<id>`).
 2. Alternar para a aba **"Questões para revisar"**.
 3. Observar o cabeçalho de uma disciplina com nome composto (ex.: *"Aprofundamento de Matemática"*).
+
+---
+
+### 🎨 BUG-04: Barras de porcentagem dos cards de "Domínio dos temas" desalinhadas verticalmente
+
+| Atributo | Detalhe |
+|---|---|
+| **ID** | `BUG-04` |
+| **Severidade** | Baixa (Fidelidade Visual / Alinhamento de UI) |
+| **Componentes** | Frontend: Cards de Domínio dos Temas (`QuestionsToReview` / `SubjectDomainCard` em `lize-student`) |
+| **Tela / Rota** | `/painel/minhas-provas/<id>` (Aba *"Questões para revisar"* $\rightarrow$ Seção *"Domínio dos temas"*) |
+| **Status** | **Identificado e Documentado (Aguardando Ajuste Visual)** |
+
+#### 1. Comportamento Atual
+Nos cards da grade de *"Domínio dos temas"*, a barra de porcentagem e a indicação `"Grau de domínio / [X]%"` não estão ancoradas ao rodapé do container:
+- Quando o título do assunto é curto e ocupa 1 linha (ex.: *"Álgebra"* ou *"Funcional"*), a barra fica posicionada mais acima.
+- Quando o título ocupa 2 ou mais linhas (ex.: *"Determinar elementos de progressões..."* ou *"Equação 2º Grau: Propriedades"*), o conteúdo empurra a barra para baixo.
+Essa variação quebra a linha visual horizontal entre cards adjacentes na mesma fileira.
+
+#### 2. Comportamento Esperado
+As barras de porcentagem e o rótulo de grau de domínio devem ficar sempre alinhados ao rodapé (*footer*) de cada card, mantendo uma linha de base consistente e uniforme em toda a grade, independentemente da extensão do título do tema.
+
+#### 3. Passos para Reproduzir
+1. Acessar o resultado de uma avaliação no App do Aluno (`/painel/minhas-provas/<id>`).
+2. Alternar para a aba **"Questões para revisar"**.
+3. Rolar até a seção **"Domínio dos temas"**.
+4. Comparar um card de tema com título de 1 linha (ex.: *"Álgebra"*) com os cards vizinhos que possuem títulos em múltiplas linhas.
 
 ---
 
