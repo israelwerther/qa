@@ -194,7 +194,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
   - [x] Exibe a linha `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"` com 10 questões (Biologia + Química), 6 acertos, 4 erros, 0 parciais, desempenho 61.36% e nota 6.75/11.0.
   - [x] Exibe a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` com 5 questões (História), 4 acertos, 1 erro, 0 parciais, desempenho 79.17% e nota 4.75/6.0.
   - [x] Exibe a linha `"**Matemática e suas Tecnologias - Ensino Médio**"` com 5 questões (Matemática), 3 acertos, 2 erros, 0 parciais, desempenho 60.00% e nota 3.00/5.0.
-  - [ ] Na extrema direita de cada linha de área, validar a presença da coluna com o botão `"**Visualizar**"` `(botão branco com contorno cinza e ícone de olho)`.
+  - [X] Na extrema direita de cada linha de área, validar a presença da coluna com o botão `"**Visualizar**"` `(botão branco com contorno cinza e ícone de olho)`.
 
 ---
 
@@ -203,10 +203,10 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Confirmar que o botão "Visualizar" abre o painel lateral com navegação restrita unicamente às questões daquela área.
 
 #### Cenário 4 — Escopo de Navegação na Área do Conhecimento
-- [ ] 1. Na tabela da aba `"**Área do conhecimento**"`, localizar a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` (ou `"**Ciências da Natureza...**"`).
-- [ ] 2. Clicar no botão `"**Visualizar**"` `(botão com ícone de olho)` correspondente a essa linha.
-- [ ] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda.
-- [ ] 4. Validar o cabeçalho da gaveta:
+- [X] 1. Na tabela da aba `"**Área do conhecimento**"`, localizar a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` (ou `"**Ciências da Natureza...**"`).
+- [X] 2. Clicar no botão `"**Visualizar**"` `(botão com ícone de olho)` correspondente a essa linha.
+- [X] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda.
+- [X] 4. Validar o cabeçalho da gaveta:
   - [ ] Deve exibir o número da primeira questão da área selecionada (ex: `"**Q6**"` para Humanas ou `"**Q1**"` para Natureza).
   - [ ] O subtítulo deve exibir claramente a disciplina e a área de conhecimento correspondente.
 - [ ] 5. Clicar no botão de próxima questão `(botão circular com ícone de seta ChevronRight)` ou pressionar a tecla `ArrowRight` no teclado.
@@ -223,8 +223,8 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Validar a apresentação segmentada por disciplina, domínios de competência e listagem exclusiva de erros/parciais.
 
 #### Cenário 5 — Painel de Disciplinas e Grau de Domínio
-- [ ] 1. No topo da tela de resultados (abaixo do cabeçalho da prova), localizar as abas principais: `"**Informações Gerais**"` e `"**Questões para revisar**"`.
-- [ ] 2. Clicar na aba `"**Questões para revisar**"`.
+- [x] 1. No topo da tela de resultados (abaixo do cabeçalho da prova), localizar as abas principais: `"**Informações Gerais**"` e `"**Questões para revisar**"`.
+- [x] 2. Clicar na aba `"**Questões para revisar**"`.
 - [ ] 3. Validar a renderização da seção de `"**Aprofundamento Biologia**"`:
   - [ ] Título `"**Aprofundamento Biologia**"` com subtítulo `"**Ciências da Natureza e suas Tecnologias - Ensino Médio**"`.
   - [ ] Indicador numérico correspondente a 3 acertos em 5 questões (`"**62%**"` ou `"**63%**"`) acompanhado da legenda `"Desempenho na prova"`.
