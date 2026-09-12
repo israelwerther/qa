@@ -19,6 +19,7 @@
 | **#006** | 10/09/2026 | Listagens (`ExamTabs` / `minhas-provas` / `listas-de-exercicio`) | Alternar abas de status reseta o scroll para o topo da página (scroll jump forçado) | **Média** | ⏳ Aguardando Pauta |
 | **#007** | 11/09/2026 | Resultado da Prova (`/painel/minhas-provas/$id`) | Redundância visual: Legenda inferior de status torna-se desnecessária com o mapa de cores e labels nos cards | **Baixa** | ⏳ Aguardando Pauta |
 | **#008** | 11/09/2026 | Modal de Disciplina (`SubjectPerformanceModal` / API `/result/subject/`) | Divergência no percentual por tópico para questões de Somatório (`SumAnswer`) vs alinhamento PO | **Média** | ⏳ Aguardando Alinhamento com PO |
+| **#009** | 11/09/2026 | Área do Conhecimento (`DisciplinesBreakdown` / Botão *"Visualizar"*) | Descarte e omissão de questões na gaveta por divergência entre área do caderno e área avulsa da questão | **Alta** | ⏳ Aguardando Pauta Técnica |
 
 ---
 
@@ -308,6 +309,34 @@ Como `SumAnswer` foi omitido:
 1. **Dúvida para o PO:** O App do Aluno exibirá resultados de avaliações que tenham questões de somatório (ex.: simulados tradicionais estilo UFSC/UEM importados via OMR)?
 2. **Se SIM:** Devemos abrir uma tarefa técnica no backend `lizeedu` para adicionar a subquery de `SumAnswer` em `_aggregate_performance_by`.
 3. **Se NÃO (Não suportado por definição de produto):** O produto deve definir se cadernos com questões de somatório devem ter o modal bloqueado ou se é uma restrição de negócio que não requer suporte online.
+
+---
+
+### [APP-ALUNO #009] — Omissão de Questões na Gaveta "Visualizar" por Divergência de Área (`question.subject` vs `ExamTeacherSubject`)
+
+* **Data de Identificação:** 11 de setembro de 2026
+* **Identificado durante:** QA da branch `feat/resultado-area-do-conhecimento` (Cenário 4 - Navegação Restrita por Área)
+* **Tipo:** Defeito de Integração / Arquitetura de Dados entre Backend e Frontend
+* **Severidade:** **Alta** (Impacta diretamente a experiência de navegação e revisão de questões do aluno)
+* **Tela / Rota:** `/painel/minhas-provas/$id` (Aba *"Área do conhecimento"* $\rightarrow$ Botão *"Visualizar"*)
+* **Vídeo do Problema (Jam):** [https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37](https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37)
+* **Arquivos Afetados:**
+  - Backend: [`fiscallizeon/app/students/views.py`](file:///home/israel/Workspace/lizeedu/fiscallizeon/app/students/views.py) (linhas 768-771)
+  - Frontend: `src/components/exam-result/disciplines-breakdown.tsx` (linhas 133-142 e 356)
+
+#### 📝 Descrição do Problema
+Ao navegar na aba **"Área do conhecimento"**, a tabela exibe o total de questões consolidado pelo caderno da prova (ex.: 5 questões em Ciências Humanas, 5 em Matemática, 10 em Natureza). Contudo, ao clicar no botão **"Visualizar"**, a gaveta lateral (`QuestionReviewSheet`):
+1. **Pula questões iniciais:** Em Matemática abre na Q12 (em vez de Q11); em Natureza abre na Q5 (em vez de Q1); em Humanas abre na Q9 (em vez de Q6).
+2. **Descarta questões:** As questões cujo cadastro original no banco não possuía a mesma string exata de área do caderno (ex.: cadastradas como "Ensino Fundamental" ou "Farmácia" inseridas em um caderno de "Ensino Médio") são descartadas, fazendo a gaveta entregar uma fração dos itens prometidos na tabela.
+
+#### 🛠️ Causa Técnica
+- A tabela usa a área definida no caderno da avaliação (`ExamTeacherSubject.teacher_subject.subject.knowledge_area`).
+- O payload de questões `/result/` no backend usa `question.subject.knowledge_area` (origem estática do cadastro da questão no acervo).
+- O frontend faz a filtragem estrita `questions.filter(q => q.knowledgeArea === area)`. Havendo divergência de string, a questão é omitida da navegação da gaveta.
+
+#### 💡 Sugestões de Correção
+- **Opção Recomendada (Backend Contextual):** Em `fiscallizeon/app/students/views.py`, atribuir `knowledge_area` a partir do `ExamQuestion.exam_teacher_subject.teacher_subject.subject.knowledge_area` no contexto da avaliação.
+- **Opção Alternativa (Frontend):** Fazer fallback de mapeamento no frontend correlacionando `question.subject` com a lista `subjects` da prova.
 
 ---
 
