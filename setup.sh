@@ -1,0 +1,1 @@
+scripts/setup-tasks.sh

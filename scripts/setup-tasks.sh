@@ -2,9 +2,11 @@
 # Script para configurar as tasks do VS Code e Slash Commands (/qa-create-exam, /qa-reset-passwords)
 set -e
 
-WORKSPACE_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+ACERVO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+WORKSPACE_ROOT="$(cd "$ACERVO_DIR/.." && pwd)"
 VSCODE_DIR="$WORKSPACE_ROOT/.vscode"
-TASKS_SOURCE="$(cd "$(dirname "$0")/../vscode" && pwd)/tasks.json"
+TASKS_SOURCE="$ACERVO_DIR/vscode/tasks.json"
 
 # 1. Configura tasks.json para inicialização de serviços locais (Ctrl+Shift+B)
 mkdir -p "$VSCODE_DIR"
@@ -16,31 +18,26 @@ rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-create-test-exam.md"
 rm -f "$WORKSPACE_ROOT/.agent/workflows/qa.md"
 rm -f "$WORKSPACE_ROOT/.cursor/commands/qa.md"
 
-# 3. Configura slash commands nas IDEs (Antigravity e Cursor)
+# 3. Configura slash commands nas IDEs dinamicamente (Antigravity e Cursor)
 mkdir -p "$WORKSPACE_ROOT/.agent/workflows"
+mkdir -p "$WORKSPACE_ROOT/.agents/workflows"
 mkdir -p "$WORKSPACE_ROOT/.cursor/commands"
 
-# /qa-create-plan (Gerador oficial de QA Test Plans)
-ln -sf "../../.ai_qa_acervo/workflows/qa-create-plan.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-plan.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-create-plan.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-plan.md"
+WORKFLOWS_DIR="$WORKSPACE_ROOT/.ai_qa_acervo/workflows"
+for wf in "$WORKFLOWS_DIR"/*.md; do
+    [ -f "$wf" ] || continue
+    wf_name="$(basename "$wf")"
+    ln -sf "../../.ai_qa_acervo/workflows/$wf_name" "$WORKSPACE_ROOT/.agent/workflows/$wf_name"
+    ln -sf "../../.ai_qa_acervo/workflows/$wf_name" "$WORKSPACE_ROOT/.agents/workflows/$wf_name"
+    ln -sf "../../.ai_qa_acervo/workflows/$wf_name" "$WORKSPACE_ROOT/.cursor/commands/$wf_name"
+done
 
-# /qa-create-application (Gerador de aplicações de teste e alunos)
-ln -sf "../../.ai_qa_acervo/workflows/qa-create-application.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-application.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-create-application.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-application.md"
-
-# /qa-create-exam (Gerador de cadernos e questões)
-ln -sf "../../.ai_qa_acervo/workflows/qa-create-exam.md" "$WORKSPACE_ROOT/.agent/workflows/qa-create-exam.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-create-exam.md" "$WORKSPACE_ROOT/.cursor/commands/qa-create-exam.md"
-
-# /qa-reset-passwords (Reset de senhas, 2FA e sessões)
-ln -sf "../../.ai_qa_acervo/workflows/qa-reset-passwords.md" "$WORKSPACE_ROOT/.agent/workflows/qa-reset-passwords.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-reset-passwords.md" "$WORKSPACE_ROOT/.cursor/commands/qa-reset-passwords.md"
-
-# /qa-export-pdf (Exportação de plano com evidências para PDF consolidado)
-ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.agent/workflows/qa-export-pdf.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.cursor/commands/qa-export-pdf.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.agent/workflows/qa-export.md"
-ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.cursor/commands/qa-export.md"
+# Atalho rápido /qa-export apontando para qa-export-pdf
+if [ -f "$WORKFLOWS_DIR/qa-export-pdf.md" ]; then
+    ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.agent/workflows/qa-export.md"
+    ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.agents/workflows/qa-export.md"
+    ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.cursor/commands/qa-export.md"
+fi
 
 # 4. Garante que os links e o acervo fiquem isolados e não sujem o git status do lizeedu
 EXCLUDE_FILE="$WORKSPACE_ROOT/.git/info/exclude"
