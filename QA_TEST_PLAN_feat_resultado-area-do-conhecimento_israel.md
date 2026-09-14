@@ -205,8 +205,8 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 #### Cenário 4 — Escopo de Navegação na Área do Conhecimento
 - [X] 1. Na tabela da aba `"**Área do conhecimento**"`, localizar a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` (ou `"**Ciências da Natureza...**"`).
 - [X] 2. Clicar no botão `"**Visualizar**"` `(botão com ícone de olho)` correspondente a essa linha.
-- [X] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda.
-- [X] 4. Validar o cabeçalho da gaveta:
+- [ ] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda `(Nota: falha identificada — o botão não abre a gaveta devido ao descasamento de nomes — ver BUG-05)`.
+- [ ] 4. Validar o cabeçalho da gaveta:
   - [ ] Deve exibir o número da primeira questão da área selecionada (ex: `"**Q6**"` para Humanas ou `"**Q1**"` para Natureza).
   - [ ] O subtítulo deve exibir claramente a disciplina e a área de conhecimento correspondente.
 - [ ] 5. Clicar no botão de próxima questão `(botão circular com ícone de seta ChevronRight)` ou pressionar a tecla `ArrowRight` no teclado.
@@ -446,6 +446,84 @@ As barras de porcentagem e o rótulo de grau de domínio devem ficar sempre alin
 2. Alternar para a aba **"Questões para revisar"**.
 3. Rolar até a seção **"Domínio dos temas"**.
 4. Comparar um card de tema com título de 1 linha (ex.: *"Álgebra"*) com os cards vizinhos que possuem títulos em múltiplas linhas.
+
+---
+
+### 🐛 BUG-05: Botão "Visualizar" totalmente inoperante (não abre a gaveta lateral) por descasamento de nomes entre a disciplina do caderno e a da questão
+
+| Atributo | Detalhe |
+|---|---|
+| **ID** | `BUG-05` |
+| **Severidade** | **Crítica / Bloqueante** (Falha funcional silenciosa que impede a navegação e revisão por área no App do Aluno) |
+| **Componentes** | **Backend:** `fiscallizeon/app/students/views.py` (`ApplicationStudentViewSet.result`)<br>**Frontend:** `lize-student/src/components/exam-result/disciplines-breakdown.tsx` (`questionsOfArea`) e `lize-student/src/routes/_app/painel/minhas-provas.$id.tsx` (`onViewArea`) |
+| **Tela / Rota** | `/painel/minhas-provas/<application_student_id>` (Aba *"Área do conhecimento"* $\rightarrow$ Botão *"Visualizar"*) |
+| **Cenário Base (Preservado)** | Aluna: Sarah Guimarães Monteiro (`c58df2c4-5994-41c4-cf79-136db4e3946f`)<br>URL: `http://localhost:3000/painel/minhas-provas/c58df2c4-5994-41c4-cf79-136db4e3946f?status=liberadas&year="2026"&page=1` |
+| **Status** | **Identificado e Documentado (Aguardando Correção pelos times de Backend e Frontend)** |
+
+#### 1. Comportamento Atual (Defeito)
+Na aba **"Área do conhecimento"**, o aluno visualiza as linhas com os totais de questões, acertos, erros e notas de cada área (ex.: *"Ciências da Natureza e suas Tecnologias - Ensino Médio"* com 15 questões). 
+Porém, ao clicar no botão **"Visualizar"** dessa linha:
+- **Absolutamente nada acontece**: o clique é ignorado, a gaveta lateral (`QuestionReviewSheet`) não abre e não há nenhum feedback visual ou alerta ao aluno.
+- O botão parece completamente "morto" na interface.
+
+#### 2. Comportamento Esperado
+Ao clicar em **"Visualizar"** em qualquer linha da tabela que possua questões contabilizadas, a gaveta lateral de revisão (`QuestionReviewSheet`) deve abrir imediatamente, posicionada na primeira questão daquela área na prova e permitindo transitar pelas questões correspondentes.
+
+#### 3. Causa Raiz Técnica (Diagnóstico de Engenharia)
+Ocorre um desacoplamento estrutural entre a serialização da API no Backend e o filtro de correspondência estrita no Frontend:
+
+1. **No Backend (`views.py:L765`):**
+   Na action `result`, o backend preenche o campo `subject` e `knowledge_area` de cada questão olhando para o cadastro bruto original da questão no banco de dados (`question.subject.name`), em vez de olhar para a disciplina do bloco da prova no qual a questão foi inserida (`ExamTeacherSubject.teacher_subject.subject.name`):
+   ```python
+   question_data['subject'] = question.subject.name  # Ex: retorna "Biologia"
+   question_data['knowledge_area'] = question.subject.knowledge_area.name
+   ```
+   No caderno da avaliação, a disciplina foi configurada como `"Aprofundamento Biologia"`. A API entrega a lista `subjects` com `"Aprofundamento Biologia"`, mas em `questions_data` entrega as questões com `"Biologia"`.
+
+2. **No Frontend (`disciplines-breakdown.tsx:L138-L160`):**
+   A função `questionsOfArea` filtra as questões da área fazendo uma verificação textual exata no `Set` de nomes das disciplinas daquela área:
+   ```typescript
+   const subjectNamesInArea = new Set(
+       subjects.filter(s => normalizeArea(s.knowledgeArea) === area).map(s => s.subject.trim())
+   ); // Contém: Set(['Aprofundamento Biologia', 'Aprofundamento de Química 2'])
+
+   return questions.filter((question) => {
+       const subjectName = question.subject?.trim();
+       if (subjectName) return subjectNamesInArea.has(subjectName); // 👈 Retorna FALSE para "Biologia"!
+       return normalizeArea(question.knowledgeArea) === area;
+   });
+   ```
+   Como a questão traz `"Biologia"` e o `Set` só tem `"Aprofundamento Biologia"`, a busca retorna `false`. Como consequência, o array filtrado retorna **vazio (`[]`)**.
+
+3. **Aborto Silencioso (`minhas-provas.$id.tsx:L272`):**
+   Ao receber o array vazio retornado por `questionsOfArea`, o handler do clique aborta sem qualquer ação:
+   ```tsx
+   onViewArea={(areaQuestions) => {
+       if (areaQuestions.length === 0) return; // 👈 Aborta silenciosamente e nada abre!
+       setNavScope(areaQuestions);
+       setActiveQuestionId(areaQuestions[0].id);
+   }}
+   ```
+
+#### 4. Impacto e Validação Empírica em Produção (Provas Reais)
+Uma auditoria direta realizada no banco de dados do Lize Edu revelou que este **não é um caso isolado de teste**, mas sim um **comportamento frequente de produção**:
+- Foram analisadas **1.435.838 questões** em cadernos de prova reais cadastrados na plataforma.
+- Em **56.350 questões** reais de colégios (ex.: *Salesiano Dom Bosco*, *Salesiano São José*, *Rede Decisão*), a matéria da prova é diferente da matéria original da questão no banco (ex.: prova de `"(Geral) Linguagens"` usando questão de `"Língua Inglesa"`; prova de `"Ciências"` usando questão de `"Biologia"`; prova de `"Aprofundamento Biologia"` usando questão de `"Biologia"`).
+- **Impacto em Produção:** Em todas essas mais de 56 mil situações de provas reais com disciplinas multidisciplinares, itinerários formativos do Novo Ensino Médio ou questões do banco público, os alunos que clicarem em "Visualizar" por área sofrerão exatamente esse bloqueio silencioso.
+
+#### 5. Passos para Reproduzir
+1. Fazer login no App do Aluno com `sarah-guimaraes-monteiro-515-515@email-temp.com.br` (senha `123456`).
+2. Acessar a avaliação: `http://localhost:3000/painel/minhas-provas/c58df2c4-5994-41c4-cf79-136db4e3946f?status=liberadas&year="2026"&page=1`.
+3. Rolar até a tabela e alternar para a aba **"Área do conhecimento"**.
+4. Localizar a linha `"Ciências da Natureza e suas Tecnologias - Ensino Médio"` (ou `"Ciências Humanas..."` / `"Matemática..."`).
+5. Clicar no botão **"Visualizar"**.
+6. Constatar que nada acontece e a gaveta lateral não abre.
+
+#### 6. Solução Recomendada aos Desenvolvedores
+- **Backend (`views.py`):** Resolver `question_data['subject']` e `question_data['knowledge_area']` a partir da associação da questão com o caderno (`ExamQuestion.exam_teacher_subject.teacher_subject.subject`), garantindo que o nome da disciplina e da área na questão reflitam fielmente o contexto em que ela foi aplicada na avaliação.
+- **Frontend (`disciplines-breakdown.tsx` / `minhas-provas.$id.tsx`):**
+  - Implementar associação resiliente (por ID de disciplina/área ou agrupamento pelo vínculo da avaliação em vez de igualdade pura de string).
+  - Nunca abortar silenciosamente: caso por algum motivo inesperado uma área não possua questões vinculadas, exibir toast/alerta explicativo em vez de deixar o botão inoperante.
 
 ---
 
