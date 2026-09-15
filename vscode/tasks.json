@@ -2,6 +2,21 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Sync QA Tools",
+      "type": "shell",
+      "command": "git -C .ai_qa_acervo pull --quiet origin main 2>/dev/null && bash .ai_qa_acervo/scripts/setup-tasks.sh --silent 2>/dev/null || true",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Django: Runserver",
       "type": "shell",
       "command": "./venv/bin/python ./manage.py runserver",
@@ -40,6 +55,7 @@
     {
       "label": "Start All Services",
       "dependsOn": [
+        "Sync QA Tools",
         "Django: Runserver",
         "Celery: Worker",
         "PDF Service"

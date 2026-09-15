@@ -12,46 +12,66 @@ TASKS_SOURCE="$ACERVO_DIR/vscode/tasks.json"
 mkdir -p "$VSCODE_DIR"
 cp "$TASKS_SOURCE" "$VSCODE_DIR/tasks.json"
 
-# 2. Limpa links legados ou obsoletos
-rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-create-test-exam.md"
-rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-create-test-exam.md"
+# 2. Limpa links legados ou obsoletos (antigos em inglês)
+rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-create-*.md"
+rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-export*.md"
+rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-reset*.md"
+rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-answer*.md"
 rm -f "$WORKSPACE_ROOT/.agent/workflows/qa.md"
+
+rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-create-*.md"
+rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-export*.md"
+rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-reset*.md"
+rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-answer*.md"
+rm -f "$WORKSPACE_ROOT/.agents/workflows/qa.md"
+
+rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-create-*.md"
+rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-export*.md"
+rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-reset*.md"
+rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-answer*.md"
 rm -f "$WORKSPACE_ROOT/.cursor/commands/qa.md"
 
-# 3. Configura slash commands nas IDEs dinamicamente (Antigravity e Cursor)
+# 3. Configura slash commands nas IDEs (Antigravity e Cursor) em pt-BR
 mkdir -p "$WORKSPACE_ROOT/.agent/workflows"
 mkdir -p "$WORKSPACE_ROOT/.agents/workflows"
 mkdir -p "$WORKSPACE_ROOT/.cursor/commands"
 
 WORKFLOWS_DIR="$WORKSPACE_ROOT/.ai_qa_acervo/workflows"
-for wf in "$WORKFLOWS_DIR"/*.md; do
-    [ -f "$wf" ] || continue
-    wf_name="$(basename "$wf")"
-    ln -sf "../../.ai_qa_acervo/workflows/$wf_name" "$WORKSPACE_ROOT/.agent/workflows/$wf_name"
-    ln -sf "../../.ai_qa_acervo/workflows/$wf_name" "$WORKSPACE_ROOT/.agents/workflows/$wf_name"
-    ln -sf "../../.ai_qa_acervo/workflows/$wf_name" "$WORKSPACE_ROOT/.cursor/commands/$wf_name"
-done
 
-# Atalho rápido /qa-export apontando para qa-export-pdf
-if [ -f "$WORKFLOWS_DIR/qa-export-pdf.md" ]; then
-    ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.agent/workflows/qa-export.md"
-    ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.agents/workflows/qa-export.md"
-    ln -sf "../../.ai_qa_acervo/workflows/qa-export-pdf.md" "$WORKSPACE_ROOT/.cursor/commands/qa-export.md"
-fi
+link_workflow() {
+    local src_file="$1"
+    local alias_name="$2"
+    if [ -f "$WORKFLOWS_DIR/$src_file" ]; then
+        ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.agent/workflows/$alias_name"
+        ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.agents/workflows/$alias_name"
+        ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.cursor/commands/$alias_name"
+    fi
+}
+
+link_workflow "qa-create-application.md" "qa-criar-aplicacao.md"
+link_workflow "qa-create-exam.md"        "qa-criar-caderno.md"
+link_workflow "qa-create-plan.md"        "qa-criar-plano.md"
+link_workflow "qa-export-pdf.md"         "qa-exportar-plano.md"
+link_workflow "qa-reset-passwords.md"    "qa-resetar-senhas.md"
+link_workflow "qa-answer-omr.md"         "qa-responder-gabarito.md"
 
 # 4. Garante que os links e o acervo fiquem isolados e não sujem o git status do lizeedu
 EXCLUDE_FILE="$WORKSPACE_ROOT/.git/info/exclude"
 if [ -f "$EXCLUDE_FILE" ]; then
     grep -q "\.ai_qa_acervo/" "$EXCLUDE_FILE" || echo ".ai_qa_acervo/" >> "$EXCLUDE_FILE"
-    grep -q "qa\*.md" "$EXCLUDE_FILE" || echo -e ".agent/workflows/qa*.md\n.cursor/commands/qa*.md" >> "$EXCLUDE_FILE"
+    grep -q "\.agent/workflows/qa\*" "$EXCLUDE_FILE" || echo ".agent/workflows/qa*.md" >> "$EXCLUDE_FILE"
+    grep -q "\.agents/workflows/qa\*" "$EXCLUDE_FILE" || echo ".agents/workflows/qa*.md" >> "$EXCLUDE_FILE"
+    grep -q "\.cursor/commands/qa\*" "$EXCLUDE_FILE" || echo ".cursor/commands/qa*.md" >> "$EXCLUDE_FILE"
 fi
 
-echo "✅ Tasks do VS Code e Slash Commands (/qa-create-plan, /qa-create-application, /qa-create-exam, /qa-reset-passwords, /qa-export-pdf) configurados com sucesso!"
-echo "👉 Pressione Ctrl+Shift+B para iniciar todos os serviços."
-echo "👉 Comandos disponíveis na IDE:"
-echo "   • /qa-create-plan        -> Gera o plano de testes de QA (QA Test Plan) da branch atual"
-echo "   • /qa-create-application -> Cria aplicações prontas com turmas/alunos (ou respondidas)"
-echo "   • /qa-create-exam        -> Cria cadernos e questões de teste sob medida"
-echo "   • /qa-reset-passwords    -> Reseta senhas, 2FA e sessões para login limpo"
-echo "   • /qa-export-pdf         -> Exporta o plano para PDF com imagens embutidas (Base64) em exports/"
-echo "   (Atalho rápido: /qa-export aciona o /qa-export-pdf)"
+if [ "$1" != "--silent" ]; then
+    echo "✅ Tasks do VS Code e Slash Commands configurados com sucesso!"
+    echo "👉 Pressione Ctrl+Shift+B para iniciar todos os serviços."
+    echo "👉 Comandos disponíveis na IDE:"
+    echo "   • /qa-criar-plano        -> Gera o plano de testes de QA (QA Test Plan)"
+    echo "   • /qa-criar-aplicacao    -> Cria aplicações prontas com turmas/alunos"
+    echo "   • /qa-criar-caderno      -> Cria cadernos e questões de teste sob medida"
+    echo "   • /qa-resetar-senhas     -> Reseta senhas, 2FA e sessões para login limpo"
+    echo "   • /qa-exportar-plano     -> Exporta o plano para PDF com imagens embutidas"
+    echo "   • /qa-responder-gabarito -> Gera cartões resposta preenchidos (PDF A4) para simulação OMR"
+fi
