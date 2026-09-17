@@ -16,20 +16,11 @@ O QA humano executa os planos agora **enquanto o acervo é construído**. O obje
 
 ## Problemas Identificados no Prompt Atual
 
-### 1. Navegação inferida ≠ navegação real
-- **O erro:** O prompt me instrui a investigar `urls.py` e templates para inferir caminhos de menu
-- **O que aconteceu:** Inferí `Cadernos > Provas` a partir do HTML, mas o menu real é `Instrumentos Avaliativos`
-- **Raiz do problema:** HTML ≠ UI real. Texto no código pode não ser o rótulo visível ao usuário
-
-### 2. Documento escrito para humano, não para IA executar
-- O plano atual usa linguagem em prosa suficiente para um humano com contexto
-- Para a IA executar via browser subagent, precisa de: URL exata, seletores DOM reais, dados determinísticos
-
-### 3. Dados de teste vagos
+### 1. Dados de teste vagos
 - "Abrir uma prova com 5 questões" — o humano improvisa, o Playwright (e a IA) falha
 - Precisa integrar o **mixer** existente para criar fixtures determinísticas
 
-### 4. IA atribui origem "conforme OpenSpec" a comportamentos que ela mesma inferiu
+### 2. IA atribui origem "conforme OpenSpec" a comportamentos que ela mesma inferiu
 - **O erro:** Ao documentar um bug, escrevi "Comportamento esperado (conforme OpenSpec): elementos clicáveis devem oferecer feedback visual consistente ao hover" — mas isso **não estava no OpenSpec**. Foi uma inferência minha de boas práticas de UX.
 - **O impacto:** O QA pode gastar tempo procurando no OpenSpec algo que não existe, ou pior, reportar ao dev como "violação de spec" quando na verdade é um Spec Gap.
 - **Raiz do problema:** O prompt não instrui explicitamente a IA a verificar se o comportamento esperado descrito num bug **está de fato documentado no OpenSpec** antes de citá-lo como fonte.
@@ -39,31 +30,7 @@ O QA humano executa os planos agora **enquanto o acervo é construído**. O obje
 
 ## O que Precisa Mudar no Prompt
 
-### Mudança 1 — Mapa de Navegação Verificado
-Adicionar instrução para o prompt criar uma tabela de navegação canônica no documento, marcando itens como `[verificar]` quando inferidos do código (nunca assumir como verdade absoluta).
-
-Formato:
-```
-| Destino            | Rótulo real no menu UI    | URL Django              | View name      |
-|--------------------|---------------------------|-------------------------|----------------|
-| Lista de provas    | Instrumentos Avaliativos  | /exams/?category=exam   | exams_list     |
-| Visualizar Prova   | (link na listagem)        | /exams/<uuid>/visualizar | exams_preview |
-```
-
-### Mudança 2 — Dupla camada em cada cenário
-Cada cenário do roteiro deve ter dois blocos:
-
-```markdown
-**Ação humana:** Clicar em "Selecionar" de uma questão.
-
-**Referência técnica (para automação):**
-- URL: `/exams/<uuid>/visualizar`
-- Seletor: `button:has-text("Selecionar")` (coluna de ações)
-- Estado esperado no DOM: `outline: 2px solid #FF6900` na `span.rounded-circle`
-- Fixture: `python manage.py mixer_exam --questions=5 --ets=2` (verificar comando real)
-```
-
-### Mudança 3 — Tag de automatizabilidade
+### Mudança 1 — Tag de automatizabilidade
 Cada cenário classificado como:
 - `[Automatizável ✅]` — pode virar teste Playwright
 - `[Apenas Manual 👁]` — requer julgamento humano (visual, UX, comparação com Figma)
@@ -165,10 +132,31 @@ Provide the exact CLI command(s) needed to run the automated tests locally that 
 
 ## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
 Write detailed, step-by-step test scenarios focusing 100% on the human tester's perspective and visual confirmation.
+- **CRITICAL RULE 0 (Dupla Camada — Obrigatória):** Cada cenário DEVE conter dois blocos inseparáveis: a **Ação Humana** (checklists visuais para o QA) e a **Referência Técnica** (para automação futura). NUNCA gere um cenário com apenas um dos dois blocos.
+  - **Bloco 1 — Ação Humana:** Checklists `- [ ]` em português claro, com destaque visual rigoroso (rótulos entre aspas duplas, contexto visual entre parênteses).
+  - **Bloco 2 — Referência Técnica (para automação):** Imediatamente abaixo do bloco humano, incluir bloco markdown com:
+    - URL exata ou rota
+    - Seletor DOM estável (`button:has-text(...)`, `#id`, `[data-...]`)
+    - Estado esperado no DOM (ex: `outline: 2px solid #FF6900`)
+    - Fixture/mixer necessário (ex: `mixer.blend(Application, exam=obj)`)
+  - **Formato obrigatório:**
+    ```markdown
+    #### Cenário Y — Descrição clara do cenário
+
+    **Ação humana:**
+    - [ ] Passo 1 em português claro
+    - [ ] Passo 2 em português claro
+
+    **Referência técnica (para automação):**
+    - URL: `/rota/exata`
+    - Seletor: `button:has-text("Rótulo")`
+    - Estado esperado: `classe/estilo no DOM`
+    - Fixture: `comando mixer ou factory`
+    ```
 - **CRITICAL RULE 1 (Format Consistency):** Section 5 MUST use the exact scenario structure:
   - `### 5.X Feature Area [Automatizável ✅ / Apenas Manual 👁]`
   - `#### Cenário Y — Clear Scenario Description`
-  - `- [ ] Action or verification step written in clear, concise Portuguese.`
+  - Bloco de Ação Humana + Bloco de Referência Técnica (conforme Rule 0 acima)
 - **CRITICAL RULE 2 (Padrão de Destaque Visual Mandatório):** Todos os elementos clicáveis ou referências visuais devem ser descritos com destaque rigoroso:
   - **Rótulo Literal:** Sempre em negrito e entre aspas duplas: `"**Rótulo Exato**"`.
   - **Contexto Visual:** Detalhes de formato, cor, ícone ou agrupamento entre parênteses: `(botão branco com borda cinza e seta chevron-down)`, `(seção cinza "**IMPRESSÃO**" ➔ item "**Todos os alunos**" com ícone de usuários)`.
