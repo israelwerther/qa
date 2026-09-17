@@ -20,12 +20,6 @@ O QA humano executa os planos agora **enquanto o acervo é construído**. O obje
 - "Abrir uma prova com 5 questões" — o humano improvisa, o Playwright (e a IA) falha
 - Precisa integrar o **mixer** existente para criar fixtures determinísticas
 
-### 2. IA atribui origem "conforme OpenSpec" a comportamentos que ela mesma inferiu
-- **O erro:** Ao documentar um bug, escrevi "Comportamento esperado (conforme OpenSpec): elementos clicáveis devem oferecer feedback visual consistente ao hover" — mas isso **não estava no OpenSpec**. Foi uma inferência minha de boas práticas de UX.
-- **O impacto:** O QA pode gastar tempo procurando no OpenSpec algo que não existe, ou pior, reportar ao dev como "violação de spec" quando na verdade é um Spec Gap.
-- **Raiz do problema:** O prompt não instrui explicitamente a IA a verificar se o comportamento esperado descrito num bug **está de fato documentado no OpenSpec** antes de citá-lo como fonte.
-- **Correção necessária no prompt:** Adicionar regra: ao preencher o campo "Comportamento esperado" de um bug, a IA DEVE indicar explicitamente a fonte — `(conforme OpenSpec: spec.md L.XX)` com citação direta, ou `(inferência de UX — Spec Gap)` quando não houver referência. Jamais escrever "conforme OpenSpec" sem citar o trecho exato.
-
 ---
 
 ## O que Precisa Mudar no Prompt
