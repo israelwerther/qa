@@ -14,23 +14,6 @@ O QA humano executa os planos agora **enquanto o acervo é construído**. O obje
 
 ---
 
-## Problemas Identificados no Prompt Atual
-
-### 1. Dados de teste vagos
-- "Abrir uma prova com 5 questões" — o humano improvisa, o Playwright (e a IA) falha
-- Precisa integrar o **mixer** existente para criar fixtures determinísticas
-
----
-
-## O que Precisa Mudar no Prompt
-
-### Mudança 1 — Tag de automatizabilidade
-Cada cenário classificado como:
-- `[Automatizável ✅]` — pode virar teste Playwright
-- `[Apenas Manual 👁]` — requer julgamento humano (visual, UX, comparação com Figma)
-
----
-
 ## Próximos Passos (Atualizado - Aguardando Nova Task)
 
 - [x] **1. Analisar os testes Playwright e Mixer:** Foi identificado que o projeto usa Playwright integrado ao Python/pytest (`tests/usability/`) e gera fixtures dinamicamente via `mixer.blend()` no banco de testes.
@@ -151,6 +134,10 @@ Write detailed, step-by-step test scenarios focusing 100% on the human tester's 
   - `### 5.X Feature Area [Automatizável ✅ / Apenas Manual 👁]`
   - `#### Cenário Y — Clear Scenario Description`
   - Bloco de Ação Humana + Bloco de Referência Técnica (conforme Rule 0 acima)
+- **CRITICAL RULE 1.1 (Classificação de Automatizabilidade — Obrigatória):** Cada cenário DEVE ser classificado com uma das duas tags na linha do cabeçalho da feature:
+  - `[Automatizável ✅]` — O cenário pode ser convertido em teste Playwright automatizado. Critérios: ação reproduzível via seletores DOM estáveis, dados determinísticos via mixer, resultado verificável programaticamente (estado de elemento, texto, URL, resposta de API).
+  - `[Apenas Manual 👁]` — O cenário requer julgamento humano e NÃO pode ser automatizado. Critérios: validação visual/estética (cores, alinhamento, animação), comparação com Figma/mockup, experiência subjetiva (UX), testes de acessibilidade perceptual, ou interações com elementos instáveis.
+  - **Regra de decisão:** Se houver dúvida, classificar como `[Apenas Manual 👁]` — é melhor ter um teste manual confiável do que um automatizado frágil.
 - **CRITICAL RULE 2 (Padrão de Destaque Visual Mandatório):** Todos os elementos clicáveis ou referências visuais devem ser descritos com destaque rigoroso:
   - **Rótulo Literal:** Sempre em negrito e entre aspas duplas: `"**Rótulo Exato**"`.
   - **Contexto Visual:** Detalhes de formato, cor, ícone ou agrupamento entre parênteses: `(botão branco com borda cinza e seta chevron-down)`, `(seção cinza "**IMPRESSÃO**" ➔ item "**Todos os alunos**" com ícone de usuários)`.
