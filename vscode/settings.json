@@ -1,0 +1,5 @@
+{
+  "markdown.copyFiles.destination": {
+    "**/*": "${documentWorkspaceFolder}/.ai_qa_acervo/evidencias/${fileName}"
+  }
+}

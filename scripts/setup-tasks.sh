@@ -7,10 +7,31 @@ ACERVO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 WORKSPACE_ROOT="$(cd "$ACERVO_DIR/.." && pwd)"
 VSCODE_DIR="$WORKSPACE_ROOT/.vscode"
 TASKS_SOURCE="$ACERVO_DIR/vscode/tasks.json"
+SETTINGS_SOURCE="$ACERVO_DIR/vscode/settings.json"
 
-# 1. Configura tasks.json para inicialização de serviços locais (Ctrl+Shift+B)
+# 1. Configura tasks.json e settings.json (serviços locais e colagem de prints em evidencias/)
 mkdir -p "$VSCODE_DIR"
 cp "$TASKS_SOURCE" "$VSCODE_DIR/tasks.json"
+if [ -f "$SETTINGS_SOURCE" ]; then
+    if [ ! -f "$VSCODE_DIR/settings.json" ]; then
+        cp "$SETTINGS_SOURCE" "$VSCODE_DIR/settings.json"
+    else
+        python3 -c "
+import json
+try:
+    with open('$VSCODE_DIR/settings.json', 'r') as f:
+        dest = json.load(f)
+except Exception:
+    dest = {}
+with open('$SETTINGS_SOURCE', 'r') as f:
+    src = json.load(f)
+for k, v in src.items():
+    dest[k] = v
+with open('$VSCODE_DIR/settings.json', 'w') as f:
+    json.dump(dest, f, indent=2)
+" 2>/dev/null || true
+    fi
+fi
 
 # 2. Limpa links legados ou obsoletos (antigos em inglês)
 rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-create-*.md"
