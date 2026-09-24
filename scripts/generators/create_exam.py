@@ -237,7 +237,7 @@ def create_exam_with_questions(
         if not name:
             name = f"[QA] Caderno Modelo PAS ({pas_type_a}A + {pas_type_b}B + {pas_type_c}C + {pas_type_d}D) - {timestamp_str}"
     else:
-        total_q = objective_count + discursive_count + essay_count
+        total_q = objective_count + discursive_count + essay_count + (sum_count or 0)
         if not name:
             tags = []
             if objective_count:
@@ -515,6 +515,7 @@ def create_exam_with_questions(
     for i in range(1, (sum_count or 0) + 1):
         q = Question.objects.create(
             category=Question.SUM_QUESTION,
+            created_by=user,
             subject=subject,
             grade=grade,
             level=Question.MEDIUM,
@@ -606,6 +607,12 @@ def parse_arguments():
         type=int,
         default=None,
         help="Quantidade de propostas de redação",
+    )
+    parser.add_argument(
+        '-sum', '--sum',
+        type=int,
+        default=None,
+        help="Quantidade de questões de somatório",
     )
     parser.add_argument(
         '-rq', '--random-questions',
@@ -716,7 +723,10 @@ def interactive_mode():
 if __name__ == '__main__':
     args = parse_arguments()
 
-    has_counts = any(x is not None for x in [args.objective, args.discursive, args.essay, args.pas_a, args.pas_b, args.pas_c, args.pas_d]) or args.pas
+    has_counts = (
+        any(x is not None for x in [args.objective, args.discursive, args.essay, args.sum, args.pas_a, args.pas_b, args.pas_c, args.pas_d])
+        or args.pas
+    )
 
     if args.interactive or (not has_counts and sys.stdin.isatty()):
         config = interactive_mode()
@@ -734,9 +744,10 @@ if __name__ == '__main__':
             is_pas=args.pas,
         )
     else:
+        obj_count = args.objective if args.objective is not None else (0 if args.sum is not None else 5)
         create_exam_with_questions(
             name=args.name,
-            objective_count=args.objective if args.objective is not None else 5,
+            objective_count=obj_count,
             discursive_count=args.discursive if args.discursive is not None else 0,
             essay_count=args.essay if args.essay is not None else 0,
             random_questions=args.random_questions,
@@ -750,4 +761,5 @@ if __name__ == '__main__':
             pas_type_b=args.pas_b,
             pas_type_c=args.pas_c,
             pas_type_d=args.pas_d,
+            sum_count=args.sum if args.sum is not None else 0,
         )
