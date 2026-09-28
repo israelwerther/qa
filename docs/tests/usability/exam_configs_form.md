@@ -22,6 +22,11 @@ application = mixer.blend('applications.Application', exam=exam)
 
 ## 3. Seletores DOM e Ações
 
+### Seção Imagem de fundo (branch skip-first-page)
+- Select: `#id-exam-background-image` (`v-model="examPrintConfig.backgroundImage"`, opção vazia "**Não aplicar imagem de fundo**")
+- Switch skip: `#id-skip-background-first-page` (`v-model="examPrintConfig.skipBackgroundFirstPage"`), visível só com `v-show="examPrintConfig.backgroundImage"`
+- Rótulo do switch: "**Não adicionar imagem à primeira página**" (classe `custom-control custom-switch mt-2`)
+
 ### Seção Layout de alternativas
 - Divisor: texto **"Layout de alternativas"** (`div.divider-text`)
 

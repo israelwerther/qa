@@ -21,6 +21,11 @@ client_obj = mixer.blend('clients.Client')  # garantir flag de distribution no c
 
 ## 3. Seletores DOM e Ações
 
+### Seção Imagem de fundo (branch skip-first-page)
+- Select: `#id_background_image` (`v-model="examPrintConfig.backgroundImage"`, opção vazia "**Não há imagem de fundo**")
+- Switch skip: `#id_skip_background_first_page` (`v-model="examPrintConfig.skipBackgroundFirstPage"`), visível só com `v-show="examPrintConfig.backgroundImage"`
+- Rótulo do switch: "**Não adicionar imagem à primeira página**" (classe `custom-control custom-switch mt-2`)
+
 Controles em grupos `btn-group-toggle` (Sim/Não ou opções):
 
 | Controle | IDs | Binding |
