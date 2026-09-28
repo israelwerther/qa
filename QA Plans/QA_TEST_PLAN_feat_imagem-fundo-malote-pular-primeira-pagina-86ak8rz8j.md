@@ -190,11 +190,19 @@ Persona ativa em todos os cenários: **coordenação do `Client` dono do caderno
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] Tirar print da sidebar "**Estrutura**" da diagramação com imagem selecionada (switch visível) e sem imagem (switch oculto); comparar com `openspec/changes/imagem-fundo-pular-primeira-pagina-86ak8rz8j/references/diagramacao.html`.
-- [ ] Tirar print do modal de malote de aplicação com o switch ligado; comparar com `references/malote-aplicacao-padrao.html`.
-- [ ] Tirar print do modal de ensalamento com o switch ligado; comparar com `references/malote-ensalamento.html`.
-- [ ] Tirar print do PDF de 2+ páginas nos dois estados (switch ligado/desligado) e anexar como evidência de que só a primeira página muda.
-- [ ] Confirmar que o texto é exatamente "**Não adicionar imagem à primeira página**" nas 4 superfícies e que o switch usa o padrão visual da própria tela (Alpine peer laranja na diagramação; `custom-switch` Bootstrap nos modais Vue).
+- [x] Tirar print da sidebar "**Estrutura**" da diagramação com imagem selecionada (switch visível) e sem imagem (switch oculto); comparar com `openspec/changes/imagem-fundo-pular-primeira-pagina-86ak8rz8j/references/diagramacao.html`.
+
+| Ativado | Desativado |
+|----|----|
+| ![ ](./evidencias/ativado.png) | ![ ](./evidencias/desativado.png) |
+
+- [x] Tirar print do modal de malote de aplicação com o switch ligado; comparar com `references/malote-aplicacao-padrao.html`.
+- [x] Tirar print do modal de ensalamento com o switch ligado; comparar com `references/malote-ensalamento.html`.
+
+![ ](./evidencias/malote_ativado.png)
+
+- [x] Tirar print do PDF de 2+ páginas nos dois estados (switch ligado/desligado) e anexar como evidência de que só a primeira página muda. ![ ](./evidencias/print_pdf.png)
+- [x] Confirmar que o texto é exatamente "**Não adicionar imagem à primeira página**" nas 4 superfícies e que o switch usa o padrão visual da própria tela (Alpine peer laranja na diagramação; `custom-switch` Bootstrap nos modais Vue).
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 

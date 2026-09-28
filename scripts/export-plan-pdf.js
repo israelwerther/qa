@@ -4,9 +4,117 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { marked } from 'marked';
 
-const inputFile = process.argv[2];
+/**
+ * Uso:
+ *   bun export-plan-pdf.js <plano.md> [saida.pdf] [--skip A,B,...]
+ *
+ * --skip A,B    Remove as seções listadas (ex.: 4 ou 4,8,9). Pular "8" também
+ *               remove "8.1". Padrão: não pula nada (exporta 100%).
+ *               Use --skip none para explicitar que nada deve ser pulado.
+ */
+
+const USAGE =
+  'Uso: bun export-plan-pdf.js <plano.md> [saida.pdf] [--skip A,B|none]';
+
+function parseSectionId(raw) {
+  const value = String(raw).trim();
+  if (!/^\d+(?:\.\d+)*$/.test(value)) {
+    console.error(`Erro: id de seção inválido "${raw}". Use números como 4 ou 8.1.`);
+    process.exit(1);
+  }
+  return value;
+}
+
+function parseSkipList(raw) {
+  if (raw === undefined) return null;
+  const trimmed = String(raw).trim();
+  if (trimmed === '' || trimmed === 'none') return [];
+  return trimmed.split(',').map(parseSectionId);
+}
+
+function parseArgs(argv) {
+  const positional = [];
+  let skipSections = null; // null = aplicar default depois
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--until' || arg.startsWith('--until=')) {
+      console.error('Erro: --until foi removido. O padrão agora exporta 100%; use --skip A,B para pular seções.');
+      console.error(USAGE);
+      process.exit(1);
+    } else if (arg === '--skip') {
+      skipSections = parseSkipList(argv[++i]);
+    } else if (arg.startsWith('--skip=')) {
+      skipSections = parseSkipList(arg.slice('--skip='.length));
+    } else if (arg.startsWith('-')) {
+      console.error(`Erro: flag desconhecida "${arg}".`);
+      console.error(USAGE);
+      process.exit(1);
+    } else {
+      positional.push(arg);
+    }
+  }
+
+  // Default: exporta 100% — só pula se pedido via --skip explícito.
+  if (skipSections === null) {
+    skipSections = [];
+  }
+
+  return { positional, skipSections };
+}
+
+/**
+ * True se `sectionId` deve ser pulado: match exato ou filho de um id na lista
+ * (ex.: skip "8" também remove "8.1").
+ */
+function shouldSkipSection(sectionId, skipSections) {
+  return skipSections.some(
+    (skipId) => sectionId === skipId || sectionId.startsWith(`${skipId}.`)
+  );
+}
+
+/**
+ * Remove blocos inteiros de seções numeradas (`## N.` / `## N.M.`) listadas em skipSections.
+ * Headings ### internos (5.1 etc. sob ## 5) não são tratados como seções de topo —
+ * só headings #/## com número no padrão do template QA.
+ */
+function skipMarkdownSections(markdown, skipSections) {
+  if (!skipSections.length) return markdown;
+
+  const headingRegex = /^#{1,2}\s+(\d+(?:\.\d+)*)\.\s[^\n]*/gm;
+  const matches = [...markdown.matchAll(headingRegex)];
+  if (!matches.length) return markdown;
+
+  let result = markdown.slice(0, matches[0].index);
+  const removed = [];
+
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    const sectionId = match[1];
+    const start = match.index;
+    const end = i + 1 < matches.length ? matches[i + 1].index : markdown.length;
+    if (shouldSkipSection(sectionId, skipSections)) {
+      removed.push(sectionId);
+      continue;
+    }
+    result += markdown.slice(start, end);
+  }
+
+  if (removed.length) {
+    console.log(`Pulando seções: ${removed.map((id) => `## ${id}.`).join(', ')}.`);
+  } else {
+    console.warn(
+      `Aviso: nenhuma seção correspondente a --skip ${skipSections.join(',')} foi encontrada.`
+    );
+  }
+
+  return result.replace(/\n{3,}/g, '\n\n').replace(/^\s+|\s+$/g, '') + '\n';
+}
+
+const { positional, skipSections } = parseArgs(process.argv.slice(2));
+const inputFile = positional[0];
 if (!inputFile) {
-  console.error('Uso: bun export-plan-pdf.js <caminho-para-o-plano.md> [saida.pdf]');
+  console.error(USAGE);
   process.exit(1);
 }
 
@@ -28,8 +136,8 @@ if (!fs.existsSync(defaultOutputDir)) {
   fs.mkdirSync(defaultOutputDir, { recursive: true });
 }
 
-const outputFile = process.argv[3] 
-  ? path.resolve(process.argv[3]) 
+const outputFile = positional[1]
+  ? path.resolve(positional[1])
   : path.join(defaultOutputDir, `${baseName}.pdf`);
 
 const outputDir = path.dirname(outputFile);
@@ -38,6 +146,7 @@ if (!fs.existsSync(outputDir)) {
 }
 
 let markdownContent = fs.readFileSync(inputAbsPath, 'utf8');
+markdownContent = skipMarkdownSections(markdownContent, skipSections);
 
 // Converter caminhos locais de imagens para data:image/png;base64 para garantir inclusão 100% autocontida
 markdownContent = markdownContent.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, imagePath) => {
