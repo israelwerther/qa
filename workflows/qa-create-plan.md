@@ -67,7 +67,7 @@ You must be proactively attentive to the enrichment of this very prompt/skill. I
 - Se ainda houver dúvida sobre o texto real de um botão ou menu dinâmico, **peça um print de tela ao usuário**. Nunca chute nem use termos genéricos ("clique no botão que parece com X").
 
 # Output File Constraints
-- **Location:** The `.ai_qa_acervo/` directory of the project.
+- **Location:** The `.ai_qa_acervo/QA Plans` directory of the project.
 - **Naming Convention:** `QA_TEST_PLAN_<branch_name>.md`. 
   - *Rule:* Replace any forward slashes (`/`) and hash symbols (`#`) in the branch name with underscores (`_`) to ensure it's a valid filename (e.g., `feat/my-feature` becomes `QA_TEST_PLAN_feat_my-feature.md`).
 
