@@ -153,6 +153,7 @@ for i in range(4):
 | `force_one_column` | switch_toggle |
 | `number_is_hidden` | switch_toggle (rótulo UI: **Não exibir numeração**) |
 | `force_break_page` | switch_toggle |
+| `accepts_audio_response` | switch_toggle (`#accepts_audio_response`, visível quando categoria é Arquivo Anexado / `category === 2`, rótulo: **Resposta em áudio (prova online)**) |
 | `text_question_format` | select |
 | `quantity_lines` | number (`id_quantity_lines`) |
 | `draft_rows_number` | number |

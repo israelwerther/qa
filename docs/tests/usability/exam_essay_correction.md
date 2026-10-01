@@ -105,6 +105,11 @@ suggestion = mixer.blend(
   - **Ação Recusar na Linha:** `.lize-ai-action-btn.reject`
   - **Ação Desfazer na Linha:** `.lize-ai-action-btn.undo`
 
+### 3.5. Player de Resposta em Áudio (Questões de Arquivo com Áudio)
+- **Container do Player de Áudio:** `.essay-viewer-body .overlay-content audio`
+- **Tag do Player:** `audio[controls]` (com atributo `:src="audioAnswerUrl"`)
+- **Comportamento:** Quando a resposta do aluno possui extensão de áudio (`.webm`, `.mp3`, `.mpeg`, `.mp4`, `.m4a`, `.ogg`, `.wav`, `.aac`), o visualizador OpenSeadragon e Annotorious são desativados e o player HTML5 nativo é renderizado centralizado no corpo do visualizador, desabilitando o painel de OCR/Lize AI para áudios.
+
 ## 4. Rotas Críticas de API e Entidades de Banco
 - `POST /respostas/arquivos/<uuid:pk>/enem-ai-correction/` (enfileira ou reutiliza correção)
 - `GET /respostas/arquivos/<uuid:pk>/enem-ai-correction/` (obtém status, transcrição com linhas e sugestões agrupadas C1–C5)
