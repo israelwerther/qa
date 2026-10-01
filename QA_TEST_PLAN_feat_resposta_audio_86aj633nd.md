@@ -300,8 +300,13 @@ application = mixer.blend(
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-> [!NOTE]
-> Nenhum bug bloqueante identificado na execução inicial dos testes automatizados (`67 passed`). Registre aqui quaisquer divergências encontradas durante a validação manual.
+> [!WARNING]
+> ### BUG-01: Ausência da opção "Resposta em áudio (prova online)" na elaboração de caderno solicitada ao professor `[UX/UI]` `[Spec Gap]`
+> 
+> - **1. Title:** Falta da opção de resposta em áudio no card de questão do tipo "Arquivo anexado" na tela de solicitação de elaboração de caderno (`/provas/prova/<id>/editar/`).
+> - **2. Context/Root Cause:** O desenvolvimento da feature focou o toggle `accepts_audio_response` exclusivamente no novo formulário de questões (`question_edit_tab_questao.html` / `question_create_update_redesign.html`). A tela de elaboração de caderno solicitada ao professor ([`exam_request_teacher_subject_edit_new.html`](file:///home/israel/Workspace/lizeedu/fiscallizeon/exams/templates/dashboard/exams/exam_request/exam_request_teacher_subject_edit_new.html)) utiliza um componente inline em Vue 2 que não foi atualizado para expor nem persistir a flag `accepts_audio_response` ao selecionar o card `"Arquivo anexado"`.
+> - **3. Expected Behavior:** Ao selecionar a categoria `"Arquivo anexado"` na elaboração inline, a interface deve exibir a opção/checkbox `"Resposta em áudio (prova online)"` logo abaixo, seguindo o mesmo padrão visual do checkbox de *"Correção com competências"* que já aparece quando a categoria *"Redação"* é selecionada (conforme feedback de alinhamento de produto e [anexo do ClickUp](https://t3120759.p.clickup-attachments.com/t3120759/062400e2-0a04-4c71-9cc2-4804bebaf89b/image.png)).
+> - **4. Workaround (Contorno temporário para QA):** O QA ou o professor pode salvar a questão no caderno como "Arquivo anexado", abrir a URL de edição no redesign (`/questoes/<question_id>/editar/?v=redesign`), ativar o switch `"Resposta em áudio (prova online)"` na aba *"Questão"* e salvar para que a questão passe a aceitar áudio na aplicação.
 
 ---
 
