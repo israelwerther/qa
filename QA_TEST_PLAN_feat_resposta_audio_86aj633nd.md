@@ -158,8 +158,8 @@ application = mixer.blend(
 - [x] Observar que aparece o container de configuração com o switch `"**Resposta em áudio (prova online)**"`.
 - [x] Verificar o texto descritivo: `"Quando ativo, o aluno grava ou anexa áudio no app. Com a opção desligada, permanece o envio de imagem."`.
 - [x] Ativar o switch `"**Resposta em áudio (prova online)**"`.
-- [ ] Preencher o enunciado `"Grave a leitura do texto em áudio"`, selecionar disciplina/série e clicar no botão `"**Salvar questão**"` (botão laranja no rodapé).
-- [ ] Confirmar que a questão foi salva com sucesso e que a flag `accepts_audio_response` permaneceu `True`.
+- [x] Preencher o enunciado `"Grave a leitura do texto em áudio"`, selecionar disciplina/série e clicar no botão `"**Salvar questão**"` (botão laranja no rodapé).
+- [x] Confirmar que a questão foi salva com sucesso e que a flag `accepts_audio_response` permaneceu `True`.
 
 **Referência técnica (para automação):**
 - URL: `/questoes/cadastrar/?v=redesign`
@@ -187,20 +187,20 @@ application = mixer.blend(
 
 #### Cenário 3 — Gravação de Áudio In-Browser com Preview e Regravação
 **Ação humana:**
-- [ ] Efetuar login no app do aluno (`http://localhost:5173` ou porta de desenvolvimento) com a **Persona Aluno** (ex: `cloud.student@lize.local`, senha `123456`).
-- [ ] Iniciar a prova online contendo a questão de resposta em áudio.
-- [ ] Navegar até a questão de áudio.
-- [ ] Confirmar que a interface exibe o ícone de microfone e o texto explicativo: `"Grave sua resposta em áudio (até 5 min) ou anexe um arquivo."`.
-- [ ] Confirmar que são exibidos os botões `"**Gravar**"` (com ícone de microfone) e `"**Anexar áudio**"` (com ícone de upload).
-- [ ] Clicar no botão `"**Gravar**"`. O navegador solicitará permissão de microfone (conceda a permissão).
-- [ ] Observar que o botão muda para `"**Encerrar gravação**"` com destaque em vermelho.
-- [ ] Falar durante alguns segundos (ex: 5 a 10 segundos) e clicar em `"**Encerrar gravação**"`.
-- [ ] Confirmar que um player `<audio controls>` surge na tela para preview antes do envio, acompanhado dos botões `"**Regravar**"` e `"**Enviar áudio**"`.
-- [ ] Reproduzir o áudio no player para validar que a voz foi capturada com clareza.
-- [ ] Clicar no botão `"**Regravar**"`.
-- [ ] Confirmar que o preview é descartado e a tela retorna ao estado inicial com o botão `"**Gravar**"`.
-- [ ] Iniciar uma nova gravação de teste e clicar em `"**Enviar áudio**"`.
-- [ ] Confirmar que é exibido o indicador `"Enviando..."` e em seguida a mensagem de confirmação `"**Áudio enviado com sucesso!**"` em verde.
+- [x] Efetuar login no app do aluno (`http://localhost:5173` ou porta de desenvolvimento) com a **Persona Aluno** (ex: `cloud.student@lize.local`, senha `123456`).
+- [x] Iniciar a prova online contendo a questão de resposta em áudio.
+- [x] Navegar até a questão de áudio.
+- [x] Confirmar que a interface exibe o ícone de microfone e o texto explicativo: `"Grave sua resposta em áudio (até 5 min) ou anexe um arquivo."`.
+- [x] Confirmar que são exibidos os botões `"**Gravar**"` (com ícone de microfone) e `"**Anexar áudio**"` (com ícone de upload).
+- [x] Clicar no botão `"**Gravar**"`. O navegador solicitará permissão de microfone (conceda a permissão).
+- [x] Observar que o botão muda para `"**Encerrar gravação**"` com destaque em vermelho.
+- [x] Falar durante alguns segundos (ex: 5 a 10 segundos) e clicar em `"**Encerrar gravação**"`.
+- [x] Confirmar que um player `<audio controls>` surge na tela para preview antes do envio, acompanhado dos botões `"**Regravar**"` e `"**Enviar áudio**"`.
+- [x] Reproduzir o áudio no player para validar que a voz foi capturada com clareza.
+- [x] Clicar no botão `"**Regravar**"`.
+- [x] Confirmar que o preview é descartado e a tela retorna ao estado inicial com o botão `"**Gravar**"`.
+- [x] Iniciar uma nova gravação de teste e clicar em `"**Enviar áudio**"`.
+- [ ] Confirmar que é exibido o indicador `"Enviando..."` e em seguida a mensagem de confirmação `"**Áudio enviado com sucesso!**"` em verde. *(⚠️ Falhando: Mensagem de sucesso não surge de forma imediata; UI fica travada no preview e só exibe a confirmação após atualizar a página via F5 — ver BUG-02)*
 
 **Referência técnica (para automação):**
 - URL: `/provas/<application_id>`
@@ -307,6 +307,14 @@ application = mixer.blend(
 > - **2. Context/Root Cause:** O desenvolvimento da feature focou o toggle `accepts_audio_response` exclusivamente no novo formulário de questões (`question_edit_tab_questao.html` / `question_create_update_redesign.html`). A tela de elaboração de caderno solicitada ao professor ([`exam_request_teacher_subject_edit_new.html`](file:///home/israel/Workspace/lizeedu/fiscallizeon/exams/templates/dashboard/exams/exam_request/exam_request_teacher_subject_edit_new.html)) utiliza um componente inline em Vue 2 que não foi atualizado para expor nem persistir a flag `accepts_audio_response` ao selecionar o card `"Arquivo anexado"`.
 > - **3. Expected Behavior:** Ao selecionar a categoria `"Arquivo anexado"` na elaboração inline, a interface deve exibir a opção/checkbox `"Resposta em áudio (prova online)"` logo abaixo, seguindo o mesmo padrão visual do checkbox de *"Correção com competências"* que já aparece quando a categoria *"Redação"* é selecionada (conforme feedback de alinhamento de produto e [anexo do ClickUp](https://t3120759.p.clickup-attachments.com/t3120759/062400e2-0a04-4c71-9cc2-4804bebaf89b/image.png)).
 > - **4. Workaround (Contorno temporário para QA):** O QA ou o professor pode salvar a questão no caderno como "Arquivo anexado", abrir a URL de edição no redesign (`/questoes/<question_id>/editar/?v=redesign`), ativar o switch `"Resposta em áudio (prova online)"` na aba *"Questão"* e salvar para que a questão passe a aceitar áudio na aplicação.
+
+> [!WARNING]
+> ### BUG-02: Mensagem "Áudio enviado com sucesso!" não aparece imediatamente após o envio na SPA do aluno `[UX/UI]` `[Bug]`
+> 
+> - **1. Title:** Falta de feedback visual imediato de sucesso após envio de gravação de áudio (mensagem em verde só é renderizada após recarregar a página com F5).
+> - **2. Context/Root Cause:** No componente [`audio-answer-question.tsx`](file:///home/israel/Workspace/lize-student/src/components/test-execution/question-strategies/audio-answer-question.tsx), a mensagem verde é condicionada a `{fileSuccess && !isUploading && !previewFile}`. A função `processFile(file)` conclui com sucesso `await onFileAnswer(...)` e seta `setFileSuccess(true)`, porém **não limpa os estados de preview** (`setPreviewFile(null)` e `setPreviewUrl(null)`). Com isso, a interface permanece presa exibindo o preview com os botões `"Regravar"` e `"Enviar áudio"`, bloqueando a renderização da mensagem de sucesso. Ao recarregar a página (F5), `previewFile` inicia como `null` e `fileSuccess` inicia como `true` (via `useState(!!answer.fileUrl)`), fazendo a mensagem finalmente aparecer.
+> - **3. Expected Behavior:** Imediatamente após a resolução da requisição de envio (`onFileAnswer`), o estado de preview deve ser resetado ou substituído pelo status de resposta gravada, exibindo de pronto o texto `"Áudio enviado com sucesso!"` em verde, sem exigir refresh da página pelo aluno. *(Ajuste já registrado via gravação no Jam pelo QA)*.
+> - **4. Workaround (Contorno temporário para QA):** Após clicar em `"Enviar áudio"`, aguardar o término do upload e atualizar a página da prova (F5) para confirmar visualmente a mensagem verde de sucesso e a persistência do áudio enviado antes de avançar para a correção.
 
 ---
 
