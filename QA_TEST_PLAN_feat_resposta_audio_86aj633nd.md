@@ -232,12 +232,12 @@ application = mixer.blend(
 
 #### Cenário 5 — Reprodução de Áudio Inline na Tela de Correção
 **Ação humana:**
-- [ ] Finalizar a realização da prova com o aluno.
-- [ ] Acessar o portal LizeEdu com a **Persona Professor / Corretor** (`http://localhost:8000`).
-- [ ] Navegar até a tela de correção de redações/arquivos da prova: `/provas/<exam_id>/correcao/?application_student=<id>`.
-- [ ] Selecionar a questão de resposta em áudio respondida pelo aluno.
+- [X] Finalizar a realização da prova com o aluno.
+- [X] Acessar o portal LizeEdu com a **Persona Professor / Corretor** (`http://localhost:8000`).
+- [X] Navegar até a tela de correção de redações/arquivos da prova: `/provas/<exam_id>/correcao/?application_student=<id>`.
+- [X] Selecionar a questão de resposta em áudio respondida pelo aluno.
 - [ ] Verificar que a área central (onde normalmente ficaria a folha de redação/imagem) renderiza um player HTML5 nativo `<audio controls>`.
-- [ ] Confirmar que o painel de anotação de imagem (OpenSeadragon / Annotorious) e o painel OCR / Lize AI **não** são exibidos.
+- [ ] Confirmar que o painel de anotação de imagem (OpenSeadragon / Annotorious) e o painel OCR / Lize AI **não** são exibidos. ![alt text](evidencias/image.png)
 - [ ] Dar play no áudio e ouvir a gravação enviada pelo aluno.
 - [ ] No painel lateral direito de avaliação, preencher a nota (ex: `8.5`) e digitar um comentário de feedback pedagógico.
 - [ ] Clicar no botão `"**Salvar correção**"` (ou equivalente da tela).
@@ -255,12 +255,12 @@ application = mixer.blend(
 
 #### Cenário 6 — Player de Áudio no Espelho de Resposta do Aluno
 **Ação humana:**
-- [ ] Acessar o sistema com a **Persona Aluno** após a liberação do resultado da aplicação.
-- [ ] Navegar para a tela de detalhes da prova: `/painel/minhas-provas/<application_id>`.
-- [ ] Clicar na questão de resposta em áudio para abrir o drawer/sheet de revisão (`QuestionReviewSheet`).
-- [ ] Clicar na aba `"**Sua resposta**"`.
-- [ ] Confirmar que a interface exibe o player `<audio controls>` permitindo que o aluno escute novamente o áudio que enviou.
-- [ ] Clicar na aba `"**Questão**"` e conferir se o feedback e nota atribuídos pelo professor estão visíveis.
+- [x] Acessar o sistema com a **Persona Aluno** após a liberação do resultado da aplicação.
+- [x] Navegar para a tela de detalhes da prova: `/painel/minhas-provas/<application_id>`.
+- [x] Clicar na questão de resposta em áudio para abrir o drawer/sheet de revisão (`QuestionReviewSheet`).
+- [x] Clicar na aba `"**Sua resposta**"`.
+- [x] Confirmar que a interface exibe o player `<audio controls>` permitindo que o aluno escute novamente o áudio que enviou.
+- [x] Clicar na aba `"**Questão**"` e conferir se o feedback e nota atribuídos pelo professor estão visíveis.
 
 **Referência técnica (para automação):**
 - URL: `/painel/minhas-provas/<application_id>`
@@ -274,12 +274,12 @@ application = mixer.blend(
 
 #### Cenário 7 — Questão FILE sem Flag de Áudio Mantém Envio Exclusivo de Imagem
 **Ação humana:**
-- [ ] Iniciar uma prova online contendo uma questão FILE com a flag `"**Resposta em áudio (prova online)**"` **desligada**.
-- [ ] Na tela de realização da prova, verificar que o componente renderizado é o seletor tradicional de anexo de imagem (sem opções de microfone ou gravação).
-- [ ] Anexar uma imagem válida (PNG/JPEG) e confirmar que o envio é realizado com sucesso.
-- [ ] Tentar enviar um arquivo de áudio (`.mp3` ou `.webm`) para esta questão.
-- [ ] Confirmar que a validação bloqueia o arquivo com mensagem de erro informando que o formato não é aceito.
-- [ ] Na tela de correção do professor, confirmar que a imagem é exibida normalmente no visualizador OpenSeadragon com ferramentas de anotação ativas.
+- [x] Iniciar uma prova online contendo uma questão FILE com a flag `"**Resposta em áudio (prova online)**"` **desligada**.
+- [x] Na tela de realização da prova, verificar que o componente renderizado é o seletor tradicional de anexo de imagem (sem opções de microfone ou gravação).
+- [x] Anexar uma imagem válida (PNG/JPEG) e confirmar que o envio é realizado com sucesso.
+- [x] Tentar enviar um arquivo de áudio (`.mp3` ou `.webm`) para esta questão.
+- [x] Confirmar que a validação bloqueia o arquivo com mensagem de erro informando que o formato não é aceito.
+- [x] Na tela de correção do professor, confirmar que a imagem é exibida normalmente no visualizador OpenSeadragon com ferramentas de anotação ativas.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<application_id>`
