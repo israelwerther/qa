@@ -231,25 +231,31 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
   - [x] Lista com marcadores: `"5 questões"`, `"3 acertos"`, `"2 erros"`.
   - [x] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
   - [x] Resumo no rodapé: `"3/5 questões · nota X/Y"`.
-- [ ] 4. No bloco `"**Domínio dos temas**"` (ou `"**Grau de domínio**"`), testar o seletor `(dropdown com opção inicial "Assuntos")`:
-  - [ ] Validar a exibição dos cards de temas `(Nota: identificado desalinhamento vertical das barras de porcentagem quando o título varia em linhas — ver BUG-04)`.
-  - [ ] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
-  - [ ] Alternar para `"**Competências**"` e verificar a exibição correspondente.
+- [x] 4. No bloco `"**Domínio dos temas**"` (ou `"**Grau de domínio**"`), testar o seletor `(dropdown com opção inicial "Assuntos")`:
+  - [x] Validar a exibição dos cards de temas `(Nota: identificado desalinhamento vertical das barras de porcentagem quando o título varia em linhas — ver BUG-04)`.
+  - [x] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
+  - [x] Alternar para `"**Competências**"` e verificar a exibição correspondente.
 
 #### Cenário 6 — Tabela de Questões a Revisar e Botão "Revisar"
-- [ ] 1. Rolar até a tabela `"**Questões que você pode revisar**"` dentro do bloco de Biologia.
-- [ ] 2. Observar as questões listadas:
-  - [ ] Validar que apenas `"**Q2**"` e `"**Q5**"` (questões que o aluno errou) estão presentes.
-  - [ ] Confirmar que `"**Q1**"`, `"**Q3**"` e `"**Q4**"` (que o aluno acertou) **NÃO são exibidas** na tabela de revisão.
-- [ ] 3. Validar os elementos da linha da Q2:
-  - [ ] Círculo cinza com o número `"**2**"`.
-  - [ ] Trecho do enunciado da questão Q2.
-  - [ ] Selo colorido com o índice da turma: `"[X]% da turma acertou essa questão"`.
-  - [ ] Botão `"**Revisar**"` `(botão branco com ícone de olho)`.
-- [ ] 4. Clicar no botão `"**Revisar**"` da Q2 de Biologia.
-- [ ] 5. Confirmar que a gaveta lateral abre exibindo a Q2.
-- [ ] 6. Clicar em avançar para a próxima questão e validar que transita para a Q5 (e desabilita o botão de próxima na Q5, pois o escopo se restringe às 2 questões erradas da matéria).
-- [ ] 7. Fechar a gaveta lateral.
+> **Nota de Contexto da Prova Ativa**: Na ordem de renderização da tela, a primeira disciplina exibida no topo é **Aprofundamento de Matemática**, seguida por Química, Biologia e História:
+> - **Matemática (1º bloco do topo):** Erros em **Q11 e Q15** (acertos em Q12, Q13 e Q14).
+> - **Biologia:** Erros em **Q2 e Q5** (acertos em Q1, Q3 e Q4).
+> - **Química:** Erros em **Q16 e Q20** (acertos em Q17, Q18 e Q19).
+> - **História:** Erro em **Q7** (acertos em Q6, Q8, Q9 e Q10).
+
+- [x] 1. Rolar até a tabela `"**Questões que você pode revisar**"` do bloco de **Matemática** (logo abaixo dos cards de temas no topo) ou de **Biologia**.
+- [x] 2. Observar as questões listadas:
+  - [x] Validar que apenas `"**Q11**"` e `"**Q15**"` em Matemática (ou `"**Q2**"` e `"**Q5**"` em Biologia) estão presentes.
+  - [x] Confirmar que as questões acertadas (`"**Q12, Q13, Q14**"` em Matemática ou `"**Q1, Q3, Q4**"` em Biologia) **NÃO são exibidas** na tabela de revisão.
+- [x] 3. Validar os elementos da linha da questão a revisar (ex.: Q11 em Matemática ou Q2 em Biologia):
+  - [x] Círculo cinza com o número da questão (ex.: `"**11**"` ou `"**2**"`).
+  - [x] Trecho do enunciado da questão (`excerpt`).
+  - [x] Selo colorido com o índice da turma: `"[X]% da turma acertou essa questão"`.
+  - [x] Botão `"**Revisar**"` `(botão branco com ícone de olho)`.
+- [x] 4. Clicar no botão `"**Revisar**"` da Q11 de Matemática (ou Q2 de Biologia).
+- [x] 5. Confirmar que a gaveta lateral abre exibindo a questão selecionada.
+- [x] 6. Clicar em avançar para a próxima questão e validar que transita para a próxima questão errada da matéria (ex.: Q15 em Matemática ou Q5 em Biologia), e desabilita o botão de próxima pois o escopo se restringe às questões erradas daquela disciplina.
+- [x] 7. Fechar a gaveta lateral.
 
 ---
 
