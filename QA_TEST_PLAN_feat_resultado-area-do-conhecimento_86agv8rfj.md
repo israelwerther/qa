@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | **Data:** | 2026-09-11 |
-| **Branch Backend (lizeedu):** | `feat/resultado-questoes-excerpt-disciplina` |
+| **Branch Backend (lizeedu):** | `fix/result-questions-subject-paridade-86agv8rfj` |
 | **Branch Frontend (lize-student):** | `feat/resultado-area-do-conhecimento` |
 | **Natureza da Tarefa:** | `[Business Feature]` / `[UI/UX & Results]` |
 | **Área da Feature:** | App do Aluno (Tela de Resultados, Desempenho por Área de Conhecimento, Revisão por Disciplina e Navegação em Cards) |
@@ -14,7 +14,7 @@
 
 ## 1. Summary of Changes (Resumo das Alterações)
 
-### Backend (`LizeEdu/lizeedu` — branch `feat/resultado-questoes-excerpt-disciplina`)
+### Backend (`LizeEdu/lizeedu` — branch `fix/result-questions-subject-paridade-86agv8rfj`)
 - **Enriquecimento do Payload de Resultado (`GET /api/v3/applications/{pk}/result/`):**
   - Cada item da lista `questions_data` passa a entregar os novos campos `excerpt`, `subject` e `knowledge_area`, permitindo ao frontend renderizar os cards de questão e cabeçalhos de revisão sem consultas adicionais.
   - A disciplina e área são resolvidas a partir do `select_related` já existente no queryset (`question.subject` e `question.subject.knowledge_area`), mantendo zero queries adicionais ao banco.
@@ -136,7 +136,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 
 ## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
 
-> **Ambiente Backend**: `lizeedu` (branch `feat/resultado-questoes-excerpt-disciplina`) rodando via `./manage.py runserver` (porta 8000).  
+> **Ambiente Backend**: `lizeedu` (branch `fix/result-questions-subject-paridade-86agv8rfj`) rodando via `./manage.py runserver` (porta 8000).  
 > **Ambiente Frontend**: `lize-student` (branch `feat/resultado-area-do-conhecimento`) rodando via `npm run dev` ou `bun dev` (porta 5173).  
 > **Persona Ativa Principal**: `enrico.a53143@aluno.decisaovirtual.com.br` (senha `123456` / Turma `F4MA`).  
 > **Aplicação de Teste Ativa**: `b47ce1b3-4883-40b3-bf68-025ca3f2835e` (`Simulado Multi-Áreas (Natureza, Humanas e Matemática) - QA`).
