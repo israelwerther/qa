@@ -169,7 +169,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 - [x] 2. Clicar no chip `"**Objetivas**"` e validar que a lista filtra apenas questões de múltipla escolha.
 - [x] 3. Clicar no campo seletor de ordenação `(dropdown no canto direito com texto padrão "Número (crescente)")`.
 - [x] 4. Selecionar a opção `"**Número (decrescente)**"` e validar que os cards invertem a ordem imediatamente (da Q9 para a Q1).
-- [ ] 5. Selecionar `"**Acerto da turma (menor → maior)**"` e validar que as questões com menor índice de acerto aparecem no início da grade.
+- [x] 5. Selecionar `"**Acerto da turma (menor → maior)**"` e validar que as questões com menor índice de acerto aparecem no início da grade.
 - [x] 6. Em provas com mais de 15 questões, validar que a paginação exibe no máximo 15 cards por página e os botões de seta `(‹ e ›)` transitam de página sem recarregar a tela.
 
 ---
@@ -205,16 +205,16 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 #### Cenário 4 — Escopo de Navegação na Área do Conhecimento
 - [X] 1. Na tabela da aba `"**Área do conhecimento**"`, localizar a linha `"**Ciências Humanas e Sociais Aplicadas - Ensino Médio**"` (ou `"**Ciências da Natureza...**"`).
 - [X] 2. Clicar no botão `"**Visualizar**"` `(botão com ícone de olho)` correspondente a essa linha.
-- [ ] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda `(Nota: falha identificada — o botão não abre a gaveta devido ao descasamento de nomes — ver BUG-05)`.
-- [ ] 4. Validar o cabeçalho da gaveta:
-  - [ ] Deve exibir o número da primeira questão da área selecionada (ex: `"**Q6**"` para Humanas ou `"**Q1**"` para Natureza).
-  - [ ] O subtítulo deve exibir claramente a disciplina e a área de conhecimento correspondente.
-- [ ] 5. Clicar no botão de próxima questão `(botão circular com ícone de seta ChevronRight)` ou pressionar a tecla `ArrowRight` no teclado.
-- [ ] 6. Confirmar que a gaveta transita exclusivamente pelas questões daquela área.
-- [ ] 7. Observar o botão de próxima questão na última questão da área (ex: Q10 em Humanas):
-  - [ ] Validar que o botão de próxima questão fica **desabilitado** (opacidade reduzida e não clicável).
-  - [ ] Confirmar que **NÃO transita** para questões de outras áreas fora do escopo selecionado.
-- [ ] 8. Fechar a gaveta lateral no botão de fechar `(X no canto superior direito)` ou clicando fora no backdrop escuro.
+- [x] 3. Confirmar que a gaveta lateral de revisão (`QuestionReviewSheet`) abre deslizando da direita para a esquerda `(Resolvido ✅ — paridade de subjectId e disciplines-breakdown atualizada — ver BUG-05)`.
+- [x] 4. Validar o cabeçalho da gaveta:
+  - [x] Deve exibir o número da primeira questão da área selecionada (ex: `"**Q6**"` para Humanas ou `"**Q1**"` para Natureza).
+  - [x] O subtítulo deve exibir claramente a disciplina e a área de conhecimento correspondente.
+- [x] 5. Clicar no botão de próxima questão `(botão circular com ícone de seta ChevronRight)` ou pressionar a tecla `ArrowRight` no teclado.
+- [x] 6. Confirmar que a gaveta transita exclusivamente pelas questões daquela área.
+- [x] 7. Observar o botão de próxima questão na última questão da área (ex: Q10 em Humanas):
+  - [x] Validar que o botão de próxima questão fica **desabilitado** (opacidade reduzida e não clicável).
+  - [x] Confirmar que **NÃO transita** para questões de outras áreas fora do escopo selecionado.
+- [x] 8. Fechar a gaveta lateral no botão de fechar `(X no canto superior direito)` ou clicando fora no backdrop escuro.
 
 ---
 
@@ -373,7 +373,7 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 | **Componentes** | Frontend: `DisciplinesBreakdown` / `QuestionReviewSheet`<br>Backend: `/api/v3/applications/<id>/result/` |
 | **Tela / Rota** | `/painel/minhas-provas/<id>` (Aba *"Área do conhecimento"* $\rightarrow$ Botão *"Visualizar"*) |
 | **Evidência Oficial** | 🎬 **Gravação Jam:** [https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37](https://jam.dev/c/ef5caafb-5eaa-43bf-96ce-2731f3efeb37) |
-| **Status** | **Identificado e Documentado (Aguardando Correção)** |
+| **Status** | **Resolvido e Validado ✅ (Corrigido na branch `fix/result-questions-subject-paridade-86agv8rfj` / `feat/resultado-area-do-conhecimento` via `subjectId` e escopo restrito)** |
 
 #### 1. Comportamento Atual
 Embora todas as questões da prova já estejam carregadas e disponíveis na tela (aparecendo normalmente na listagem geral e abrindo individualmente ao clicar nos cards), o botão **"Visualizar"** da tabela de Área do Conhecimento apresenta falha ao alimentar a gaveta lateral (`QuestionReviewSheet`):
@@ -458,7 +458,7 @@ As barras de porcentagem e o rótulo de grau de domínio devem ficar sempre alin
 | **Componentes** | **Backend:** `fiscallizeon/app/students/views.py` (`ApplicationStudentViewSet.result`)<br>**Frontend:** `lize-student/src/components/exam-result/disciplines-breakdown.tsx` (`questionsOfArea`) e `lize-student/src/routes/_app/painel/minhas-provas.$id.tsx` (`onViewArea`) |
 | **Tela / Rota** | `/painel/minhas-provas/<application_student_id>` (Aba *"Área do conhecimento"* $\rightarrow$ Botão *"Visualizar"*) |
 | **Cenário Base (Preservado)** | Aluna: Sarah Guimarães Monteiro (`c58df2c4-5994-41c4-cf79-136db4e3946f`)<br>URL: `http://localhost:3000/painel/minhas-provas/c58df2c4-5994-41c4-cf79-136db4e3946f?status=liberadas&year="2026"&page=1` |
-| **Status** | **Identificado e Documentado (Aguardando Correção pelos times de Backend e Frontend)** |
+| **Status** | **Resolvido e Validado ✅ (Corrigido no backend via `fix/result-questions-subject-paridade-86agv8rfj` e no frontend via `feat/resultado-area-do-conhecimento`)** |
 
 #### 1. Comportamento Atual (Defeito)
 Na aba **"Área do conhecimento"**, o aluno visualiza as linhas com os totais de questões, acertos, erros e notas de cada área (ex.: *"Ciências da Natureza e suas Tecnologias - Ensino Médio"* com 15 questões). 
