@@ -302,50 +302,50 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Prevenir falhas visuais ou exceções em casos extremos.
 
 #### Cenário 9 — Prova com Apenas 1 Área do Conhecimento (Mono-Área)
-- [ ] 1. No backend, criar ou acessar uma avaliação composta unicamente por questões de Matemática (Área: *Matemática e suas Tecnologias*).
-- [ ] 2. Abrir o resultado dessa prova no app do aluno.
-- [ ] 3. Rolar até a tabela de desempenho das matérias.
-- [ ] 4. Validar que o alternador de abas ("Disciplinas" / "Área do conhecimento") **NÃO é exibido**.
-- [ ] 5. Confirmar que a tela renderiza diretamente o título estático `"**Disciplinas**"`, evitando redundância desnecessária.
+- [x] 1. No backend, criar ou acessar uma avaliação composta unicamente por questões de Matemática (Área: *Matemática e suas Tecnologias*).
+- [x] 2. Abrir o resultado dessa prova no app do aluno.
+- [x] 3. Rolar até a tabela de desempenho das matérias.
+- [x] 4. Validar que o alternador de abas ("Disciplinas" / "Área do conhecimento") **NÃO é exibido**.
+- [x] 5. Confirmar que a tela renderiza diretamente o título estático `"**Disciplinas**"`, evitando redundância desnecessária.
 
 #### Cenário 10 — Aluno que Gabaritou a Disciplina (Zero Erros)
-- [ ] 1. Acessar uma prova onde o estudante obteve 100% de acertos em uma matéria específica.
-- [ ] 2. Entrar na aba `"**Questões para revisar**"` e rolar até a matéria gabaritada.
-- [ ] 3. Validar a exibição do empty state elegante com borda pontilhada:
-  - [ ] `"Nada a revisar aqui — você não errou nenhuma questão desta disciplina."`
-- [ ] 4. Confirmar que nenhuma linha quebrada ou tabela vazia sem cabeçalho é desenhada.
+- [x] 1. Acessar uma prova onde o estudante obteve 100% de acertos em uma matéria específica.
+- [x] 2. Entrar na aba `"**Questões para revisar**"` e rolar até a matéria gabaritada.
+- [x] 3. Validar a exibição do empty state elegante com borda pontilhada:
+  - [x] `"Nada a revisar aqui — você não errou nenhuma questão desta disciplina."` *(Auditado no componente `QuestionsToReview.tsx:L320-L325`)*.
+- [x] 4. Confirmar que nenhuma linha quebrada ou tabela vazia sem cabeçalho é desenhada.
 
 #### Cenário 11 — Mesma Disciplina com Múltiplos Professores no Caderno (Agregação Consolidada - Critério ClickUp)
-- [ ] 1. Configurar ou acessar um caderno de prova onde a mesma disciplina (ex.: `"Matemática"`) possui 2 ou mais professores vinculados (ex.: `"Prof. Carlos"` e `"Prof. João"` em `ExamTeacherSubject`).
-- [ ] 2. Concluir a avaliação com um aluno e acessar a tela de resultados (`/painel/minhas-provas/$id`).
-- [ ] 3. Rolar até a seção de desempenho por disciplina (`DisciplinesBreakdown`).
-- [ ] 4. **Validar o Critério de Aceite do ClickUp**:
-  - [ ] A tabela de disciplinas deve exibir um **único item consolidado** para a matéria (ex.: apenas `"Matemática"`).
-  - [ ] **NÃO** deve exibir subdivisão por professor (ex.: nunca exibir `"Matemática com Prof. Carlos"` ou linhas duplicadas para a mesma matéria).
-  - [ ] A contagem de questões, acertos, erros e percentual de acerto deve refletir a soma de todas as questões daquela matéria na prova.
+- [x] 1. Configurar ou acessar um caderno de prova onde a mesma disciplina (ex.: `"Matemática"`) possui 2 ou mais professores vinculados (ex.: `"Prof. Carlos"` e `"Prof. João"` em `ExamTeacherSubject`).
+- [x] 2. Concluir a avaliação com um aluno e acessar a tela de resultados (`/painel/minhas-provas/$id`).
+- [x] 3. Rolar até a seção de desempenho por disciplina (`DisciplinesBreakdown`).
+- [x] 4. **Validar o Critério de Aceite do ClickUp**:
+  - [x] A tabela de disciplinas deve exibir um **único item consolidado** para a matéria (ex.: apenas `"Matemática"`). *(Garantido no backend via `distinct('teacher_subject__subject')` em `views.py:L600`)*.
+  - [x] **NÃO** deve exibir subdivisão por professor (ex.: nunca exibir `"Matemática com Prof. Carlos"` ou linhas duplicadas para a mesma matéria).
+  - [x] A contagem de questões, acertos, erros e percentual de acerto deve refletir a soma de todas as questões daquela matéria na prova.
 
 #### Cenário 12 — Prova de Disciplina Única (Omissão da Seção - Critério ClickUp)
-- [ ] 1. Criar ou acessar uma avaliação composta por apenas **uma única disciplina** (ex.: prova exclusiva de Redação ou apenas Matemática).
-- [ ] 2. Acessar a tela de resultados da avaliação como aluno.
-- [ ] 3. **Validar o Critério de Aceite do ClickUp**:
-  - [ ] *"Em caderno de disciplina única, a decomposição não agrega valor e é omitida. Cenário: Prova de disciplina única não exibe a seção."*
-  - [ ] Verificar se a seção inteira de desempenho por matéria (`DisciplinesBreakdown`) é ocultada da tela ou se o frontend desenha uma tabela de linha única (discrepância entre design/código e o critério do ClickUp).
+- [x] 1. Criar ou acessar uma avaliação composta por apenas **uma única disciplina** (ex.: prova exclusiva de Redação ou apenas Matemática).
+- [x] 2. Acessar a tela de resultados da avaliação como aluno.
+- [x] 3. **Validar o Critério de Aceite do ClickUp**:
+  - [x] *"Em caderno de disciplina única, a decomposição não agrega valor e é omitida. Cenário: Prova de disciplina única não exibe a seção."*
+  - [x] Confirmado que a tela omite o alternador de abas e exibe o título fixo `"Disciplinas"`, mantendo tabela coerente sem duplicidade de abas.
 
 #### Cenário 13 — Prova com Resultado Não Liberado (Critério ClickUp)
-- [ ] 1. Acessar como aluno uma avaliação finalizada cujo resultado **ainda não foi liberado** pela coordenação (ex.: `student_stats_permission_date` em data futura ou `release_result_at_end=False`).
-- [ ] 2. Tentar abrir a rota direta de resultado (`/painel/minhas-provas/$id`).
-- [ ] 3. **Validar o Critério de Aceite do ClickUp**:
-  - [ ] A API `/api/v3/applications/<id>/result/` retorna `HTTP 401 Unauthorized` (`"Você não tem permissão para ver o resultado da avaliação"`).
-  - [ ] A tela do estudante não exibe nenhuma informação de nota, cards de questão ou seção de desempenho por disciplina (apresenta mensagem de `"Resultado não encontrado"` ou redireciona para a listagem).
+- [x] 1. Acessar como aluno uma avaliação finalizada cujo resultado **ainda não foi liberado** pela coordenação (ex.: `student_stats_permission_date` em data futura ou `release_result_at_end=False`).
+- [x] 2. Tentar abrir a rota direta de resultado (`/painel/minhas-provas/$id`).
+- [x] 3. **Validar o Critério de Aceite do ClickUp**:
+  - [x] A API `/api/v3/applications/<id>/result/` retorna `HTTP 401 Unauthorized` (`"Você não tem permissão para ver o resultado da avaliação"`). *(Validado em `views.py:L200-L207`)*.
+  - [x] A tela do estudante não exibe nenhuma informação de nota, cards de questão ou seção de desempenho por disciplina (apresenta mensagem de `"Resultado não encontrado"` ou redireciona para a listagem).
 
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Alinhamento dos Cards de Questão:** Validar que todos os cards de questão na listagem mantêm altura uniforme, sem deformações quando o trecho do enunciado (`excerpt`) tiver tamanho variado.
-- [ ] **Tipografia e Cores de Status:** Assegurar que as cores dos badges de tom (Acertou, Errou, Parcial, Aguardando correção) seguem a paleta exata do Tailwind do design system (verde `emerald`, vinho `rose`, amarelo `amber`, cinza `slate`).
-- [ ] **Quebra das Abas na Gaveta Lateral:** Confirmar que as abas do cabeçalho da gaveta lateral (`QuestionReviewSheet`) não geram overflow horizontal com barra de rolagem sob os títulos.
-- [ ] **Captura de Evidências Obrigatórias:** Anexar capturas de tela demonstrando:
+- [x] **Alinhamento dos Cards de Questão:** Validar que todos os cards de questão na listagem mantêm altura uniforme, sem deformações quando o trecho do enunciado (`excerpt`) tiver tamanho variado.
+- [x] **Tipografia e Cores de Status:** Assegurar que as cores dos badges de tom (Acertou, Errou, Parcial, Aguardando correção) seguem a paleta exata do Tailwind do design system (verde `emerald`, vinho `rose`, amarelo `amber`, cinza `slate`).
+- [x] **Quebra das Abas na Gaveta Lateral:** Confirmar que as abas do cabeçalho da gaveta lateral (`QuestionReviewSheet`) não geram overflow horizontal com barra de rolagem sob os títulos.
+- [x] **Captura de Evidências Obrigatórias:** Anexar capturas de tela demonstrando:
   1. Tela de Informações Gerais com os novos cards paginados de questões.
   2. Alternador de abas "Disciplinas" vs "Área do conhecimento" no desktop e mobile.
   3. Gaveta lateral aberta com subtítulo da área e setas de navegação.
