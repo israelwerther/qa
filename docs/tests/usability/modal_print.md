@@ -37,10 +37,19 @@ Controles em grupos `btn-group-toggle` (Sim/Não ou opções):
 | Borda Não/Sim | `#id-marker-border-false` / `#id-marker-border-true` | `examPrintConfig.alternativesMarkerBorder` |
 | Alinhamento Centro/Topo | `#id-alignment-0` / `#id-alignment-1` | `examPrintConfig.alternativesAlignment` |
 
-- Rótulos `h6`: **"Zebrado:"**, **"Linha separadora entre alternativas:"**, **"Marcador das alternativas:"**, **"Cor do marcador:"**, **"Borda no marcador:"**, **"Alinhamento das alternativas:"**
-- Opções de alinhamento UI: **"Centro (Padrão)"**, **"Topo (Estilo ENEM)"**
-- Bloco de cor/borda: `v-if="examPrintConfig.alternativesMarker"`
-- Legado **"Remover cores das alternativas"**: **removido**
+### Seção Tipo de fonte (branch fonte-cliente-diagramacao)
+- Rótulo `h6`: **"Tipo de fonte:"**
+- Botões padrão (`btn-group-toggle`):
+  - IBM Plex Sans: `#font_family_0` (style `font-family: IBM Plex Sans;`)
+  - Verdana: `#font_family_1` (style `font-family: Verdana;`)
+  - Times: `#font_family_2` (style `font-family: Times;`)
+  - Arial: `#font_family_3` (style `font-family: Arial;`)
+  - Nunito Sans: `#font_family_4` (style `font-family: 'Nunito Sans', sans-serif;`)
+- Botões institucionais (`v-for="font in printFontChoices.client"`):
+  - Rótulo anterior: `p.form-text.text-muted` "**Fontes da instituição**"
+  - Elementos: `label.btn.btn-outline-primary.btn-lg` com `@click="examPrintConfig.clientPrintFont = font.id"` e classe `.active` quando selecionada.
+  - Texto auxiliar: `p.form-text.text-muted` "**Fontes liberadas pela Lize para sua instituição.**"
+- Binding: `examPrintConfig.clientPrintFont` (ID da fonte ou `null` quando padrão) e `examPrintConfig.fontFamily` (inteiro 0–4).
 
 ## 4. API Interception & Fixtures
 - `fiscallizeon/distribution/api/exams_bag.py` propaga os mesmos `exam_params` de alternativas

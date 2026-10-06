@@ -27,6 +27,20 @@ application = mixer.blend('applications.Application', exam=exam)
 - Switch skip: `#id-skip-background-first-page` (`v-model="examPrintConfig.skipBackgroundFirstPage"`), visível só com `v-show="examPrintConfig.backgroundImage"`
 - Rótulo do switch: "**Não adicionar imagem à primeira página**" (classe `custom-control custom-switch mt-2`)
 
+### Seção Tipo de fonte (branch fonte-cliente-diagramacao)
+- Template incluído: `fiscallizeon/exams/templates/dashboard/exams/includes/exam/print/print_font_family_vue.html`
+- Rótulo: `<label for="form-element-6 mb-0">` **"Tipo da fonte"**
+- Botões padrão: `div.btn-group-toggle` com 5 labels (`btn btn-sm`):
+  - Plex Sans: `value="0"`
+  - Verdana: `value="1"`
+  - Times: `value="2"`
+  - Arial: `value="3"`
+  - Nunito Sans: `value="4"`
+- Seção institucional: `v-if="printFontChoices && printFontChoices.client && printFontChoices.client.length"`
+  - Subtítulo: `p.text-muted.small` **"Fontes da instituição"**
+  - Botões gerados via `v-for="font in printFontChoices.client"` com `@change="examPrintConfig.clientPrintFont = font.id"` e classe dinâmica `btn-primary` quando ativo
+- Binding: `examPrintConfig.clientPrintFont` e `examPrintConfig.fontFamily`
+
 ### Seção Layout de alternativas
 - Divisor: texto **"Layout de alternativas"** (`div.divider-text`)
 
