@@ -264,17 +264,17 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Assegurar a integridade das abas de conteúdo da questão e suporte a fórmulas/gráficos.
 
 #### Cenário 7 — Abas Internas da Revisão e Resposta Comentada
-- [ ] 1. Na listagem de cards da aba "Informações Gerais", clicar na `"**Q1**"` para abrir a gaveta lateral com todas as questões.
-- [ ] 2. No cabeçalho da gaveta, validar a presença das abas internas: `"**Questão**"`, `"**Sua resposta**"`, `"**Resposta comentada**"`, `"**Assuntos abordados**"`, `"**Competências**"` e `"**Habilidades**"`.
-- [ ] 3. Na aba `"**Questão**"`:
-  - [ ] Validar a leitura do enunciado completo e a lista de alternativas com as letras (a, b, c...).
-  - [ ] A alternativa correta deve estar contornada em verde esmeralda com fundo verde claro.
-- [ ] 4. Clicar na aba `"**Sua resposta**"`:
-  - [ ] Validar que exibe a alternativa que o aluno assinalou. Se correta, verde; se incorreta, vermelha.
-- [ ] 5. Clicar na aba `"**Resposta comentada**"`:
-  - [ ] Validar a exibição do gabarito oficial com o comentário explicativo do professor/autor da questão.
-  - [ ] Caso haja feedback individual inserido pelo professor, verificar se aparece o card `"**Feedback do professor**"`.
-- [ ] 6. Clicar nas abas `"**Assuntos abordados**"`, `"**Competências**"` e `"**Habilidades**"` e validar se os respectivos tópicos pedagógicos são listados com badges e barras de progresso.
+- [x] 1. Na listagem de cards da aba "Informações Gerais", clicar na `"**Q1**"` para abrir a gaveta lateral com todas as questões.
+- [x] 2. No cabeçalho da gaveta, validar a presença das abas internas: `"**Questão**"`, `"**Sua resposta**"`, `"**Resposta comentada**"`, `"**Assuntos abordados**"`, `"**Competências**"` e `"**Habilidades**"`.
+- [x] 3. Na aba `"**Questão**"`:
+  - [x] Validar a leitura do enunciado completo e a lista de alternativas com as letras (a, b, c...).
+  - [x] A alternativa correta deve estar contornada em verde esmeralda com fundo verde claro.
+- [x] 4. Clicar na aba `"**Sua resposta**"`:
+  - [x] Validar que exibe a alternativa que o aluno assinalou. Se correta, verde; se incorreta, vermelha.
+- [x] 5. Clicar na aba `"**Resposta comentada**"`:
+  - [x] Validar a exibição do gabarito oficial com o comentário explicativo do professor/autor da questão.
+  - [x] Caso haja feedback individual inserido pelo professor, verificar se aparece o card `"**Feedback do professor**"`.
+- [x] 6. Clicar nas abas `"**Assuntos abordados**"`, `"**Competências**"` e `"**Habilidades**"` e validar se os respectivos tópicos pedagógicos são listados com badges e barras de progresso (ou *EmptyCard* de estado vazio amigável quando a questão não possui metadados cadastrados no banco).
 
 ---
 
@@ -283,17 +283,17 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 > **Objetivo**: Garantir que as abas, tabelas e gaveta lateral não quebram em telas pequenas (<400px).
 
 #### Cenário 8 — Comportamento Responsivo e Toque no Mobile
-- [ ] 1. No navegador, abrir as Ferramentas de Desenvolvedor (`F12`) e ativar a emulação móvel (ex.: iPhone 14, largura 390px).
-- [ ] 2. Acessar a tela de resultado da avaliação.
-- [ ] 3. Observar o alternador de nível superior:
-  - [ ] Validar que as abas `"Informações Gerais"` e `"Questões para revisar"` assumem o formato de **pílula compacta** ajustada à largura total da tela (`TabsList size="sm"`), sem estourar a viewport horizontal.
-- [ ] 4. Rolar até a tabela de Disciplinas / Área do Conhecimento:
-  - [ ] Validar que o alternador "Disciplinas" / "Área do conhecimento" também renderiza em pílula compacta.
-  - [ ] Verificar se a tabela possui rolagem horizontal suave nos dados numéricos sem quebrar a estrutura da página.
-- [ ] 5. Tocar no botão `"**Visualizar**"` da área de conhecimento:
-  - [ ] Validar que a gaveta lateral abre ocupando 100% da largura da tela mobile.
-  - [ ] Confirmar que as 6 abas internas da revisão quebram harmoniosamente em 2 linhas em vez de esconder abas ou gerar barra de rolagem horizontal defeituosa.
-- [ ] 6. Deslizar verticalmente e validar que o botão de fechar `(X)` e a navegação por toques funcionam perfeitamente sem estados de hover presos.
+- [x] 1. No navegador, abrir as Ferramentas de Desenvolvedor (`F12`) e ativar a emulação móvel (ex.: iPhone 14, largura 390px).
+- [x] 2. Acessar a tela de resultado da avaliação.
+- [x] 3. Observar o alternador de nível superior:
+  - [x] Validar que as abas `"Informações Gerais"` e `"Questões para revisar"` assumem o formato de **pílula compacta** ajustada à largura total da tela (`TabsList size="sm"`), sem estourar a viewport horizontal.
+- [x] 4. Rolar até a tabela de Disciplinas / Área do Conhecimento:
+  - [x] Validar que o alternador "Disciplinas" / "Área do conhecimento" também renderiza em pílula compacta.
+  - [x] Verificar se a tabela possui rolagem horizontal suave nos dados numéricos sem quebrar a estrutura da página.
+- [x] 5. Tocar no botão `"**Visualizar**"` da área de conhecimento:
+  - [x] Validar que a gaveta lateral abre ocupando 100% da largura da tela mobile.
+  - [x] Confirmar que as 6 abas internas da revisão quebram harmoniosamente em 2 linhas em vez de esconder abas ou gerar barra de rolagem horizontal defeituosa.
+- [x] 6. Deslizar verticalmente e validar que o botão de fechar `(X)` e a navegação por toques funcionam perfeitamente sem estados de hover presos.
 
 ---
 
