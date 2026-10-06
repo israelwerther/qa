@@ -225,12 +225,12 @@ python .ai_qa_acervo/scripts/generators/create_multiarea_exam_application.py
 #### Cenário 5 — Painel de Disciplinas e Grau de Domínio
 - [x] 1. No topo da tela de resultados (abaixo do cabeçalho da prova), localizar as abas principais: `"**Informações Gerais**"` e `"**Questões para revisar**"`.
 - [x] 2. Clicar na aba `"**Questões para revisar**"`.
-- [ ] 3. Validar a renderização da seção de disciplinas (ex.: `"**Aprofundamento Biologia**"` ou `"**Aprofundamento de Matemática**"`):
-  - [ ] Título da disciplina com subtítulo da área de conhecimento `(Nota: identificado defeito visual de quebra em 3 linhas e desalinhamento vertical — ver BUG-03)`.
-  - [ ] Indicador numérico correspondente aos acertos acompanhado da legenda `"Desempenho na prova"`.
-  - [ ] Lista com marcadores: `"5 questões"`, `"3 acertos"`, `"2 erros"`.
-  - [ ] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
-  - [ ] Resumo no rodapé: `"3/5 questões · nota X/Y"`.
+- [x] 3. Validar a renderização da seção de disciplinas (ex.: `"**Aprofundamento Biologia**"` ou `"**Aprofundamento de Matemática**"`):
+  - [x] Título da disciplina com subtítulo da área de conhecimento `(Resolvido e Validado Visualmente ✅ — ver BUG-03)`.
+  - [x] Indicador numérico correspondente aos acertos acompanhado da legenda `"Desempenho na prova"`.
+  - [x] Lista com marcadores: `"5 questões"`, `"3 acertos"`, `"2 erros"`.
+  - [x] Card lateral de acertos com barra de progresso e o emoji `"🚀"`.
+  - [x] Resumo no rodapé: `"3/5 questões · nota X/Y"`.
 - [ ] 4. No bloco `"**Domínio dos temas**"` (ou `"**Grau de domínio**"`), testar o seletor `(dropdown com opção inicial "Assuntos")`:
   - [ ] Validar a exibição dos cards de temas `(Nota: identificado desalinhamento vertical das barras de porcentagem quando o título varia em linhas — ver BUG-04)`.
   - [ ] Alternar para `"**Habilidades**"` e validar que a lista recarrega exibindo as habilidades avaliadas e suas barras segmentadas de 4 blocos.
@@ -407,7 +407,7 @@ O componente aplica uma filtragem textual rígida para popular a gaveta lateral,
 | **Severidade** | Baixa (Fidelidade Visual / UI / Alinhamento) |
 | **Componentes** | Frontend: `QuestionsToReview` / Cabeçalho da Disciplina (`lize-student`) |
 | **Tela / Rota** | `/painel/minhas-provas/<id>` (Aba *"Questões para revisar"*) |
-| **Status** | **Identificado e Documentado (Aguardando Ajuste Visual)** |
+| **Status** | **Resolvido e Validado Visualmente ✅ (Corrigido no frontend via `feat/resultado-area-do-conhecimento` com largura fluida e alinhamento centralizado no mesmo eixo)** |
 
 #### 1. Comportamento Atual
 O container do nome da disciplina possui largura excessivamente restrita, forçando títulos compostos a quebrarem em até 3 linhas (ex.: "APROFUNDAMENTO / DE / MATEMÁTICA"). Essa quebra estica verticalmente o bloco de texto e gera um desalinhamento vertical entre os elementos vizinhos (o gráfico donut à esquerda, o bloco de título, a porcentagem de desempenho e a lista de métricas).
