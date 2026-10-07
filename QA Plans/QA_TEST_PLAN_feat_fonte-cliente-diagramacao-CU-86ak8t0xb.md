@@ -104,58 +104,30 @@ from fiscallizeon.accounts.models import User
 from fiscallizeon.clients.models import Client, ClientPrintFont, ExamPrintConfig
 from fiscallizeon.exams.models import Exam
 
-# 1. Configurar Cliente A (Escola com fonte institucional)
-client_a = mixer.blend(Client, name="Colégio Exemplo A")
-unity_a = mixer.blend('clients.Unity', client=client_a)
-coord_a = mixer.blend('clients.SchoolCoordination', unity=unity_a)
-coord_user_a = mixer.blend(
-    User,
-    email="coord.escola_a@lize.local",
-    user_type='coordination',
-    two_factor_enabled=False,
-    must_change_password=False
-)
-coord_user_a.set_password("123456")
-coord_user_a.save()
-mixer.blend('clients.CoordinationMember', user=coord_user_a, coordination=coord_a)
-for perm in ['can_diagram_exam', 'view_exam', 'can_print_exam']:
-    coord_user_a.user_permissions.add(Permission.objects.get(codename=perm))
+# 1. Utilizando o cliente real existente no banco (Rede Decisão):
+client_a = Client.objects.filter(name__icontains="Rede Decisão").first()
+# UUID: a2b1158b-367a-40a4-8413-9897057c8aa2
+# Usuários de coordenação existentes: chrystyane.mello@rededecisao.com.br, tatiana.pereira@rededecisao.com.br
+# (Dica de QA: pode logar diretamente via staff "Aderir ao cliente" ou resetar senha para 123456 via /qa-reset-passwords)
 
-# Cadastrar fonte extra para Cliente A
+# Fonte extra cadastrada para a Rede Decisão (manual via Admin ou via script):
 fonte_institucional = ClientPrintFont(
     client=client_a,
-    label="Institucional Serif A",
+    label="Institucional Decisão Sans",
     is_active=True,
     sort_order=1
 )
-fonte_institucional.font_file.name = "clients/print-fonts/institucional_a.woff2"
+fonte_institucional.font_file.name = "clients/print-fonts/decisao_sans.woff2"
 fonte_institucional.save()
 
-# 2. Configurar Cliente B (Escola concorrente / isolada)
-client_b = mixer.blend(Client, name="Colégio Exemplo B")
-unity_b = mixer.blend('clients.Unity', client=client_b)
-coord_b = mixer.blend('clients.SchoolCoordination', unity=unity_b)
-coord_user_b = mixer.blend(
-    User,
-    email="coord.escola_b@lize.local",
-    user_type='coordination',
-    two_factor_enabled=False,
-    must_change_password=False
-)
-coord_user_b.set_password("123456")
-coord_user_b.save()
-mixer.blend('clients.CoordinationMember', user=coord_user_b, coordination=coord_b)
-for perm in ['can_diagram_exam', 'view_exam', 'can_print_exam']:
-    coord_user_b.user_permissions.add(Permission.objects.get(codename=perm))
+# 2. Cliente B para validação de barreira multi-tenant (ex: Salesiano Dom Bosco ou criado via mixer):
+client_b = Client.objects.filter(name__icontains="Salesiano").first()
+if not client_b:
+    client_b = mixer.blend(Client, name="Colégio Exemplo B")
 
-# 3. Caderno de teste no Cliente A
-config_a = ExamPrintConfig.objects.create(
-    client=client_a,
-    name="Padrão Prova A",
-    font_family=0,
-    client_print_font=None
-)
-exam_a = mixer.blend(Exam, name="Prova Institucional 1", is_printed=False, exam_print_config=config_a, coordinations=[coord_a])
+# 3. Caderno existente para testes na Rede Decisão:
+# Já existe no banco: "Caderno para revisão 1" (ID: 1589f071-494c-4a58-964d-820c6717987d)
+# Ou crie um novo sob demanda se preferir.
 ```
 
 ---
@@ -166,23 +138,23 @@ exam_a = mixer.blend(Exam, name="Prova Institucional 1", is_printed=False, exam_
 
 Persona: **Staff Lize** logado em `/admin/`.
 
-#### Cenário 1 — Cadastro de fonte institucional ativa vinculada ao Cliente A
+#### Cenário 1 — Cadastro de fonte institucional ativa vinculada à Rede Decisão
 
 **Ação humana:**
-- [ ] Acessar `/admin/clients/clientprintfont/add/` (ou abrir o Cliente A em `/admin/clients/client/` e descer até o inline `"**Fontes de impressão do cliente**"`)
-- [ ] Selecionar o cliente `"**Colégio Exemplo A**"` no campo `"**Cliente**"`
-- [ ] Preencher o campo `"**Nome exibido**"` com `"**Institucional Sans A**"`
+- [x] Acessar `/admin/clients/clientprintfont/add/` (ou abrir o cliente Rede Decisão em `/admin/clients/client/` e descer até o inline `"**Fontes de impressão do cliente**"`)
+- [ ] Selecionar o cliente `"**Rede Decisão**"` no campo `"**Cliente**"`
+- [ ] Preencher o campo `"**Nome exibido**"` com `"**Institucional Decisão Sans**"`
 - [ ] No campo `"**Arquivo da fonte**"`, fazer upload de um arquivo com extensão válida (`.woff2`, `.woff`, `.ttf` ou `.otf`)
 - [ ] Confirmar que o checkbox `"**Ativa**"` está marcado e a `"**Ordem**"` está como `1`
 - [ ] Clicar no botão azul `"**Salvar**"` (canto inferior direito)
-- [ ] Validar a mensagem de sucesso verde: `"A fonte de impressão do cliente "Colégio Exemplo A — Institucional Sans A" foi adicionada com sucesso."`
+- [ ] Validar a mensagem de sucesso verde: `"A fonte de impressão do cliente "Rede Decisão — Institucional Decisão Sans" foi adicionada com sucesso."`
 - [ ] Abrir a fonte salva e verificar que o campo `"**Identificador CSS**"` foi gerado automaticamente com o formato `LizeClientFont-<identificador>` em modo somente leitura
 
 **Referência técnica (para automação):**
 - URL: `/admin/clients/clientprintfont/add/`
 - Seletor: `input[name="label"]`, `input[name="font_file"]`, `input[name="is_active"]`, `input[type="submit"][name="_save"]`
 - Estado esperado: Registro salvo no banco com `css_family` não-nulo e `client_id == client_a.pk`
-- Fixture: `mixer.blend(Client)` + arquivo dummy com extensão `.woff2`
+- Fixture: `Client.objects.get(name="Rede Decisão")` + arquivo de fonte válido
 
 #### Cenário 2 — Rejeição de arquivo com formato inválido
 
@@ -201,7 +173,7 @@ Persona: **Staff Lize** logado em `/admin/`.
 
 **Ação humana:**
 - [ ] Acessar a listagem `/admin/clients/clientprintfont/`
-- [ ] Clicar sobre a fonte cadastrada `"**Institucional Sans A**"`
+- [ ] Clicar sobre a fonte cadastrada `"**Institucional Decisão Sans**"`
 - [ ] Desmarcar o checkbox `"**Ativa**"` (`is_active = False`)
 - [ ] Clicar no botão `"**Salvar**"`
 - [ ] Confirmar que o status na coluna `"**Ativa**"` da listagem passa a exibir o ícone vermelho de falso (ícone de X)
@@ -215,33 +187,33 @@ Persona: **Staff Lize** logado em `/admin/`.
 
 ### 5.2 Diagramador de Provas: Seleção e Persistência [Automatizável ✅]
 
-Persona: **Coordenação do Cliente A** (com fontes liberadas) vs **Coordenação do Cliente B** (sem fontes liberadas).
+Persona: **Coordenação da Rede Decisão** (com fontes liberadas) vs **Coordenação do Cliente B** (ex: Salesiano Dom Bosco, sem fontes liberadas).
 
-#### Cenário 4 — Exibição das fontes da instituição para o Cliente A
+#### Cenário 4 — Exibição das fontes da instituição para a Rede Decisão
 
 **Ação humana:**
-- [ ] Fazer login com a conta de coordenação do **Cliente A**
-- [ ] Acessar o menu lateral `"**Cadernos**"` e abrir a diagramação da `"**Prova Institucional 1**"` (botão `"**Diagramar**"`)
+- [ ] Fazer login com a conta de coordenação da **Rede Decisão** (ex: `chrystyane.mello@rededecisao.com.br` ou via botão staff `"Aderir ao cliente"`)
+- [ ] Acessar o menu lateral `"**Cadernos**"` e abrir a diagramação de um caderno (ex: `"**Caderno para revisão 1**"`, clicando no botão `"**Diagramar**"`)
 - [ ] Na barra lateral de diagramação, clicar na seção/acordeon `"**Fonte**"`
 - [ ] Clicar no campo select `"**Tipo de fonte**"`
 - [ ] Confirmar visualmente a presença do grupo `"**Padrão Lize**"` com as opções: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
-- [ ] Confirmar visualmente a presença do grupo separado `"**Fontes da instituição**"` exibindo a opção `"**Institucional Sans A**"`
+- [ ] Confirmar visualmente a presença do grupo separado `"**Fontes da instituição**"` exibindo a opção `"**Institucional Decisão Sans**"`
 - [ ] Confirmar que logo abaixo do campo é exibido o texto explicativo em cinza: `"(Fontes da instituição são liberadas pela Lize para este cliente.)"`
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/v2/imprimir/`
 - Seletor: `select:has(optgroup[label="Padrão Lize"])`, `optgroup[label="Fontes da instituição"] option`
 - Estado esperado: `optgroup[label="Fontes da instituição"]` presente no DOM contendo o `value="custom:<id>"`
-- Fixture: `ClientPrintFont(client=client_a, is_active=True)`
+- Fixture: `ClientPrintFont(client=rede_decisao, is_active=True)`
 
-#### Cenário 5 — Isolamento Multi-tenant: Cliente B não enxerga as fontes do Cliente A
+#### Cenário 5 — Isolamento Multi-tenant: Cliente B não enxerga as fontes da Rede Decisão
 
 **Ação humana:**
-- [ ] Deslogar e fazer login com a conta de coordenação do **Cliente B**
+- [ ] Deslogar e fazer login com a conta de coordenação do **Cliente B** (ex: Salesiano Dom Bosco ou outro cliente sem fontes extras)
 - [ ] Acessar um caderno de prova do Cliente B e clicar em `"**Diagramar**"`
 - [ ] Expandir o acordeon `"**Fonte**"` na barra lateral
 - [ ] Clicar no campo select `"**Tipo de fonte**"`
-- [ ] Confirmar que **NÃO** existe o grupo `"**Fontes da instituição**"` e que a opção `"**Institucional Sans A**"` NÃO aparece
+- [ ] Confirmar que **NÃO** existe o grupo `"**Fontes da instituição**"` e que a opção `"**Institucional Decisão Sans**"` NÃO aparece
 - [ ] Confirmar que apenas as 5 opções do grupo `"**Padrão Lize**"` estão disponíveis
 - [ ] Confirmar que o texto explicativo `"(Fontes da instituição são liberadas pela Lize...)"` está oculto
 
@@ -249,18 +221,18 @@ Persona: **Coordenação do Cliente A** (com fontes liberadas) vs **Coordenaçã
 - URL: `/provas/<uuid>/v2/imprimir/`
 - Seletor: `optgroup[label="Fontes da instituição"]`
 - Estado esperado: Elemento não existe no DOM (`count == 0`)
-- Fixture: `ClientPrintFont` pertencente exclusivamente ao `client_a`
+- Fixture: `ClientPrintFont` pertencente exclusivamente à Rede Decisão
 
 #### Cenário 6 — Seleção e salvamento de fonte institucional no caderno
 
 **Ação humana:**
-- [ ] Estando logado no **Cliente A** na tela de diagramação do caderno
-- [ ] No select `"**Tipo de fonte**"`, escolher a opção `"**Institucional Sans A**"`
+- [ ] Estando logado na **Rede Decisão** na tela de diagramação do caderno
+- [ ] No select `"**Tipo de fonte**"`, escolher a opção `"**Institucional Decisão Sans**"`
 - [ ] Confirmar que o indicador de status da diagramação é atualizado para indicar alterações pendentes
 - [ ] Clicar na ação `"**Salvar e visualizar**"` (ou botão de salvar diagramação)
 - [ ] Aguardar a notificação/toast verde de sucesso
 - [ ] Recarregar a página (F5) e reabrir o acordeon `"**Fonte**"`
-- [ ] Confirmar que o select `"**Tipo de fonte**"` permanece com `"**Institucional Sans A**"` selecionada
+- [ ] Confirmar que o select `"**Tipo de fonte**"` permanece com `"**Institucional Decisão Sans**"` selecionada
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/v2/imprimir/`
@@ -286,24 +258,24 @@ Persona: **Coordenação do Cliente A** (com fontes liberadas) vs **Coordenaçã
 
 ### 5.3 Padrões de Impressão da Escola [Automatizável ✅]
 
-Persona: **Coordenação do Cliente A**.
+Persona: **Coordenação da Rede Decisão**.
 
 #### Cenário 8 — Criação e edição de Padrão de Impressão com fonte institucional
 
 **Ação humana:**
 - [ ] Acessar no menu superior/lateral: Gerenciamento ➔ Provas ➔ `"**Padrões de impressão**"` (`/membros/padrao/configuracao/`)
 - [ ] Clicar no botão `"**Cadastrar um novo padrão de impressão**"`
-- [ ] Preencher o campo de nome do modelo (ex: `"**Padrão Institucional 2026**"`)
+- [ ] Preencher o campo de nome do modelo (ex: `"**Padrão Institucional Decisão 2026**"`)
 - [ ] Na seção `"**Tipo da fonte**"`, verificar que os botões padrão estão visíveis: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
-- [ ] Verificar logo abaixo a seção com o subtítulo em cinza `"**Fontes da instituição**"` exibindo o botão `"**Institucional Sans A**"`
-- [ ] Clicar no botão `"**Institucional Sans A**"` e confirmar que ele fica destacado com fundo azul/laranja (`btn-primary`) enquanto os demais botões ficam com fundo branco
+- [ ] Verificar logo abaixo a seção com o subtítulo em cinza `"**Fontes da instituição**"` exibindo o botão `"**Institucional Decisão Sans**"`
+- [ ] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele fica destacado com fundo azul/laranja (`btn-primary`) enquanto os demais botões ficam com fundo branco
 - [ ] Preencher os demais campos obrigatórios e clicar no botão `"**Cadastrar padrão de impressão**"`
 - [ ] Confirmar o redirecionamento com mensagem de sucesso
-- [ ] Clicar em `"**Editar**"` no padrão recém-criado e validar que o botão `"**Institucional Sans A**"` continua selecionado
+- [ ] Clicar em `"**Editar**"` no padrão recém-criado e validar que o botão `"**Institucional Decisão Sans**"` continua selecionado
 
 **Referência técnica (para automação):**
 - URL: `/membros/padrao/configuracao/cadastrar/`
-- Seletor: `div.btn-group-toggle label:has-text("Institucional Sans A") input[type="radio"]`
+- Seletor: `div.btn-group-toggle label:has-text("Institucional Decisão Sans") input[type="radio"]`
 - Estado esperado: `examPrintConfig.clientPrintFont == "<uuid>"` e `examPrintConfig.fontFamily == 0`
 - Fixture: `POST /api/v2/clients/print-configs/`
 
@@ -311,55 +283,55 @@ Persona: **Coordenação do Cliente A**.
 
 ### 5.4 Modal de Impressão e Malote (Cadernos, Aplicações e Ensalamento) [Automatizável ✅]
 
-Persona: **Coordenação do Cliente A**.
+Persona: **Coordenação da Rede Decisão**.
 
 #### Cenário 9 — Modal de impressão rápida de caderno
 
 **Ação humana:**
 - [ ] Acessar a listagem de cadernos em `"**Cadernos**"` (`/provas/`)
-- [ ] Localizar a `"**Prova Institucional 1**"` e clicar no botão de impressão `(ícone de impressora)` para abrir o modal de configuração
+- [ ] Localizar um caderno da Rede Decisão (ex: `"**Caderno para revisão 1**"`) e clicar no botão de impressão `(ícone de impressora)` para abrir o modal de configuração
 - [ ] Localizar a seção `"**Tipo de fonte:**"`
-- [ ] Confirmar que além dos 5 botões padrão, é exibida a seção `"**Fontes da instituição**"` com o botão `"**Institucional Sans A**"`
-- [ ] Clicar no botão `"**Institucional Sans A**"` e confirmar que ele ganha a classe ativa de destaque
+- [ ] Confirmar que além dos 5 botões padrão, é exibida a seção `"**Fontes da instituição**"` com o botão `"**Institucional Decisão Sans**"`
+- [ ] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele ganha a classe ativa de destaque
 - [ ] Clicar no botão `"**Imprimir prova**"` e verificar que a requisição de impressão é disparada
 
 **Referência técnica (para automação):**
 - URL: `/provas/`
-- Seletor: `#modal-print-exam label:has-text("Institucional Sans A")`
+- Seletor: `#modal-print-exam label:has-text("Institucional Decisão Sans")`
 - Estado esperado: `examPrintConfig.clientPrintFont == "<uuid>"` enviado nos parâmetros de impressão
 
 #### Cenário 10 — Modal de impressão de malote em Aplicações Presenciais
 
 **Ação humana:**
 - [ ] Acessar o menu `"**Aplicações**"` e abrir a aba `"**Presencial**"`
-- [ ] Em uma aplicação com a prova vinculada, clicar em `"**Opções**"` ➔ `"**Todos os alunos**"` para abrir o modal de malote
+- [ ] Em uma aplicação da Rede Decisão com a prova vinculada, clicar em `"**Opções**"` ➔ `"**Todos os alunos**"` para abrir o modal de malote
 - [ ] Rolar até a seção `"**Tipo da fonte**"`
 - [ ] Verificar a presença dos botões padrão e da seção `"**Fontes da instituição**"`
-- [ ] Clicar na fonte `"**Institucional Sans A**"`
+- [ ] Clicar na fonte `"**Institucional Decisão Sans**"`
 - [ ] Clicar em `"**Imprimir malote**"`
 - [ ] Confirmar que o malote é colocado na fila de exportação sem erros 500
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/?category=presential`
-- Seletor: `label:has-text("Institucional Sans A")` dentro do modal de malote
+- Seletor: `label:has-text("Institucional Decisão Sans")` dentro do modal de malote
 - Estado esperado: `POST /aplicacoes/api/aplicacao/<uuid>/imprimir-malote/` com `clientPrintFontId: "<uuid>"`
 
 ---
 
 ### 5.5 Renderização do Caderno e Impressão PDF [Apenas Manual 👁]
 
-Persona: **Coordenação do Cliente A**.
+Persona: **Coordenação da Rede Decisão**.
 
 #### Cenário 11 — Renderização da fonte institucional com `@font-face` na prova impressa
 
 **Ação humana:**
-- [ ] Abrir a pré-visualização da impressão (ou o arquivo PDF gerado) do caderno configurado com a fonte `"**Institucional Sans A**"`
+- [ ] Abrir a pré-visualização da impressão (ou o arquivo PDF gerado) do caderno configurado com a fonte `"**Institucional Decisão Sans**"`
 - [ ] Abrir as ferramentas de desenvolvedor (F12) na visualização HTML da prova
 - [ ] Inspecionar a tag `<style>` no `<head>` do documento e confirmar a presença da declaração:
   ```css
   @font-face {
       font-family: "LizeClientFont-<hash>";
-      src: url(".../clients/print-fonts/institucional_a.woff2");
+      src: url(".../clients/print-fonts/decisao_sans.woff2");
       font-display: swap;
   }
   ```
@@ -394,9 +366,9 @@ Persona: **Coordenação do Cliente A**.
 #### Cenário 13 — Fallback gracioso ao desativar a fonte no Admin após uso
 
 **Ação humana:**
-- [ ] Com o caderno do Cliente A previamente configurado com `"**Institucional Sans A**"`, acessar o Admin Lize como staff
+- [ ] Com o caderno da Rede Decisão previamente configurado com `"**Institucional Decisão Sans**"`, acessar o Admin Lize como staff
 - [ ] Desativar a fonte (`is_active = False`) e salvar
-- [ ] Retornar à diagramação do caderno como Coordenação do Cliente A e recarregar a tela
+- [ ] Retornar à diagramação do caderno como Coordenação da Rede Decisão e recarregar a tela
 - [ ] Confirmar que o sistema faz o fallback suave para a fonte padrão (Plex Sans) sem tela branca (erro 500)
 - [ ] Abrir a impressão do caderno e verificar que a prova é renderizada normalmente usando a fonte padrão
 
@@ -414,10 +386,10 @@ Persona: Desenvolvedor / Automação de Segurança via API.
 #### Cenário 14 — Tentativa de vincular fonte de outro cliente retorna HTTP 400
 
 **Ação humana:**
-- [ ] Executar uma chamada de API `PATCH /api/v1/exams/<exam_b_id>/print-config/` autenticado como Coordenação do Cliente B, enviando no payload o ID da fonte pertencente ao Cliente A:
+- [ ] Executar uma chamada de API `PATCH /api/v1/exams/<exam_b_id>/print-config/` autenticado como Coordenação do Cliente B, enviando no payload o ID da fonte pertencente à Rede Decisão:
   ```json
   {
-    "clientPrintFont": "<id_da_fonte_do_cliente_a>"
+    "clientPrintFont": "<id_da_fonte_da_rede_decisao>"
   }
   ```
 - [ ] Confirmar que a API responde com status **HTTP 400 Bad Request**
