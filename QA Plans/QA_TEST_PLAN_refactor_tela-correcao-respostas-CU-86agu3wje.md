@@ -246,10 +246,10 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 6 — Preservação de comportamento em Questões Objetivas e sem Rubrica
 
 **Ação humana:**
-- [ ] Na tela de correção por enunciado, clicar no filtro `"**Objetivas**"` (botão pill na barra superior de filtros).
-- [ ] Clicar no botão `"**Corrigir**"` de uma questão objetiva.
-- [ ] Verificar que o modal abre exibindo as alternativas marcadas pelos alunos, acertos e erros, sem qualquer tabela de rubrica de critérios.
-- [ ] Conferir que o payload do endpoint v2 retorna `criterion_scores: []` vazio, sem falhas de renderização ou quebras de script no console do navegador.
+- [x] Na tela de correção por enunciado, clicar no filtro `"**Objetivas**"` (botão pill na barra superior de filtros).
+- [x] Clicar no botão `"**Corrigir**"` de uma questão objetiva.
+- [x] Verificar que o modal abre exibindo as alternativas marcadas pelos alunos, acertos e erros, sem qualquer tabela de rubrica de critérios.
+- [x] Conferir que o payload do endpoint v2 retorna `criterion_scores: []` vazio, sem falhas de renderização ou quebras de script no console do navegador.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<exam_id>/enunciados/detalhes/`

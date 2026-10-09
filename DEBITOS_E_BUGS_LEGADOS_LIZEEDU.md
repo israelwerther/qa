@@ -29,6 +29,7 @@
 | ID | Data | Funcionalidade / Tela | Problema | Severidade | Status |
 | :-: | :-: | :--- | :--- | :-: | :-: |
 | [001](#lizeedu-001) | 21/09/2026 | Elaboração de questões (professor) — barra discursiva / switch “Correção com competências” | Switch não persiste sozinho — estado amarrado ao select de modelo (`textCorrection`) | Média | ⏳ Aguardando Pauta |
+| [002](#lizeedu-002) | 09/10/2026 | Correção por enunciado (professor/coordenação) — modal de competências | `TypeError` em `teacher_grade` e perda de critérios no primeiro envio para alunos sem resposta prévia | Média | ⏳ Aguardando Pauta |
 
 ---
 
@@ -64,6 +65,66 @@ Bug legado — **não introduzido** pelo reposicionamento da barra (a feature s�
 #### Workaround temporário (QA)
 - Para **ativar** e persistir: ligar o switch **e** selecionar um modelo de correção antes de **“Salvar”**.
 - Para **desativar** e persistir: limpar o select (opção vazia `------------------` / nenhum modelo) e então **“Salvar”** — não confiar só no switch em **“não”**.
+
+---
+
+### LIZEEDU 002
+`TypeError` ao selecionar competência e perda de critérios no primeiro envio para alunos sem resposta prévia
+
+* **Data de Identificação:** 09 de outubro de 2026
+* **Identificado durante:** QA da branch `refactor/tela-correcao-respostas-CU-86agu3wje` / plano `QA Plans/QA_TEST_PLAN_refactor_tela-correcao-respostas-CU-86agu3wje.md` (Seção 5.4, Cenário 7)
+* **Task ClickUp:** [Refactor tela de correção de respostas](https://app.clickup.com/t/86agu3wje)
+* **Tipo:** Bug Legado | `[Frontend / JS]` / `[UX/UI]`
+* **Severidade:** Média
+* **Status:** ⏳ Aguardando Pauta
+* **Arquivo(s):** 
+  - `fiscallizeon/exams/templates/dashboard/exams/includes/exam-detail-enunciation-functions.js` (funções `selectedCorrection` ~L308 e `sendTeacherFeedback` ~L247–285)
+  - `fiscallizeon/exams/templates/dashboard/exams/exam_detail_enunciation_new.html` (função `saveUpdateCorrection` ~L1574)
+* **Tela / rota:** Detalhes de enunciados / Correção por enunciado — modal de respostas (`#answers-accordion`) — `/provas/<uuid>/enunciados/detalhes/` (`exams:exams_detail_enunciation_new`)
+
+#### 📝 Descrição
+Ao abrir o modal de correção por enunciado de uma questão discursiva com rubrica/competências ativas (ex.: Competências ENEM) para um aluno que **não submeteu resposta textual prévia** (ou seja, `application_student.answers` é uma lista vazia `[]`):
+1. **Erro de JavaScript no console:** Ao clicar em qualquer pill de pontuação de critério (ex.: 120, 160, 200), o console dispara repetidamente:
+   ```text
+   [Vue warn]: Error in v-on handler: "TypeError: Cannot set properties of undefined (setting 'teacher_grade')"
+   TypeError: Cannot set properties of undefined (setting 'teacher_grade')
+       at Vue.selectedCorrection (detalhes/?turma=all:4534:66)
+       at Vue.selectCriterionPoint (detalhes/?turma=all:4905:22)
+   ```
+2. **Critérios não persistem na primeira tentativa:** Ao preencher a nota ou clicar para salvar/avançar, o modal passa para o próximo aluno, mas **as notas das competências selecionadas não são gravadas no backend**.
+3. **Comportamento enganoso de "funcionar só na 2ª vez":** Ao reabrir o mesmo aluno pela segunda vez e preencher as competências novamente, o salvamento finalmente persiste. Isso ocorre porque o primeiro salvamento criou uma instância de `TextualAnswer` com `corrected_but_no_answer = true`, permitindo que na segunda tentativa `answers[0]` exista.
+
+#### 🛠️ Causa Técnica
+Bug legado pré-existente (código presente desde o commit `5ac4398aa0` em 13/08/2024):
+1. **Acesso inseguro a array vazio:** Em `selectedCorrection` (`exam-detail-enunciation-functions.js`), a linha:
+   ```javascript
+   this.selectedApplicationStudent.answers.at(0).teacher_grade = this.totalPoints
+   ```
+   assume que `this.selectedApplicationStudent.answers.at(0)` sempre existe. Para alunos sem resposta prévia (`answers: []`), `answers.at(0)` retorna `undefined`, estourando a exceção não tratada ao tentar setar `.teacher_grade`.
+2. **Omissão de chamada a `saveUpdateCorrection` no fluxo de criação:** No método `sendTeacherFeedback`, quando `answer && answer.id` é verdadeiro (`if`), a função invoca `await this.saveUpdateCorrection(...)`. Porém, no bloco `else` (quando o aluno não possuía resposta e é criada uma nova resposta via `POST` em `createUrl`), a chamada a `saveUpdateCorrection` **nunca é executada**. O código apenas faz `this.selectedApplicationStudent.answers[0] = answer` e chama `this.changeStudent()`, avançando para o próximo aluno e descartando o array `this.selectPoint` em memória.
+
+#### 🎯 Como Simular
+1. Acessar `/provas/<exam_id>/enunciados/detalhes/?turma=all` em uma prova com discursiva com rubrica ENEM (ex.: Univar `ADM - Fundamentos da Economia Aplicada` — `effa9336-d46f-4617-ac58-44e3e286cf9e`).
+2. Abrir o modal de correção da **Questão 11**.
+3. Selecionar um aluno que não enviou resposta (ex.: `ISADORA CAMYLLE CERDAM FERNANDES AGUIAR` ou `FABIANA MOREIRA BATISTA`).
+4. Abrir o Console do Navegador (F12).
+5. Clicar em qualquer nota de critério na tabela (ex.: C1 = 200).
+6. **Observar o erro:** O console dispara `TypeError: Cannot set properties of undefined (setting 'teacher_grade')`.
+7. Clicar em salvar/atribuir nota. O modal pula para o próximo aluno.
+8. Reabrir o aluno anterior: constatar que os critérios não foram salvos e aparecem em branco.
+
+#### 💡 Sugestão de Correção
+1. Em `selectedCorrection`: proteger o acesso com checagem segura:
+   ```javascript
+   if (this.selectedApplicationStudent && this.selectedApplicationStudent.answers && this.selectedApplicationStudent.answers.at(0)) {
+       this.selectedApplicationStudent.answers.at(0).teacher_grade = this.totalPoints;
+   }
+   ```
+2. Em `sendTeacherFeedback` (bloco `else`): após criar com sucesso a resposta em branco via `POST`, encadear a chamada a `await this.saveUpdateCorrection(this.selectedApplicationStudent.id)` antes de chamar `this.changeStudent()`.
+
+#### Workaround temporário (QA)
+- Ao validar ou corrigir alunos sem submissão prévia, salvar primeiro uma nota geral para criar a resposta no backend, e só então pontuar as competências na segunda abertura.
+- Para testes de QA em lote, priorizar alunos que já possuam respostas textuais submetidas.
 
 <!--
 ### LIZEEDU NNN
