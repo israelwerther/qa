@@ -199,17 +199,26 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 4 — Regravação de notas executando PUT em vez de duplicar via POST
 
 **Ação humana:**
-- [ ] Selecionar um aluno discursivo já corrigido.
-- [ ] Alterar uma das opções de competência clicando em um valor diferente de nota (o botão pill correspondente deve ficar azul).
-- [ ] Clicar no botão `"**Salvar**"` (botão roxo/primário `tw-bg-primary-600`).
-- [ ] Observar a aba Rede: a requisição enviada para `/correcoes/api/textuais/<uuid>/` deve ser do método **`PUT`** (atualização), e **NÃO `POST`** (criação).
-- [ ] Fechar o modal de correção clicando no botão `"**Fechar**"` (ícone `X` no canto superior direito).
-- [ ] Reabrir a mesma questão clicando em `"**Corrigir**"` e selecionar novamente o mesmo aluno.
-- [ ] Clicar em `"**Salvar**"` mais uma vez.
-- [ ] Verificar no banco de dados (ou via API) que o número de registros em `CorrectionTextualAnswer` para aquela resposta permaneceu exatamente o mesmo (sem linhas duplicadas geradas).
+- [x] Selecionar um aluno discursivo já corrigido.
+- [x] Alterar uma das opções de competência clicando em um valor diferente de nota (o botão pill correspondente deve ficar azul).
+- [x] Clicar no botão `"**Salvar**"` (botão roxo/primário `tw-bg-primary-600` ou laranja do formulário).
+- [x] Observar a aba Rede: a requisição enviada para `/correcoes/api/textuais/<uuid>/atualizar` deve ser do método **`PUT`** (atualização), e **NÃO `POST`** (criação).
+- [x] Fechar o modal de correção clicando no botão `"**Fechar**"` (ícone `X` no canto superior direito).
+- [x] Reabrir a mesma questão clicando em `"**Corrigir**"` e selecionar novamente o mesmo aluno.
+- [x] Clicar em `"**Salvar**"` mais uma vez.
+- [x] Verificar no banco de dados (ou via API) que o número de registros em `CorrectionTextualAnswer` para aquela resposta permaneceu exatamente o mesmo (sem linhas duplicadas geradas; verificado count constante = 5).
+
+> [!WARNING]
+> **Débito Técnico Identificado no Salvamento (Escrita Granular N+1):**
+> Ao clicar no botão `"Salvar"`, o frontend executa um loop serial assíncrono (`for ... await axios.put(...)`) disparando **uma requisição HTTP separada por competência** (`/correcoes/api/textuais/<uuid>/atualizar`), totalizando 5 chamadas de `PUT` + 1 de `feedback` para salvar um único aluno.
+> - **Status no PR:** O PR cumpre seu objetivo funcional de evitar a duplicação no banco substituindo `POST` por `PUT`.
+> - **Riscos / Débito Técnico:**
+>   1. **Falta de atomicidade:** Se a rede oscilar no meio do loop, o aluno fica com notas parciais gravadas no banco (sem transação/rollback).
+>   2. **Latência de rede:** O salvamento sequencial acumula centenas de milissegundos bloqueando a interface.
+> - **Recomendação (para backlog futuro):** Desenvolver um endpoint de salvamento em lote (*batch update*, ex.: `PATCH /correcoes/api/textuais/batch/`) que processe todas as notas de uma questão em uma única chamada HTTP e transação atômica no banco de dados.
 
 **Referência técnica (para automação):**
-- URL: `/correcoes/api/textuais/<uuid>/`
+- URL: `/correcoes/api/textuais/<uuid>/atualizar`
 - Seletor: `#answers-accordion button:has-text("Salvar")`
 - Estado esperado no DOM: Mensagem de confirmação `"Correção salva!"` exibida; requisição HTTP PUT com status 200.
 - Fixture: `CorrectionTextualAnswer.objects.filter(textual_answer=answer).count()` constante antes e após a regravação.
@@ -419,6 +428,7 @@ def test_correction_screen_discursive_hydration_and_put(page: Page, live_server)
 - **Principal gargalo durante o planejamento:** A ausência dos testes automatizados declarados na OpenSpec, que foi expressamente sinalizada pelo desenvolvedor nos comentários do ClickUp e impede a validação automatizada imediata do teto de queries via CI.
 - **Interações e alinhamento técnico:** Discussão entre a equipe (comentários de Dioney e Luiz no ClickUp) reforçou a importância de manter o escopo enxuto, focando em resolver o gargalo de performance O(1) e a duplicação no Vue sem abrir frentes arriscadas de banco de dados neste ciclo.
 - **Melhorias de processo sugeridas:** Criar os testes unitários da camada de serviço (`test_correction_screen_loading.py`) antes de mover o card para a coluna de QA/Testing no ClickUp, evitando que tarefas cheguem para validação com pendências técnicas abertas.
+- **Débito técnico documentado:** Identificado que a gravação de rubricas realiza N requisições seriais (`PUT /correcoes/api/textuais/<uuid>/atualizar` por competência) mais uma de feedback. Embora o PR resolva a duplicação no banco de dados, recomenda-se criar futuramente um endpoint de atualização em lote (*batch*) para garantir atomicidade transacional e eliminar latência de escrita.
 
 ---
 
