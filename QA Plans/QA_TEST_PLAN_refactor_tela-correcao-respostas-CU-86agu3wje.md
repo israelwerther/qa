@@ -264,11 +264,11 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 7 — Isolamento de notas entre questões distintas com a mesma rubrica
 
 **Ação humana:**
-- [ ] Em uma prova com duas questões discursivas (Q1 e Q2) associadas à mesma rubrica/template de correção:
-- [ ] Corrigir as notas de um aluno na questão Q1 e salvar.
-- [ ] Fechar o modal e abrir o modal de correção da questão Q2.
-- [ ] Selecionar o mesmo aluno na questão Q2.
-- [ ] Confirmar que as notas marcadas em Q1 **NÃO aparecem** em Q2 (as competências em Q2 devem aparecer limpas/zeradas para esse aluno).
+- [x] Em uma prova com duas questões discursivas (Q1 e Q2) associadas à mesma rubrica/template de correção:
+- [x] Corrigir as notas de um aluno na questão Q1 e salvar.
+- [x] Fechar o modal e abrir o modal de correção da questão Q2.
+- [x] Selecionar o mesmo aluno na questão Q2.
+- [x] Confirmar que as notas marcadas em Q1 **NÃO aparecem** em Q2 (as competências em Q2 devem aparecer limpas/zeradas para esse aluno).
 
 **Referência técnica (para automação):**
 - URL: `/provas/<exam_id>/enunciados/detalhes/`
@@ -283,11 +283,11 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 8 — Simulação de falha na gravação e exibição de alerta de erro
 
 **Ação humana:**
-- [ ] Abrir o modal de correção de uma questão discursiva e selecionar um aluno.
-- [ ] Abrir as ferramentas de desenvolvedor (F12) ➔ aba Rede (Network) ➔ ativar bloqueio de requisições ou simular falha na rota `/correcoes/api/textuais/`.
-- [ ] Modificar uma nota e clicar no botão `"**Salvar**"`.
-- [ ] Confirmar que o indicador exibe a mensagem em vermelho: `"**Erro no envio, tente novamente**"`.
-- [ ] Confirmar que o console não trava a aplicação e que o usuário pode tentar submeter novamente após restabelecer a conexão.
+- [x] Abrir o modal de correção de uma questão discursiva e selecionar um aluno.
+- [x] Abrir as ferramentas de desenvolvedor (F12) ➔ aba Rede (Network) ➔ ativar bloqueio de requisições ou simular falha na rota `/correcoes/api/textuais/`.
+- [x] Modificar uma nota e clicar no botão `"**Salvar**"`.
+- [x] Confirmar que o indicador exibe a mensagem em vermelho: `"**Erro no envio, tente novamente**"`.
+- [x] Confirmar que o console não trava a aplicação e que o usuário pode tentar submeter novamente após restabelecer a conexão. ![alt text](../evidencias/image-13.png)
 
 **Referência técnica (para automação):**
 - URL: `/correcoes/api/textuais/`
@@ -302,11 +302,11 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 9 — Verificação visual de layout, acordeons e visualizador de imagem
 
 **Ação humana:**
-- [ ] Conferir o visual da listagem de questões: cabeçalho com nome do caderno, dropdown de turmas `"select[name='turma']"`, botões de filtro (`"Todas"`, `"Objetivas"`, `"Dissertativas"`, `"Somatórias"`).
-- [ ] Conferir a barra de progresso de cada card de questão (`"X de Y corrigidas"`).
-- [ ] No modal de correção, testar o botão `"**Detalhes da questão**"` e verificar a expansão suave do enunciado (`transition: height 200ms`).
-- [ ] Verificar a navegação sequencial entre questões pelos botões `"**Anterior**"` e `"**Próximo**"` no topo do modal.
-- [ ] Testar os botões rápidos de atribuição de nota (`0%`, `25%`, `50%`, `75%`, `100%`) em questões sem rubrica e conferir preenchimento correto no input de nota.
+- [x] Conferir o visual da listagem de questões: cabeçalho com nome do caderno, dropdown de turmas `"select[name='turma']"`, botões de filtro (`"Todas"`, `"Objetivas"`, `"Dissertativas"`, `"Somatórias"`).
+- [x] Conferir a barra de progresso de cada card de questão (`"X de Y corrigidas"`).
+- [x] No modal de correção, testar o botão `"**Detalhes da questão**"` e verificar a expansão suave do enunciado (`transition: height 200ms`).
+- [x] Verificar a navegação sequencial entre questões pelos botões `"**Anterior**"` e `"**Próximo**"` no topo do modal.
+- [x] Testar os botões rápidos de atribuição de nota (`0%`, `25%`, `50%`, `75%`, `100%`) em questões sem rubrica e conferir preenchimento correto no input de nota.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<exam_id>/enunciados/detalhes/`
@@ -318,11 +318,11 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] Validar que nenhum componente Tailwind com prefixo `tw-*` perdeu estilos ou sofreu quebra de padding/margin na listagem de cards.
-- [ ] Validar que a tabela de rubricas (`Competências` e `Pontos`) possui bordas arredondadas e divisores cinzas (`tw-border-gray-100`, `tw-divide-gray-200`).
-- [ ] Confirmar que os pills de seleção de notas mantêm a transição visual de cinza (`tw-ring-gray-200`) para azul suave (`tw-bg-blue-50 tw-text-blue-700`) quando ativos.
-- [ ] Confirmar que o visualizador de imagens (ViewerJS / OpenSeaDragon) carrega os scans OMR na coluna direita sem distorção e com suporte a zoom/pan.
-- [ ] Validar que o botão fechar do modal (`data-dismiss="modal"`) encerra o modal e devolve o foco para a listagem sem travar o scroll da página.
+- [x] Validar que nenhum componente Tailwind com prefixo `tw-*` perdeu estilos ou sofreu quebra de padding/margin na listagem de cards.
+- [x] Validar que a tabela de rubricas (`Competências` e `Pontos`) possui bordas arredondadas e divisores cinzas (`tw-border-gray-100`, `tw-divide-gray-200`).
+- [x] Confirmar que os pills de seleção de notas mantêm a transição visual de cinza (`tw-ring-gray-200`) para azul suave (`tw-bg-blue-50 tw-text-blue-700`) quando ativos.
+- [x] Confirmar que o visualizador de imagens (ViewerJS / OpenSeaDragon) carrega os scans OMR na coluna direita sem distorção e com suporte a zoom/pan.
+- [x] Validar que o botão fechar do modal (`data-dismiss="modal"`) encerra o modal e devolve o foco para a listagem sem travar o scroll da página.
 
 ---
 
