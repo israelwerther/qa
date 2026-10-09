@@ -167,10 +167,10 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 2 — Respeito ao parâmetro de ano (`?year=`) na query string
 
 **Ação humana:**
-- [ ] Abrir a tela de correção forçando um parâmetro de ano anterior na barra de endereço (ex.: `?year=2025`).
-- [ ] Clicar no botão `"**Corrigir**"` de uma questão.
-- [ ] Verificar na aba Rede que a requisição para o endpoint v2 recebe o parâmetro `&year=2025` na URL.
-- [ ] Confirmar que o sistema não utiliza arbitrariamente o ano corrente (`2026`) quando o parâmetro `year` é fornecido na URL.
+- [x] Abrir a tela de correção forçando um parâmetro de ano anterior na barra de endereço (ex.: `?year=2025`).
+- [x] Clicar no botão `"**Corrigir**"` de uma questão.
+- [x] Verificar na aba Rede que a requisição para o endpoint v2 recebe o parâmetro `&year=2025` na URL.
+- [x] Confirmar que o sistema não utiliza arbitrariamente o ano corrente (`2026`) quando o parâmetro `year` é fornecido na URL.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<exam_id>/enunciados/detalhes/?year=2025&turma=<turma_id>`
