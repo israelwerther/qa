@@ -230,9 +230,9 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 5 — Seleção e salvamento em questão de "Arquivo anexado" (OMR)
 
 **Ação humana:**
-- [ ] Acessar o caderno do Caso 2 (`/provas/93faa67a-e3a2-4388-931c-273b3177c1a0/enunciados/detalhes/?turma=8839f1ab-94c9-49d8-90e4-45aa09960576`).
-- [ ] Localizar a questão de categoria Arquivo anexado com rubrica de critérios e clicar no botão `"**Corrigir**"`.
-- [ ] Selecionar um aluno no acordeon e verificar que as folhas digitalizadas do aluno aparecem na coluna direita no visualizador de imagens.
+- [x] Acessar o caderno do Caso 2 (`/provas/93faa67a-e3a2-4388-931c-273b3177c1a0/enunciados/detalhes/?turma=8839f1ab-94c9-49d8-90e4-45aa09960576`).
+- [x] Localizar a questão de categoria Arquivo anexado com rubrica de critérios e clicar no botão `"**Corrigir**"`.
+- [x] Selecionar um aluno no acordeon e verificar que as folhas digitalizadas do aluno aparecem na coluna direita no visualizador de imagens.
 - [ ] Conferir que as notas por critério são hidratadas corretamente na tabela de competências.
 - [ ] Modificar uma nota e clicar no botão `"**Salvar**"`.
 - [ ] Confirmar na aba Rede que a requisição foi disparada via **`PUT`** para `/correcoes/api/arquivos/<uuid>/`.
