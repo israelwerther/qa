@@ -226,13 +226,13 @@ Persona: **Coordenação da Rede Decisão** (com fontes liberadas) vs **Coordena
 #### Cenário 6 — Seleção e salvamento de fonte institucional no caderno
 
 **Ação humana:**
-- [ ] Estando logado na **Rede Decisão** na tela de diagramação do caderno
-- [ ] No select `"**Tipo de fonte**"`, escolher a opção `"**Institucional Decisão Sans**"`
-- [ ] Confirmar que o indicador de status da diagramação é atualizado para indicar alterações pendentes
-- [ ] Clicar na ação `"**Salvar e visualizar**"` (ou botão de salvar diagramação)
-- [ ] Aguardar a notificação/toast verde de sucesso
-- [ ] Recarregar a página (F5) e reabrir o acordeon `"**Fonte**"`
-- [ ] Confirmar que o select `"**Tipo de fonte**"` permanece com `"**Institucional Decisão Sans**"` selecionada
+- [x] Estando logado na **Rede Decisão** na tela de diagramação do caderno
+- [x] No select `"**Tipo de fonte**"`, escolher a opção `"**Institucional Decisão Sans**"`
+- [x] Confirmar que o indicador de status da diagramação é atualizado para indicar alterações pendentes
+- [x] Clicar na ação `"**Salvar e visualizar**"` (ou botão de salvar diagramação)
+- [x] Aguardar a notificação/toast verde de sucesso
+- [x] Recarregar a página (F5) e reabrir o acordeon `"**Fonte**"`
+- [x] Confirmar que o select `"**Tipo de fonte**"` permanece com `"**Institucional Decisão Sans**"` selecionada 
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/v2/imprimir/`
