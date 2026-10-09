@@ -142,13 +142,13 @@ Persona: **Staff Lize** logado em `/admin/`.
 
 **Ação humana:**
 - [x] Acessar `/admin/clients/clientprintfont/add/` (ou abrir o cliente Rede Decisão em `/admin/clients/client/` e descer até o inline `"**Fontes de impressão do cliente**"`)
-- [ ] Selecionar o cliente `"**Rede Decisão**"` no campo `"**Cliente**"`
-- [ ] Preencher o campo `"**Nome exibido**"` com `"**Institucional Decisão Sans**"`
-- [ ] No campo `"**Arquivo da fonte**"`, fazer upload de um arquivo com extensão válida (`.woff2`, `.woff`, `.ttf` ou `.otf`)
-- [ ] Confirmar que o checkbox `"**Ativa**"` está marcado e a `"**Ordem**"` está como `1`
-- [ ] Clicar no botão azul `"**Salvar**"` (canto inferior direito)
-- [ ] Validar a mensagem de sucesso verde: `"A fonte de impressão do cliente "Rede Decisão — Institucional Decisão Sans" foi adicionada com sucesso."`
-- [ ] Abrir a fonte salva e verificar que o campo `"**Identificador CSS**"` foi gerado automaticamente com o formato `LizeClientFont-<identificador>` em modo somente leitura
+- [x] Selecionar o cliente `"**Rede Decisão**"` no campo `"**Cliente**"`
+- [x] Preencher o campo `"**Nome exibido**"` com `"**Institucional Decisão Sans**"`
+- [x] No campo `"**Arquivo da fonte**"`, fazer upload de um arquivo com extensão válida (`.woff2`, `.woff`, `.ttf` ou `.otf`)
+- [x] Confirmar que o checkbox `"**Ativa**"` está marcado e a `"**Ordem**"` está como `1`
+- [x] Clicar no botão azul `"**Salvar**"` (canto inferior direito)
+- [x] Validar a mensagem de sucesso verde: `"A fonte de impressão do cliente "Rede Decisão — Institucional Decisão Sans" foi adicionada com sucesso."`
+- [x] Abrir a fonte salva e verificar que o campo `"**Identificador CSS**"` foi gerado automaticamente com o formato `LizeClientFont-<identificador>` em modo somente leitura ![alt text](../evidencias/image-7.png)
 
 **Referência técnica (para automação):**
 - URL: `/admin/clients/clientprintfont/add/`
@@ -159,10 +159,10 @@ Persona: **Staff Lize** logado em `/admin/`.
 #### Cenário 2 — Rejeição de arquivo com formato inválido
 
 **Ação humana:**
-- [ ] Acessar `/admin/clients/clientprintfont/add/`
-- [ ] Selecionar um cliente, digitar o nome exibido `"**Fonte Inválida**"` e anexar um arquivo não suportado (ex: `.zip`, `.pdf` ou `.exe`)
-- [ ] Clicar no botão `"**Salvar**"`
-- [ ] Confirmar que o formulário não é submetido e exibe o alerta de erro: `"Formato não suportado. Use: .otf, .ttf, .woff, .woff2."`
+- [x] Acessar `/admin/clients/clientprintfont/add/`
+- [x] Selecionar um cliente, digitar o nome exibido `"**Fonte Inválida**"` e anexar um arquivo não suportado (ex: `.zip`, `.pdf` ou `.exe`)
+- [x] Clicar no botão `"**Salvar**"`
+- [x] Confirmar que o formulário não é submetido e exibe o alerta de erro: `"Formato não suportado. Use: .otf, .ttf, .woff, .woff2."` ![alt text](../evidencias/image-8.png)
 
 **Referência técnica (para automação):**
 - URL: `/admin/clients/clientprintfont/add/`
@@ -172,11 +172,11 @@ Persona: **Staff Lize** logado em `/admin/`.
 #### Cenário 3 — Desativação de fonte no admin
 
 **Ação humana:**
-- [ ] Acessar a listagem `/admin/clients/clientprintfont/`
-- [ ] Clicar sobre a fonte cadastrada `"**Institucional Decisão Sans**"`
-- [ ] Desmarcar o checkbox `"**Ativa**"` (`is_active = False`)
-- [ ] Clicar no botão `"**Salvar**"`
-- [ ] Confirmar que o status na coluna `"**Ativa**"` da listagem passa a exibir o ícone vermelho de falso (ícone de X)
+- [x] Acessar a listagem `/admin/clients/clientprintfont/`
+- [x] Clicar sobre a fonte cadastrada `"**Institucional Decisão Sans**"`
+- [x] Desmarcar o checkbox `"**Ativa**"` (`is_active = False`)
+- [x] Clicar no botão `"**Salvar**"`
+- [x] Confirmar que o status na coluna `"**Ativa**"` da listagem passa a exibir o ícone vermelho de falso (ícone de X) ![alt text](../evidencias/image-9.png)
 
 **Referência técnica (para automação):**
 - URL: `/admin/clients/clientprintfont/<uuid>/change/`
@@ -192,13 +192,13 @@ Persona: **Coordenação da Rede Decisão** (com fontes liberadas) vs **Coordena
 #### Cenário 4 — Exibição das fontes da instituição para a Rede Decisão
 
 **Ação humana:**
-- [ ] Fazer login com a conta de coordenação da **Rede Decisão** (ex: `chrystyane.mello@rededecisao.com.br` ou via botão staff `"Aderir ao cliente"`)
-- [ ] Acessar o menu lateral `"**Cadernos**"` e abrir a diagramação de um caderno (ex: `"**Caderno para revisão 1**"`, clicando no botão `"**Diagramar**"`)
-- [ ] Na barra lateral de diagramação, clicar na seção/acordeon `"**Fonte**"`
-- [ ] Clicar no campo select `"**Tipo de fonte**"`
-- [ ] Confirmar visualmente a presença do grupo `"**Padrão Lize**"` com as opções: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
-- [ ] Confirmar visualmente a presença do grupo separado `"**Fontes da instituição**"` exibindo a opção `"**Institucional Decisão Sans**"`
-- [ ] Confirmar que logo abaixo do campo é exibido o texto explicativo em cinza: `"(Fontes da instituição são liberadas pela Lize para este cliente.)"`
+- [x] Fazer login com a conta de coordenação da **Rede Decisão** (ex: `chrystyane.mello@rededecisao.com.br` ou via botão staff `"Aderir ao cliente"`)
+- [x] Acessar o menu lateral `"**Cadernos**"` e abrir a diagramação de um caderno (ex: `"**Caderno para revisão 1**"`, clicando no botão `"**Diagramar**"`)
+- [x] Na barra lateral de diagramação, clicar na seção/acordeon `"**Fonte**"`
+- [x] Clicar no campo select `"**Tipo de fonte**"`
+- [x] Confirmar visualmente a presença do grupo `"**Padrão Lize**"` com as opções: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
+- [x] Confirmar visualmente a presença do grupo separado `"**Fontes da instituição**"` exibindo a opção `"**Institucional Decisão Sans**"`![alt text](../evidencias/image-10.png)
+- [x] Confirmar que logo abaixo do campo é exibido o texto explicativo em cinza: `"(Fontes da instituição são liberadas pela Lize para este cliente.)"`
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/v2/imprimir/`
@@ -209,13 +209,13 @@ Persona: **Coordenação da Rede Decisão** (com fontes liberadas) vs **Coordena
 #### Cenário 5 — Isolamento Multi-tenant: Cliente B não enxerga as fontes da Rede Decisão
 
 **Ação humana:**
-- [ ] Deslogar e fazer login com a conta de coordenação do **Cliente B** (ex: Salesiano Dom Bosco ou outro cliente sem fontes extras)
-- [ ] Acessar um caderno de prova do Cliente B e clicar em `"**Diagramar**"`
-- [ ] Expandir o acordeon `"**Fonte**"` na barra lateral
-- [ ] Clicar no campo select `"**Tipo de fonte**"`
-- [ ] Confirmar que **NÃO** existe o grupo `"**Fontes da instituição**"` e que a opção `"**Institucional Decisão Sans**"` NÃO aparece
-- [ ] Confirmar que apenas as 5 opções do grupo `"**Padrão Lize**"` estão disponíveis
-- [ ] Confirmar que o texto explicativo `"(Fontes da instituição são liberadas pela Lize...)"` está oculto
+- [x] Deslogar e fazer login com a conta de coordenação do **Cliente B** (ex: Salesiano Dom Bosco ou outro cliente sem fontes extras)
+- [x] Acessar um caderno de prova do Cliente B e clicar em `"**Diagramar**"`
+- [x] Expandir o acordeon `"**Fonte**"` na barra lateral
+- [x] Clicar no campo select `"**Tipo de fonte**"`
+- [x] Confirmar que **NÃO** existe o grupo `"**Fontes da instituição**"` e que a opção `"**Institucional Decisão Sans**"` NÃO aparece ![alt text](../evidencias/image-11.png)
+- [x] Confirmar que apenas as 5 opções do grupo `"**Padrão Lize**"` estão disponíveis
+- [x] Confirmar que o texto explicativo `"(Fontes da instituição são liberadas pela Lize...)"` está oculto
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/v2/imprimir/`
