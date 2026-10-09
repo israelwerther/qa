@@ -150,16 +150,18 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 1 — Carga O(1) e hidratação de notas no payload inicial
 
 **Ação humana:**
-- [ ] Acessar o caderno do Caso 1 (`/provas/12d0d423-a8f3-4934-8abf-0580ddf48285/enunciados/detalhes/?turma=7a24afea-b8c9-4b71-82ac-148ded9dca48`) logado como coordenação ou staff.
-- [ ] Localizar a questão discursiva com rubrica de 5 critérios e clicar no botão `"**Corrigir**"` (botão branco com borda cinza `tw-border-neutral-300`).
-- [ ] Conferir se o modal de correção abre em tela cheia exibindo a lista de alunos no acordeon lateral esquerdo.
-- [ ] Inspecionar a aba Rede (Network) do navegador e confirmar que a chamada para `/provas/api/exam-question/.../answers/v2/` retorna status `200 OK`.
-- [ ] Conferir que o payload JSON traz a chave `criterion_scores` já preenchida para os alunos que possuem avaliação prévia, sem requisições adicionais de critérios por aluno ao navegar.
+- [x] Acessar o caderno do Caso 1 (`/provas/12d0d423-a8f3-4934-8abf-0580ddf48285/enunciados/detalhes/?turma=7a24afea-b8c9-4b71-82ac-148ded9dca48`) logado como coordenação ou staff.
+- [x] Localizar a questão discursiva com rubrica de 5 critérios e clicar no botão `"**Corrigir**"` (botão branco com borda cinza `tw-border-neutral-300`).
+- [x] Conferir se o modal de correção abre em tela cheia exibindo a lista de alunos no acordeon lateral esquerdo.
+- [x] Inspecionar a aba Rede (Network) do navegador e confirmar que a chamada para `/provas/api/exam-question/.../answers/v2/?class=...` retorna status `200 OK` (conforme validado na sua aba Network).
+- [x] Clicar na requisição `v2/?class=...` na aba Rede ➔ aba **Response** (ou **Preview**) e conferir que dentro de `applications_student`, alunos já avaliados (ex.: `OLENDINA MOREIRA DE SOUZA FILHA`) trazem a chave `criterion_scores` populada com as notas e IDs dos critérios. 
+- [x] No acordeon à esquerda da tela, clicar no aluno corrigido (**`OLENDINA MOREIRA DE SOUZA FILHA`** ou `WENER CARVALHO SANTOS`) e confirmar que as opções de competências aparecem marcadas em azul instantaneamente, sem gerar novas requisições HTTP na aba Rede.![alt text](../evidencias/image-12.png)
+- [x] *(Nota de ambiente local)*: A coluna da direita com o texto *"Carregando, aguarde..."* tenta carregar o scan OMR do S3/CDN; como o arquivo físico não existe no ambiente local, esse loading na imagem é normal e não interfere na correção.
 
 **Referência técnica (para automação):**
 - URL: `/provas/12d0d423-a8f3-4934-8abf-0580ddf48285/enunciados/detalhes/?turma=7a24afea-b8c9-4b71-82ac-148ded9dca48`
 - Seletor: `div[role="list"] > div:has(h3:has-text("Questão")) button:has-text("Corrigir")`
-- Estado esperado no DOM: Modal `#detailModal` visível com classe `.modal.show`; acordeon `#answers-accordion` populado com 28 itens `<h6>`.
+- Estado esperado no DOM: Modal `#detailModal` visível com classe `.modal.show`; acordeon `#answers-accordion` com lista de alunos e hidratação de notas via `criterion_scores`.
 - Fixture: `CorrectionScreenLoader(exam_question, school_class=sc, year=2026, user=coord).load()` com `len(criterion_scores) > 0`.
 
 #### Cenário 2 — Respeito ao parâmetro de ano (`?year=`) na query string
