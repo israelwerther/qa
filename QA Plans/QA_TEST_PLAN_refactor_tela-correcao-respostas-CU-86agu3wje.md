@@ -185,10 +185,10 @@ ans = mixer.blend(TextualAnswer, question=q, student_application=app_student, co
 #### Cenário 3 — Seleção de aluno com notas prévias sem chamada de API redundante
 
 **Ação humana:**
-- [ ] No modal de correção da questão discursiva, clicar no nome de um aluno que já possua notas corrigidas (ex.: aluno com ícone verde de conferência).
-- [ ] Observar que a tabela de `"**Competências**"` e `"**Pontos**"` exibe imediatamente os botões azuis selecionados com as notas salvas do aluno.
-- [ ] Inspecionar a aba Rede e confirmar que **NÃO foi disparada nenhuma requisição** para `questions/api/correction-answers/`.
-- [ ] Alternar para outro aluno corrigido e confirmar que as notas mudam instantaneamente conforme os dados de `criterion_scores` em memória.
+- [x] No modal de correção da questão discursiva, clicar no nome de um aluno que já possua notas corrigidas (ex.: aluno com ícone verde de conferência).
+- [x] Observar que a tabela de `"**Competências**"` e `"**Pontos**"` exibe imediatamente os botões azuis selecionados com as notas salvas do aluno.
+- [x] Inspecionar a aba Rede e confirmar que **NÃO foi disparada nenhuma requisição** para `questions/api/correction-answers/`.
+- [x] Alternar para outro aluno corrigido e confirmar que as notas mudam instantaneamente conforme os dados de `criterion_scores` em memória.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<exam_id>/enunciados/detalhes/`
