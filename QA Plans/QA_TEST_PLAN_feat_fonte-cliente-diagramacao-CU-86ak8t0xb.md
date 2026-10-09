@@ -269,9 +269,9 @@ Persona: **Coordenação da Rede Decisão**.
 - [x] Na seção `"**Tipo da fonte**"`, verificar que os botões padrão estão visíveis: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
 - [x] Verificar logo abaixo a seção com o subtítulo em cinza `"**Fontes da instituição**"` exibindo o botão `"**Institucional Decisão Sans**"` ![alt text](../evidencias/image-14.png)
 - [x] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele fica destacado com fundo azul/laranja (`btn-primary`) enquanto os demais botões ficam com fundo branco
-- [ ] Preencher os demais campos obrigatórios e clicar no botão `"**Cadastrar padrão de impressão**"`
-- [ ] Confirmar o redirecionamento com mensagem de sucesso
-- [ ] Clicar em `"**Editar**"` no padrão recém-criado e validar que o botão `"**Institucional Decisão Sans**"` continua selecionado
+- [x] Preencher os demais campos obrigatórios e clicar no botão `"**Cadastrar padrão de impressão**"`
+- [x] Confirmar o redirecionamento com mensagem de sucesso
+- [x] Clicar em `"**Editar**"` no padrão recém-criado e validar que o botão `"**Institucional Decisão Sans**"` continua selecionado
 
 **Referência técnica (para automação):**
 - URL: `/membros/padrao/configuracao/cadastrar/`
@@ -288,11 +288,11 @@ Persona: **Coordenação da Rede Decisão**.
 #### Cenário 9 — Modal de impressão rápida de caderno
 
 **Ação humana:**
-- [ ] Acessar a listagem de cadernos em `"**Cadernos**"` (`/provas/`)
-- [ ] Localizar um caderno da Rede Decisão (ex: `"**Caderno para revisão 1**"`) e clicar no botão de impressão `(ícone de impressora)` para abrir o modal de configuração
-- [ ] Localizar a seção `"**Tipo de fonte:**"`
-- [ ] Confirmar que além dos 5 botões padrão, é exibida a seção `"**Fontes da instituição**"` com o botão `"**Institucional Decisão Sans**"`
-- [ ] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele ganha a classe ativa de destaque
+- [x] Acessar a listagem de cadernos em `"**Cadernos**"` (`/provas/`)
+- [x] Localizar um caderno da Rede Decisão (ex: `"**Caderno para revisão 1**"`) e clicar no botão de impressão `(ícone de impressora)` para abrir o modal de configuração
+- [x] Localizar a seção `"**Tipo de fonte:**"`
+- [x] Confirmar que além dos 5 botões padrão, é exibida a seção `"**Fontes da instituição**"` com o botão `"**Institucional Decisão Sans**"`
+- [x] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele ganha a classe ativa de destaque
 - [ ] Clicar no botão `"**Imprimir prova**"` e verificar que a requisição de impressão é disparada
 
 **Referência técnica (para automação):**
