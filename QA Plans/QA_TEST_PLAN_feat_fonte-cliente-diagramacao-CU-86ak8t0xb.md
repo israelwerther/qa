@@ -243,11 +243,11 @@ Persona: **Coordenação da Rede Decisão** (com fontes liberadas) vs **Coordena
 #### Cenário 7 — Alternância de volta para fonte padrão Lize
 
 **Ação humana:**
-- [ ] No mesmo caderno com a fonte institucional selecionada, abrir novamente o acordeon `"**Fonte**"`
-- [ ] Alterar o select `"**Tipo de fonte**"` para `"**Verdana**"` (do grupo Padrão Lize)
-- [ ] Clicar em `"**Salvar e visualizar**"`
-- [ ] Recarregar a página (F5) e confirmar que o select exibe `"**Verdana**"`
-- [ ] Conferir no banco que o vínculo `client_print_font` foi desfeito (`null`) e `font_family` foi atualizado para `1`
+- [x] No mesmo caderno com a fonte institucional selecionada, abrir novamente o acordeon `"**Fonte**"`
+- [x] Alterar o select `"**Tipo de fonte**"` para `"**Verdana**"` (do grupo Padrão Lize)
+- [x] Clicar em `"**Salvar e visualizar**"`
+- [x] Recarregar a página (F5) e confirmar que o select exibe `"**Verdana**"`
+- [x] Conferir no banco que o vínculo `client_print_font` foi desfeito (`null`) e `font_family` foi atualizado para `1`
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/v2/imprimir/`
@@ -263,12 +263,12 @@ Persona: **Coordenação da Rede Decisão**.
 #### Cenário 8 — Criação e edição de Padrão de Impressão com fonte institucional
 
 **Ação humana:**
-- [ ] Acessar no menu superior/lateral: Gerenciamento ➔ Provas ➔ `"**Padrões de impressão**"` (`/membros/padrao/configuracao/`)
-- [ ] Clicar no botão `"**Cadastrar um novo padrão de impressão**"`
-- [ ] Preencher o campo de nome do modelo (ex: `"**Padrão Institucional Decisão 2026**"`)
-- [ ] Na seção `"**Tipo da fonte**"`, verificar que os botões padrão estão visíveis: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
-- [ ] Verificar logo abaixo a seção com o subtítulo em cinza `"**Fontes da instituição**"` exibindo o botão `"**Institucional Decisão Sans**"`
-- [ ] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele fica destacado com fundo azul/laranja (`btn-primary`) enquanto os demais botões ficam com fundo branco
+- [x] Acessar no menu superior/lateral: Gerenciamento ➔ Provas ➔ `"**Padrões de impressão**"` (`/membros/padrao/configuracao/`)
+- [x] Clicar no botão `"**Cadastrar um novo padrão de impressão**"`
+- [x] Preencher o campo de nome do modelo (ex: `"**Padrão Institucional Decisão 2026**"`)
+- [x] Na seção `"**Tipo da fonte**"`, verificar que os botões padrão estão visíveis: `"Plex Sans"`, `"Verdana"`, `"Times"`, `"Arial"` e `"Nunito Sans"`
+- [x] Verificar logo abaixo a seção com o subtítulo em cinza `"**Fontes da instituição**"` exibindo o botão `"**Institucional Decisão Sans**"` ![alt text](../evidencias/image-14.png)
+- [x] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele fica destacado com fundo azul/laranja (`btn-primary`) enquanto os demais botões ficam com fundo branco
 - [ ] Preencher os demais campos obrigatórios e clicar no botão `"**Cadastrar padrão de impressão**"`
 - [ ] Confirmar o redirecionamento com mensagem de sucesso
 - [ ] Clicar em `"**Editar**"` no padrão recém-criado e validar que o botão `"**Institucional Decisão Sans**"` continua selecionado
