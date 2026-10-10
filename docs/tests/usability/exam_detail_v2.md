@@ -1,12 +1,11 @@
-# Mapeamento de Usabilidade — exam_detail_new.html
+# Mapeamento de Usabilidade — exam_detail_v2.html
 
 ## 1. URLs e Navegação
 
 | Destino | URL | Como navegar |
 |---------|-----|--------------|
 | Listagem de provas | `/exams/` | Menu lateral → Instrumentos Avaliativos |
-| Detalhe da prova | `/exams/<id>/` | Clicar na prova na listagem |
-| Correção por aluno | `/exams/<id>/` (tab) | Aba "Por aluno" no detalhe da prova |
+| Detalhe da prova (template legado) | `/exams/<id>/` | Clicar na prova na listagem |
 
 ## 2. Pré-requisitos para Automação (Fixtures e Permissões)
 
@@ -47,29 +46,28 @@ textual_answer = mixer.blend(
 
 ## 3. Seletores DOM e Ações
 
-### Card de Sugestão da IA
+### Card de Sugestão da IA (Template Legado)
 
 | Elemento | Seletor | Ação |
 |----------|---------|------|
-| Botão "Aprovar apenas o feedback" | `button[title="Aprovar apenas o feedback"]` | Clique |
-| Botão "Aprovar nota e feedback" | `button[title="Aprovar nota e feedback"]` | Clique |
-| Botão "Aprovar a nota" | `button[title="Aprovar a nota"]` | Clique |
-| Texto do feedback da IA | Conteúdo do card com classe `tw-text-orange-800` | Leitura |
+| Botão "Aceitar apenas o feedback" | `button[title="Aceitar apenas o feedback"]` | Clique |
+| Botão "Aceitar nota" | `button[title="Aceitar nota"]` | Clique |
+| Botão "Aceitar nota e feedback" | `button[title="Aceitar nota e feedback"]` | Clique |
 
 ### Área de Correção
 
 | Elemento | Seletor | Ação |
 |----------|---------|------|
 | Campo de nota | Input numérico dentro do card de correção | Digitação |
-| Textarea de feedback | `textarea` dentro de `#collapseTeacherComment` | Digitação |
+| Textarea de feedback | `textarea` dentro do collapse de comentário | Digitação |
 | Botão salvar | Botão de ação na barra inferior | Clique |
 
 ### Funções JavaScript (Alpine.js)
 
 | Função | Arquivo | Descrição |
 |--------|---------|-----------|
-| `setOnlyFeedback(suggestion)` | `exam-detail-functions.js` | Preenche feedback sem atribuir nota |
-| `setSuggestion(suggestion, setFeedback)` | `exam-detail-functions.js` | Atribui nota (e feedback se solicitado) |
+| `setOnlyFeedback(suggestion)` | `exam-detail-functions.js` ou equivalente v2 | Preenche feedback sem atribuir nota |
+| `setSuggestion(suggestion, setFeedback)` | `exam-detail-functions.js` ou equivalente v2 | Atribui nota (e feedback se solicitado) |
 
 ## 4. API Endpoints
 
