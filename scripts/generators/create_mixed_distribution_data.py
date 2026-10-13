@@ -140,8 +140,8 @@ def main():
                         help='Nome ou UUID da coordenação escolar.')
     parser.add_argument('--turma', '--class-name', dest='class_name', type=str, default=None,
                         help='Nome da turma para vinculação.')
-    parser.add_argument('--students-per-app', type=int, default=1,
-                        help='Número de alunos por aplicação. Default: 1.')
+    parser.add_argument('--students-per-app', type=int, default=3,
+                        help='Número de alunos por aplicação. Default: 3.')
     parser.add_argument('--ensalar', '--create-distribution', dest='create_distribution', action='store_true',
                         help='Além de criar aplicações, cria o Ensalamento (RoomDistribution) pronto no banco.')
 
@@ -184,29 +184,64 @@ def main():
 
     print(f"📍 Coordenação:   {coordination.name} | Salas disponíveis: {rooms.count()}")
 
-    # 3. Turma e Alunos
-    school_classes = SchoolClass.objects.filter(coordination=coordination)
+    # 3. Turma Ativa e Alunos Reais Cadastrados no Ano Corrente
+    current_year = timezone.now().year
+    classes_qs = SchoolClass.objects.filter(
+        coordination=coordination,
+        school_year=current_year,
+        temporary_class=False,
+    )
     if args.class_name:
-        school_class = school_classes.filter(name__icontains=args.class_name).first()
+        school_class = classes_qs.filter(name__icontains=args.class_name).first() or SchoolClass.objects.filter(coordination=coordination, name__icontains=args.class_name).first()
     else:
-        school_class = school_classes.first()
+        # Prioriza turma com alunos ativos no ano corrente
+        school_class = classes_qs.filter(students__user__is_active=True).distinct().first() or classes_qs.first()
 
     if not school_class:
-        school_class = mixer.blend(SchoolClass, coordination=coordination, name='Turma QA Ensalamento')
+        school_class = SchoolClass.objects.filter(coordination=coordination).first()
 
-    # Alunos necessários
+    if school_class and school_class.school_year != current_year:
+        print(f"🔄 Atualizando ano letivo da turma '{school_class.name}' para {current_year}...")
+        school_class.school_year = current_year
+        school_class.save(update_fields=['school_year'])
+
+    # Quantidade necessária de alunos
     students_per_app = max(1, args.students_per_app)
     total_needed_students = 5 * students_per_app
-    existing_students = list(Student.objects.filter(client=client, classes=school_class))
 
-    if len(existing_students) < total_needed_students:
-        needed = total_needed_students - len(existing_students)
+    # Busca alunos reais cadastrados, ativos e na turma/coordenação do ano corrente
+    students_qs = Student.objects.filter(
+        client=client,
+        user__is_active=True,
+        classes=school_class,
+    ).distinct().order_by('name')
+
+    if students_qs.count() < total_needed_students:
+        students_qs = Student.objects.filter(
+            client=client,
+            user__is_active=True,
+            classes__coordination=coordination,
+            classes__school_year=current_year,
+        ).distinct().order_by('name')
+
+    real_students = list(students_qs)
+    if len(real_students) < total_needed_students:
+        needed = total_needed_students - len(real_students)
         for idx in range(1, needed + 1):
-            st = mixer.blend(Student, client=client, name=f'Aluno QA Ensalamento {len(existing_students) + idx}')
+            st = mixer.blend(Student, client=client, name=f'Aluno QA {school_class.name} {len(real_students) + idx}')
             st.classes.add(school_class)
-            existing_students.append(st)
+            real_students.append(st)
 
-    print(f"👥 Turma:         {school_class.name} | Alunos alocados: {total_needed_students} ({students_per_app} por app)")
+    # Garante senha 123456 e status ativo para os alunos alocados
+    selected_students = real_students[:total_needed_students]
+    for st in selected_students:
+        st.classes.add(school_class)
+        if st.user:
+            st.user.set_password('123456')
+            st.user.is_active = True
+            st.user.save(update_fields=['password', 'is_active'])
+
+    print(f"👥 Turma:         {school_class.name} ({current_year}) | {len(selected_students)} alunos reais ativos ({students_per_app} por app)")
 
     # 4. Data e Horário
     target_date = parse_target_date(args.date)
@@ -277,11 +312,11 @@ def main():
     # 6. Criação das Aplicações Presenciais Sincronizadas
     print("\n📝 [2/3] Aplicações Presenciais Sincronizadas:")
     exam_groups = [
-        (exam_sum_10, existing_students[0:students_per_app]),
-        (exam_sum_wide, existing_students[students_per_app:2*students_per_app]),
-        (exam_choice, existing_students[2*students_per_app:3*students_per_app]),
-        (exam_disc, existing_students[3*students_per_app:4*students_per_app]),
-        (exam_pas, existing_students[4*students_per_app:5*students_per_app]),
+        (exam_sum_10, selected_students[0:students_per_app]),
+        (exam_sum_wide, selected_students[students_per_app:2*students_per_app]),
+        (exam_choice, selected_students[2*students_per_app:3*students_per_app]),
+        (exam_disc, selected_students[3*students_per_app:4*students_per_app]),
+        (exam_pas, selected_students[4*students_per_app:5*students_per_app]),
     ]
 
     created_apps = []
@@ -304,13 +339,16 @@ def main():
             )
             app.school_classes.add(school_class)
 
+        # Substitui a lista de alunos para garantir exatamente o grupo exclusivo sem sobreposição
+        ApplicationStudent.objects.filter(application=app).delete()
+        app.students.set(app_students)
         for st in app_students:
-            app.students.add(st)
-            ApplicationStudent.objects.get_or_create(application=app, student=st)
+            ApplicationStudent.objects.create(application=app, student=st)
 
         created_apps.append((app, exam.name))
         print(f"  ✓ [{len(created_apps)}] {exam.name}")
-        print(f"      ID: {app.id} | Alunos: {len(app_students)}")
+        st_names = [s.name for s in app_students]
+        print(f"      ID: {app.id} | Alunos ({len(st_names)}): {', '.join(st_names)}")
 
     # 7. Opcional: Criar Ensalamento Diretamente (--ensalar)
     if args.create_distribution:
