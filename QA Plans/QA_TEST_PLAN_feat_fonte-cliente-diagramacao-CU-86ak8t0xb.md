@@ -293,7 +293,7 @@ Persona: **Coordenação da Rede Decisão**.
 - [x] Localizar a seção `"**Tipo de fonte:**"`
 - [x] Confirmar que além dos 5 botões padrão, é exibida a seção `"**Fontes da instituição**"` com o botão `"**Institucional Decisão Sans**"`
 - [x] Clicar no botão `"**Institucional Decisão Sans**"` e confirmar que ele ganha a classe ativa de destaque
-- [ ] Clicar no botão `"**Imprimir prova**"` e verificar que a requisição de impressão é disparada
+- [x] Clicar no botão `"**Imprimir prova**"` e verificar que a requisição de impressão é disparada
 
 **Referência técnica (para automação):**
 - URL: `/provas/`
@@ -303,13 +303,13 @@ Persona: **Coordenação da Rede Decisão**.
 #### Cenário 10 — Modal de impressão de malote em Aplicações Presenciais
 
 **Ação humana:**
-- [ ] Acessar o menu `"**Aplicações**"` e abrir a aba `"**Presencial**"`
-- [ ] Em uma aplicação da Rede Decisão com a prova vinculada, clicar em `"**Opções**"` ➔ `"**Todos os alunos**"` para abrir o modal de malote
-- [ ] Rolar até a seção `"**Tipo da fonte**"`
-- [ ] Verificar a presença dos botões padrão e da seção `"**Fontes da instituição**"`
-- [ ] Clicar na fonte `"**Institucional Decisão Sans**"`
-- [ ] Clicar em `"**Imprimir malote**"`
-- [ ] Confirmar que o malote é colocado na fila de exportação sem erros 500
+- [x] Acessar o menu `"**Aplicações**"` e abrir a aba `"**Presencial**"`
+- [x] Em uma aplicação da Rede Decisão com a prova vinculada, clicar em `"**Opções**"` ➔ `"**Todos os alunos**"` para abrir o modal de malote
+- [x] Rolar até a seção `"**Tipo da fonte**"`
+- [x] Verificar a presença dos botões padrão e da seção `"**Fontes da instituição**"`
+- [x] Clicar na fonte `"**Institucional Decisão Sans**"`
+- [x] Clicar em `"**Imprimir malote**"`
+- [x] Confirmar que o malote é colocado na fila de exportação sem erros 500
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/?category=presential`
@@ -325,9 +325,9 @@ Persona: **Coordenação da Rede Decisão**.
 #### Cenário 11 — Renderização da fonte institucional com `@font-face` na prova impressa
 
 **Ação humana:**
-- [ ] Abrir a pré-visualização da impressão (ou o arquivo PDF gerado) do caderno configurado com a fonte `"**Institucional Decisão Sans**"`
-- [ ] Abrir as ferramentas de desenvolvedor (F12) na visualização HTML da prova
-- [ ] Inspecionar a tag `<style>` no `<head>` do documento e confirmar a presença da declaração:
+- [x] Abrir a pré-visualização da impressão (ou o arquivo PDF gerado) do caderno configurado com a fonte `"**Institucional Decisão Sans**"`
+- [x] Abrir as ferramentas de desenvolvedor (F12) na visualização HTML da prova
+- [x] Inspecionar a tag `<style>` no `<head>` do documento e confirmar a presença da declaração:
   ```css
   @font-face {
       font-family: "LizeClientFont-<hash>";
@@ -335,11 +335,11 @@ Persona: **Coordenação da Rede Decisão**.
       font-display: swap;
   }
   ```
-- [ ] Inspecionar a tag `<body>` e confirmar que a regra CSS aplicada é:
+- [x] Inspecionar a tag `<body>` e confirmar que a regra CSS aplicada é:
   ```css
   font-family: "LizeClientFont-<hash>", "Noto Sans Math", sans-serif !important;
   ```
-- [ ] Inspecionar o texto dos enunciados e alternativas das questões e confirmar que a tipografia renderizada visualmente corresponde à fonte institucional enviada no upload
+- [x] Inspecionar o texto dos enunciados e alternativas das questões e confirmar que a tipografia renderizada visualmente corresponde à fonte institucional enviada no upload
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/imprimir`
