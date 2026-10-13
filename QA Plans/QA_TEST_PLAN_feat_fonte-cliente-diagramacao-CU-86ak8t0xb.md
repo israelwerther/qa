@@ -349,14 +349,14 @@ Persona: **Coordenação da Rede Decisão**.
 #### Cenário 12 — Correção de regressão histórica: Nunito Sans como fonte padrão
 
 **Ação humana:**
-- [ ] Na diagramação de um caderno, selecionar a fonte `"**Nunito Sans**"` (opção 4 das fontes padrão)
-- [ ] Salvar e abrir a pré-visualização de impressão
-- [ ] Inspecionar a tag `<body>` e o CSS da página
-- [ ] Confirmar que o `font-family` é exatamente:
+- [x] Na diagramação de um caderno, selecionar a fonte `"**Nunito Sans**"` (opção 4 das fontes padrão)
+- [x] Salvar e abrir a pré-visualização de impressão
+- [x] Inspecionar a tag `<body>` e o CSS da página
+- [x] Confirmar que o `font-family` é exatamente:
   ```css
   font-family: "Nunito Sans", "Noto Sans Math", sans-serif !important;
   ```
-- [ ] Confirmar visualmente que o texto está renderizado com a família **Nunito Sans** (arredondada), e **NÃO** com IBM Plex Sans (que era o bug legado de fallback)
+- [x] Confirmar visualmente que o texto está renderizado com a família **Nunito Sans** (arredondada), e **NÃO** com IBM Plex Sans (que era o bug legado de fallback)
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/imprimir`
@@ -366,11 +366,11 @@ Persona: **Coordenação da Rede Decisão**.
 #### Cenário 13 — Fallback gracioso ao desativar a fonte no Admin após uso
 
 **Ação humana:**
-- [ ] Com o caderno da Rede Decisão previamente configurado com `"**Institucional Decisão Sans**"`, acessar o Admin Lize como staff
-- [ ] Desativar a fonte (`is_active = False`) e salvar
-- [ ] Retornar à diagramação do caderno como Coordenação da Rede Decisão e recarregar a tela
-- [ ] Confirmar que o sistema faz o fallback suave para a fonte padrão (Plex Sans) sem tela branca (erro 500)
-- [ ] Abrir a impressão do caderno e verificar que a prova é renderizada normalmente usando a fonte padrão
+- [x] Com o caderno da Rede Decisão previamente configurado com `"**Institucional Decisão Sans**"`, acessar o Admin Lize como staff
+- [x] Desativar a fonte (`is_active = False`) e salvar
+- [x] Retornar à diagramação do caderno como Coordenação da Rede Decisão e recarregar a tela
+- [x] Confirmar que o sistema faz o fallback suave para a fonte padrão (Plex Sans) sem tela branca (erro 500)
+- [x] Abrir a impressão do caderno e verificar que a prova é renderizada normalmente usando a fonte padrão
 
 **Referência técnica (para automação):**
 - URL: `/provas/<uuid>/imprimir`
@@ -386,15 +386,15 @@ Persona: Desenvolvedor / Automação de Segurança via API.
 #### Cenário 14 — Tentativa de vincular fonte de outro cliente retorna HTTP 400
 
 **Ação humana:**
-- [ ] Executar uma chamada de API `PATCH /api/v1/exams/<exam_b_id>/print-config/` autenticado como Coordenação do Cliente B, enviando no payload o ID da fonte pertencente à Rede Decisão:
+- [x] Executar uma chamada de API `PATCH /api/v1/exams/<exam_b_id>/print-config/` autenticado como Coordenação do Cliente B, enviando no payload o ID da fonte pertencente à Rede Decisão:
   ```json
   {
     "clientPrintFont": "<id_da_fonte_da_rede_decisao>"
   }
   ```
-- [ ] Confirmar que a API responde com status **HTTP 400 Bad Request**
-- [ ] Confirmar que a mensagem de erro retornada é: `"A fonte selecionada não pertence ao cliente deste caderno."`
-- [ ] Confirmar que a configuração do caderno do Cliente B permanece inalterada
+- [x] Confirmar que a API responde com status **HTTP 400 Bad Request**
+- [x] Confirmar que a mensagem de erro retornada é: `"A fonte selecionada não pertence ao cliente deste caderno."` ![alt text](../evidencias/image-15.png)
+- [x] Confirmar que a configuração do caderno do Cliente B permanece inalterada 
 
 **Referência técnica (para automação):**
 - URL: `PATCH /api/v1/exams/<uuid>/print-config/`
@@ -405,12 +405,12 @@ Persona: Desenvolvedor / Automação de Segurança via API.
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Comparação de Layout no Diagramador:** Comparar a interface do acordeon `"Fonte"` com o arquivo de referência `openspec/changes/fonte-cliente-diagramacao-86ak8t0xb/references/diagram-tipo-fonte.html`. O `<select>` deve apresentar agrupamento limpo com `optgroup` e texto de rodapé discreto.
-- [ ] **Comparação de Layout nos Modais:** Comparar os modais de impressão (`modal_print.html` e `exam_configs_form.html`) com a referência `references/modal-tipo-fonte.html`. Os botões das fontes institucionais devem quebrar linha harmoniosamente com `flex-wrap` e espaçamento uniforme (`gap: 0.5rem`).
-- [ ] **Múltiplas Fontes Institucionais (Stress Test Visual):** Cadastrar 4 ou mais fontes ativas para o mesmo cliente e confirmar que a interface:
+- [x] **Comparação de Layout no Diagramador:** Comparar a interface do acordeon `"Fonte"` com o arquivo de referência `openspec/changes/fonte-cliente-diagramacao-86ak8t0xb/references/diagram-tipo-fonte.html`. O `<select>` deve apresentar agrupamento limpo com `optgroup` e texto de rodapé discreto.
+- [x] **Comparação de Layout nos Modais:** Comparar os modais de impressão (`modal_print.html` e `exam_configs_form.html`) com a referência `references/modal-tipo-fonte.html`. Os botões das fontes institucionais devem quebrar linha harmoniosamente com `flex-wrap` e espaçamento uniforme (`gap: 0.5rem`).
+- [x] **Múltiplas Fontes Institucionais (Stress Test Visual):** Cadastrar 4 ou mais fontes ativas para o mesmo cliente e confirmar que a interface:
   - No Diagramador: o select expande verticalmente sem quebrar o acordeon.
   - Nos Modais: os botões quebram linha elegantemente sem vazar as margens do modal.
-- [ ] **Fórmulas e Símbolos Matemáticos:** Verificar na prova impressa que expressões matemáticas (KaTeX / MathJax) permanecem renderizadas com sua fonte matemática nativa (`Noto Sans Math`), sem sofrer distorção pela fonte institucional do cliente.
+- [x] **Fórmulas e Símbolos Matemáticos:** Verificar na prova impressa que expressões matemáticas (KaTeX / MathJax) permanecem renderizadas com sua fonte matemática nativa (`Noto Sans Math`), sem sofrer distorção pela fonte institucional do cliente.
 
 ---
 
