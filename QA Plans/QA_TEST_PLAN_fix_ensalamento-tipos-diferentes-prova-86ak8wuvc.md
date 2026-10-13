@@ -139,10 +139,10 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 - [x] **Passo 2 (Objetivas - Ponto Chave da Feature):** Em seguida, marcar o checkbox da aplicação `"**[QA] Caderno 3 - Objetivas 10Q**"`.
 - [x] **Validação Crítica:** Verificar que o sistema aceita a seleção de ambas simultaneamente **SEM exibir nenhum alerta de erro** (no passado, abria o SweetAlert bloqueando *"Você não pode ensalar cadernos com questões de somatório e outros modelos de uma única vez"*).
 - [x] **Passo 3 (Adicionar Somatório Amplo e Discursiva):** Marcar também as aplicações `"**[QA] Caderno 2 - Somatório Amplo 18Q + 5 Obj**"` e `"**[QA] Caderno 4 - Redação e Discursiva**"`.
-- [ ] Verificar que agora existem 4 aplicações selecionadas juntas no painel de resumo lateral.
-- [ ] Na seção inferior `"**Salas Envolvidas**"`, localizar a coordenação e marcar o checkbox de uma ou mais salas (ex: `"**Sala 01**"` ou outra sala com vagas disponíveis).
-- [ ] No painel lateral direito de resumo (sticky), confirmar que o total de alunos é atendido pela capacidade das salas e que o botão azul `"**Salvar Ensalamento**"` está habilitado.
-- [ ] Clicar em `"**Salvar Ensalamento**"` e confirmar que o ensalamento é salvo com sucesso e você é redirecionado para a listagem (`/ensalamento/`).
+- [x] Verificar que agora existem 4 aplicações selecionadas juntas no painel de resumo lateral.
+- [x] Na seção inferior `"**Salas Envolvidas**"`, localizar a coordenação e marcar o checkbox de uma ou mais salas (ex: `"**Sala 01**"` ou outra sala com vagas disponíveis).![alt text](../evidencias/image-16.png)
+- [x] No painel lateral direito de resumo (sticky), confirmar que o total de alunos é atendido pela capacidade das salas e que o botão azul `"**Salvar Ensalamento**"` está habilitado.
+- [x] Clicar em `"**Salvar Ensalamento**"` e confirmar que o ensalamento é salvo com sucesso e você é redirecionado para a listagem (`/ensalamento/`).![alt text](../evidencias/image-17.png)
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/criar/`

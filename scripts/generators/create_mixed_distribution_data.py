@@ -186,16 +186,33 @@ def main():
 
     # 3. Turma Ativa e Alunos Reais Cadastrados no Ano Corrente
     current_year = timezone.now().year
+    students_per_app = max(1, args.students_per_app)
+    total_needed_students = 5 * students_per_app
+
     classes_qs = SchoolClass.objects.filter(
         coordination=coordination,
         school_year=current_year,
         temporary_class=False,
     )
     if args.class_name:
-        school_class = classes_qs.filter(name__icontains=args.class_name).first() or SchoolClass.objects.filter(coordination=coordination, name__icontains=args.class_name).first()
+        school_class = (
+            classes_qs.filter(name__icontains=args.class_name).first()
+            or SchoolClass.objects.filter(coordination=coordination, name__icontains=args.class_name).first()
+        )
     else:
-        # Prioriza turma com alunos ativos no ano corrente
-        school_class = classes_qs.filter(students__user__is_active=True).distinct().first() or classes_qs.first()
+        # Prioriza turma que já possua quantidade suficiente de alunos reais ativos no ano atual
+        school_class = None
+        for sc in classes_qs:
+            real_count = sc.students.filter(
+                client=client,
+                user__is_active=True,
+            ).exclude(name__startswith='Aluno ').count()
+            if real_count >= total_needed_students:
+                school_class = sc
+                break
+
+        if not school_class:
+            school_class = classes_qs.filter(students__user__is_active=True).distinct().first() or classes_qs.first()
 
     if not school_class:
         school_class = SchoolClass.objects.filter(coordination=coordination).first()
@@ -205,16 +222,12 @@ def main():
         school_class.school_year = current_year
         school_class.save(update_fields=['school_year'])
 
-    # Quantidade necessária de alunos
-    students_per_app = max(1, args.students_per_app)
-    total_needed_students = 5 * students_per_app
-
     # Busca alunos reais cadastrados, ativos e na turma/coordenação do ano corrente
     students_qs = Student.objects.filter(
         client=client,
         user__is_active=True,
         classes=school_class,
-    ).distinct().order_by('name')
+    ).exclude(name__startswith='Aluno ').distinct().order_by('name')
 
     if students_qs.count() < total_needed_students:
         students_qs = Student.objects.filter(
@@ -222,15 +235,18 @@ def main():
             user__is_active=True,
             classes__coordination=coordination,
             classes__school_year=current_year,
-        ).distinct().order_by('name')
+        ).exclude(name__startswith='Aluno ').distinct().order_by('name')
+
+    if students_qs.count() < total_needed_students:
+        students_qs = Student.objects.filter(
+            client=client,
+            user__is_active=True,
+        ).exclude(name__startswith='Aluno ').distinct().order_by('name')
 
     real_students = list(students_qs)
     if len(real_students) < total_needed_students:
-        needed = total_needed_students - len(real_students)
-        for idx in range(1, needed + 1):
-            st = mixer.blend(Student, client=client, name=f'Aluno QA {school_class.name} {len(real_students) + idx}')
-            st.classes.add(school_class)
-            real_students.append(st)
+        print(f"❌ Não há alunos reais cadastrados suficientes ({len(real_students)} encontrados, {total_needed_students} necessários).")
+        sys.exit(1)
 
     # Garante senha 123456 e status ativo para os alunos alocados
     selected_students = real_students[:total_needed_students]
@@ -337,13 +353,19 @@ def main():
                 end=end_time,
                 category=Application.PRESENTIAL,
             )
-            app.school_classes.add(school_class)
+
+        # Garante que a aplicação esteja desvinculada de ensalamentos anteriores para poder ser selecionada na UI
+        if app.room_distribution:
+            app.room_distribution = None
+            app.save(update_fields=['room_distribution'])
+
+        # Garante turma vinculada
+        app.school_classes.clear()
+        app.school_classes.add(school_class)
 
         # Substitui a lista de alunos para garantir exatamente o grupo exclusivo sem sobreposição
         ApplicationStudent.objects.filter(application=app).delete()
         app.students.set(app_students)
-        for st in app_students:
-            ApplicationStudent.objects.create(application=app, student=st)
 
         created_apps.append((app, exam.name))
         print(f"  ✓ [{len(created_apps)}] {exam.name}")
