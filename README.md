@@ -44,7 +44,9 @@ A pasta `scripts/` está organizada por domínios de responsabilidade:
 │   ├── create_exam.py            # Criação autônoma de cadernos, questões e amarrações
 │   ├── create-exam.sh            # Wrapper executável com detecção de venv
 │   ├── create_application.py     # Criação de aplicações, turmas/alunos e respostas
-│   └── create-application.sh     # Wrapper executável com detecção de venv
+│   ├── create-application.sh     # Wrapper executável com detecção de venv
+│   ├── create_mixed_distribution_data.py # Criação de dados para testes de ensalamento misto e malote
+│   └── create-mixed-distribution.sh      # Wrapper executável com detecção de venv
 ├── maintenance/                  # Utilitários de banco e autenticação
 │   ├── reset_passwords.py        # Reset de senhas (123456), desativação de 2FA e limpeza de sessões
 │   └── reset-passwords.sh       # Wrapper executável com detecção de venv
@@ -144,4 +146,28 @@ Compila o plano de testes `.md` em um **relatório PDF consolidado** de alta qua
   ```bash
   ./.ai_qa_acervo/scripts/export-plan-pdf.sh QA_TEST_PLAN_feat_minha-feature.md
   ```
+
+---
+
+### 6. Criar Dados para Ensalamento Misto e Malote (`/qa-criar-ensalamento-misto`)
+Gera o conjunto completo de 5 cadernos e 5 aplicações presenciais sincronizadas para testar a combinação mista de cadernos e a emissão do malote por caderno:
+- **Caderno 1:** Somatório até 15 questões (10Q) -> Cartão somatório padrão.
+- **Caderno 2:** Somatório amplo (>15 questões) + objetivas -> Cartão somatório expandido + folha Lize extra.
+- **Caderno 3:** Só objetivas (10Q) -> Cartão padrão / modelo do modal (Lize, ENEM ou Bolhas ampliadas).
+- **Caderno 4:** Discursiva / redação -> Folha de respostas discursiva na mesma sala.
+- **Caderno 5:** Formato PAS -> Caderno com trava de bloqueio para validação do teste negativo.
+- **Opção `--ensalar`:** Cria o `RoomDistribution` no banco com as 4 aplicações mistas já ensaladas e alunos distribuídos nas salas físicas, pronto para validar o modal de impressão de malote.
+
+**Como usar:**
+- **Slash Command na IDE:** `/qa-criar-ensalamento-misto [opções]` *(ou alias `/qa-criar-ensalamento`)*
+  - *Exemplo:* `/qa-criar-ensalamento-misto` (cria aplicações sincronizadas para hoje na sessão ativa)
+  - *Exemplo:* `/qa-criar-ensalamento-misto para amanhã`
+  - *Exemplo:* `/qa-criar-ensalamento-misto já criando o ensalamento` (cria o `RoomDistribution` direto no banco com `--ensalar`)
+  - *Exemplo:* `/qa-criar-ensalamento-misto no cliente "Rede Decisão"`
+- **Linha de comando:**
+  ```bash
+  ./.ai_qa_acervo/scripts/generators/create-mixed-distribution.sh --date hoje
+  ./.ai_qa_acervo/scripts/generators/create-mixed-distribution.sh --ensalar
+  ```
+
 
