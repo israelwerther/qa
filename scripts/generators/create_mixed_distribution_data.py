@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
-Gerador de Dados para Testes de Ensalamento Misto e Malote (Lize Edu)
+Gerador de Dados para Testes de Ensalamento e Malote (Lize Edu)
 Local: .ai_qa_acervo/scripts/generators/create_mixed_distribution_data.py
 Slash command: /qa-criar-ensalamento-misto
 
-Cria aplicações e cadernos de tipos variados sincronizados no mesmo dia e horário:
+Cria aplicações e ensalamentos sincronizados com alunos reais:
 - Caderno 1: Somatório até 15 questões (10Q) -> Cartão somatório padrão
 - Caderno 2: Somatório amplo (>15 questões) + objetivas -> Cartão somatório expandido + folha extra
 - Caderno 3: Só objetivas (10Q) -> Cartão padrão / modelo do modal
@@ -18,8 +18,11 @@ Opções:
   --end, -e              Horário final [default: 18:00]
   --coordination         Nome ou UUID da coordenação
   --turma, --class-name  Nome da turma
-  --students-per-app     Quantidade de alunos por aplicação [default: 1]
+  --students-per-app     Quantidade de alunos por aplicação [default: 2]
+  --type, -t             Tipo de geração ('mixed', 'all', 'sum', 'choice') [default: 'mixed']
+  --all-types, --suite   Cria todos os 3 tipos de ensalamento + aplicações livres de teste na UI
   --ensalar              Cria o Ensalamento (RoomDistribution) completo e distribui os alunos
+  --keep-free-apps       Garante aplicações livres para teste de cadastro na UI mesmo com --ensalar
 """
 
 import os
@@ -27,7 +30,6 @@ import sys
 import argparse
 from datetime import datetime, timedelta
 
-# Configura ambiente Django
 current_dir = os.path.dirname(os.path.abspath(__file__))
 while current_dir != '/' and not os.path.exists(os.path.join(current_dir, 'manage.py')):
     current_dir = os.path.dirname(current_dir)
@@ -101,37 +103,112 @@ def parse_target_date(date_str):
 def resolve_client(client_arg):
     """Resolve o cliente por UUID, nome ou sessão ativa."""
     if client_arg:
-        # Tenta UUID
-        client = Client.objects.filter(pk=client_arg).first()
-        if client:
-            return client
-        # Tenta por nome aproximado
+        try:
+            client = Client.objects.filter(pk=client_arg).first()
+            if client:
+                return client
+        except Exception:
+            pass
         client = Client.objects.filter(name__icontains=client_arg).first()
         if client:
             return client
 
-    # Tenta sessão ativa
     client, _ = get_active_session_client_and_user()
     if client:
         return client
 
-    # Fallback: cliente com ensalamento
     client = Client.objects.filter(has_distribution=True).first()
     if not client:
         client = Client.objects.first()
     return client
 
 
+def create_application_with_students(exam, app_students, target_date, start_time, end_time, school_class):
+    """Cria uma aplicação presencial e vincula alunos exclusivos."""
+    app = Application.objects.create(
+        exam=exam,
+        date=target_date,
+        start=start_time,
+        end=end_time,
+        category=Application.PRESENTIAL,
+        room_distribution=None,
+    )
+    app.school_classes.add(school_class)
+    app.students.set(app_students)
+    return app
+
+
+def get_or_create_qa_exams(coordination, client):
+    """Garante a existência e integridade das questões dos 5 cadernos QA."""
+    # Caderno 1: Somatório até 15 questões (10Q)
+    exam_sum_10 = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 1 - Somatório 10Q').first()
+    if not exam_sum_10:
+        exam_sum_10 = mixer.blend(Exam, name='[QA] Caderno 1 - Somatório 10Q', exam_format=Exam.STANDARD)
+        exam_sum_10.coordinations.add(coordination)
+    if not exam_sum_10.examquestion_set.exists():
+        for i in range(1, 11):
+            q = mixer.blend(Question, client=client, category=Question.SUM_QUESTION, enunciation=f'Questão Somatório QA {i}')
+            mixer.blend(QuestionOption, question=q, text='(01) Proposição 01', is_correct=True)
+            mixer.blend(QuestionOption, question=q, text='(02) Proposição 02', is_correct=False)
+            mixer.blend(ExamQuestion, exam=exam_sum_10, question=q, order=i)
+
+    # Caderno 2: Somatório amplo (>15 questões) + objetivas
+    exam_sum_wide = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 2 - Somatório Amplo 18Q + 5 Obj').first()
+    if not exam_sum_wide:
+        exam_sum_wide = mixer.blend(Exam, name='[QA] Caderno 2 - Somatório Amplo 18Q + 5 Obj', exam_format=Exam.STANDARD)
+        exam_sum_wide.coordinations.add(coordination)
+    if not exam_sum_wide.examquestion_set.exists():
+        for i in range(1, 19):
+            q = mixer.blend(Question, client=client, category=Question.SUM_QUESTION, enunciation=f'Questão Somatório Amplo QA {i}')
+            mixer.blend(QuestionOption, question=q, text='(01) Proposição 01', is_correct=True)
+            mixer.blend(QuestionOption, question=q, text='(02) Proposição 02', is_correct=False)
+            mixer.blend(ExamQuestion, exam=exam_sum_wide, question=q, order=i)
+        for i in range(19, 24):
+            q = mixer.blend(Question, client=client, category=Question.CHOICE, enunciation=f'Questão Objetiva Extra {i}')
+            mixer.blend(QuestionOption, question=q, text='Opção A', is_correct=True)
+            mixer.blend(QuestionOption, question=q, text='Opção B', is_correct=False)
+            mixer.blend(ExamQuestion, exam=exam_sum_wide, question=q, order=i)
+
+    # Caderno 3: Só Objetivas
+    exam_choice = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 3 - Objetivas 10Q').first()
+    if not exam_choice:
+        exam_choice = mixer.blend(Exam, name='[QA] Caderno 3 - Objetivas 10Q', exam_format=Exam.STANDARD)
+        exam_choice.coordinations.add(coordination)
+    if not exam_choice.examquestion_set.exists():
+        for i in range(1, 11):
+            q = mixer.blend(Question, client=client, category=Question.CHOICE, enunciation=f'Questão Objetiva QA {i}')
+            mixer.blend(QuestionOption, question=q, text='Opção A', is_correct=True)
+            mixer.blend(QuestionOption, question=q, text='Opção B', is_correct=False)
+            mixer.blend(ExamQuestion, exam=exam_choice, question=q, order=i)
+
+    # Caderno 4: Redação / Discursiva
+    exam_disc = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 4 - Redação e Discursiva').first()
+    if not exam_disc:
+        exam_disc = mixer.blend(Exam, name='[QA] Caderno 4 - Redação e Discursiva', exam_format=Exam.STANDARD)
+        exam_disc.coordinations.add(coordination)
+    if not exam_disc.examquestion_set.exists():
+        q = mixer.blend(Question, client=client, category=Question.TEXTUAL, enunciation='Tema de Redação / Questão Discursiva QA')
+        mixer.blend(ExamQuestion, exam=exam_disc, question=q, order=1)
+
+    # Caderno 5: Formato PAS (para teste negativo de bloqueio)
+    exam_pas = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 5 - Formato PAS (Bloqueio)').first()
+    if not exam_pas:
+        exam_pas = mixer.blend(Exam, name='[QA] Caderno 5 - Formato PAS (Bloqueio)', exam_format=Exam.PAS)
+        exam_pas.coordinations.add(coordination)
+
+    return exam_sum_10, exam_sum_wide, exam_choice, exam_disc, exam_pas
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description='Cria cadernos e aplicações sincronizadas para testes de ensalamento misto (Task #86ak8wuvc).'
+        description='Gerador unificado de dados para testes de ensalamento e malote (Task #86ak8wuvc).'
     )
     parser.add_argument('--date', '-d', type=str, default=None,
-                        help='Data da aplicação (AAAA-MM-DD, "hoje", "amanha", "+1"). Default: data atual.')
+                        help='Data da aplicação (AAAA-MM-DD, "hoje", "amanha", "+1"). Default: hoje.')
     parser.add_argument('--client', '-c', type=str, default=None,
                         help='Nome ou UUID do cliente. Default: detecta da sessão ativa.')
     parser.add_argument('--client-id', type=str, default=None,
-                        help='Alias legado para UUID do cliente.')
+                        help='Alias para UUID do cliente.')
     parser.add_argument('--start', '-s', type=str, default='14:00',
                         help='Horário de início (HH:MM). Default: 14:00.')
     parser.add_argument('--end', '-e', type=str, default='18:00',
@@ -140,10 +217,16 @@ def main():
                         help='Nome ou UUID da coordenação escolar.')
     parser.add_argument('--turma', '--class-name', dest='class_name', type=str, default=None,
                         help='Nome da turma para vinculação.')
-    parser.add_argument('--students-per-app', type=int, default=3,
-                        help='Número de alunos por aplicação. Default: 3.')
+    parser.add_argument('--students-per-app', type=int, default=2,
+                        help='Número de alunos por aplicação. Default: 2.')
+    parser.add_argument('--type', '-t', choices=['mixed', 'all', 'sum', 'choice'], default='mixed',
+                        help='Tipo de ensalamento a gerar: mixed (padrão), all (suíte completa), sum (só somatório), choice (só objetivas).')
+    parser.add_argument('--all-types', '--suite', dest='all_types', action='store_true',
+                        help='Atalho para criar todos os 3 tipos de ensalamento + aplicações livres.')
     parser.add_argument('--ensalar', '--create-distribution', dest='create_distribution', action='store_true',
-                        help='Além de criar aplicações, cria o Ensalamento (RoomDistribution) pronto no banco.')
+                        help='Cria o objeto RoomDistribution no banco e distribui os alunos nas salas.')
+    parser.add_argument('--keep-free-apps', dest='keep_free_apps', action='store_true',
+                        help='Garante aplicações livres para teste de cadastro manual na UI mesmo com --ensalar.')
 
     args = parser.parse_args()
 
@@ -154,40 +237,41 @@ def main():
         print("❌ Nenhum cliente encontrado. Verifique o banco ou especifique --client.")
         sys.exit(1)
 
-    # Garante módulos ativos no cliente
-    if not client.has_distribution or not client.has_sum_question:
-        client.has_distribution = True
-        client.has_sum_question = True
-        client.save(update_fields=['has_distribution', 'has_sum_question'])
+    Client.objects.filter(pk=client.pk).update(has_distribution=True, has_sum_question=True)
+    client.refresh_from_db(fields=['has_distribution', 'has_sum_question'])
 
-    print("=" * 75)
-    print("🚀 SETUP DE DADOS PARA ENSALAMENTO MISTO E MALOTE (/qa-criar-ensalamento-misto)")
-    print("=" * 75)
+    print("=" * 80)
+    print("🚀 SETUP UNIFICADO DE DADOS DE ENSALAMENTO E MALOTE (/qa-criar-ensalamento-misto)")
+    print("=" * 80)
     print(f"🏢 Cliente:       {client.name} (UUID: {client.id})")
 
     # 2. Coordenação e Salas
     coordinations = SchoolCoordination.objects.filter(unity__client=client)
     if args.coordination:
-        coordination = coordinations.filter(pk=args.coordination).first() or coordinations.filter(name__icontains=args.coordination).first()
+        try:
+            coordination = coordinations.filter(pk=args.coordination).first()
+        except Exception:
+            coordination = None
+        if not coordination:
+            coordination = coordinations.filter(name__icontains=args.coordination).first()
     else:
-        coordination = coordinations.first()
+        coordination = coordinations.filter(name__icontains='médio').first() or coordinations.first()
 
     if not coordination:
         unity = mixer.blend(Unity, client=client, name='Unidade QA')
         coordination = mixer.blend(SchoolCoordination, unity=unity, name='Coordenação QA')
 
-    rooms = Room.objects.filter(coordination=coordination)
-    if rooms.count() < 2:
+    rooms_qs = Room.objects.filter(coordination=coordination)
+    if rooms_qs.count() < 2:
         mixer.blend(Room, coordination=coordination, name='Sala QA 101', capacity=40)
         mixer.blend(Room, coordination=coordination, name='Sala QA 102', capacity=40)
-        rooms = Room.objects.filter(coordination=coordination)
+        rooms_qs = Room.objects.filter(coordination=coordination)
 
-    print(f"📍 Coordenação:   {coordination.name} | Salas disponíveis: {rooms.count()}")
+    print(f"📍 Coordenação:   {coordination.name} | Salas: {[r.name for r in rooms_qs[:3]]}")
 
-    # 3. Turma Ativa e Alunos Reais Cadastrados no Ano Corrente
+    # 3. Turma Ativa e Alunos Reais
     current_year = timezone.now().year
     students_per_app = max(1, args.students_per_app)
-    total_needed_students = 5 * students_per_app
 
     classes_qs = SchoolClass.objects.filter(
         coordination=coordination,
@@ -200,64 +284,43 @@ def main():
             or SchoolClass.objects.filter(coordination=coordination, name__icontains=args.class_name).first()
         )
     else:
-        # Prioriza turma que já possua quantidade suficiente de alunos reais ativos no ano atual
-        school_class = None
-        for sc in classes_qs:
-            real_count = sc.students.filter(
-                client=client,
-                user__is_active=True,
-            ).exclude(name__startswith='Aluno ').count()
-            if real_count >= total_needed_students:
-                school_class = sc
-                break
-
-        if not school_class:
-            school_class = classes_qs.filter(students__user__is_active=True).distinct().first() or classes_qs.first()
+        school_class = classes_qs.filter(students__user__is_active=True).distinct().first() or classes_qs.first()
 
     if not school_class:
         school_class = SchoolClass.objects.filter(coordination=coordination).first()
 
     if school_class and school_class.school_year != current_year:
-        print(f"🔄 Atualizando ano letivo da turma '{school_class.name}' para {current_year}...")
         school_class.school_year = current_year
         school_class.save(update_fields=['school_year'])
 
-    # Busca alunos reais cadastrados, ativos e na turma/coordenação do ano corrente
-    students_qs = Student.objects.filter(
-        client=client,
-        user__is_active=True,
-        classes=school_class,
-    ).exclude(name__startswith='Aluno ').distinct().order_by('name')
-
-    if students_qs.count() < total_needed_students:
-        students_qs = Student.objects.filter(
+    real_students = list(
+        Student.objects.filter(
             client=client,
             user__is_active=True,
-            classes__coordination=coordination,
-            classes__school_year=current_year,
+            classes=school_class,
         ).exclude(name__startswith='Aluno ').distinct().order_by('name')
+    )
 
-    if students_qs.count() < total_needed_students:
-        students_qs = Student.objects.filter(
-            client=client,
-            user__is_active=True,
-        ).exclude(name__startswith='Aluno ').distinct().order_by('name')
+    if len(real_students) < 25:
+        more_students = list(
+            Student.objects.filter(
+                client=client,
+                user__is_active=True,
+                classes__coordination=coordination,
+            ).exclude(name__startswith='Aluno ').distinct().order_by('name')
+        )
+        for s in more_students:
+            if s not in real_students:
+                real_students.append(s)
 
-    real_students = list(students_qs)
-    if len(real_students) < total_needed_students:
-        print(f"❌ Não há alunos reais cadastrados suficientes ({len(real_students)} encontrados, {total_needed_students} necessários).")
-        sys.exit(1)
-
-    # Garante senha 123456 e status ativo para os alunos alocados
-    selected_students = real_students[:total_needed_students]
-    for st in selected_students:
+    for st in real_students:
         st.classes.add(school_class)
         if st.user:
             st.user.set_password('123456')
             st.user.is_active = True
             st.user.save(update_fields=['password', 'is_active'])
 
-    print(f"👥 Turma:         {school_class.name} ({current_year}) | {len(selected_students)} alunos reais ativos ({students_per_app} por app)")
+    print(f"👥 Turma:         {school_class.name} ({current_year}) | {len(real_students)} alunos reais ativos")
 
     # 4. Data e Horário
     target_date = parse_target_date(args.date)
@@ -265,151 +328,155 @@ def main():
     end_time = args.end
     print(f"📅 Data da Prova: {target_date.strftime('%d/%m/%Y')} | Horário: {start_time} às {end_time}")
 
-    # 5. Criação/Atualização dos 5 Cadernos de Teste
-    print("\n📚 [1/3] Cadernos de Prova:")
-
-    # Caderno 1: Somatório até 15 questões (10Q)
-    exam_sum_10 = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 1 - Somatório 10Q').first()
-    if not exam_sum_10:
-        exam_sum_10 = mixer.blend(Exam, name='[QA] Caderno 1 - Somatório 10Q', exam_format=Exam.STANDARD)
-        exam_sum_10.coordinations.add(coordination)
-        for i in range(1, 11):
-            q = mixer.blend(Question, client=client, category=Question.SUM_QUESTION, enunciation=f'Questão Somatório QA {i}')
-            mixer.blend(QuestionOption, question=q, text='(01) Proposição 01', is_correct=True)
-            mixer.blend(QuestionOption, question=q, text='(02) Proposição 02', is_correct=False)
-            mixer.blend(ExamQuestion, exam=exam_sum_10, question=q, order=i)
-    print(f"  ✓ {exam_sum_10.name} (has_sum={exam_sum_10.has_sum_questions}, is_sum_only={exam_sum_10.is_sum_only})")
-
-    # Caderno 2: Somatório amplo (>15 questões) + objetivas
-    exam_sum_wide = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 2 - Somatório Amplo 18Q + 5 Obj').first()
-    if not exam_sum_wide:
-        exam_sum_wide = mixer.blend(Exam, name='[QA] Caderno 2 - Somatório Amplo 18Q + 5 Obj', exam_format=Exam.STANDARD)
-        exam_sum_wide.coordinations.add(coordination)
-        for i in range(1, 19):
-            q = mixer.blend(Question, client=client, category=Question.SUM_QUESTION, enunciation=f'Questão Somatório Amplo QA {i}')
-            mixer.blend(QuestionOption, question=q, text='(01) Proposição 01', is_correct=True)
-            mixer.blend(QuestionOption, question=q, text='(02) Proposição 02', is_correct=False)
-            mixer.blend(ExamQuestion, exam=exam_sum_wide, question=q, order=i)
-        for i in range(19, 24):
-            q = mixer.blend(Question, client=client, category=Question.CHOICE, enunciation=f'Questão Objetiva Extra {i}')
-            mixer.blend(QuestionOption, question=q, text='Opção A', is_correct=True)
-            mixer.blend(QuestionOption, question=q, text='Opção B', is_correct=False)
-            mixer.blend(ExamQuestion, exam=exam_sum_wide, question=q, order=i)
+    # 5. Cadernos de Prova
+    exam_sum_10, exam_sum_wide, exam_choice, exam_disc, exam_pas = get_or_create_qa_exams(coordination, client)
+    print("\n📚 Cadernos de Prova Validados:")
+    print(f"  ✓ {exam_sum_10.name} (has_sum={exam_sum_10.has_sum_questions})")
     print(f"  ✓ {exam_sum_wide.name} (has_sum={exam_sum_wide.has_sum_questions}, is_sum_only={exam_sum_wide.is_sum_only})")
-
-    # Caderno 3: Só Objetivas
-    exam_choice = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 3 - Objetivas 10Q').first()
-    if not exam_choice:
-        exam_choice = mixer.blend(Exam, name='[QA] Caderno 3 - Objetivas 10Q', exam_format=Exam.STANDARD)
-        exam_choice.coordinations.add(coordination)
-        for i in range(1, 11):
-            q = mixer.blend(Question, client=client, category=Question.CHOICE, enunciation=f'Questão Objetiva QA {i}')
-            mixer.blend(QuestionOption, question=q, text='Opção A', is_correct=True)
-            mixer.blend(QuestionOption, question=q, text='Opção B', is_correct=False)
-            mixer.blend(ExamQuestion, exam=exam_choice, question=q, order=i)
     print(f"  ✓ {exam_choice.name} (has_sum={exam_choice.has_sum_questions})")
-
-    # Caderno 4: Redação / Discursiva
-    exam_disc = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 4 - Redação e Discursiva').first()
-    if not exam_disc:
-        exam_disc = mixer.blend(Exam, name='[QA] Caderno 4 - Redação e Discursiva', exam_format=Exam.STANDARD)
-        exam_disc.coordinations.add(coordination)
-        q = mixer.blend(Question, client=client, category=Question.TEXTUAL, enunciation='Tema de Redação / Questão Discursiva QA')
-        mixer.blend(ExamQuestion, exam=exam_disc, question=q, order=1)
     print(f"  ✓ {exam_disc.name} (has_sum={exam_disc.has_sum_questions})")
-
-    # Caderno 5: Formato PAS (para teste negativo de bloqueio)
-    exam_pas = Exam.objects.filter(coordinations=coordination, name='[QA] Caderno 5 - Formato PAS (Bloqueio)').first()
-    if not exam_pas:
-        exam_pas = mixer.blend(Exam, name='[QA] Caderno 5 - Formato PAS (Bloqueio)', exam_format=Exam.PAS)
-        exam_pas.coordinations.add(coordination)
     print(f"  ✓ {exam_pas.name} (exam_format=PAS) [Caderno para teste de trava]")
 
-    # 6. Criação das Aplicações Presenciais Sincronizadas
-    print("\n📝 [2/3] Aplicações Presenciais Sincronizadas:")
-    exam_groups = [
-        (exam_sum_10, selected_students[0:students_per_app]),
-        (exam_sum_wide, selected_students[students_per_app:2*students_per_app]),
-        (exam_choice, selected_students[2*students_per_app:3*students_per_app]),
-        (exam_disc, selected_students[3*students_per_app:4*students_per_app]),
-        (exam_pas, selected_students[4*students_per_app:5*students_per_app]),
-    ]
+    # 6. Modo de Execução
+    is_suite = args.all_types or args.type == 'all'
+    student_idx = 0
 
-    created_apps = []
-    for exam, app_students in exam_groups:
-        app = Application.objects.filter(
-            exam=exam,
-            date=target_date,
-            start=start_time,
-            end=end_time,
-            category=Application.PRESENTIAL,
-        ).first()
+    if is_suite:
+        print("\n🏛️ [MODO SUÍTE COMPLETA] Gerando todos os tipos de ensalamento e aplicações livres:")
 
-        if not app:
-            app = Application.objects.create(
-                exam=exam,
-                date=target_date,
-                start=start_time,
-                end=end_time,
-                category=Application.PRESENTIAL,
-            )
+        # Tipo 1: Ensalamento Misto
+        st_m_1 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_m_2 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_m_3 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_m_4 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
 
-        # Garante que a aplicação esteja desvinculada de ensalamentos anteriores para poder ser selecionada na UI
-        if app.room_distribution:
-            app.room_distribution = None
-            app.save(update_fields=['room_distribution'])
+        app_m_1 = create_application_with_students(exam_sum_10, st_m_1, target_date, start_time, end_time, school_class)
+        app_m_2 = create_application_with_students(exam_sum_wide, st_m_2, target_date, start_time, end_time, school_class)
+        app_m_3 = create_application_with_students(exam_choice, st_m_3, target_date, start_time, end_time, school_class)
+        app_m_4 = create_application_with_students(exam_disc, st_m_4, target_date, start_time, end_time, school_class)
 
-        # Garante turma vinculada
-        app.school_classes.clear()
-        app.school_classes.add(school_class)
-
-        # Substitui a lista de alunos para garantir exatamente o grupo exclusivo sem sobreposição
-        ApplicationStudent.objects.filter(application=app).delete()
-        app.students.set(app_students)
-
-        created_apps.append((app, exam.name))
-        print(f"  ✓ [{len(created_apps)}] {exam.name}")
-        st_names = [s.name for s in app_students]
-        print(f"      ID: {app.id} | Alunos ({len(st_names)}): {', '.join(st_names)}")
-
-    # 7. Opcional: Criar Ensalamento Diretamente (--ensalar)
-    if args.create_distribution:
-        print("\n🏛️ [3/3] Criando Ensalamento Completo no Banco (--ensalar):")
-        # Ensalamos as 4 aplicações mistas (excluindo PAS que é bloqueado por regra de negócio)
-        mixed_apps = [app for app, name in created_apps if not name.startswith('[QA] Caderno 5')]
-        selected_rooms = list(rooms[:2])
-
-        distribution = RoomDistribution.objects.create(
+        distrib_misto = RoomDistribution.objects.create(
             category=RoomDistribution.NAME_GRADE,
             status=RoomDistribution.WAITING_EXPORT,
         )
+        for a in [app_m_1, app_m_2, app_m_3, app_m_4]:
+            a.room_distribution = distrib_misto
+            a.save(update_fields=['room_distribution'])
 
-        for app in mixed_apps:
-            app.room_distribution = distribution
-            app.save(update_fields=['room_distribution'])
+        functions.distribute_students_grade(distrib_misto, rooms_qs)
+        print(f"  ✓ [1/3] Ensalamento MISTO criado! ID: {distrib_misto.pk}")
+        print(f"        Aplicações: 4 cadernos mistos | Alunos: {len(st_m_1+st_m_2+st_m_3+st_m_4)}")
 
-        # Distribui alunos nas salas
-        try:
-            functions.distribute_students_grade(distribution, selected_rooms)
-            print(f"  ✓ Ensalamento criado com sucesso!")
-            print(f"      ID:               {distribution.pk}")
-            print(f"      Status:           Sem malote gerado (WAITING_EXPORT)")
-            print(f"      Aplicações:       4 cadernos mistos vinculados")
-            print(f"      Salas alocadas:   {', '.join([r.name for r in selected_rooms])}")
-            print(f"  👉 Acesse para testar o Malote: http://127.0.0.1:8000/ensalamento/")
-        except Exception as err:
-            print(f"  ⚠️ Ensalamento criado, mas falhou ao distribuir alunos: {err}")
+        # Tipo 2: Ensalamento 100% Somatório
+        st_s_1 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_s_2 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+
+        app_s_1 = create_application_with_students(exam_sum_10, st_s_1, target_date, start_time, end_time, school_class)
+        app_s_2 = create_application_with_students(exam_sum_wide, st_s_2, target_date, start_time, end_time, school_class)
+
+        distrib_sum = RoomDistribution.objects.create(
+            category=RoomDistribution.NAME_GRADE,
+            status=RoomDistribution.WAITING_EXPORT,
+        )
+        for a in [app_s_1, app_s_2]:
+            a.room_distribution = distrib_sum
+            a.save(update_fields=['room_distribution'])
+
+        functions.distribute_students_grade(distrib_sum, rooms_qs)
+        print(f"  ✓ [2/3] Ensalamento 100% SOMATÓRIO criado! ID: {distrib_sum.pk}")
+        print(f"        Aplicações: 2 cadernos de somatório | Alunos: {len(st_s_1+st_s_2)}")
+
+        # Tipo 3: Ensalamento 100% Objetivas
+        st_o_1 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_o_2 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+
+        app_o_1 = create_application_with_students(exam_choice, st_o_1, target_date, start_time, end_time, school_class)
+        app_o_2 = create_application_with_students(exam_disc, st_o_2, target_date, start_time, end_time, school_class)
+
+        distrib_obj = RoomDistribution.objects.create(
+            category=RoomDistribution.NAME_GRADE,
+            status=RoomDistribution.WAITING_EXPORT,
+        )
+        for a in [app_o_1, app_o_2]:
+            a.room_distribution = distrib_obj
+            a.save(update_fields=['room_distribution'])
+
+        functions.distribute_students_grade(distrib_obj, rooms_qs)
+        print(f"  ✓ [3/3] Ensalamento 100% OBJETIVAS criado! ID: {distrib_obj.pk}")
+        print(f"        Aplicações: 2 cadernos de objetivas | Alunos: {len(st_o_1+st_o_2)}")
+
+        # Aplicações Livres
+        st_f_1 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_f_2 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+        st_f_3 = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+
+        app_free_sum = create_application_with_students(exam_sum_10, st_f_1, target_date, start_time, end_time, school_class)
+        app_free_obj = create_application_with_students(exam_choice, st_f_2, target_date, start_time, end_time, school_class)
+        app_free_pas = create_application_with_students(exam_pas, st_f_3, target_date, start_time, end_time, school_class)
+
+        print(f"  ✓ [LIVRES] 3 Aplicações disponíveis para teste na tela de criação (/ensalamento/criar/):")
+        print(f"        1. Somatório 10Q: ID {app_free_sum.id}")
+        print(f"        2. Objetivas 10Q: ID {app_free_obj.id}")
+        print(f"        3. Formato PAS (Bloqueio): ID {app_free_pas.id}")
+
     else:
-        print("\n🌐 [3/3] Próximos Passos de QA na Interface:")
-        create_url = f"http://127.0.0.1:8000/ensalamento/criar/?date={target_date.strftime('%Y-%m-%d')}"
-        print(f"  👉 Abra no navegador: {create_url}")
-        print("  1. No campo 'Data do Ensalamento', confirme a data selecionada.")
-        print("  2. Na lista de 'Aplicações Envolvidas', marque Caderno 1 e Caderno 3 juntos.")
-        print("  3. Valide a ausência do alerta de bloqueio e salve o ensalamento!")
-        print("  4. Se quiser testar o bloqueio negativo, tente marcar o Caderno 5 (PAS).")
+        # Modo Específico (mixed, sum ou choice)
+        print(f"\n📝 Gerando aplicações para modo '{args.type}':")
+        if args.type == 'sum':
+            active_exams = [exam_sum_10, exam_sum_wide]
+        elif args.type == 'choice':
+            active_exams = [exam_choice, exam_disc]
+        else:  # mixed
+            active_exams = [exam_sum_10, exam_sum_wide, exam_choice, exam_disc, exam_pas]
 
-    print("=" * 75)
-    print("✅ Concluído com sucesso!")
+        created_apps = []
+        for exam in active_exams:
+            app_students = real_students[student_idx:student_idx+students_per_app]
+            student_idx += students_per_app
+
+            app = create_application_with_students(exam, app_students, target_date, start_time, end_time, school_class)
+            created_apps.append((app, exam.name))
+            print(f"  ✓ {exam.name}")
+            print(f"      ID: {app.id} | Alunos: {', '.join([s.name for s in app_students])}")
+
+        if args.create_distribution:
+            print("\n🏛️ Criando Ensalamento no Banco (--ensalar):")
+            ensalavel_apps = [app for app, name in created_apps if not name.startswith('[QA] Caderno 5')]
+
+            distrib = RoomDistribution.objects.create(
+                category=RoomDistribution.NAME_GRADE,
+                status=RoomDistribution.WAITING_EXPORT,
+            )
+            for app in ensalavel_apps:
+                app.room_distribution = distrib
+                app.save(update_fields=['room_distribution'])
+
+            try:
+                functions.distribute_students_grade(distrib, rooms_qs)
+                print(f"  ✓ Ensalamento criado com sucesso!")
+                print(f"      ID:         {distrib.pk}")
+                print(f"      Status:     Sem malote gerado (WAITING_EXPORT)")
+                print(f"      Aplicações: {len(ensalavel_apps)} vinculadas")
+            except Exception as err:
+                print(f"  ⚠️ Ensalamento criado, mas falhou ao distribuir alunos: {err}")
+
+            if args.keep_free_apps:
+                print("\n📝 Criando aplicações livres adicionais para a tela de cadastro:")
+                st_free_sum = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+                st_free_obj = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+                st_free_pas = real_students[student_idx:student_idx+students_per_app]; student_idx += students_per_app
+
+                app_fs = create_application_with_students(exam_sum_10, st_free_sum, target_date, start_time, end_time, school_class)
+                app_fo = create_application_with_students(exam_choice, st_free_obj, target_date, start_time, end_time, school_class)
+                app_fp = create_application_with_students(exam_pas, st_free_pas, target_date, start_time, end_time, school_class)
+                print(f"  ✓ Aplicações livres criadas para teste manual!")
+
+    print("\n" + "=" * 80)
+    print("🎯 PRÓXIMOS PASSOS DE QA:")
+    print("=" * 80)
+    print(f"1️⃣  Teste de Cadastro na UI: http://127.0.0.1:8000/ensalamento/criar/?date={target_date.strftime('%Y-%m-%d')}")
+    print(f"2️⃣  Teste do Modal de Malote: http://127.0.0.1:8000/ensalamento/")
+    print("=" * 80)
 
 
 if __name__ == '__main__':

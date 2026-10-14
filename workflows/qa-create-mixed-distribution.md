@@ -22,6 +22,7 @@ Este comando gera uma massa de dados completa e sincronizada para testar a funci
 - `/qa-criar-ensalamento-misto para amanhã` (Gera para o dia seguinte)
 - `/qa-criar-ensalamento-misto já criando o ensalamento` (Passa `--ensalar` para gerar direto no banco)
 - `/qa-criar-ensalamento-misto no cliente "Rede Decisão"` (Direciona para um cliente específico)
+- `/qa-criar-ensalamento-misto um ensalamento de cada tipo` (Passa `--all-types` para gerar ensalamento misto, somatório puro, objetivas puras e aplicações livres)
 - `/qa-criar-ensalamento-misto com 2 alunos por aplicação e já ensalado`
 
 ---
@@ -36,8 +37,11 @@ Analise o texto fornecido pelo usuário e extraia os seguintes parâmetros:
 - **Horário Inicial (`--start` / `-s`)**: Default `14:00`.
 - **Horário Final (`--end` / `-e`)**: Default `18:00`.
 - **Turma (`--turma`)**: Nome da turma. Se omitido, usa a primeira turma da coordenação.
-- **Alunos por Aplicação (`--students-per-app`)**: Quantidade de alunos por prova (default: `1`).
+- **Alunos por Aplicação (`--students-per-app`)**: Quantidade de alunos por prova (default: `2`).
+- **Suíte Completa / Todos os Tipos (`--all-types` ou `--type all`)**: Ativar se o usuário pedir "todos os tipos", "um de cada tipo", "suíte completa", "cenários completos". Gera os 3 tipos de ensalamentos prontos (misto, 100% somatório, 100% objetivas) + aplicações livres.
+- **Tipo Específico (`--type` / `-t`)**: `mixed` (default), `sum` (só somatório), `choice` (só objetivas).
 - **Criar Ensalamento Pronto (`--ensalar`)**: Ativar se o usuário mencionar "já ensalar", "criar ensalamento", "testar malote", "pronto para malote", "já distribuir salas".
+- **Manter Aplicações Livres (`--keep-free-apps`)**: Ativar se o usuário quiser testar a criação na UI mesmo com `--ensalar`.
 
 ---
 
