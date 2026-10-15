@@ -153,13 +153,13 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 #### Cenário 2 — Bloqueio inegociável de mistura com caderno formato PAS (Teste Negativo)
 
 **Ação humana:**
-- [ ] Acessar novamente a tela de cadastro de ensalamento (`/ensalamento/criar/`).
-- [ ] No campo `"**Data do Ensalamento**"`, preencher a data **`2026-10-20`**.
-- [ ] Na seção `"**Aplicações Envolvidas**"`, marcar o checkbox da aplicação `"**[QA] Caderno 5 - Formato PAS (Bloqueio)**"`.
-- [ ] Em seguida, tentar marcar qualquer uma das outras aplicações que NÃO sejam PAS (ex: `"**[QA] Caderno 1 - Somatório 10Q**"` ou `"**[QA] Caderno 3 - Objetivas 10Q**"`).
-- [ ] **Validação Crítica:** Confirmar que a interface visual bloqueia imediatamente a seleção mista e dispara o alerta SweetAlert com o texto exato:
-  `"**Não é permitido ensalar cadernos do tipo PAS com outros modelos.**"`.
-- [ ] Clicar no botão `"**Ok, entendi**"` do pop-up e verificar que o checkbox da segunda aplicação permanece desmarcado, garantindo que o isolamento do formato PAS foi preservado.
+- [x] Acessar novamente a tela de cadastro de ensalamento (`/ensalamento/criar/`).
+- [x] No campo `"**Data do Ensalamento**"`, preencher a data **`2026-10-20`**.
+- [x] Na seção `"**Aplicações Envolvidas**"`, marcar o checkbox da aplicação `"**[QA] Caderno 5 - Formato PAS (Bloqueio)**"`.
+- [x] Em seguida, tentar marcar qualquer uma das outras aplicações que NÃO sejam PAS (ex: `"**[QA] Caderno 1 - Somatório 10Q**"` ou `"**[QA] Caderno 3 - Objetivas 10Q**"`). ![alt text](../evidencias/image-1.png)
+- [x] **Validação Crítica:** Confirmar que a interface visual bloqueia imediatamente a seleção mista e dispara o alerta SweetAlert com o texto exato:
+  `"**Não é permitido ensalar cadernos do tipo PAS com outros modelos.**"`.![alt text](../evidencias/image-2.png)
+- [x] Clicar no botão `"**Ok, entendi**"` do pop-up e verificar que o checkbox da segunda aplicação permanece desmarcado, garantindo que o isolamento do formato PAS foi preservado.
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/criar/`
@@ -174,17 +174,17 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 #### Cenário 3 — Abertura do modal e exibição restrita das opções de objetivas
 
 **Ação humana:**
-- [ ] Na listagem de ensalamentos (`/ensalamento/`), localizar a linha do ensalamento misto cadastrado no Cenário 1.
-- [ ] Na coluna de ações à direita, clicar no botão branco `"**Opções**"` (com ícone chevron-down).
-- [ ] No menu dropdown aberto, clicar na opção `"**Imprimir malote**"` (com ícone de documento).
-- [ ] Confirmar a abertura do modal intitulado `"**Configure a impressão do malote nesta exportação**"`.
-- [ ] Verificar visualmente as opções de cartão-resposta exibidas no grupo de botões:
+- [x] Na listagem de ensalamentos (`/ensalamento/`), localizar a linha do ensalamento misto cadastrado no Cenário 1.
+- [x] Na coluna de ações à direita, clicar no botão branco `"**Opções**"` (com ícone chevron-down).
+- [x] No menu dropdown aberto, clicar na opção `"**Imprimir malote**"` (com ícone de documento).
+- [x] Confirmar a abertura do modal intitulado `"**Configure a impressão do malote nesta exportação**"`.
+- [x] Verificar visualmente as opções de cartão-resposta exibidas no grupo de botões:
   - Deve estar visível `"**Folha de respostas Lize**"` (selecionada por padrão com classe `active`).
   - Deve estar visível `"**Bolhas ampliadas**"`.
-  - Deve estar visível `"**Folha de respostas ENEM**"`.
-- [ ] Verificar que as opções `"**Modelo somatório**"`, `"**Modelo PAS**"`, `"**Modelo Híbrido**"`, `"**Modelo Reduzido**"` e `"**EFAI**"` NÃO aparecem no modal.
-- [ ] Verificar a presença do alerta azul de informação com o texto exato:
-  `"**Cadernos com somatório saem no cartão de somatório automaticamente (até 15 questões: uma folha; mais de 15: somatório expandido). A escolha acima vale só para cadernos de objetivas.**"`.
+  - Deve estar visível `"**Folha de respostas ENEM**"`.![alt text](../evidencias/image-3.png)
+- [x] Verificar que as opções `"**Modelo somatório**"`, `"**Modelo PAS**"`, `"**Modelo Híbrido**"`, `"**Modelo Reduzido**"` e `"**EFAI**"` NÃO aparecem no modal.![alt text](../evidencias/image-4.png)
+- [x] Verificar a presença do alerta azul de informação com o texto exato:
+  `"**Cadernos com somatório saem no cartão de somatório automaticamente (até 15 questões: uma folha; mais de 15: somatório expandido). A escolha acima vale só para cadernos de objetivas.**"`.![alt text](../evidencias/image-5.png)
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/`
@@ -198,11 +198,11 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 #### Cenário 4 — Configuração e envio da solicitação de impressão do malote
 
 **Ação humana:**
-- [ ] No modal de impressão aberto, manter selecionada a opção `"**Folha de respostas Lize**"` (ou alternar para `"**Folha de respostas ENEM**"`).
-- [ ] Marcar o checkbox `"**Incluir folhas de respostas discursivas**"`.
-- [ ] Marcar o checkbox `"**Incluir cadernos de prova**"`.
-- [ ] Clicar no botão azul `"**Imprimir malote**"` no rodapé do modal.
-- [ ] Verificar que o modal se fecha e o status da linha na tabela passa para indicador de processamento/geração do malote.
+- [x] No modal de impressão aberto, manter selecionada a opção `"**Folha de respostas Lize**"` (ou alternar para `"**Folha de respostas ENEM**"`).
+- [x] Marcar o checkbox `"**Incluir folhas de respostas discursivas**"`.
+- [x] Marcar o checkbox `"**Incluir cadernos de prova**"`.
+- [x] Clicar no botão azul `"**Imprimir malote**"` no rodapé do modal.
+- [x] Verificar que o modal se fecha e o status da linha na tabela passa para indicador de processamento/geração do malote.
 
 **Referência técnica (para automação):**
 - URL: `POST /ensalamento/api/exportar/malote/<distribution_id>/`
@@ -217,16 +217,16 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 #### Cenário 5 — Conferência detalhada dos cartões gerados por caderno na mesma sala
 
 **Ação humana:**
-- [ ] Aguardar a conclusão do processamento do malote (o worker Celery processa a fila `omr-export`).
-- [ ] Recarregar a página `/ensalamento/` e verificar que surgiu o botão/pill `"**Baixar malote**"` na linha do ensalamento.
-- [ ] Clicar em `"**Baixar malote**"` e descompactar o arquivo `.zip` baixado.
-- [ ] Acessar a pasta correspondente à sala (ex: `Sala QA 101/`).
-- [ ] Verificar a presença e o formato dos cartões de resposta de cada aluno:
+- [x] Aguardar a conclusão do processamento do malote (o worker Celery processa a fila `omr-export`).
+- [x] Recarregar a página `/ensalamento/` e verificar que surgiu o botão/pill `"**Baixar malote**"` na linha do ensalamento.
+- [x] Clicar em `"**Baixar malote**"` e descompactar o arquivo `.zip` baixado.
+- [x] Acessar a pasta correspondente à sala (ex: `Sala QA 101/`).
+- [x] Verificar a presença e o formato dos cartões de resposta de cada aluno:
   - **Caderno 1 (Somatório ≤15Q):** O arquivo de cartão do aluno deve ser no modelo `"**sum**"` em folha única (cartão de somatório padrão de até 15 questões).
   - **Caderno 2 (Somatório >15Q + Objetivas):** O arquivo do aluno deve conter o cartão de somatório expandido (`"**sum_only**"`) E adicionalmente a folha de respostas Lize complementar (`_lize.pdf`) com as 5 questões objetivas.
   - **Caderno 3 (Só Objetivas):** O arquivo do aluno deve conter estritamente o cartão escolhido no modal (`"**fiscallize**"` ou `"**enem**"`), SEM folha de somatório nem anexos indevidos.
   - **Caderno 4 (Discursivas/Redação):** O arquivo do aluno deve conter a folha de redação/discursiva gerada corretamente.
-- [ ] Verificar que a lista de presença (`lista_presenca.pdf`) contém todos os 4 alunos listados na mesma sala.
+- [x] Verificar que a lista de presença (`lista_presenca.pdf`) contém todos os 4 alunos listados na mesma sala.
 
 **Referência técnica (para automação):**
 - URL: arquivo ZIP extraído localmente
