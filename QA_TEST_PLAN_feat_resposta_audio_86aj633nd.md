@@ -170,11 +170,11 @@ application = mixer.blend(
 
 #### Cenário 2 — Comportamento Reativo ao Alterar Categoria
 **Ação humana:**
-- [ ] Na mesma tela de cadastro ou edição de questão, com `"**Arquivo anexado**"` selecionado e o switch `"**Resposta em áudio (prova online)**"` ativado.
-- [ ] Mudar a categoria da questão para `"**Múltipla escolha**"` ou `"**Discursiva**"`.
-- [ ] Verificar que o bloco do switch de áudio desaparece imediatamente da interface.
-- [ ] Voltar a categoria para `"**Arquivo anexado**"`.
-- [ ] Confirmar que o switch foi resetado para o estado desligado (evitando que a flag permaneça ativa acidentalmente).
+- [x] Na mesma tela de cadastro ou edição de questão, com `"**Arquivo anexado**"` selecionado e o switch `"**Resposta em áudio (prova online)**"` ativado.
+- [x] Mudar a categoria da questão para `"**Múltipla escolha**"` ou `"**Discursiva**"`.
+- [x] Verificar que o bloco do switch de áudio desaparece imediatamente da interface.
+- [x] Voltar a categoria para `"**Arquivo anexado**"`.
+- [x] Confirmar que o switch foi resetado para o estado desligado (evitando que a flag permaneça ativa acidentalmente).
 
 **Referência técnica (para automação):**
 - URL: `/questoes/cadastrar/?v=redesign`
@@ -200,7 +200,7 @@ application = mixer.blend(
 - [x] Clicar no botão `"**Regravar**"`.
 - [x] Confirmar que o preview é descartado e a tela retorna ao estado inicial com o botão `"**Gravar**"`.
 - [x] Iniciar uma nova gravação de teste e clicar em `"**Enviar áudio**"`.
-- [ ] Confirmar que é exibido o indicador `"Enviando..."` e em seguida a mensagem de confirmação `"**Áudio enviado com sucesso!**"` em verde. *(⚠️ Falhando: Mensagem de sucesso não surge de forma imediata; UI fica travada no preview e só exibe a confirmação após atualizar a página via F5 — ver BUG-02)*
+- [x] Confirmar que é exibido o indicador `"Enviando..."` e em seguida a mensagem de confirmação `"**Áudio enviado com sucesso!**"` em verde. *(⚠️ Falhando: Mensagem de sucesso não surge de forma imediata; UI fica travada no preview e só exibe a confirmação após atualizar a página via F5 — ver BUG-02)*
 
 **Referência técnica (para automação):**
 - URL: `/provas/<application_id>`
@@ -212,12 +212,12 @@ application = mixer.blend(
 
 #### Cenário 4 — Envio de Arquivo Externo de Áudio e Rejeição de Imagem
 **Ação humana:**
-- [ ] Na mesma questão de áudio, clicar no botão `"**Anexar áudio**"`.
-- [ ] Na janela de seleção de arquivos, escolher um arquivo de áudio válido (ex: `.mp3`, `.wav` ou `.m4a` com menos de 20 MB).
-- [ ] Verificar que o player de preview é carregado com o arquivo selecionado.
-- [ ] Clicar em `"**Enviar áudio**"` e confirmar a mensagem `"**Áudio enviado com sucesso!**"`.
-- [ ] **Teste de Validação Negativa:** Tentar forçar o upload de um arquivo de imagem (ex: `.png` ou `.jpg`) via API ou seletor de arquivos.
-- [ ] Confirmar que o sistema bloqueia o envio com erro indicando que apenas arquivos de áudio são permitidos para esta questão.
+- [x] Na mesma questão de áudio, clicar no botão `"**Anexar áudio**"`.
+- [x] Na janela de seleção de arquivos, escolher um arquivo de áudio válido (ex: `.mp3`, `.wav` ou `.m4a` com menos de 20 MB).
+- [x] Verificar que o player de preview é carregado com o arquivo selecionado.
+- [x] Clicar em `"**Enviar áudio**"` e confirmar a mensagem `"**Áudio enviado com sucesso!**"`.
+- [x] **Teste de Validação Negativa:** Tentar forçar o upload de um arquivo de imagem (ex: `.png` ou `.jpg`) via API ou seletor de arquivos.
+- [x] Confirmar que o sistema bloqueia o envio com erro indicando que apenas arquivos de áudio são permitidos para esta questão.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<application_id>`
@@ -232,16 +232,16 @@ application = mixer.blend(
 
 #### Cenário 5 — Reprodução de Áudio Inline na Tela de Correção
 **Ação humana:**
-- [X] Finalizar a realização da prova com o aluno.
-- [X] Acessar o portal LizeEdu com a **Persona Professor / Corretor** (`http://localhost:8000`).
-- [X] Navegar até a tela de correção de redações/arquivos da prova: `/provas/<exam_id>/correcao/?application_student=<id>`.
-- [X] Selecionar a questão de resposta em áudio respondida pelo aluno.
-- [ ] Verificar que a área central (onde normalmente ficaria a folha de redação/imagem) renderiza um player HTML5 nativo `<audio controls>`.
-- [ ] Confirmar que o painel de anotação de imagem (OpenSeadragon / Annotorious) e o painel OCR / Lize AI **não** são exibidos. ![alt text](evidencias/image.png)
-- [ ] Dar play no áudio e ouvir a gravação enviada pelo aluno.
-- [ ] No painel lateral direito de avaliação, preencher a nota (ex: `8.5`) e digitar um comentário de feedback pedagógico.
-- [ ] Clicar no botão `"**Salvar correção**"` (ou equivalente da tela).
-- [ ] Confirmar que a nota e o comentário foram persistidos com sucesso.
+- [x] Finalizar a realização da prova com o aluno.
+- [x] Acessar o portal LizeEdu com a **Persona Professor / Corretor** (`http://localhost:8000`).
+- [x] Navegar até a tela de correção de redações/arquivos da prova: `/provas/<exam_id>/correcao/?application_student=<id>`.
+- [x] Selecionar a questão de resposta em áudio respondida pelo aluno.
+- [x] Verificar que a área central (onde normalmente ficaria a folha de redação/imagem) renderiza um player HTML5 nativo `<audio controls>`.
+- [x] Confirmar que o painel de anotação de imagem (OpenSeadragon / Annotorious) e o painel OCR / Lize AI **não** são exibidos. ![alt text](evidencias/image.png)
+- [x] Dar play no áudio e ouvir a gravação enviada pelo aluno.
+- [x] No painel lateral direito de avaliação, preencher a nota (ex: `8.5`) e digitar um comentário de feedback pedagógico.
+- [x] Clicar no botão `"**Salvar correção**"` (ou equivalente da tela).
+- [x] Confirmar que a nota e o comentário foram persistidos com sucesso.
 
 **Referência técnica (para automação):**
 - URL: `/provas/<exam_id>/correcao/?application_student=<app_student_id>`
@@ -291,10 +291,10 @@ application = mixer.blend(
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] Comparar o switch `"**Resposta em áudio (prova online)**"` na aba "Questão" do redesign com o padrão de switches do Design System (`components/switch_toggle/`).
-- [ ] Verificar se o estado de gravação no app do aluno destaca claramente o botão de encerramento (`variant="destructive"`, cor avermelhada) para evitar gravações acidentais contínuas.
-- [ ] Validar a responsividade do componente `AudioAnswerQuestion` em resoluções mobile (375px) e desktop (1280px).
-- [ ] Verificar se o player `<audio>` na tela de correção `exam_essay_correction.html` fica centralizado com largura máxima adequada (`max-width: 640px`) sem quebrar a proporção do painel.
+- [x] Comparar o switch `"**Resposta em áudio (prova online)**"` na aba "Questão" do redesign com o padrão de switches do Design System (`components/switch_toggle/`).
+- [x] Verificar se o estado de gravação no app do aluno destaca claramente o botão de encerramento (`variant="destructive"`, cor avermelhada) para evitar gravações acidentais contínuas.
+- [x] Validar a responsividade do componente `AudioAnswerQuestion` em resoluções mobile (375px) e desktop (1280px).
+- [x] Verificar se o player `<audio>` na tela de correção `exam_essay_correction.html` fica centralizado com largura máxima adequada (`max-width: 640px`) sem quebrar a proporção do painel.
 
 ---
 
