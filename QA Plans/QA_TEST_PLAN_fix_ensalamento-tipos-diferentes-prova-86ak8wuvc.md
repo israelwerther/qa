@@ -250,10 +250,10 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 
 **Ação humana:**
 - [x] Cadastrar um novo ensalamento contendo apenas aplicações com cadernos de somatório.
-- [ ] Na listagem `/ensalamento/`, abrir o modal `"**Imprimir malote**"` para este ensalamento.
-- [ ] Verificar que o modal exibe unicamente a opção `"**Modelo somatório**"` (comportamento clássico).
-- [ ] Verificar que o alerta azul de ensalamento misto NÃO é exibido.
-- [ ] Gerar o malote e confirmar que todos os alunos recebem o cartão de somatório correspondente à quantidade de questões.
+- [x] Na listagem `/ensalamento/`, abrir o modal `"**Imprimir malote**"` para este ensalamento.
+- [x] Verificar que o modal exibe unicamente a opção `"**Modelo somatório**"` (comportamento clássico).![alt text](../evidencias/image-6.png)
+- [x] Verificar que o alerta azul de ensalamento misto NÃO é exibido.
+- [x] Gerar o malote e confirmar que todos os alunos recebem o cartão de somatório correspondente à quantidade de questões.
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/`
@@ -264,11 +264,11 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 #### Cenário 7 — Ensalamento 100% Objetivas (Regressão)
 
 **Ação humana:**
-- [ ] Cadastrar um novo ensalamento contendo apenas aplicações com cadernos só de objetivas.
-- [ ] Na listagem `/ensalamento/`, abrir o modal `"**Imprimir malote**"` para este ensalamento.
-- [ ] Verificar que o modal exibe as opções normais: `"**Folha de respostas Lize**"`, `"**Bolhas ampliadas**"`, `"**Folha de respostas ENEM**"` e os modelos extras do cliente (ex: `"**Modelo Híbrido**"`, `"**Modelo Reduzido**"`, `"**EFAI**"`, caso habilitados no cliente).
-- [ ] Verificar que o alerta azul de somatório automático NÃO é exibido.
-- [ ] Gerar o malote com `"**Folha de respostas ENEM**"` e confirmar que todos os alunos saem no modelo ENEM.
+- [x] Cadastrar um novo ensalamento contendo apenas aplicações com cadernos só de objetivas.
+- [x] Na listagem `/ensalamento/`, abrir o modal `"**Imprimir malote**"` para este ensalamento.
+- [x] Verificar que o modal exibe as opções normais: `"**Folha de respostas Lize**"`, `"**Bolhas ampliadas**"`, `"**Folha de respostas ENEM**"` e os modelos extras do cliente (ex: `"**Modelo Híbrido**"`, `"**Modelo Reduzido**"`, `"**EFAI**"`, caso habilitados no cliente).
+- [x] Verificar que o alerta azul de somatório automático NÃO é exibido.
+- [x] Gerar o malote com `"**Folha de respostas ENEM**"` e confirmar que todos os alunos saem no modelo ENEM.![alt text](../evidencias/image-7.png)
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/`
@@ -280,11 +280,11 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Alerta no Modal de Impressão:** O alerta informativo (`.alert.alert-info`) no modal `#configurePrintModal` deve possuir fundo azul claro, borda suave e tipografia legível, posicionado imediatamente abaixo do grupo de botões de cartão-resposta.
-- [ ] **Comparação com Mockup da OpenSpec:** Comparar o modal renderizado no navegador com o arquivo de referência:
+- [x] **Alerta no Modal de Impressão:** O alerta informativo (`.alert.alert-info`) no modal `#configurePrintModal` deve possuir fundo azul claro, borda suave e tipografia legível, posicionado imediatamente abaixo do grupo de botões de cartão-resposta.
+- [x] **Comparação com Mockup da OpenSpec:** Comparar o modal renderizado no navegador com o arquivo de referência:
   `openspec/changes/ensalamento-cadernos-mistos-86ak8wuvc/references/modal-malote-misto.html`
-- [ ] **Remoção Limpa do Alerta no Cadastro:** Na tela `/ensalamento/criar/`, confirmar que a marcação alternada entre cadernos somatório e objetivas ocorre de forma fluida, sem "piscar" caixas de diálogo ou mensagens de erro.
-- [ ] **Comparação com Mockup de Cadastro da OpenSpec:** Comparar a listagem de aplicações no cadastro com o arquivo de referência:
+- [x] **Remoção Limpa do Alerta no Cadastro:** Na tela `/ensalamento/criar/`, confirmar que a marcação alternada entre cadernos somatório e objetivas ocorre de forma fluida, sem "piscar" caixas de diálogo ou mensagens de erro.
+- [x] **Comparação com Mockup de Cadastro da OpenSpec:** Comparar a listagem de aplicações no cadastro com o arquivo de referência:
   `openspec/changes/ensalamento-cadernos-mistos-86ak8wuvc/references/cadastro-ensalamento-misto.html`
 
 ---
