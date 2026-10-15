@@ -104,7 +104,7 @@ Para que as aplicações apareçam disponíveis e possam ser selecionadas juntas
 ### Dados Prontos no seu Ambiente Local (Gerados Automaticamente):
 Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os dados de teste já foram gerados e sincronizados no seu banco local:
 
-- **📅 Data configurada:** `2026-10-13` (Hoje)
+- **📅 Data configurada:** `2026-10-20`
 - **⏰ Horário sincronizado:** `14:00` às `18:00`
 - **🏢 Coordenação:** `Ensino Médio` (Cliente ativo: `Rede Decisão`)
 - **📚 Aplicações disponíveis para seleção imediata na tela:**
@@ -132,7 +132,7 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 **Ação humana:**
 - [x] Acessar o menu lateral `"**Aplicações**"` e clicar no submenu `"**Ensalamento**"`.
 - [x] Clicar no botão azul `"**Cadastrar ensalamento**"` (localizado no canto superior direito da página).
-- [x] No campo `"**Data do Ensalamento**"`, preencher ou selecionar a data **`2026-10-13`** (ou a data informada pelo gerador de dados).
+- [x] No campo `"**Data do Ensalamento**"`, preencher ou selecionar a data **`2026-10-20`** (ou a data informada pelo gerador de dados).
 - [x] No campo `"**Tipo de Ensalamento**"`, selecionar a opção `"**Por nome e série**"`.
 - [x] Observar que a seção `"**Aplicações Envolvidas**"` será carregada automaticamente via API exibindo as aplicações com horário `"De 14:00 até 18:00"`.
 - [x] **Passo 1 (Somatório):** Marcar o checkbox da aplicação `"**[QA] Caderno 1 - Somatório 10Q**"`.
@@ -154,7 +154,7 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 
 **Ação humana:**
 - [ ] Acessar novamente a tela de cadastro de ensalamento (`/ensalamento/criar/`).
-- [ ] No campo `"**Data do Ensalamento**"`, preencher a data **`2026-10-13`**.
+- [ ] No campo `"**Data do Ensalamento**"`, preencher a data **`2026-10-20`**.
 - [ ] Na seção `"**Aplicações Envolvidas**"`, marcar o checkbox da aplicação `"**[QA] Caderno 5 - Formato PAS (Bloqueio)**"`.
 - [ ] Em seguida, tentar marcar qualquer uma das outras aplicações que NÃO sejam PAS (ex: `"**[QA] Caderno 1 - Somatório 10Q**"` ou `"**[QA] Caderno 3 - Objetivas 10Q**"`).
 - [ ] **Validação Crítica:** Confirmar que a interface visual bloqueia imediatamente a seleção mista e dispara o alerta SweetAlert com o texto exato:
