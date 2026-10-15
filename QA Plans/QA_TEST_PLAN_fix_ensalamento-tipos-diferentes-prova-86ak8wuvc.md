@@ -220,22 +220,26 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 - [x] Aguardar a conclusão do processamento do malote (o worker Celery processa a fila `omr-export`).
 - [x] Recarregar a página `/ensalamento/` e verificar que surgiu o botão/pill `"**Baixar malote**"` na linha do ensalamento.
 - [x] Clicar em `"**Baixar malote**"` e descompactar o arquivo `.zip` baixado.
-- [x] Acessar a pasta correspondente à sala (ex: `Sala QA 101/`).
+- [x] Acessar a pasta correspondente à sala (ex: `Sala QA 101/` ou `3_ANO_A__Ensino_Mdio__3_Srie/`).
 - [x] Verificar a presença e o formato dos cartões de resposta de cada aluno:
-  - **Caderno 1 (Somatório ≤15Q):** O arquivo de cartão do aluno deve ser no modelo `"**sum**"` em folha única (cartão de somatório padrão de até 15 questões).
-  - **Caderno 2 (Somatório >15Q + Objetivas):** O arquivo do aluno deve conter o cartão de somatório expandido (`"**sum_only**"`) E adicionalmente a folha de respostas Lize complementar (`_lize.pdf`) com as 5 questões objetivas.
-  - **Caderno 3 (Só Objetivas):** O arquivo do aluno deve conter estritamente o cartão escolhido no modal (`"**fiscallize**"` ou `"**enem**"`), SEM folha de somatório nem anexos indevidos.
-  - **Caderno 4 (Discursivas/Redação):** O arquivo do aluno deve conter a folha de redação/discursiva gerada corretamente.
-- [x] Verificar que a lista de presença (`lista_presenca.pdf`) contém todos os 4 alunos listados na mesma sala.
+  - **Caderno 1 (Somatório ≤15Q):** O arquivo de cartão do aluno deve ser no modelo `"**sum**"` em folha única (cartão de somatório padrão de até 15 questões). *(Auditado com sucesso: Arthur, Cauã e Daniel com folha única de somatório de 10Q)*.
+  - **Caderno 2 (Somatório >15Q + Objetivas):** O arquivo do aluno deve conter o cartão de somatório expandido (`"**sum_only**"`) E adicionalmente a folha de respostas Lize complementar (`_lize.pdf`) com as 5 questões objetivas. *(Auditado com sucesso: Duane, Enzo e Felipe com exatamente 2 páginas unidas)*.
+  - **Caderno 3 (Só Objetivas):** O arquivo do aluno deve conter estritamente o cartão escolhido no modal (`"**fiscallize**"` ou `"**enem**"`), SEM folha de somatório nem anexos indevidos. *(Auditado com sucesso: Giovanna, Giulia e Johnny com folha única de objetivas)*.
+  - **Caderno 4 (Discursivas/Redação):** O arquivo do aluno deve conter a folha de redação/discursiva gerada corretamente. *(Auditado com sucesso: Julia, Katarina e Leonardo com folha de redação/discursiva)*.
+- [x] Verificar que a lista de presença (`lista_presenca.pdf`) contém todos os alunos listados na mesma sala com os 4 cadernos listados no cabeçalho. *(Auditado com sucesso: lista de presença com os 12 alunos e as 4 provas)*.
+- [x] **Verificação Adicional — Separação de Arquivos de Gabaritos (`omr_print_separate_answer_sheets = True`):**
+  - Testada e validada a configuração de clientes que imprimem gabaritos individuais por aluno.
+  - O sistema gerou a pasta `gabaritos/` contendo 12 arquivos nominais individuais.
+  - Confirmado que os alunos do Caderno 2 receberam **2 páginas unidas no PDF individual** (`sum_only` + folha Lize de objetivas), enquanto os demais alunos receberam PDFs de **1 página única**, garantindo que não há vazamento entre cadernos e nem deslocamento de índice (*off-by-one*).
 
 **Referência técnica (para automação):**
 - URL: arquivo ZIP extraído localmente
-- Caminho dos arquivos: `Sala QA 101/gabaritos/<student_id>_*.pdf`
+- Caminho dos arquivos: `Sala QA 101/gabaritos/<student_id>_*.pdf` ou pasta `gabaritos/gabarito_<student_name>.pdf`
 - Estado esperado:
   - Aluno 1: PDF com layout OMR `sum` (1 página).
-  - Aluno 2: PDF com layout OMR `sum_only` + anexo `*_lize.pdf`.
-  - Aluno 3: PDF com layout OMR `fiscallize` (ou `enem`).
-  - Aluno 4: PDF com folha de redação/discursiva.
+  - Aluno 2: PDF com layout OMR `sum_only` + anexo `*_lize.pdf` (2 páginas).
+  - Aluno 3: PDF com layout OMR `fiscallize` (ou `enem`) (1 página).
+  - Aluno 4: PDF com folha de redação/discursiva (1 página).
 - Fixture: tarefas `export_exams_bag` e `group_files`.
 
 ---
@@ -245,7 +249,7 @@ Para que você não precise criar 5 cadernos e 5 aplicações manualmente, os da
 #### Cenário 6 — Ensalamento 100% Somatório (Regressão)
 
 **Ação humana:**
-- [ ] Cadastrar um novo ensalamento contendo apenas aplicações com cadernos de somatório.
+- [x] Cadastrar um novo ensalamento contendo apenas aplicações com cadernos de somatório.
 - [ ] Na listagem `/ensalamento/`, abrir o modal `"**Imprimir malote**"` para este ensalamento.
 - [ ] Verificar que o modal exibe unicamente a opção `"**Modelo somatório**"` (comportamento clássico).
 - [ ] Verificar que o alerta azul de ensalamento misto NÃO é exibido.
