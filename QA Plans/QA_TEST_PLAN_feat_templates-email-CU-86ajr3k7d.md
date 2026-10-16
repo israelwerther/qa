@@ -253,17 +253,17 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 5 — Solicitação de Nova Senha e Recebimento de E-mail com Link HTTPS
 **Ação humana:**
-- [ ] Acessar a tela de login em `/conta/entrar/`.
-- [ ] Clicar no link `"**Esqueci minha senha**"` (link em cinza localizado abaixo do campo de senha).
-- [ ] Confirmar o redirecionamento para a tela `/conta/resetar-senha/`.
-- [ ] Verificar o título da página `"**Redefinição de senha**"` e a instrução `"Insira o endereço de e-mail associado à sua conta. Um link para redefinição de senha será enviado."`.
-- [ ] Digitar o endereço de e-mail real da conta de teste no campo `"**E-mail**"`.
-- [ ] Clicar no botão `"**Enviar link**"` (botão laranja abaixo do formulário).
-- [ ] Confirmar o redirecionamento para a página de sucesso `/conta/resetar-senha/concluido/` exibindo o título `"**Solicitação enviada com sucesso!**"`.
-- [ ] Acessar a caixa de entrada do e-mail do usuário e verificar o recebimento da mensagem:
+- [x] Acessar a tela de login em `/conta/entrar/`.
+- [x] Clicar no link `"**Esqueci minha senha**"` (link em cinza localizado abaixo do campo de senha).
+- [x] Confirmar o redirecionamento para a tela `/conta/resetar-senha/`.
+- [x] Verificar o título da página `"**Redefinição de senha**"` e a instrução `"Insira o endereço de e-mail associado à sua conta. Um link para redefinição de senha será enviado."`.
+- [x] Digitar o endereço de e-mail real da conta de teste no campo `"**E-mail**"`.![alt text](../evidencias/image-21.png)
+- [x] Clicar no botão `"**Enviar link**"` (botão laranja abaixo do formulário).
+- [x] Confirmar o redirecionamento para a página de sucesso `/conta/resetar-senha/concluido/` exibindo o título `"**Solicitação enviada com sucesso!**"`.
+- [x] Acessar a caixa de entrada do e-mail do usuário e verificar o recebimento da mensagem:
   - Assunto exato: `"**Lize Edu - Alteração de senha**"`.
-  - Remetente oficial: `"**Lize <contato@lizeedu.com.br>**"`.
-- [ ] Abrir o e-mail e checar os elementos visuais:
+  - Remetente oficial: `"**Lize <contato@lizeedu.com.br>**"`.![alt text](../evidencias/image-22.png)
+- [x] Abrir o e-mail e checar os elementos visuais:
   - Logotipo laranja da Lize no topo.
   - Mensagem explicativa de redefinição de credenciais.
   - Botão de ação destacado para alterar/redefinir senha.
@@ -279,14 +279,14 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 6 — Conclusão da Alteração de Senha via Link do E-mail
 **Ação humana:**
-- [ ] No e-mail recebido, clicar no botão/link de redefinição de senha.
-- [ ] Confirmar a abertura da tela de confirmação em `/conta/confirmar-redefinicao/<uidb64>/<token>/`.
-- [ ] Constatar que a página exibe o título `"**Criar nova senha**"` e os campos `"**Nova senha**"` e `"**Confirmar nova senha**"`.
-- [ ] Informar uma nova senha segura atendendo aos requisitos mínimos (ao menos 8 caracteres, uma letra maiúscula e um caractere especial) em ambos os campos.
-- [ ] Clicar no botão `"**Alterar senha**"` (botão laranja).
-- [ ] Confirmar o redirecionamento para a página de conclusão `/conta/redefinicao-concluida/` ou direto para a tela de login.
-- [ ] Na tela de login, inserir o usuário e a **nova senha** recém-definida.
-- [ ] Confirmar que o login é efetuado com sucesso (passando pelo 2FA, se o usuário possuir o recurso ativo).
+- [x] No e-mail recebido, clicar no botão/link de redefinição de senha.
+- [x] Confirmar a abertura da tela de confirmação em `/conta/confirmar-redefinicao/<uidb64>/<token>/`.
+- [x] Constatar que a página exibe o título `"**Criar nova senha**"` e os campos `"**Nova senha**"` e `"**Confirmar nova senha**"`.![alt text](../evidencias/image-23.png)
+- [x] Informar uma nova senha segura atendendo aos requisitos mínimos (ao menos 8 caracteres, uma letra maiúscula e um caractere especial) em ambos os campos.
+- [x] Clicar no botão `"**Alterar senha**"` (botão laranja).
+- [x] Confirmar o redirecionamento para a página de conclusão `/conta/redefinicao-concluida/` ou direto para a tela de login.
+- [x] Na tela de login, inserir o usuário e a **nova senha** recém-definida.
+- [x] Confirmar que o login é efetuado com sucesso (passando pelo 2FA, se o usuário possuir o recurso ativo).
 
 **Referência técnica (para automação):**
 - URL: `/conta/confirmar-redefinicao/<uidb64>/<token>/`
@@ -295,10 +295,10 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 7 — Tentativa de Reutilização de Token ou Link Expirado de Reset
 **Ação humana:**
-- [ ] Com o link de redefinição de senha que já foi utilizado com sucesso no Cenário 6, abrir novamente a mesma URL no navegador (ou clicar de novo no e-mail).
-- [ ] Constatar que o sistema **não** exibe o formulário de definição de senha.
-- [ ] Verificar a exibição da mensagem de erro em vermelho: `"**Link inválido! O link para alteração de senha é inválido ou já foi utilizado.**"`.
-- [ ] Confirmar que nenhuma alteração de credenciais é permitida com tokens reutilizados.
+- [x] Com o link de redefinição de senha que já foi utilizado com sucesso no Cenário 6, abrir novamente a mesma URL no navegador (ou clicar de novo no e-mail).
+- [x] Constatar que o sistema **não** exibe o formulário de definição de senha.
+- [x] Verificar a exibição da mensagem de erro em vermelho: `"**Link inválido! O link para alteração de senha é inválido ou já foi utilizado.**"`.
+- [x] Confirmar que nenhuma alteração de credenciais é permitida com tokens reutilizados.![alt text](../evidencias/image-24.png)
 
 **Referência técnica (para automação):**
 - URL: `/conta/confirmar-redefinicao/<uidb64>/<token_ja_usado>/`
@@ -311,11 +311,11 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 8 — Login Direto de Usuário SEM 2FA Habilitado
 **Ação humana:**
-- [ ] Acessar `/conta/entrar/`.
-- [ ] Efetuar login com a **Persona Coordenação/Professor SEM 2FA**.
-- [ ] Clicar no botão `"**Entrar**"`.
-- [ ] Confirmar que o usuário é redirecionado diretamente para o painel de coordenação/professor (`/dashboard/` ou similar).
-- [ ] Confirmar que a tela `/conta/verify_2fa/` **não** é apresentada em nenhum momento e **nenhum** e-mail de código 2FA é disparado.
+- [x] Acessar `/conta/entrar/`.
+- [x] Efetuar login com a **Persona Coordenação/Professor SEM 2FA**.
+- [x] Clicar no botão `"**Entrar**"`.
+- [x] Confirmar que o usuário é redirecionado diretamente para o painel de coordenação/professor (`/dashboard/` ou similar).
+- [x] Confirmar que a tela `/conta/verify_2fa/` **não** é apresentada em nenhum momento e **nenhum** e-mail de código 2FA é disparado.
 
 **Referência técnica (para automação):**
 - URL: `/conta/entrar/`
@@ -323,21 +323,21 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 9 — Login de Superusuário em Cliente com 2FA Ativo (Bypass de 2FA)
 **Ação humana:**
-- [ ] Acessar `/conta/entrar/`.
-- [ ] Efetuar login com a **Persona Superuser** (`is_superuser=True`) associada a um cliente que possui `two_factor_enabled=True`.
-- [ ] Clicar no botão `"**Entrar**"`.
-- [ ] Confirmar que o superusuário é direcionado direto ao painel, sem interrupção pela tela de 2FA e sem envio de e-mail de token (garantindo que o bypass de segurança para administradores continua operacional).
+- [x] Acessar `/conta/entrar/`.
+- [x] Efetuar login com a **Persona Superuser** (`is_superuser=True`) associada a um cliente que possui `two_factor_enabled=True`.
+- [x] Clicar no botão `"**Entrar**"`.
+- [x] Confirmar que o superusuário é direcionado direto ao painel, sem interrupção pela tela de 2FA e sem envio de e-mail de token (garantindo que o bypass de segurança para administradores continua operacional).
 
 **Referência técnica (para automação):**
 - Validação em `fiscallizeon/accounts/views.py`: `if getattr(user, 'is_superuser', False): return response`.
 
 #### Cenário 10 — Solicitação de Reset para E-mail Inexistente ou Inativo
 **Ação humana:**
-- [ ] Acessar a tela `/conta/resetar-senha/`.
-- [ ] Digitar um e-mail aleatório que não existe na base de dados (ex: `usuario.fantasma.inexistente@lize.local`).
-- [ ] Clicar no botão `"**Enviar link**"`.
-- [ ] Confirmar que o sistema exibe a página `/conta/resetar-senha/concluido/` com a mesma mensagem neutra de sucesso (impedindo enumeração maliciosa de e-mails válidos).
-- [ ] Confirmar que **nenhum** e-mail de reset é despachado via Mailgun.
+- [x] Acessar a tela `/conta/resetar-senha/`.
+- [x] Digitar um e-mail aleatório que não existe na base de dados (ex: `usuario.fantasma.inexistente@lize.local`).
+- [x] Clicar no botão `"**Enviar link**"`.
+- [x] Confirmar que o sistema exibe a página `/conta/resetar-senha/concluido/` com a mesma mensagem neutra de sucesso (impedindo enumeração maliciosa de e-mails válidos).
+- [x] Confirmar que **nenhum** e-mail de reset é despachado via Mailgun.
 
 **Referência técnica (para automação):**
 - Comportamento padrão seguro do `PasswordResetForm`: `get_users()` retorna queryset vazio e não dispara `send_mail()`.
@@ -348,25 +348,25 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 11 — Validação Visual e Responsiva do E-mail de 2FA
 **Ação humana:**
-- [ ] Abrir o e-mail de código 2FA no cliente web desktop (ex: Gmail Web ou Outlook Web).
-- [ ] Validar que o logotipo Lize carrega com proporção nítida (sem distorção de aspect ratio) e sem quebra de imagem.
-- [ ] Checar o alinhamento centralizado do código de 6 dígitos, com tipografia legível e contraste adequado.
-- [ ] Abrir o mesmo e-mail no aplicativo de celular (Gmail ou Apple Mail no smartphone).
-- [ ] Confirmar que o e-mail se adapta fluidamente à largura da tela sem exigir rolagem horizontal (scroll horizontal proibido).
-- [ ] Validar que os links de redes sociais do rodapé são clicáveis e direcionam para os perfis oficiais corretos da Lize.
+- [x] Abrir o e-mail de código 2FA no cliente web desktop (ex: Gmail Web ou Outlook Web).
+- [x] Validar que o logotipo Lize carrega com proporção nítida (sem distorção de aspect ratio) e sem quebra de imagem.
+- [x] Checar o alinhamento centralizado do código de 6 dígitos, com tipografia legível e contraste adequado.
+- [x] Abrir o mesmo e-mail no aplicativo de celular (Gmail ou Apple Mail no smartphone).
+- [x] Confirmar que o e-mail se adapta fluidamente à largura da tela sem exigir rolagem horizontal (scroll horizontal proibido).
+- [x] Validar que os links de redes sociais do rodapé são clicáveis e direcionam para os perfis oficiais corretos da Lize.
 
 #### Cenário 12 — Validação Visual e Responsiva do E-mail de Reset de Senha
 **Ação humana:**
-- [ ] Abrir o e-mail de alteração de senha no cliente desktop e mobile.
-- [ ] Constatar que o botão de ação principal (ex: `"Redefinir senha"`) possui tamanho de toque confortável em telas touchscreen (mínimo de 44x44px de área de toque).
-- [ ] Checar se há texto auxiliar ou link textual alternativo abaixo do botão para o caso de o cliente de e-mail desativar estilos CSS.
-- [ ] Validar que não existem sobras de moldura ou caixas vazias remanescentes no template.
+- [x] Abrir o e-mail de alteração de senha no cliente desktop e mobile.
+- [x] Constatar que o botão de ação principal (ex: `"Redefinir senha"`) possui tamanho de toque confortável em telas touchscreen (mínimo de 44x44px de área de toque).
+- [x] Checar se há texto auxiliar ou link textual alternativo abaixo do botão para o caso de o cliente de e-mail desativar estilos CSS.
+- [x] Validar que não existem sobras de moldura ou caixas vazias remanescentes no template.
 
 #### Cenário 13 — Exibição com Bloqueio de Imagens no Cliente de E-mail
 **Ação humana:**
-- [ ] No cliente de e-mail, configurar o bloqueio do download automático de imagens externas (ou abrir em modo texto/segurança).
-- [ ] Abrir o e-mail de 2FA e o e-mail de reset de senha.
-- [ ] Confirmar que a mensagem principal permanece 100% compreensível:
+- [x] No cliente de e-mail, configurar o bloqueio do download automático de imagens externas (ou abrir em modo texto/segurança).
+- [x] Abrir o e-mail de 2FA e o e-mail de reset de senha.
+- [x] Confirmar que a mensagem principal permanece 100% compreensível:
   - O código numérico de 2FA continua visível em texto selecionável.
   - A ação de redefinir senha e o link continuam claramente identificáveis e acessíveis.
   - As tags `alt` das imagens (ex: logotipo da Lize) informam o nome da plataforma sem quebrar o layout.
@@ -375,11 +375,11 @@ print("Setup de QA concluído com sucesso!")
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Logotipo Oficial:** O arquivo de logotipo laranja (`logo-lize-orange.png`) deve carregar via CDN/URL pública do Mailgun com renderização límpida em alta densidade de pixels (Retina display).
-- [ ] **Variáveis e Placeholders:** Garantir ausência total de variáveis brutas do template engine do Mailgun sem substituição (ex: `{{code}}`, `{{reset_url}}`, `%recipient.code%`).
-- [ ] **Layout Mobile (360px a 420px):** Testar visualização em viewport reduzido garantindo que o padding lateral não esmague os números do código 2FA.
-- [ ] **Consistência de Cores da Marca:** O botão de ação e elementos em destaque devem seguir a paleta oficial da Lize (`#FF6900` / laranja primário).
-- [ ] **Telhas Web Locais:** As telas Django de login, 2FA e reset de senha devem manter o visual padronizado do design system (Tailwind `tw-*`), sem quebras de alinhamento ou artefatos visuais.
+- [x] **Logotipo Oficial:** O arquivo de logotipo laranja (`logo-lize-orange.png`) deve carregar via CDN/URL pública do Mailgun com renderização límpida em alta densidade de pixels (Retina display).
+- [x] **Variáveis e Placeholders:** Garantir ausência total de variáveis brutas do template engine do Mailgun sem substituição (ex: `{{code}}`, `{{reset_url}}`, `%recipient.code%`).
+- [x] **Layout Mobile (360px a 420px):** Testar visualização em viewport reduzido garantindo que o padding lateral não esmague os números do código 2FA.
+- [x] **Consistência de Cores da Marca:** O botão de ação e elementos em destaque devem seguir a paleta oficial da Lize (`#FF6900` / laranja primário).
+- [x] **Telhas Web Locais:** As telas Django de login, 2FA e reset de senha devem manter o visual padronizado do design system (Tailwind `tw-*`), sem quebras de alinhamento ou artefatos visuais.
 
 ---
 
