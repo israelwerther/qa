@@ -183,19 +183,20 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 1 — Disparo e Recebimento de E-mail de Código 2FA no Login
 **Ação humana:**
-- [ ] Acessar a tela de login do sistema em `/conta/entrar/`.
-- [ ] Informar o usuário e senha da **Persona Coordenação com 2FA** configurada com e-mail real.
-- [ ] Clicar no botão `"**Entrar**"` (botão laranja com cantos arredondados).
-- [ ] Confirmar o redirecionamento automático para a tela de verificação 2FA em `/conta/verify_2fa/`.
-- [ ] Verificar que a tela exibe o título `"**Bem-vindo de volta**"` e o campo `"**Insira o código enviado para o seu e-mail:**"`.
-- [ ] Acessar a caixa de entrada do e-mail do usuário e aguardar a chegada da mensagem (esperado em até ~1 a 2 minutos).
-- [ ] Conferir o remetente: `"**Lize <contato@lizeedu.com.br>**"` (ou o domínio Mailgun configurado no ambiente).
-- [ ] Conferir o assunto do e-mail: `"**Seu código de verificação Lize**"`.
-- [ ] Abrir o e-mail e constatar que o layout renderiza com o novo padrão Mailgun:
+- [x] Acessar a tela de login do sistema em `/conta/entrar/`.
+- [x] Informar o usuário e senha da **Persona Coordenação com 2FA** configurada com e-mail real.
+- [x] Clicar no botão `"**Entrar**"` (botão laranja com cantos arredondados).
+- [x] Confirmar o redirecionamento automático para a tela de verificação 2FA em `/conta/verify_2fa/`.
+- [x] Verificar que a tela exibe o título `"**Bem-vindo de volta**"` e o campo `"**Insira o código enviado para o seu e-mail:**"`.
+- [x] Acessar a caixa de entrada do e-mail do usuário e aguardar a chegada da mensagem (esperado em até ~1 a 2 minutos).
+- [x] Conferir o remetente: `"**Lize <contato@lizeedu.com.br>**"` (ou o domínio Mailgun configurado no ambiente).
+- [x] Conferir o assunto do e-mail: `"**Seu código de verificação Lize**"`.
+- [x] Abrir o e-mail e constatar que o layout renderiza com o novo padrão Mailgun:
   - Logotipo oficial laranja da Lize visível e centralizado no topo.
   - Bloco de conteúdo destacando o código de segurança de 6 dígitos numéricos.
   - Rodapé com identificação institucional da Lize e ícones de redes sociais.
   - Inexistência de placeholders crus sem interpolação (ex: não deve aparecer texto literal `{{code}}`).
+![alt text](../evidencias/image-18.png)
 
 **Referência técnica (para automação):**
 - URL: `/conta/entrar/` ➔ `/conta/verify_2fa/`
@@ -206,10 +207,10 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 2 — Conclusão de Login com Código 2FA Correto
 **Ação humana:**
-- [ ] Na tela `/conta/verify_2fa/`, digitar exatamente o código numérico de 6 dígitos recebido no e-mail dentro do prazo de validade (5 minutos).
-- [ ] Clicar no botão `"**Verificar**"` (botão laranja abaixo do campo).
-- [ ] Verificar que o formulário é submetido com sucesso e ocorre o redirecionamento imediato para o painel principal do usuário (`/dashboard/`).
-- [ ] Confirmar que a sessão foi autenticada e o usuário tem acesso total aos módulos autorizados.
+- [x] Na tela `/conta/verify_2fa/`, digitar exatamente o código numérico de 6 dígitos recebido no e-mail dentro do prazo de validade (5 minutos).
+- [x] Clicar no botão `"**Verificar**"` (botão laranja abaixo do campo).
+- [x] Verificar que o formulário é submetido com sucesso e ocorre o redirecionamento imediato para o painel principal do usuário (`/dashboard/`).
+- [x] Confirmar que a sessão foi autenticada e o usuário tem acesso total aos módulos autorizados.
 
 **Referência técnica (para automação):**
 - URL: `/conta/verify_2fa/`
@@ -218,12 +219,13 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 3 — Tentativa de Login com Código 2FA Incorreto
 **Ação humana:**
-- [ ] Realizar novo login com a **Persona Coordenação com 2FA** e acessar a tela `/conta/verify_2fa/`.
-- [ ] Informar deliberadamente um código de 6 dígitos errado (ex: `"000000"`).
-- [ ] Clicar no botão `"**Verificar**"`.
-- [ ] Confirmar que o sistema permanece na tela `/conta/verify_2fa/`.
-- [ ] Observar a exibição da mensagem de erro destacada no container âmbar: `"**Código inválido.**"`.
-- [ ] Verificar que **nenhum** novo e-mail foi disparado para a caixa postal (o código original permanece vigente durante os 5 minutos).
+- [x] Realizar novo login com a **Persona Coordenação com 2FA** e acessar a tela `/conta/verify_2fa/`.
+- [x] Informar deliberadamente um código de 6 dígitos errado (ex: `"000000"`).
+- [x] Clicar no botão `"**Verificar**"`.
+- [x] Confirmar que o sistema permanece na tela `/conta/verify_2fa/`.
+- [x] Observar a exibição da mensagem de erro destacada no container âmbar: `"**Código inválido.**"`.
+- [x] Verificar que **nenhum** novo e-mail foi disparado para a caixa postal (o código original permanece vigente durante os 5 minutos).
+![alt text](../evidencias/image-19.png)
 
 **Referência técnica (para automação):**
 - URL: `/conta/verify_2fa/`
@@ -232,17 +234,18 @@ print("Setup de QA concluído com sucesso!")
 
 #### Cenário 4 — Tentativa com Código 2FA Expirado e Reenvio Automático
 **Ação humana:**
-- [ ] Na tela `/conta/verify_2fa/`, aguardar a expiração natural da validade do código (> 5 minutos) ou forçar a expiração no banco (`expire_in = timezone.now() - timedelta(minutes=1)`).
-- [ ] Digitar qualquer código de 6 dígitos no campo e clicar no botão `"**Verificar**"`.
-- [ ] Verificar que o sistema permanece na tela de verificação e exibe a mensagem de aviso: `"**Código expirado, enviamos um novo código.**"`.
-- [ ] Acessar a caixa de e-mail e confirmar a chegada de um **segundo e-mail** com assunto `"**Seu código de verificação Lize**"`, contendo um **novo código de 6 dígitos**.
-- [ ] Inserir o novo código na tela e clicar em `"**Verificar**"`.
-- [ ] Confirmar que o login é concluído com sucesso e o usuário é redirecionado ao painel.
+- [x] Na tela `/conta/verify_2fa/`, aguardar a expiração natural da validade do código (> 5 minutos) ou forçar a expiração no banco (`expire_in = timezone.now() - timedelta(minutes=1)`).
+- [x] Digitar qualquer código de 6 dígitos no campo e clicar no botão `"**Verificar**"`.
+- [x] Verificar que o sistema permanece na tela de verificação e exibe a mensagem de aviso: `"**Código expirado, enviamos um novo código.**"`.
+- [x] Acessar a caixa de e-mail e confirmar a chegada de um **segundo e-mail** com assunto `"**Seu código de verificação Lize**"`, contendo um **novo código de 6 dígitos**.
+- [x] Inserir o novo código na tela e clicar em `"**Verificar**"`.
+- [x] Confirmar que o login é concluído com sucesso e o usuário é redirecionado ao painel.
 
 **Referência técnica (para automação):**
 - URL: `/conta/verify_2fa/`
 - Seletor do Erro/Aviso: `div.tw-bg-amber-50 p:has-text("Código expirado, enviamos um novo código.")`
 - Validação backend: Novo registro `TwoFactorAuth` gerado com código diferente e `expire_in` renovado para +5 min.
+![alt text](../evidencias/image-20.png)
 
 ---
 
