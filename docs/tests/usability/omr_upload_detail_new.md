@@ -70,6 +70,54 @@ upload = mixer.blend(OMRUpload, application=application, client=client, status=3
 | Linha | `tr[data-trchecked="<id>"]` |
 | Botão de checagem | `[data-check="<id>"]` |
 
+### Ações em massa (barra com seleção)
+
+Visível apenas quando `omrStudentsSelecteds.length > 0`.
+
+| Elemento | Seletor | Ação |
+|----------|---------|------|
+| Contador "N Selecionados" | `label[for="check-student-all"]` | — |
+| "Zerar prova" | `#menu-item-1` | Bulk clear |
+| "Adicionar falta" / "Remover falta" | botões com `@click="missedBulkStudents(...)"` | Bulk miss |
+| "**Reprocessar folhas**" | `#menu-item-reprocess-sheets` | `openReprocessSheetsModal()` |
+
+### Modal Reprocessar folhas (`#reprocess-sheets-modal`)
+
+| Elemento | Seletor / ID | Notas |
+|----------|--------------|-------|
+| Título | `#reprocessSheetsModalLabel` | Texto: "Reprocessar folhas" |
+| Alerta âmbar | `.tw-bg-amber-50` no body (estado formulário) | Sobrescrita objetiva/PAS; discursiva/redação ignoradas |
+| Select tipo de marcação | `#reprocess-sheets-gamma` | `1` / `2.5` / `3.5`; desabilitado se smart read |
+| Contraste inteligente | `#reprocess-sheets-smart-read` | `v-model="reprocessSheets.smartRead"` |
+| Confirmar | botão `@click="confirmReprocessSheets()"` | Label dinâmico: "Reprocessar N aluno(s)" / "Aguarde..." |
+| Cancelar / Fechar | `data-dismiss="modal"` | "Cancelar" antes do submit; "Fechar" depois |
+| Lista de status | `ul > li` com `#{item.name}` + badge | Labels: Na fila, Processando, Concluído, Ignorado (não objetiva), Erro |
+| Poll | Vue `pollReprocessSheetsStatus` | 1º poll 2s; depois 5s; para ao fechar modal |
+
+**APIs:**
+
+| Método | Rota | Name |
+|--------|------|------|
+| POST | `/gabaritos/api/omr-students/<uuid>/reprocess-sheet/` | `omr:reprocess_omr_student_sheet` |
+| GET | `/gabaritos/api/omr-students/reprocess-sheet/status/` | `omr:reprocess_omr_student_sheet_status` |
+
+Body POST: `{ "gamma_option": "1"|"2.5"|"3.5", "smart_read": bool }` → `202` `{ task_id, omr_student_id }`.
+
+**Não confundir** com `#reprocess-modal` (reprocessar **upload** inteiro, título "Reprocessar upload").
+
+### Pré-requisitos extras (reprocessar folhas)
+
+```python
+# Além do setup mínimo da seção 2:
+omr_student = mixer.blend(
+    OMRStudents,
+    upload=upload,
+    application_student=application_student,
+    scan_image='omr/scans/folha.jpg',  # obrigatório (ou fallback em outro upload do mesmo aluno)
+)
+# Worker Celery fila omr-import + Redis result backend para o poll
+```
+
 ### Estados de aluno relevantes
 
 | Estado | Grupo | Badge visual |
