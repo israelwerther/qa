@@ -77,14 +77,26 @@ link_workflow "qa-reset-passwords.md"    "qa-resetar-senhas.md"
 link_workflow "qa-answer-omr.md"         "qa-responder-gabarito.md"
 link_workflow "qa-create-mixed-distribution.md" "qa-criar-ensalamento-misto.md"
 link_workflow "qa-create-mixed-distribution.md" "qa-criar-ensalamento.md"
+link_workflow "qa-mcp-health.md"         "qa-mcp-health.md"
+link_workflow "qa-mcp-health.md"         "qa-mcp.md"
 
-# 4. Garante que os links e o acervo fiquem isolados e não sujem o git status do lizeedu
+# 4. Configura MCP servers para Antigravity e Cursor
+MCP_SOURCE="$ACERVO_DIR/mcp/mcp_config.json"
+if [ -f "$MCP_SOURCE" ]; then
+    ln -sf "../.ai_qa_acervo/mcp/mcp_config.json" "$WORKSPACE_ROOT/.agents/mcp_config.json"
+    mkdir -p "$WORKSPACE_ROOT/.cursor"
+    ln -sf "../.ai_qa_acervo/mcp/mcp_config.json" "$WORKSPACE_ROOT/.cursor/mcp.json"
+fi
+
+# 5. Garante que os links e o acervo fiquem isolados e não sujem o git status do lizeedu
 EXCLUDE_FILE="$WORKSPACE_ROOT/.git/info/exclude"
 if [ -f "$EXCLUDE_FILE" ]; then
     grep -q "\.ai_qa_acervo/" "$EXCLUDE_FILE" || echo ".ai_qa_acervo/" >> "$EXCLUDE_FILE"
     grep -q "\.agent/workflows/qa\*" "$EXCLUDE_FILE" || echo ".agent/workflows/qa*.md" >> "$EXCLUDE_FILE"
     grep -q "\.agents/workflows/qa\*" "$EXCLUDE_FILE" || echo ".agents/workflows/qa*.md" >> "$EXCLUDE_FILE"
     grep -q "\.cursor/commands/qa\*" "$EXCLUDE_FILE" || echo ".cursor/commands/qa*.md" >> "$EXCLUDE_FILE"
+    grep -q "\.agents/mcp_config\.json" "$EXCLUDE_FILE" || echo ".agents/mcp_config.json" >> "$EXCLUDE_FILE"
+    grep -q "\.cursor/mcp\.json" "$EXCLUDE_FILE" || echo ".cursor/mcp.json" >> "$EXCLUDE_FILE"
 fi
 
 if [ "$1" != "--silent" ]; then

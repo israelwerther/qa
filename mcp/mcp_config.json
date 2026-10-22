@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "bunx",
+      "args": ["@executeautomation/playwright-mcp-server", "--port", "8123"],
+      "env": {
+        "HEADLESS": "true"
+      }
+    }
+  }
+}
