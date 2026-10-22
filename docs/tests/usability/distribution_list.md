@@ -14,6 +14,8 @@
 | Visualizar Alunos do Ensalamento | `/ensalamento/<uuid:pk>/distribuicao/detalhe/` | `distribution:distribution_detail` (`RoomDistributionDetailtView`) |
 | Deletar Ensalamento | `/ensalamento/<uuid:pk>/deletar/` | `distribution:distribution_delete` (`RoomDistributionDeleteView`) |
 | API: Gerar Malote de Ensalamento | `POST /ensalamento/api/exportar/malote/<uuid:distribution_id>/` | `distribution:export_exams_bag` (`ExportDistributionExamsBagAPIView`) |
+| Lista de pátio (por sala) | `/ensalamento/<uuid:pk>/lista/patio/` | `distribution:distribution_patio_list` → `patio_list.html` |
+| Lista de pátio (por turma) | `/ensalamento/<uuid:pk>/lista/patio/?by_class=true` | idem → `patio_list_by_class.html` (ver `patio_list_by_class.md`) |
 
 ### Navegação para a tela
 
@@ -148,3 +150,25 @@ mixer.blend(RoomDistributionStudent, distribution=distribution, room=room, appli
 #### Botão de Ação / Disparo:
 - **Botão Imprimir Malote:** `#configurePrintModal button:has-text("Imprimir malote")`
   - *Ação:* Envia requisição `POST` com `{ sheet_model: answer_sheet_model, ... }` e fecha o modal.
+
+### Dropdown — seção IMPRESSÃO (lista de pátio)
+
+- **Abrir modal de pátio:** `button:has-text("Imprimir lista de pátio")` → `@click="showPrintPatioListModal(distribution.id)"` → `$('#patioPrintConfig').modal('show')`
+- Visível apenas quando `distribution.rooms.length > 0`.
+
+### Modal de Layout da Lista de Pátio (`#patioPrintConfig`)
+
+- **Container:** `#patioPrintConfig`
+- **Título:** `h5.modal-title:has-text("Layout da listagem de alunos")`
+- **Pergunta de colunas:** `h6:has-text("Quantas colunas as tabelas de alunos devem utilizar?")`
+- **Uma coluna:** `label.btn:has(input[value="one"])` / texto `"Uma coluna"` (`v-model="twoColumnsPatioList"`, default `'one'`)
+- **Duas colunas:** `label.btn:has(input[value="two"])` / texto `"Duas colunas"`
+- **Switch Separar por turma:** `#patio-by-class` (`v-model="patioListByClass"`, default `false`)
+  - Label: `label[for="patio-by-class"]:has-text("Separar lista por turma")`
+  - Ajuda: *"Ative esta opção para gerar a listagem com uma turma por página e a sala ao lado de cada aluno."*
+- **Gerar:** `#patioPrintConfig button:has-text("Gerar listagem de pátio")` → `printPatiolist()`
+  - Monta URL base `distributionPatioList` + query:
+    - switch on → `by_class=true`
+    - colunas `'two'` → `two_columns=true`
+    - params combináveis com `&`
+  - Abre em nova aba: `window.open(url, '_blank')`
