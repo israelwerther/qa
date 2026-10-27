@@ -175,11 +175,22 @@ def create_exam_with_questions(
                     teacher__user__username__icontains=teacher_name,
                 ).first()
                 or TeacherSubject.objects.filter(
+                    subject=subject,
+                    teacher__user__email__icontains=teacher_name,
+                ).first()
+                or TeacherSubject.objects.filter(
+                    teacher__user__email__icontains=teacher_name,
+                ).first()
+                or TeacherSubject.objects.filter(
+                    teacher__user__username__icontains=teacher_name,
+                ).first()
+                or TeacherSubject.objects.filter(
                     teacher__name__icontains=teacher_name,
                 ).first()
             )
             if ts_match:
                 teacher_subject = ts_match
+                subject = ts_match.subject
                 if not getattr(ts_match.teacher.user, 'is_active', False):
                     teacher_warning = f"Professor '{ts_match.teacher.name}' está com a conta INATIVA no sistema."
             else:
