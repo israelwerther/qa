@@ -261,12 +261,11 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 6 — Tendência de Queda em Desempenho e Média das Notas
 
 **Ação humana:**
-- [ ] Preparar aluno com 7 avaliações no ano corrente:
-  - 2 avaliações mais antigas com notas altas (ex: 10.0) e 100% de acertos.
-  - 5 avaliações mais recentes com notas baixas (ex: 2.0) e erros nas questões.
-- [ ] Recarregar o Painel do Aluno.
-- [ ] Observar os cards `"Desempenho"` e `"Média das notas"`.
-- [ ] Confirmar a presença da **seta vermelha para baixo** (`ChevronDown`).
+- [x] Preparar aluno com avaliações no ano corrente onde a pontuação recente é menor que a anterior (testado com Sarah Nogueira).
+- [x] Recarregar o Painel do Aluno.
+- [x] Observar os cards `"Desempenho"` e `"Média das notas"`.
+- [x] Confirmar a presença da **seta vermelha para baixo** (`ChevronDown`).
+![alt text](../evidencias/image-32.png)
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
@@ -326,10 +325,30 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-*(Preenchido durante os testes de homologação pelo QA)*
+### ⚠️ Observação de QA: Dessincronização de Janelas entre Média de Notas e Desempenho
 
-> [!NOTE]
-> Nenhum bug bloqueante reportado no CI da pipeline `dev` (Run `40937504443`).
+| Item | Descrição |
+|---|---|
+| **Tipo:** | Inconsistência na Regra de Negócio / Lógica de Agregação |
+| **Componente:** | Backend (`fiscallizeon/app/students/performance_summary.py`) |
+| **Gravidade:** | Média (Não quebra a tela, mas gera dados temporalmente incoerentes entre cards) |
+
+#### 1. Descrição do Problema
+Os cards de **"Média das notas"** e **"Desempenho"** são apresentados lado a lado no dashboard com a premissa de indicar a tendência recente do aluno ("baseado nas últimas 5 avaliações"). No entanto, os dois cálculos utilizam conjuntos de dados diferentes no banco:
+* **Média das Notas (`get_grades_current_year`):** Consulta todas as `ApplicationStudent` finalizadas no ano corrente.
+* **Desempenho (`get_corrects_and_totals_current_year`):** Consulta apenas aplicações que possuem respostas objetivas registradas (`OptionAnswer`).
+
+#### 2. Impacto Prático no Dia a Dia Escolar
+Se um aluno finaliza avaliações sem questões de múltipla escolha (ex: provas discursivas, redações ou provas onde não houve marcação de gabarito/falta):
+1. O card de **Média das Notas** computa essas avaliações mais recentes (ex: notas de Outubro).
+2. O card de **Desempenho** ignora essas avaliações e busca no histórico até encontrar as últimas 5 provas que continham questões objetivas (ex: notas de Setembro ou Agosto).
+
+**Efeito visível na tela:** O aluno pode ver no mesmo instante uma seta vermelha de queda em *Média das notas* e uma seta verde de alta em *Desempenho*, mesmo que ambas devessem refletir a mesma fase de estudos recente.
+
+#### 3. Sugestão de Melhoria para o Time de Desenvolvimento
+Unificar a lista base de aplicações antes de calcular as janelas móveis:
+* Determinar primeiro as 5 últimas `ApplicationStudent` finalizadas no ano letivo;
+* Calcular a média de notas **e** a taxa de acertos objetivas referentes a **esse mesmo conjunto fixo de aplicações**. Provas puramente discursivas teriam suas questões computadas ou a taxa de acertos refletiria apenas as questões daquele bloco de provas.
 
 ---
 
