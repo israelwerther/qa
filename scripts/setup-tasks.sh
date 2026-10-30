@@ -52,20 +52,62 @@ rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-reset*.md"
 rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-answer*.md"
 rm -f "$WORKSPACE_ROOT/.cursor/commands/qa.md"
 
-# 3. Configura slash commands nas IDEs (Antigravity e Cursor) em pt-BR
+rm -rf "$WORKSPACE_ROOT/.agents/skills/qa-"*
+rm -rf "$WORKSPACE_ROOT/.agent/skills/qa-"*
+
+# 3. Configura slash commands nas IDEs (Antigravity Skills e Cursor Commands) em pt-BR
 mkdir -p "$WORKSPACE_ROOT/.agent/workflows"
 mkdir -p "$WORKSPACE_ROOT/.agents/workflows"
 mkdir -p "$WORKSPACE_ROOT/.cursor/commands"
+mkdir -p "$WORKSPACE_ROOT/.agents/skills"
 
 WORKFLOWS_DIR="$WORKSPACE_ROOT/.ai_qa_acervo/workflows"
 
 link_workflow() {
     local src_file="$1"
     local alias_name="$2"
+    local cmd_name="${alias_name%.md}"
+
     if [ -f "$WORKFLOWS_DIR/$src_file" ]; then
+        # Retrocompatibilidade (Workflows legados e Cursor)
         ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.agent/workflows/$alias_name"
         ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.agents/workflows/$alias_name"
         ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.cursor/commands/$alias_name"
+
+        # Antigravity Skills (necessário para slash commands / no chat)
+        local skill_dir="$WORKSPACE_ROOT/.agents/skills/$cmd_name"
+        mkdir -p "$skill_dir"
+        python3 -c "
+import re
+
+src_path = '$WORKFLOWS_DIR/$src_file'
+cmd_name = '$cmd_name'
+out_path = '$skill_dir/SKILL.md'
+
+with open(src_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+desc = 'Comandos de QA para Lize Edu'
+body = content
+if content.startswith('---'):
+    parts = content.split('---', 2)
+    if len(parts) >= 3:
+        fm = parts[1]
+        body = parts[2].lstrip()
+        m = re.search(r'description:\s*(.+)', fm)
+        if m:
+            desc = m.group(1).strip()
+
+new_content = f'''---
+name: {cmd_name}
+description: {desc}
+---
+
+{body}'''
+
+with open(out_path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+"
     fi
 }
 
@@ -95,6 +137,8 @@ if [ -f "$EXCLUDE_FILE" ]; then
     grep -q "\.agent/workflows/qa\*" "$EXCLUDE_FILE" || echo ".agent/workflows/qa*.md" >> "$EXCLUDE_FILE"
     grep -q "\.agents/workflows/qa\*" "$EXCLUDE_FILE" || echo ".agents/workflows/qa*.md" >> "$EXCLUDE_FILE"
     grep -q "\.cursor/commands/qa\*" "$EXCLUDE_FILE" || echo ".cursor/commands/qa*.md" >> "$EXCLUDE_FILE"
+    grep -q "\.agents/skills/qa\*" "$EXCLUDE_FILE" || echo ".agents/skills/qa*" >> "$EXCLUDE_FILE"
+    grep -q "\.agent/skills/qa\*" "$EXCLUDE_FILE" || echo ".agent/skills/qa*" >> "$EXCLUDE_FILE"
     grep -q "\.agents/mcp_config\.json" "$EXCLUDE_FILE" || echo ".agents/mcp_config.json" >> "$EXCLUDE_FILE"
     grep -q "\.cursor/mcp\.json" "$EXCLUDE_FILE" || echo ".cursor/mcp.json" >> "$EXCLUDE_FILE"
 fi
