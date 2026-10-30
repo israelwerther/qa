@@ -325,7 +325,7 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-### ⚠️ Observação de QA: Dessincronização de Janelas entre Média de Notas e Desempenho
+### 7.1. ⚠️ Inconsistência Crítica: Dessincronização de Janelas entre Média de Notas e Desempenho
 
 | Item | Descrição |
 |---|---|
@@ -338,17 +338,87 @@ Os cards de **"Média das notas"** e **"Desempenho"** são apresentados lado a l
 * **Média das Notas (`get_grades_current_year`):** Consulta todas as `ApplicationStudent` finalizadas no ano corrente.
 * **Desempenho (`get_corrects_and_totals_current_year`):** Consulta apenas aplicações que possuem respostas objetivas registradas (`OptionAnswer`).
 
-#### 2. Impacto Prático no Dia a Dia Escolar
-Se um aluno finaliza avaliações sem questões de múltipla escolha (ex: provas discursivas, redações ou provas onde não houve marcação de gabarito/falta):
-1. O card de **Média das Notas** computa essas avaliações mais recentes (ex: notas de Outubro).
-2. O card de **Desempenho** ignora essas avaliações e busca no histórico até encontrar as últimas 5 provas que continham questões objetivas (ex: notas de Setembro ou Agosto).
+#### 2. Evidência Real de Produção (Aluna Sarah - Rede Decisão)
+* **Provas usadas na Média de Notas:** 5 provas P6 realizadas em **24 e 25 de Setembro de 2026** (onde a aluna tirou 0.0).
+* **Provas usadas no Desempenho:** 5 provas P4 realizadas em **25 e 26 de Junho de 2026** (**3 meses antes!**).
 
-**Efeito visível na tela:** O aluno pode ver no mesmo instante uma seta vermelha de queda em *Média das notas* e uma seta verde de alta em *Desempenho*, mesmo que ambas devessem refletir a mesma fase de estudos recente.
+**Efeito visível na tela:** O card de notas olha para Setembro e o card de desempenho olha para Junho. O aluno vê ao mesmo tempo uma seta vermelha $\downarrow$ e uma seta verde $\uparrow$ que referenciam momentos totalmente distintos da sua vida escolar.
 
 #### 3. Sugestão de Melhoria para o Time de Desenvolvimento
 Unificar a lista base de aplicações antes de calcular as janelas móveis:
 * Determinar primeiro as 5 últimas `ApplicationStudent` finalizadas no ano letivo;
-* Calcular a média de notas **e** a taxa de acertos objetivas referentes a **esse mesmo conjunto fixo de aplicações**. Provas puramente discursivas teriam suas questões computadas ou a taxa de acertos refletiria apenas as questões daquele bloco de provas.
+* Calcular a média de notas **e** a taxa de acertos objetivas referentes a **esse mesmo conjunto fixo de aplicações**.
+
+---
+
+### 7.2. ⚠️ Assimetria e Distorção Estatística no Histórico entre 6 e 9 Avaliações
+
+| Item | Descrição |
+|---|---|
+| **Tipo:** | Distorção de Amostragem / Falha Metodológica |
+| **Componente:** | Backend (`split_windows` em `performance_summary.py`) |
+| **Gravidade:** | Média |
+
+* **Regra Atual:** O algoritmo exige `len(series) > 5` para habilitar a tendência. Ele fixa as **5 mais recentes** no bloco `recent` e joga as restantes no bloco `previous` (`series[-10:-5]`).
+* **Impacto Real (Cenário de 6 avaliações):**
+  * O sistema compara a média de **5 provas recentes** contra **1 única prova antiga**.
+  * Se o aluno tirou **10.0** na 1ª prova do ano e manteve médias constantes de **9.0** nas 5 seguintes, o cálculo faz: `recent (9.0) < previous (10.0)` $\rightarrow$ **Seta Vermelha de Queda $\downarrow$**!
+  * O aluno é penalizado visualmente com declínio mesmo tendo desempenho altíssimo e consistente. A amostragem só se equilibra de verdade (5 contra 5) a partir da 10ª avaliação.
+* **Recomendação:** Avaliar se a tendência só deve ser exibida com pelo menos 10 avaliações (5 vs 5 equilibradas), ou ponderar a comparação para evitar que 1 prova isolada distorça a métrica.
+
+---
+
+### 7.3. ⚠️ Distorção da Média Aritmética Simples com Provas de Escalas Heterogêneas
+
+| Item | Descrição |
+|---|---|
+| **Tipo:** | Regra de Negócio / Interpretação Pedagógica |
+| **Componente:** | Backend (`grade_avg` em `views.py` e `performance_summary.py`) |
+| **Gravidade:** | Alta para a Percepção da Família/Aluno |
+
+* **Contexto:** Na plataforma, cada caderno pode ter sua própria escala máxima (ex: lista semanal valendo **2.0**, simulado valendo **10.0**, prova bimestral valendo **20.0**).
+* **Impacto Real:** A média é uma soma bruta dividida pela quantidade (`sum(grades) / len(grades)`), sem normalização para escala 0 a 10.
+  * Se o aluno fez 4 testes de valor máximo 2.0 e tirou 2.0 em todos (100% de acerto), a média exibida no dashboard será **`2.00`**.
+  * Isso induz a família a acreditar que o aluno está com nota vermelha/reprovado, gerando atrito no atendimento das escolas parceiras.
+
+---
+
+### 7.4. ⚠️ Penalização Desproporcional de Faltas (`missed=True` = `0.0`)
+
+| Item | Descrição |
+|---|---|
+| **Tipo:** | Regra Pedagógica |
+| **Componente:** | Backend (`get_grades_current_year`) |
+| **Gravidade:** | Média |
+
+* **Comportamento Atual:** Faltas do aluno entram em `ApplicationStudent` com nota `0.0`.
+* **Impacto Real:** Se o aluno faltou a 2 provas por motivo de saúde justificado, a média recente despenca imediatamente para zero, disparando a seta vermelha $\downarrow$. A ausência administrativa destrói o indicador de aprendizado real do aluno.
+
+---
+
+### 7.5. ⚠️ Cache Rígido de 20 Minutos sem Invalidação por Eventos
+
+| Item | Descrição |
+|---|---|
+| **Tipo:** | Arquitetura / Experiência do Usuário (Latência) |
+| **Componente:** | Backend (`cache_key` em `views.py`) |
+| **Gravidade:** | Baixa / Média |
+
+* **Comportamento Atual:** O payload fica em cache Redis por 20 minutos (`timeout=20 * 60`).
+* **Impacto Real:** Quando um professor termina de corrigir uma prova discursiva ou o coordenador libera o resultado de um simulado, o aluno entra no app e **por até 20 minutos continua vendo a média e a tendência antigas**, gerando a sensação de que o resultado não foi lançado.
+
+---
+
+### 7.6. ⚠️ Sobrecarga Cognitiva e Densidade Visual no Mobile (< 380px)
+
+| Item | Descrição |
+|---|---|
+| **Tipo:** | UX / Design de Interface |
+| **Componente:** | Frontend (`lize-student` / `app-aluno`) |
+| **Gravidade:** | Baixa / Usabilidade |
+
+* **Problema:** Em telas estreitas (360px a 375px), 3 colunas contendo simultaneamente `Número grande` + `Emoji` + `Seta direcional` + `Rótulo textual` + `Botão de Tooltip (i)` causam poluição visual e esmagamento dos elementos.
+* **Redundância:** Na maioria dos casos, as setas de Notas e Desempenho sobem ou descem juntas. Ter duas setas disputando atenção em poucos pixels aumenta a carga cognitiva do estudante sem trazer clareza acionável.
 
 ---
 
