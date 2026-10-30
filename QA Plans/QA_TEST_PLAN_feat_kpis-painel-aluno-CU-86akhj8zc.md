@@ -163,10 +163,11 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 1 — Verificação do novo rótulo "Média das notas" em Desktop
 
 **Ação humana:**
-- [ ] Acessar o app do aluno e navegar para o Painel Geral (`/painel/`).
-- [ ] Localizar a linha superior de 3 cards de estatísticas.
-- [ ] Verificar se o terceiro card exibe o título `"Média das notas"` (em substituição ao antigo rótulo `"Nota"`).
-- [ ] Confirmar a presença do ícone de medalha 🏅 e valor formatado com 2 casas decimais.
+- [x] Acessar o app do aluno e navegar para o Painel Geral (`/painel/`).
+- [x] Localizar a linha superior de 3 cards de estatísticas.
+- [x] Verificar se o terceiro card exibe o título `"Média das notas"` (em substituição ao antigo rótulo `"Nota"`).
+- [x] Confirmar a presença do ícone de medalha 🏅 e valor formatado com 2 casas decimais.
+![alt text](../evidencias/image-25.png)
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
@@ -179,14 +180,17 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 2 — Abertura e texto do Tooltip no Desktop (Hover e Foco)
 
 **Ação humana:**
-- [ ] Passar o cursor do mouse sobre o ícone ⓘ do card `"Questões"`.
-- [ ] Confirmar que o tooltip abre com o texto: `"Total de questões objetivas que você respondeu nas avaliações e listas do ano letivo com resultado já liberado."`.
-- [ ] Passar o cursor sobre o ícone ⓘ do card `"Desempenho"`.
-- [ ] Confirmar que o tooltip abre com o texto: `"Percentual de acertos nas questões objetivas que você respondeu no ano letivo. A seta compara suas 5 últimas avaliações com as 5 anteriores."`.
-- [ ] Passar o cursor sobre o ícone ⓘ do card `"Média das notas"`.
-- [ ] Confirmar que o tooltip abre com o texto: `"Média das notas que você obteve nas avaliações e listas do ano letivo. A seta compara suas 5 últimas avaliações com as 5 anteriores."`.
-- [ ] Navegar via tecla `Tab` até os botões ⓘ e validar se o tooltip é exibido ao receber foco via teclado.
-
+- [x] Passar o cursor do mouse sobre o ícone ⓘ do card `"Questões"`.
+- [x] Confirmar que o tooltip abre com o texto: `"Total de questões objetivas que você respondeu nas avaliações e listas do ano letivo com resultado já liberado."`.
+![alt text](../evidencias/image-26.png)
+- [x] Passar o cursor sobre o ícone ⓘ do card `"Desempenho"`.
+- [x] Confirmar que o tooltip abre com o texto: `"Percentual de acertos nas questões objetivas que você respondeu no ano letivo. A seta compara suas 5 últimas avaliações com as 5 anteriores."`.
+![alt text](../evidencias/image-27.png)
+- [x] Passar o cursor sobre o ícone ⓘ do card `"Média das notas"`.
+- [x] Confirmar que o tooltip abre com o texto: `"Média das notas que você obteve nas avaliações e listas do ano letivo. A seta compara suas 5 últimas avaliações com as 5 anteriores."`.
+![alt text](../evidencias/image-28.png)
+- [x] Navegar via tecla `Tab` até os botões ⓘ e validar se o tooltip é exibido ao receber foco via teclado.
+![alt text](../evidencias/image-29.png)
 **Referência técnica (para automação):**
 - URL: `/painel/`
 - Seletor: `button[aria-label="Como é calculado: Desempenho"]`
@@ -199,7 +203,7 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 3 — Comportamento de Toque no Mobile [Apenas Manual 👁]
 
 **Ação humana:**
-- [ ] Alternar o navegador para modo responsivo (viewport de smartphone, ex: 375x667).
+- [x] Alternar o navegador para modo responsivo (viewport de smartphone, ex: 375x667).
 - [ ] Verificar a exibição da barra condensada de 3 colunas no topo (`Questões`, `Desempenho`, `Média das notas`).
 - [ ] Tocar com o dedo no ícone ⓘ de `"Desempenho"`.
 - [ ] Verificar se o tooltip abre e permanece visível na tela sem sumir imediatamente.
