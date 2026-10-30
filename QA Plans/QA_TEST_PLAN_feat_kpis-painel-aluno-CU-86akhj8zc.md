@@ -203,11 +203,11 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 3 — Comportamento de Toque no Mobile [Apenas Manual 👁]
 
 **Ação humana:**
-- [x] Alternar o navegador para modo responsivo (viewport de smartphone, ex: 375x667).
-- [ ] Verificar a exibição da barra condensada de 3 colunas no topo (`Questões`, `Desempenho`, `Média das notas`).
-- [ ] Tocar com o dedo no ícone ⓘ de `"Desempenho"`.
-- [ ] Verificar se o tooltip abre e permanece visível na tela sem sumir imediatamente.
-- [ ] Tocar novamente no ícone ⓘ e confirmar que o tooltip se fecha adequadamente.
+- [x] Alternar o navegador para modo responsivo (viewport de smartphone, ex: 390x844 ou tela mobile < 768px).
+- [x] Verificar a exibição da barra condensada de 3 colunas no topo (`Questões`, `Desempenho`, `Média das notas`).
+- [x] Tocar com o dedo no ícone ⓘ de `"Desempenho"`.
+- [x] Verificar se o tooltip abre e permanece visível na tela sem sumir imediatamente.
+- [x] Tocar novamente no ícone ⓘ e confirmar que o tooltip se fecha adequadamente.
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
@@ -221,10 +221,11 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 4 — Aluno com Histórico Insuficiente (<= 5 avaliações no ano)
 
 **Ação humana:**
-- [ ] Logar com aluno que possui apenas 3 avaliações concluídas no ano corrente.
-- [ ] Observar os cards de `"Desempenho"` e `"Média das notas"`.
-- [ ] Confirmar que **nenhuma seta** (nem verde nem vermelha) é exibida ao lado dos valores.
-- [ ] Confirmar que o card de `"Questões"` nunca exibe setas.
+- [x] Logar com aluno que possui apenas 3 avaliações concluídas no ano corrente.
+- [x] Observar os cards de `"Desempenho"` e `"Média das notas"`.
+- [x] Confirmar que **nenhuma seta** (nem verde nem vermelha) é exibida ao lado dos valores.
+- [x] Confirmar que o card de `"Questões"` nunca exibe setas.
+![alt text](../evidencias/image-30.png)
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
@@ -238,14 +239,15 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 5 — Tendência de Alta em Desempenho e Média das Notas
 
 **Ação humana:**
-- [ ] Preparar aluno com 7 avaliações no ano corrente:
+- [x] Preparar aluno com 7 avaliações no ano corrente:
   - 2 avaliações mais antigas com notas baixas (ex: 2.0 e 3.0) e erros nas questões objetivas.
   - 5 avaliações mais recentes com notas altas (ex: 9.0 e 10.0) e acertos nas questões.
-- [ ] Recarregar o Painel do Aluno.
-- [ ] Observar o card `"Desempenho"`:
+- [x] Recarregar o Painel do Aluno.
+- [x] Observar o card `"Desempenho"`:
   - Confirmar a presença da **seta verde para cima** (`ChevronUp`).
-- [ ] Observar o card `"Média das notas"`:
+- [x] Observar o card `"Média das notas"`:
   - Confirmar a presença da **seta verde para cima** (`ChevronUp`).
+![alt text](../evidencias/image-31.png)
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
