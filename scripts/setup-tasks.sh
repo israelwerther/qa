@@ -33,31 +33,19 @@ with open('$VSCODE_DIR/settings.json', 'w') as f:
     fi
 fi
 
-# 2. Limpa links legados ou obsoletos (antigos em inglês)
-rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-create-*.md"
-rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-export*.md"
-rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-reset*.md"
-rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-answer*.md"
+# 2. Limpa links legados ou obsoletos
+rm -f "$WORKSPACE_ROOT/.agent/workflows/qa-"*.md
+rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-"*.md
 rm -f "$WORKSPACE_ROOT/.agent/workflows/qa.md"
-
-rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-create-*.md"
-rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-export*.md"
-rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-reset*.md"
-rm -f "$WORKSPACE_ROOT/.agents/workflows/qa-answer*.md"
 rm -f "$WORKSPACE_ROOT/.agents/workflows/qa.md"
 
-rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-create-*.md"
-rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-export*.md"
-rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-reset*.md"
-rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-answer*.md"
+rm -f "$WORKSPACE_ROOT/.cursor/commands/qa-"*.md
 rm -f "$WORKSPACE_ROOT/.cursor/commands/qa.md"
 
 rm -rf "$WORKSPACE_ROOT/.agents/skills/qa-"*
 rm -rf "$WORKSPACE_ROOT/.agent/skills/qa-"*
 
 # 3. Configura slash commands nas IDEs (Antigravity Skills e Cursor Commands) em pt-BR
-mkdir -p "$WORKSPACE_ROOT/.agent/workflows"
-mkdir -p "$WORKSPACE_ROOT/.agents/workflows"
 mkdir -p "$WORKSPACE_ROOT/.cursor/commands"
 mkdir -p "$WORKSPACE_ROOT/.agents/skills"
 
@@ -69,12 +57,10 @@ link_workflow() {
     local cmd_name="${alias_name%.md}"
 
     if [ -f "$WORKFLOWS_DIR/$src_file" ]; then
-        # Retrocompatibilidade (Workflows legados e Cursor)
-        ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.agent/workflows/$alias_name"
-        ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.agents/workflows/$alias_name"
+        # Cursor Commands (slash commands no Cursor)
         ln -sf "../../.ai_qa_acervo/workflows/$src_file" "$WORKSPACE_ROOT/.cursor/commands/$alias_name"
 
-        # Antigravity Skills (necessário para slash commands / no chat)
+        # Antigravity Skills (pasta oficial de skills/slash commands no Antigravity)
         local skill_dir="$WORKSPACE_ROOT/.agents/skills/$cmd_name"
         mkdir -p "$skill_dir"
         python3 -c "
@@ -111,16 +97,14 @@ with open(out_path, 'w', encoding='utf-8') as f:
     fi
 }
 
-link_workflow "qa-create-application.md" "qa-criar-aplicacao.md"
-link_workflow "qa-create-exam.md"        "qa-criar-caderno.md"
-link_workflow "qa-create-plan.md"        "qa-criar-plano.md"
-link_workflow "qa-export-pdf.md"         "qa-exportar-plano.md"
-link_workflow "qa-reset-passwords.md"    "qa-resetar-senhas.md"
-link_workflow "qa-answer-omr.md"         "qa-responder-gabarito.md"
+link_workflow "qa-create-application.md"        "qa-criar-aplicacao.md"
+link_workflow "qa-create-exam.md"               "qa-criar-caderno.md"
+link_workflow "qa-create-plan.md"               "qa-criar-plano.md"
+link_workflow "qa-export-pdf.md"                "qa-exportar-plano.md"
+link_workflow "qa-reset-passwords.md"           "qa-resetar-senhas.md"
+link_workflow "qa-answer-omr.md"                "qa-responder-gabarito.md"
 link_workflow "qa-create-mixed-distribution.md" "qa-criar-ensalamento-misto.md"
-link_workflow "qa-create-mixed-distribution.md" "qa-criar-ensalamento.md"
-link_workflow "qa-mcp-health.md"         "qa-mcp-health.md"
-link_workflow "qa-mcp-health.md"         "qa-mcp.md"
+link_workflow "qa-mcp-health.md"                "qa-mcp-health.md"
 
 # 4. Configura MCP servers para Antigravity e Cursor
 MCP_SOURCE="$ACERVO_DIR/mcp/mcp_config.json"
@@ -154,4 +138,5 @@ if [ "$1" != "--silent" ]; then
     echo "   • /qa-resetar-senhas          -> Reseta senhas, 2FA e sessões para login limpo"
     echo "   • /qa-exportar-plano          -> Exporta o plano para PDF com imagens embutidas"
     echo "   • /qa-responder-gabarito      -> Gera cartões resposta preenchidos (PDF A4) para simulação OMR"
+    echo "   • /qa-mcp-health              -> Validação de conectividade e smoke test do Playwright MCP"
 fi
