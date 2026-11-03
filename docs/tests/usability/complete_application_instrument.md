@@ -125,3 +125,4 @@ Na edição, campos alterados em relação ao snapshot original recebem a direti
 - `PUT /aplicacoes/api/instrumentos/aplicacoes/<uuid>/` (edição da Application existente).
 - `GET /aplicacoes/api/instrumentos/cadernos/<uuid>/` (hidratação do Exam na edição).
 - `GET /aplicacoes/api/instrumentos/aplicacoes/<uuid>/` (hidratação da Application na edição).
+

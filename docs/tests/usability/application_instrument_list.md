@@ -134,3 +134,4 @@ Aparece somente quando `selectionList.length > 0`:
 ## 4. Rotas de API Críticas
 - `GET /aplicacoes/api/instrumentos/`: Lista paginada das aplicações com filtros.
 - `GET /aplicacoes/api/instrumentos/<uuid>/`: Detalhe da aplicação e permissões/opções unitárias.
+

@@ -516,3 +516,4 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 1. Incluir suporte nativo para rastreamento de tasks divididas entre múltiplos PRs ou tasks filhas de finalização (como a relação 86ak8r20g -> 17tu7rp42zh).
 2. Adicionar verificação automática de comentários do ClickUp para identificação precoce de não-objetivos pactuados pela equipe.
 -->
+
