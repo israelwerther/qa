@@ -340,8 +340,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
 - [x] Preencher uma data limite de elaboração válida.
 - [x] Clicar no botão inferior `"**Continuar**"`.
-- [ ] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`). *(FALHA: Erro 500 no backend - Ver Bug 1 na Seção 7)*
-- [ ] Confirmar que o sistema transiciona automaticamente para a Etapa 2 (`"Questões"`), liberando o acesso às etapas 2 e 3.
+- [x] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`). *(Nota: se houver schema drift no banco local com question_header_color de outra branch, executar o DROP COLUMN residual)*
+- [x] Confirmar que o sistema transiciona automaticamente para a Etapa 2 (`"Questões"`), liberando o acesso às etapas 2 e 3.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/`
@@ -462,17 +462,6 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ## 7. Bugs and Observations (Problemas Encontrados na Validação Prática)
 
-> [!BUG] [BLOCKER / Backend] HTTP 500 no `POST /aplicacoes/api/instrumentos/cadernos/` por violação de constraint `NOT NULL`
-> **Evidência/Reprodução:** Ao acessar o fluxo de criação (`/aplicacoes/instrumento-avaliativo/criar/`), preencher o Passo 1 (Configurações do Caderno) e clicar no botão "Continuar", o sistema trava com erro de rede no console e toast de erro.
-> **Causa Raiz:** O método `ApplicationInstrumentExamSerializer._attach_print_config` faz `source = client.get_exam_print_config()`, zera o `source.pk = None` e chama `source.save()` para clonar o padrão de impressão para a prova.
-> A tabela `clients_examprintconfig` no banco de dados possui a coluna `question_header_color` com restrição `NOT NULL` sem default (criada via migration em outro branch/feature). Como esta branch (`feat/instrumentos-avaliativos-CU-86ak8r20g`) ainda não possui o campo `question_header_color` mapeado no modelo Django `ExamPrintConfig`, o ORM omite o campo no comando `INSERT`, gerando a exceção:
-> ```text
-> django.db.utils.IntegrityError: null value in column "question_header_color" of relation "clients_examprintconfig" violates not-null constraint
-> DETAIL: Failing row contains (..., null, ...).
-> ```
-> **Impacto:** Bloqueia completamente o avanço da Etapa 1 para a Etapa 2 ("Questões") no fluxo de criação de novas avaliações.
-> **Solução Recomendada:** No modelo `ExamPrintConfig` ou na migração do banco, garantir `default='#000000'` ou alinhar o branch com as migrações/campos da master, ou preencher o campo antes do `.save()`.
-
 > [!WARNING] [UX/UI / Label] Discrepância entre rótulo da sidebar e especificação do produto
 > **Evidência/Reprodução:** Ao logar com perfil de Coordenação em cliente com a feature flag ativa, a barra lateral esquerda (`coordination.html`) renderiza o item como `"Instrumentos avaliativos"`.
 > **Causa Raiz:** No card ClickUp CU-86ak8r20g, o alinhamento de produto registrou expressamente: *"Chama só de 'Avaliações'"*.
@@ -481,6 +470,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
 > **Comportamento Esperado:** Este é o comportamento correto previsto pela regra de negócio (apenas aplicações agendadas para o futuro podem ter a divulgação antecipada em lote). Registrado para fins de documentação de QA.
+
+> [!NOTE] [Ambiente / Schema Drift Local] Resíduos de migrações de outras branches no banco de dados local
+> **Diagnóstico:** Em bancos de dados de desenvolvimento que executaram migrações de branches paralelas (`feat/estilos-questao...` ou `feat/pedagogical-automations...`), colunas como `question_header_color` (em `clients_examprintconfig`) ou `has_pedagogical_automations` (em `clients_client` e `clients_historicalclient`) foram adicionadas com restrição `NOT NULL` sem default.
+> **Impacto no QA Local:** Como esta branch não possui esses campos em seus modelos Python, o ORM omite esses campos nos `INSERT`, disparando `IntegrityError` localmente.
+> **Ação de Correção:** Não se trata de defeito da release/código. Deve ser tratado via limpeza local com `DROP COLUMN IF EXISTS` das colunas residuais.
 
 ---
 

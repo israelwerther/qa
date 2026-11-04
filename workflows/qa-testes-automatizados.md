@@ -56,11 +56,14 @@ Ao rodar scripts automatizados de QA ou navegar simulando o usuário:
      ./venv/bin/python .ai_qa_acervo/scripts/smoke/playwright_smoke.py
      ```
 
-3. **Verificar logs em caso de erro 500:**
-   Quando qualquer tela ou requisição falhar nos testes automatizados, inspecione imediatamente o log do servidor QA:
+3. **Diagnóstico de Erros (Anti-Falso-Positivo / Schema Drift):**
+   Quando qualquer tela ou requisição falhar (ex.: HTTP 500), inspecione os logs do servidor QA:
    ```bash
    tail -n 50 .ai_qa_acervo/logs/qa_server_8001.log
    ```
+   - **Atenção para `IntegrityError` / `NotNullViolation`:** Se o traceback apontar erro de banco em uma coluna específica, verifique se a coluna existe no modelo (`models.py`) da branch atual.
+   - **Se NÃO pertencer à branch atual:** Trata-se de contaminação de banco local (Schema Drift de migrações de outras branches).
+   - **Regra:** NÃO registre como bug da tarefa. Avise o desenvolvedor no chat informando a tabela/coluna residual e forneça o comando `DROP COLUMN` para ele revisar e executar. NUNCA execute mutações no banco sem autorização.
 
 4. **Desligar após a conclusão dos testes:**
    Finalizada a suite ou a validação de QA, pare o servidor para liberar recursos da máquina:

@@ -160,6 +160,14 @@ Reserve a dedicated section to document any bugs or UX issues.
   2. **Context/Root Cause:** Explain *why* it happens technically (if known, like checking the backend serialization sequence).
   3. **Expected Behavior:** What the UI/API should have done.
   4. **Workaround (Gambiarra temporária):** If a bug completely blocks the testing flow, the AI MUST suggest and document a technical workaround (e.g., "Select the Partners checkbox to bypass DB validation") so the QA can continue the test plan without stopping.
+- **CRITICAL RULE (Anti-Falso-Positivo / Schema Drift de Banco de Dados):**
+  - Ao identificar erros de banco de dados (`IntegrityError`, `NotNullViolation`, `UndefinedColumn`):
+  - A IA **DEVE** verificar obrigatoriamente se a coluna/campo existe no modelo Django da branch atual (`models.py`).
+  - Se o campo **NÃO constar no código da branch atual**, trata-se de **contaminação de banco local por migrations de outras branches (Schema Drift)**.
+  - **PROIBIDO CLASSIFICAR COMO BUG DA FEATURE:** É estritamente proibido imputar resíduos de migração de outras branches como bug da tarefa atual.
+  - **PROIBIDO MUTAR O BANCO AUTONOMAMENTE:** A IA nunca deve executar `DROP COLUMN` por iniciativa própria.
+  - **COMUNICAÇÃO OBRIGATÓRIA AO USUÁRIO:** A IA deve relatar prontamente o diagnóstico ao desenvolvedor com o formato:
+    `"⚠️ QA, encontrei um campo residual no banco de dados local que não pertence a esta branch e está quebrando a execução. O campo é '<coluna>' na tabela '<tabela>'. Comando sugerido para sua revisão: ALTER TABLE <tabela> DROP COLUMN IF EXISTS <coluna>;"`
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 Reserve a separate section (independent from critical bugs) to document items that do not break the current release but should be tracked:
