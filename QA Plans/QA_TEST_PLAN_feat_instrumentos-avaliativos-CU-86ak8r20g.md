@@ -194,10 +194,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 1 — Visibilidade do novo menu com Feature Flag ativa
 **Ação humana:**
-- [ ] Logar com o usuário de teste da Coordenação Piloto (`coord.piloto@lize.local`).
-- [ ] Expandir o menu **"Aplicações"** na barra lateral (sidebar esquerda).
-- [ ] Verificar se o item de menu exibido se chama `"**Avaliações**"` (ou `"**Instrumentos avaliativos**"`).
-- [ ] Clicar no item e verificar se a navegação direciona para a URL `/aplicacoes/instrumentos-avaliativos/`.
+- [x] Logar com o usuário de teste da Coordenação Piloto (`coord.piloto@lize.local`).
+- [x] Expandir o menu **"Aplicações"** na barra lateral (sidebar esquerda).
+- [x] Verificar se o item de menu exibido se chama `"**Avaliações**"` (ou `"**Instrumentos avaliativos**"`). *(Validado: exibe "Instrumentos avaliativos", ver Obs na Seção 7)*
+- [x] Clicar no item e verificar se a navegação direciona para a URL `/aplicacoes/instrumentos-avaliativos/`.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -207,9 +207,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 2 — Isolamento para clientes sem Feature Flag (Retrocompatibilidade)
 **Ação humana:**
-- [ ] Logar com usuário de cliente com a flag desmarcada (`has_new_application_experience = False`).
-- [ ] Observar o menu **"Aplicações"** na sidebar.
-- [ ] Confirmar que o item direciona para a rota legada `/aplicacoes/` e que a nova interface não é exposta.
+- [x] Logar com usuário de cliente com a flag desmarcada (`has_new_application_experience = False`).
+- [x] Observar o menu **"Aplicações"** na sidebar.
+- [x] Confirmar que o item direciona para a rota legada `/aplicacoes/` e que a nova interface não é exposta.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`
@@ -223,10 +223,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 3 — Filtragem por categoria nas abas e persistência no localStorage
 **Ação humana:**
-- [ ] Na tela `/aplicacoes/instrumentos-avaliativos/`, observar a barra de abas superiores (`"**Todas**"`, `"**Presencial**"`, `"**Online**"`, `"**Exercícios**"`, `"**Híbrida**"`).
-- [ ] Clicar na aba `"**Presencial**"`.
-- [ ] Verificar visualmente se a aba selecionada recebe a borda inferior laranja e se a listagem exibe apenas aplicações presenciais.
-- [ ] Recarregar a página (F5) e confirmar que a aba `"**Presencial**"` permaneceu selecionada automaticamente.
+- [x] Na tela `/aplicacoes/instrumentos-avaliativos/`, observar a barra de abas superiores (`"**Todas**"`, `"**Presencial**"`, `"**Online**"`, `"**Exercícios**"`, `"**Híbrida**"`).
+- [x] Clicar na aba `"**Presencial**"`.
+- [x] Verificar visualmente se a aba selecionada recebe a borda inferior laranja e se a listagem exibe apenas aplicações presenciais.
+- [x] Recarregar a página (F5) e confirmar que a aba `"**Presencial**"` permaneceu selecionada automaticamente.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -236,10 +236,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 4 — Busca textual e filtros combinados
 **Ação humana:**
-- [ ] Digitar parte do nome da avaliação no campo de busca com ícone de lupa (`placeholder="Buscar"`).
-- [ ] Aguardar brevemente (debounce de 300ms) e confirmar que a listagem filtra em tempo real sem recarregar a tela inteira.
-- [ ] Selecionar um ano específico no dropdown `"**Ano**"` e uma unidade no dropdown `"**Unidade**"`.
-- [ ] Confirmar que o filtro por URL/API é aplicado corretamente.
+- [x] Digitar parte do nome da avaliação no campo de busca com ícone de lupa (`placeholder="Buscar"`).
+- [x] Aguardar brevemente (debounce de 300ms) e confirmar que a listagem filtra em tempo real sem recarregar a tela inteira.
+- [x] Selecionar um ano específico no dropdown `"**Ano**"` e uma unidade no dropdown `"**Unidade**"`.
+- [x] Confirmar que o filtro por URL/API é aplicado corretamente.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -253,10 +253,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 5 — Visualização compacta e expansão de turmas
 **Ação humana:**
-- [ ] Localizar uma avaliação que possua mais de uma turma vinculada.
-- [ ] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**2 turmas**"` com ícone chevron).
-- [ ] Clicar no botão expansor de turmas.
-- [ ] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
+- [x] Localizar uma avaliação que possua mais de uma turma vinculada.
+- [x] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**2 turmas**"` com ícone chevron).
+- [x] Clicar no botão expansor de turmas.
+- [x] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -266,10 +266,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 6 — Copiar token online diretamente na listagem
 **Ação humana:**
-- [ ] Na aba `"**Online**"`, localizar uma aplicação online que tenha o token aleatório habilitado.
-- [ ] Observar abaixo da data a indicação do token (ex.: `"**Token: ABC-123**"` acompanhado de um ícone de cópia).
-- [ ] Clicar no ícone de cópia.
-- [ ] Verificar se há feedback visual de confirmação (tooltip `"Copiado!"`).
+- [x] Na aba `"**Online**"`, localizar uma aplicação online que tenha o token aleatório habilitado.
+- [x] Observar abaixo da data a indicação do token (ex.: `"**Token: ABC-123**"` acompanhado de um ícone de cópia).
+- [x] Clicar no ícone de cópia.
+- [x] Verificar se há feedback visual de confirmação (tooltip `"Copiado!"`).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -283,11 +283,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 7 — Estrutura em 2 colunas do menu de opções
 **Ação humana:**
-- [ ] Em qualquer linha da listagem, clicar no botão de três pontos ou engrenagem no canto direito (`...`).
-- [ ] Verificar se o menu dropdown abre alinhado à direita, organizado em até duas colunas:
+- [x] Em qualquer linha da listagem, clicar no botão de três pontos ou engrenagem no canto direito (`...`).
+- [x] Verificar se o menu dropdown abre alinhado à direita, organizado em até duas colunas:
   - Coluna 1: `"**GERAL**"` (com ações de Editar, Duplicar, Divulgar resultado, etc.).
   - Coluna 2: `"**IMPRESSÃO**"` (com ações de configurações de impressão, malote e folhas avulsas).
-- [ ] Clicar em `"**Editar**"` e certificar-se de que a página é redirecionada para `/aplicacoes/instrumento-avaliativo/<uuid>/`.
+- [x] Clicar em `"**Editar**"` e certificar-se de que a página é redirecionada para `/aplicacoes/instrumento-avaliativo/<uuid>/`.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -301,11 +301,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 8 — Seleção múltipla e exibição do card flutuante
 **Ação humana:**
-- [ ] Marcar o checkbox na primeira linha da tabela.
-- [ ] Verificar se o card flutuante de ações em lote surge no topo/base da listagem (`.application-instruments-bulk`).
-- [ ] Confirmar o texto de contagem: `"**1 selecionado**"`.
-- [ ] Marcar mais duas linhas e verificar se a contagem atualiza para `"**3 selecionados**"`.
-- [ ] Clicar no link `"**Limpar seleção**"` e confirmar que todos os checkboxes são desmarcados e o card flutuante desaparece.
+- [x] Marcar o checkbox na primeira linha da tabela.
+- [x] Verificar se o card flutuante de ações em lote surge no topo/base da listagem (`.application-instruments-bulk`).
+- [x] Confirmar o texto de contagem: `"**1 selecionado**"`.
+- [x] Marcar mais duas linhas e verificar se a contagem atualiza para `"**3 selecionados**"`.
+- [x] Clicar no link `"**Limpar seleção**"` e confirmar que todos os checkboxes são desmarcados e o card flutuante desaparece.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -315,10 +315,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 9 — Operação em lote: Divulgar resultados
 **Ação humana:**
-- [ ] Selecionar duas aplicações cuja divulgação de resultado esteja agendada para o futuro.
-- [ ] No card flutuante, clicar no botão `"**Divulgar resultados**"`.
-- [ ] Confirmar o diálogo/modal de confirmação.
-- [ ] Verificar se o status de divulgação é atualizado na listagem para `"Divulgado em: [Data atual]"`.
+- [x] Selecionar duas aplicações cuja divulgação de resultado esteja agendada para o futuro.
+- [x] No card flutuante, clicar no botão `"**Divulgar resultados**"`.
+- [x] Confirmar o diálogo/modal de confirmação.
+- [x] Verificar se o status de divulgação é atualizado na listagem para `"Divulgado em: [Data atual]"`.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -332,15 +332,15 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 10 — Preenchimento inicial e persistência do Caderno (Exam)
 **Ação humana:**
-- [ ] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
-- [ ] Confirmar que a tela abre na Etapa 1: `"**Configurações**"` (com o passo marcado em laranja).
-- [ ] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando que o caderno deve ser criado antes.
-- [ ] Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`.
-- [ ] Selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
-- [ ] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
-- [ ] Preencher uma data limite de elaboração válida.
-- [ ] Clicar no botão inferior `"**Continuar**"`.
-- [ ] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`).
+- [x] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
+- [x] Confirmar que a tela abre na Etapa 1: `"**Configurações**"` (com o passo marcado em laranja).
+- [x] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando que o caderno deve ser criado antes.
+- [x] Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`.
+- [x] Selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
+- [x] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
+- [x] Preencher uma data limite de elaboração válida.
+- [x] Clicar no botão inferior `"**Continuar**"`.
+- [ ] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`). *(FALHA: Erro 500 no backend - Ver Bug 1 na Seção 7)*
 - [ ] Confirmar que o sistema transiciona automaticamente para a Etapa 2 (`"Questões"`), liberando o acesso às etapas 2 e 3.
 
 **Referência técnica (para automação):**
@@ -404,13 +404,13 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 14 — Hidratação e detecção visual de alterações (`v-changed`)
 **Ação humana:**
-- [ ] Acessar diretamente a rota de edição de uma aplicação existente: `/aplicacoes/instrumento-avaliativo/<uuid>/`.
-- [ ] Verificar se o cabeçalho exibe o botão `"**Salvar alterações**"` e se todos os campos vêm preenchidos com os dados salvos.
-- [ ] Alterar o título da prova no input `"**Título da prova**"`.
-- [ ] Verificar se o campo recebe imediatamente um destaque visual (borda/ring) indicando alteração não salva (`v-changed`).
-- [ ] Passar o mouse sobre o campo e confirmar o tooltip informativo orientando a salvar.
-- [ ] Clicar no botão `"**Salvar alterações**"` no cabeçalho.
-- [ ] Confirmar que uma requisição PUT é enviada e que o destaque visual de alteração desaparece após o sucesso.
+- [x] Acessar diretamente a rota de edição de uma aplicação existente: `/aplicacoes/instrumento-avaliativo/<uuid>/`.
+- [x] Verificar se o cabeçalho exibe o botão `"**Salvar alterações**"` e se todos os campos vêm preenchidos com os dados salvos.
+- [x] Alterar o título da prova no input `"**Título da prova**"`.
+- [x] Verificar se o campo recebe imediatamente um destaque visual (borda/ring) indicando alteração não salva (`v-changed`).
+- [x] Passar o mouse sobre o campo e confirmar o tooltip informativo orientando a salvar.
+- [x] Clicar no botão `"**Salvar alterações**"` no cabeçalho.
+- [x] Confirmar que uma requisição PUT é enviada e que o destaque visual de alteração desaparece após o sucesso.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/<uuid>/`
@@ -460,17 +460,27 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-## 7. Bugs and Observations (Problemas Encontrados)
+## 7. Bugs and Observations (Problemas Encontrados na Validação Prática)
 
-> [!NOTE]
-> Nenhum bug bloqueante impeditivo de release registrado até o momento. Utilize o formato abaixo caso novas falhas sejam detectadas durante a execução manual:
->
-> ```markdown
-> > [!BUG] [Backend Logic / UX/UI / Database] Título do Bug
-> > **Contexto/Causa Raiz:** Explicação técnica do motivo da falha.
-> > **Comportamento Esperado:** O que a UI ou API deveria fazer.
-> > **Workaround:** Solução de contorno para prosseguir com os testes.
+> [!BUG] [BLOCKER / Backend] HTTP 500 no `POST /aplicacoes/api/instrumentos/cadernos/` por violação de constraint `NOT NULL`
+> **Evidência/Reprodução:** Ao acessar o fluxo de criação (`/aplicacoes/instrumento-avaliativo/criar/`), preencher o Passo 1 (Configurações do Caderno) e clicar no botão "Continuar", o sistema trava com erro de rede no console e toast de erro.
+> **Causa Raiz:** O método `ApplicationInstrumentExamSerializer._attach_print_config` faz `source = client.get_exam_print_config()`, zera o `source.pk = None` e chama `source.save()` para clonar o padrão de impressão para a prova.
+> A tabela `clients_examprintconfig` no banco de dados possui a coluna `question_header_color` com restrição `NOT NULL` sem default (criada via migration em outro branch/feature). Como esta branch (`feat/instrumentos-avaliativos-CU-86ak8r20g`) ainda não possui o campo `question_header_color` mapeado no modelo Django `ExamPrintConfig`, o ORM omite o campo no comando `INSERT`, gerando a exceção:
+> ```text
+> django.db.utils.IntegrityError: null value in column "question_header_color" of relation "clients_examprintconfig" violates not-null constraint
+> DETAIL: Failing row contains (..., null, ...).
 > ```
+> **Impacto:** Bloqueia completamente o avanço da Etapa 1 para a Etapa 2 ("Questões") no fluxo de criação de novas avaliações.
+> **Solução Recomendada:** No modelo `ExamPrintConfig` ou na migração do banco, garantir `default='#000000'` ou alinhar o branch com as migrações/campos da master, ou preencher o campo antes do `.save()`.
+
+> [!WARNING] [UX/UI / Label] Discrepância entre rótulo da sidebar e especificação do produto
+> **Evidência/Reprodução:** Ao logar com perfil de Coordenação em cliente com a feature flag ativa, a barra lateral esquerda (`coordination.html`) renderiza o item como `"Instrumentos avaliativos"`.
+> **Causa Raiz:** No card ClickUp CU-86ak8r20g, o alinhamento de produto registrou expressamente: *"Chama só de 'Avaliações'"*.
+> **Comportamento Esperado:** O rótulo da sidebar deve refletir a nomenclatura de produto acordada: `"Avaliações"`.
+
+> [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
+> **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
+> **Comportamento Esperado:** Este é o comportamento correto previsto pela regra de negócio (apenas aplicações agendadas para o futuro podem ter a divulgação antecipada em lote). Registrado para fins de documentação de QA.
 
 ---
 

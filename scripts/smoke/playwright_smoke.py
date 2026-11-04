@@ -60,7 +60,8 @@ def run_smoke_test(url: str, output_path: str, headless: bool = True):
 
 def main():
     parser = argparse.ArgumentParser(description="Smoke Test do Playwright para QA Lize Edu")
-    parser.add_argument("-u", "--url", default="http://127.0.0.1:8000/conta/entrar/", help="URL para validação (default: login local)")
+    default_url = os.environ.get("QA_BASE_URL", "http://127.0.0.1:8001/conta/entrar/")
+    parser.add_argument("-u", "--url", default=default_url, help=f"URL para validação (default: {default_url})")
     parser.add_argument("-o", "--output", default=".ai_qa_acervo/evidencias/mcp_health.png", help="Caminho do screenshot de saída")
     parser.add_argument("--headed", action="store_true", help="Executar com navegador visível")
 
