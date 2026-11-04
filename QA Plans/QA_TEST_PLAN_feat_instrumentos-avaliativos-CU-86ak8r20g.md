@@ -340,7 +340,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
 - [x] Preencher uma data limite de elaboração válida.
 - [x] Clicar no botão inferior `"**Continuar**"`.
-- [x] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`). *(Nota: se houver schema drift no banco local com question_header_color de outra branch, executar o DROP COLUMN residual)*
+- [x] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`).
 - [x] Confirmar que o sistema transiciona automaticamente para a Etapa 2 (`"Questões"`), liberando o acesso às etapas 2 e 3.
 
 **Referência técnica (para automação):**
@@ -470,11 +470,6 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
 > **Comportamento Esperado:** Este é o comportamento correto previsto pela regra de negócio (apenas aplicações agendadas para o futuro podem ter a divulgação antecipada em lote). Registrado para fins de documentação de QA.
-
-> [!NOTE] [Ambiente / Schema Drift Local] Resíduos de migrações de outras branches no banco de dados local
-> **Diagnóstico:** Em bancos de dados de desenvolvimento que executaram migrações de branches paralelas (`feat/estilos-questao...` ou `feat/pedagogical-automations...`), colunas como `question_header_color` (em `clients_examprintconfig`) ou `has_pedagogical_automations` (em `clients_client` e `clients_historicalclient`) foram adicionadas com restrição `NOT NULL` sem default.
-> **Impacto no QA Local:** Como esta branch não possui esses campos em seus modelos Python, o ORM omite esses campos nos `INSERT`, disparando `IntegrityError` localmente.
-> **Ação de Correção:** Não se trata de defeito da release/código. Deve ser tratado via limpeza local com `DROP COLUMN IF EXISTS` das colunas residuais.
 
 ---
 
