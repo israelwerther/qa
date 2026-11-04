@@ -106,6 +106,7 @@ link_workflow "qa-answer-omr.md"                "qa-responder-gabarito.md"
 link_workflow "qa-create-mixed-distribution.md" "qa-criar-ensalamento-misto.md"
 link_workflow "qa-mcp-health.md"                "qa-mcp-health.md"
 link_workflow "qa-testes-automatizados.md"       "qa-testes-automatizados.md"
+link_workflow "qa-limpar-coluna-residual.md"     "qa-limpar-coluna-residual.md"
 
 # 4. Configura MCP servers para Antigravity e Cursor
 MCP_SOURCE="$ACERVO_DIR/mcp/mcp_config.json"
@@ -141,4 +142,5 @@ if [ "$1" != "--silent" ]; then
     echo "   • /qa-responder-gabarito      -> Gera cartões resposta preenchidos (PDF A4) para simulação OMR"
     echo "   • /qa-mcp-health              -> Validação de conectividade e smoke test do Playwright MCP"
     echo "   • /qa-testes-automatizados    -> Gerencia o servidor QA (porta 8001) e testes automatizados com Playwright"
+    echo "   • /qa-limpar-coluna-residual  -> Diagnóstica e limpa colunas residuais de Schema Drift com trava de segurança"
 fi
