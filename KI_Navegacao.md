@@ -76,3 +76,19 @@ notificacao = mixer.blend(
 Detalhe de seletores DOM e ações da tela de feedbacks: `.ai_qa_acervo/docs/tests/usability/notification_user_feedback_list.md`.
 
 *Nota para a IA:* Sempre que encontrar uma divergência entre o nome da View (`exams_list`) e o rótulo da UI, consulte este documento antes de pedir para o usuário clicar em "Provas" ou "Exames".
+
+---
+
+## 🎨 Menu: Configurações → Provas → Padrões de Impressão (Cabeçalho de Questão)
+
+> **Status:** Registrado a partir da task ClickUp `CU-86ak8t23v` / branch `feat/estilos-questao-disciplina-area-CU-86ak8t23v` — validado no plano QA `QA_TEST_PLAN_feat_estilos-questao-disciplina-area-CU-86ak8t23v.md`.
+
+| Rótulo Real na UI (Texto do link) | Ação / Destino Lógico | Observações |
+|-----------------------------------|-----------------------|-------------|
+| **Padrões de impressão** | Criar/editar padrão de impressão (`ExamPrintConfig`) com presets de cabeçalho de questão, cor institucional e ajustes granulares. | URLs: `/membros/padrao/configuracao/`, `/membros/padrao/configuracao/cadastrar/`, `/membros/padrao/configuracao/atualizar/<uuid:pk>/`. Views: `clients:print-configs-list/create/update`. |
+
+### Fluxo validado (estilos visuais de cabeçalho de questão)
+
+1. **Configurações → Provas → Padrões de impressão** → criar/editar padrão → seção *"Estilo Visual de Questão, Disciplina e Área"* (presets + cor + ajustes granulares).
+2. **Instrumentos Avaliativos → Visualizar** (`/provas/<uuid>/visualizar`) → **Usar modelo** no Diagramador (`/provas/<uuid>/v2/diagramacao/`).
+3. **Impressão** (`/provas/<uuid>/v2/imprimir/`) e malotes (`/aplicacoes/`, `/distribuicao/`) → herdam o estilo configurado.
