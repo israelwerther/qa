@@ -204,9 +204,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 2 — Isolamento para clientes sem Feature Flag (Retrocompatibilidade)
 **Ação humana:**
-- [ ] Logar com usuário de cliente com a flag desmarcada (`has_new_application_experience = False`).
-- [ ] Observar o menu **"Aplicações"** na sidebar.
-- [ ] Confirmar que o item direciona para a rota legada `/aplicacoes/` e que a nova interface não é exposta.
+- [x] Logar com usuário de cliente com a flag desmarcada (`has_new_application_experience = False`).
+- [x] Observar o menu **"Aplicações"** na sidebar.
+- [x] Confirmar que o item direciona para a rota legada `/aplicacoes/` e que a nova interface não é exposta.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`

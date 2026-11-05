@@ -39,7 +39,6 @@ def find_active_qa_plan(explicit_file=None):
     if explicit_file and os.path.isfile(explicit_file):
         return os.path.abspath(explicit_file)
 
-    # 1. Tenta encontrar plano pelo nome da branch atual
     branch = get_current_git_branch()
     clean_branch = re.sub(r'^(feat|fix|chore|hotfix)/', '', branch)
     
@@ -51,7 +50,6 @@ def find_active_qa_plan(explicit_file=None):
         for p in plan_files:
             if clean_branch in os.path.basename(p):
                 return p
-        # Tenta pelo ID ClickUp (ex.: CU-86ak8r20g ou 86ak8r20g)
         m = re.search(r'(CU-[a-zA-Z0-9]+|[0-9][a-zA-Z0-9]{7,})', branch)
         if m:
             task_id = m.group(1).replace('CU-', '')
@@ -59,7 +57,6 @@ def find_active_qa_plan(explicit_file=None):
                 if task_id in os.path.basename(p):
                     return p
 
-    # 2. Se não encontrou pelo branch, pega o mais recentemente modificado
     plan_files.sort(key=os.path.getmtime, reverse=True)
     return plan_files[0]
 
@@ -76,6 +73,18 @@ class ChecklistHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        if self.path == "/version":
+            # Retorna mtime do arquivo para que a interface saiba se o .md mudou no disco
+            if not self.plan_path or not os.path.isfile(self.plan_path):
+                self.send_error(404)
+                return
+            mtime = os.path.getmtime(self.plan_path)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"mtime": mtime}).encode("utf-8"))
+            return
+
         if self.path == "/":
             if not self.plan_path or not os.path.isfile(self.plan_path):
                 self.send_error(404, "Plano de testes não encontrado.")
@@ -105,16 +114,18 @@ class ChecklistHandler(http.server.BaseHTTPRequestHandler):
                     total += 1
                     if is_done:
                         checked += 1
+                    raw_text = m.group(4).strip()
                     items.append({
                         "line": idx,
                         "checked": is_done,
-                        "text": m.group(4).strip(),
+                        "text": raw_text,
                         "section": current_section,
                         "scenario": current_scenario
                     })
 
             percent = int((checked / total * 100)) if total > 0 else 0
             plan_name = os.path.basename(self.plan_path)
+            mtime = os.path.getmtime(self.plan_path)
 
             cards_html = ""
             last_section = None
@@ -137,9 +148,12 @@ class ChecklistHandler(http.server.BaseHTTPRequestHandler):
 
                 chk = "checked" if it["checked"] else ""
                 clean_text = it["text"].replace("`", "").replace("**", "").replace('"', "&quot;")
+                # Chave canônica para busca caso as linhas mudem
+                query_key = it["text"][:50].replace('"', "&quot;")
+
                 cards_html += f'''
-    <label class="item" onclick="toggleItem({it['line']}, this, event)">
-      <input type="checkbox" {chk} onclick="event.stopPropagation(); toggleItem({it['line']}, this.parentElement, event)">
+    <label class="item" data-line="{it['line']}" data-key="{query_key}" onclick="handleToggle(this, event)">
+      <input type="checkbox" {chk} onclick="event.stopPropagation(); handleToggle(this.parentElement, event)">
       <span class="item-text">{clean_text}</span>
     </label>'''
 
@@ -174,9 +188,13 @@ class ChecklistHandler(http.server.BaseHTTPRequestHandler):
   .item-text {{ font-size: 14px; line-height: 1.5; color: #CBD5E1; transition: color 0.15s; }}
   .item input[type="checkbox"]:checked ~ .item-text {{ color: #64748B; text-decoration: line-through; }}
   .footer-hint {{ text-align: center; color: var(--muted); font-size: 12px; margin-top: 28px; padding-bottom: 40px; }}
+  #toast {{ display: none; position: fixed; bottom: 24px; right: 24px; background: #DC2626; color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100; }}
+  #sync-banner {{ display: none; position: fixed; top: 16px; background: #2563EB; color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100; cursor: pointer; }}
 </style>
 </head>
 <body>
+<div id="sync-banner" onclick="window.location.reload()">🔄 O arquivo .md foi atualizado. Clique para recarregar.</div>
+<div id="toast"></div>
 <div class="container">
   <div class="header">
     <div class="plan-subtitle">📄 {plan_name}</div>
@@ -200,21 +218,60 @@ class ChecklistHandler(http.server.BaseHTTPRequestHandler):
 <script>
 let total = {total};
 let checked = {checked};
+let initialMtime = {mtime};
+let isSelfSaving = false;
 
-function toggleItem(line, el, ev) {{
+function showToast(msg) {{
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.style.display = 'block';
+  setTimeout(() => {{ t.style.display = 'none'; }}, 4000);
+}}
+
+function handleToggle(el, ev) {{
   const chk = el.querySelector('input[type="checkbox"]');
-  if (ev.target !== chk) {{
+  if (ev && ev.target !== chk) {{
     chk.checked = !chk.checked;
   }}
+  const line = parseInt(el.getAttribute('data-line'), 10);
+  const key = el.getAttribute('data-key');
   const isChecked = chk.checked;
+
   if (isChecked) {{ checked++; }} else {{ checked--; }}
   updateProgress();
 
+  isSelfSaving = true;
   fetch('/toggle', {{
     method: 'POST',
     headers: {{ 'Content-Type': 'application/json' }},
-    body: JSON.stringify({{ line: line, checked: isChecked }})
-  }}).catch(err => console.error(err));
+    body: JSON.stringify({{ line: line, key: key, checked: isChecked }})
+  }})
+  .then(res => res.json())
+  .then(data => {{
+    if (data.success) {{
+      if (data.actual_line !== undefined) {{
+        el.setAttribute('data-line', data.actual_line);
+      }}
+      if (data.mtime) {{
+        initialMtime = data.mtime;
+      }}
+    }} else {{
+      chk.checked = !isChecked;
+      if (isChecked) {{ checked--; }} else {{ checked++; }}
+      updateProgress();
+      showToast('⚠️ Não foi possível sincronizar o item. Recarregue a página.');
+    }}
+  }})
+  .catch(err => {{
+    console.error(err);
+    chk.checked = !isChecked;
+    if (isChecked) {{ checked--; }} else {{ checked++; }}
+    updateProgress();
+    showToast('❌ Erro de conexão com o servidor de checklist.');
+  }})
+  .finally(() => {{
+    setTimeout(() => {{ isSelfSaving = false; }}, 1500);
+  }});
 }}
 
 function updateProgress() {{
@@ -223,6 +280,19 @@ function updateProgress() {{
   document.getElementById('p-bar').style.width = pct + '%';
   document.getElementById('stats-txt').innerText = checked + ' de ' + total + ' itens marcados';
 }}
+
+// Polling suave a cada 3s para detectar se o arquivo mudou por fora (ex: novos commits ou edições da IA)
+setInterval(() => {{
+  if (isSelfSaving) return;
+  fetch('/version')
+    .then(r => r.json())
+    .then(d => {{
+      if (d.mtime && Math.abs(d.mtime - initialMtime) > 1.5) {{
+        document.getElementById('sync-banner').style.display = 'block';
+      }}
+    }})
+    .catch(() => {{}});
+}}, 3000);
 </script>
 </body>
 </html>"""
@@ -240,25 +310,52 @@ function updateProgress() {{
             body = self.rfile.read(content_length)
             data = json.loads(body.decode("utf-8"))
             target_line = data.get("line")
+            target_key = (data.get("key") or "").strip()
             target_checked = data.get("checked")
 
             with open(self.plan_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
 
+            found_idx = -1
+
+            # 1. Tenta na linha exata informada
             if 0 <= target_line < len(lines):
-                line = lines[target_line]
+                curr = lines[target_line]
+                if re.match(r"^\s*-\s*\[[ xX]\]", curr):
+                    if not target_key or target_key[:25].lower() in curr.lower():
+                        found_idx = target_line
+
+            # 2. Se as linhas deslocaram (adição/remoção de linhas no .md), busca pelo texto
+            if found_idx == -1 and target_key:
+                # Procura primeiro num raio próximo (+- 60 linhas)
+                window = list(range(max(0, target_line - 60), min(len(lines), target_line + 61)))
+                remaining = [i for i in range(len(lines)) if i not in window]
+                for idx in window + remaining:
+                    curr = lines[idx]
+                    if re.match(r"^\s*-\s*\[[ xX]\]", curr):
+                        if target_key[:25].lower() in curr.lower():
+                            found_idx = idx
+                            break
+
+            if found_idx != -1:
+                line = lines[found_idx]
                 if target_checked:
                     new_line = re.sub(r"^((\s*-\s*\[)[\s](\]))", r"\g<2>x\g<3>", line)
                 else:
                     new_line = re.sub(r"^((\s*-\s*\[)[xX](\]))", r"\g<2> \g<3>", line)
-                lines[target_line] = new_line
+                lines[found_idx] = new_line
                 with open(self.plan_path, "w", encoding="utf-8") as f:
                     f.writelines(lines)
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"success": True}).encode("utf-8"))
+                mtime = os.path.getmtime(self.plan_path)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "actual_line": found_idx, "mtime": mtime}).encode("utf-8"))
+            else:
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Item não encontrado no arquivo"}).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
