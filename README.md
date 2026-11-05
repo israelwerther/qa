@@ -170,4 +170,19 @@ Gera o conjunto completo de 5 cadernos e 5 aplicações presenciais sincronizada
   ./.ai_qa_acervo/scripts/generators/create-mixed-distribution.sh --ensalar
   ```
 
+---
+
+### 7. Criar Descrição de Pull Request (`/qa-criar-pr`)
+Gera o título, o link de compare e a descrição de Pull Request devidamente formatada e preenchida no padrão corporativo da Lize Edu (`.github/PULL_REQUEST_TEMPLATE.md`):
+- **Checklist Pre-Deploy preenchido:** Marca automaticamente com `[x]` todos os itens padrão verificados (migrações, testes, lint, conventional commits).
+- **Tratamento condicional de bugfix:** Marca `[x] Esse PR corrige um bug?` exclusivamente se a branch ou commits forem do tipo `fix`/`hotfix` (mantém desmarcado para `feat`, `chore`, etc.).
+- **Descrição objetiva:** Resumo conciso das alterações técnicas e link direto para a tarefa correspondente no ClickUp (`[CU-ID]`).
+- **Seção de Mídias:** Adiciona links de gravação (ex.: Jam Dev) e evidências visuais.
+
+**Como usar:**
+- **Slash Command na IDE:** `/qa-criar-pr [link-ou-detalhes-opcionais]`
+  - *Exemplo:* `/qa-criar-pr`
+  - *Exemplo:* `/qa-criar-pr https://jam.dev/c/...`
+
+
 
