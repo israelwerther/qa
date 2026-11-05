@@ -2,7 +2,8 @@
 
 | Campo | Valor |
 |---|---|
-| **Data:** | 2026-11-03 |
+| **Data de Criação:** | 2026-11-03 |
+| **Última Revisão (v2):** | 2026-11-05 (Sincronização pós-commits de Participantes e Malote) |
 | **Natureza da Tarefa:** | `[Business Feature]` |
 | **Área da Feature:** | Applications / Exams / Instrumentos Avaliativos |
 | **Nível de Risco:** | Alto |
@@ -10,61 +11,52 @@
 
 ---
 
-## 1. Summary of Changes (Resumo das Alterações)
+## 1. Summary of Changes (Resumo das Alterações Atualizado)
 
-Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `CU-86ak8r20g` (**"Versão 2.0 da criação de avaliações"**), com continuidade e finalização acompanhada na task `17tu7rp42zh` (ciclo 9.2026). A mudança propõe unificar a criação e acompanhamento de cadernos e aplicações a partir de um fluxo centralizado ("Instrumentos Avaliativos").
+Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `CU-86ak8r20g` (**"Versão 2.0 da criação de avaliações"**). A mudança unifica a criação e acompanhamento de cadernos e aplicações a partir de um fluxo centralizado ("Instrumentos Avaliativos"). 
+
+*Atualização de 04/11 e 05/11/2026:* O escopo foi ampliado com a inclusão de **Participantes (turmas e alunos avulsos na Etapa 3)**, **Etapa 5 (Conferência com 3 cards de Malote e Acompanhamento de Progresso)** e **UX com foco automático em erros de validação**.
 
 ### Backend (`fiscallizeon/applications/`, `accounts/`, `clients/`)
-- **Controle de Feature Flag (`has_new_application_experience`)**: Adicionados campos em `Client` e `User` (sobrescrita individual), migrações `clients.0217_has_new_application_experience` e `accounts.0049_has_new_application_experience`. Admin e forms atualizados.
-- **API de Caderno no Instrumento (`ApplicationInstrumentExamViewSet`)**: Exposta em `/aplicacoes/api/instrumentos/cadernos/` (POST) e `/cadernos/<uuid>/` (GET/PUT). Criação atômica no primary com lock de cliente, validação de unicidade de nome por ano, restrição de coordenações acessíveis e prefetch dos vínculos.
-- **API de Aplicação no Instrumento (`ApplicationInstrumentApplicationViewSet`)**: Exposta em `/aplicacoes/api/instrumentos/aplicacoes/` (POST) e `/aplicacoes/<uuid>/` (GET/PUT). Persiste os campos configuráveis da aplicação (formato, horários, tolerâncias, divulgação, dispositivos) vinculando ao caderno criado, sem exigir seleção imediata de participantes.
-- **API de Listagem de Instrumentos (`ApplicationInstrumentViewSet`)**: Exposta em `/aplicacoes/api/instrumentos/` e `/aplicacoes/api/instrumentos/<uuid>/`. Suporta busca, categoria, paginação simples (`SimpleAPIPagination`), filtros por ano, unidade, turmas, etapas e situação do malote.
-- **Filtros (`ApplicationInstrumentFilterSet`)**: Implementados filtros em `fiscallizeon/applications/filters.py` com predicados para malote (gerando, pronto, download, erro).
-- **Serializers**: `ApplicationInstrumentExamSerializer` (validação rica de opções avançadas de caderno) e `ApplicationInstrumentApplicationSerializer` (validações compartilhadas de aplicação).
+- **Controle de Feature Flag (`has_new_application_experience`)**: Adicionados campos em `Client` e `User` (sobrescrita individual), migrações `clients.0217` e `accounts.0049`.
+- **API de Caderno no Instrumento (`ApplicationInstrumentExamViewSet`)**: Em `/aplicacoes/api/instrumentos/cadernos/` (POST) e `/cadernos/<uuid>/` (GET/PUT). Criação atômica no primary com lock de cliente, validação de unicidade de nome por ano e opções avançadas.
+- **API de Aplicação e Participantes (`ApplicationInstrumentApplicationViewSet`)**: Em `/aplicacoes/api/instrumentos/aplicacoes/` (POST/PUT). Recebe `students` e `school_classes`, grava relações M2M, valida permissão de gestão de alunos e sincroniza turmas via `sync_school_classes_from_students()`.
+- **API de Listagem de Instrumentos (`ApplicationInstrumentViewSet`)**: Em `/aplicacoes/api/instrumentos/`. Busca com debounce, paginação, filtros por ano, unidade, turmas, etapas e situação do malote.
+- **Serializers**: `ApplicationInstrumentExamSerializer` e `ApplicationInstrumentApplicationSerializer` (validações ricas de participantes, antecedência e datas).
 
 ### Frontend & UI (`fiscallizeon/applications/templates/`, `components/`)
-- **Sidebar Dinâmica**: Itens de Coordenação e Professor adaptados para exibir `"**Avaliações**"` sob o menu Aplicações apontando para a nova rota quando a flag estiver ativa.
-- **Nova Listagem (`application_instrument_list.html`)**:
-  - Estende `redesign/base_component.html`.
-  - Cabeçalho com botão primário `"**Nova aplicação**"` (`#EA580C`) e botões secundários `"**Importar alunos**"` e `"**Importar aplicações**"`.
-  - Abas de categoria: Todas, Presencial, Online, Exercícios, Híbrida (persistência no `localStorage`).
-  - Filtros estilizados via componente `application_instrument_list_filter` (truncamento de labels em 48 caracteres).
-  - Tabela com linhas informativas: resumo e expansão de turmas abaixo do caderno, selo de categoria, coluna de malote com badges reais e divulgação de resultados abaixo da data.
-  - Dropdown unitário de Ações (`application_instrument_list_options`) em 2 colunas (Geral e Impressão).
-  - Card flutuante de ações em lote (`.application-instruments-bulk`) com seleção via componente global `checkbox`, contagem dinâmica e ações em massa.
-- **Nova Tela Unificada de Cadastro e Edição (`complete_application_instrument.html`)**:
-  - Navegação em etapas (Configurações, Questões, Aplicação, Diagramação, Conferência).
-  - Bloqueio inteligente de etapas posteriores até a persistência do caderno (`exam.id`).
-  - Etapa 1: dados do caderno, etapa de ensino, nota geral, coordenações autorizadas, card retrátil de Opções Avançadas e prazos com modal de exceção.
-  - Etapa 2: solicitações ao professor com modal completo, geração com IA e cadernos anteriores; integração do modal completo de revisão de questões via mixin `application_instrument_review.js`.
-  - Etapa 3: configurações da aplicação (formato, token online, horários, tolerâncias e divulgação).
-  - Edição com hidratação via GET, comparação profunda de estado e destaque de campos alterados (`v-changed`) com tooltip explicativo.
+- **Sidebar Dinâmica**: Itens de Coordenação e Professor adaptados para exibir `"**Avaliações**"` sob Aplicações.
+- **Nova Listagem (`application_instrument_list.html`)**: Abas de categoria com `localStorage`, filtros estilizados, linhas com turmas expansíveis, badges de malote, dropdown unitário em 2 colunas e card flutuante de ações em lote.
+- **Nova Tela Unificada (`complete_application_instrument.html`)**:
+  - **Etapa 1 (Configurações)**: Dados do caderno, nota, prazos e sanfona de opções avançadas.
+  - **Etapa 2 (Questões)**: Solicitações a docentes, IA, cadernos anteriores e modal de revisão de questões (só abre após entrega concluída).
+  - **Etapa 3 (Aplicação & Participantes)**: Formato (presencial/online/híbrida), horários, tokens, componente `instrument_participants` (seleção por turma com collapse de alunos sob demanda) e seção de alunos avulsos com `search-students-component`.
+  - **Etapa 5 (Conferência & Malote)**: Cards de status da aplicação e das questões com link direto para correção; seção de Malote com 3 modalidades: **Malote completo**, **Apenas gabaritos** e **Aluno específico**; diálogo de impressão refatorado (`instrument_print_dialogs.html`); barra de progresso em tempo real da geração do malote.
+  - **UX & Validações**: Foco e scroll automático no primeiro campo com erro; bloqueio inteligente de abas; detecção de alterações `v-changed`.
 
 ---
 
-## 2. Scope Boundaries (Diferenças de Escopo)
+## 2. Scope Boundaries (Diferenças de Escopo Atualizadas)
 
 ### O QUE FOI IMPLEMENTADO (IN SCOPE — Deve ser testado agora)
-- **Ativação da Feature Flag**: Alternância no Admin e exibição condicional do menu "Avaliações" na sidebar.
+- **Ativação da Feature Flag**: Alternância no Admin e exibição condicional do menu na sidebar.
 - **Nova Listagem de Instrumentos Avaliativos**: Carregamento assíncrono via API, paginação, busca com debounce e filtros de ano, unidade, turmas, etapas e malote.
 - **Persistência da Aba de Categoria**: Seleção da aba (Presencial, Online, Exercícios, Híbrida) salva no `localStorage`.
 - **Coluna Malote e Detalhes da Linha**: Badges de status do malote, turmas expansíveis e token online com botão de copiar.
-- **Menu Unitário de Opções (Dropdown em 2 colunas)**: Ações de Editar (redireciona para o editor), Duplicar, Divulgar resultado e ações de impressão.
-- **Card de Ações em Lote**: Seleção unitária/geral com componente `checkbox`, contagem dinâmica, "Marcar para impressão", "Divulgar resultados", "Gerar malotes" e submenu "Mais opções".
+- **Menu Unitário de Opções (Dropdown em 2 colunas)**: Ações de Editar, Duplicar, Divulgar resultado e ações de impressão.
+- **Card de Ações em Lote**: Seleção múltipla, contagem dinâmica, marcar para impressão, divulgar resultados e gerar malotes.
 - **Criação de Novo Instrumento (Etapa 1 — Caderno)**: Criação do `Exam` ao clicar em Continuar, validação de nome e persistência das opções avançadas.
-- **Criação de Novo Instrumento (Etapa 2 — Questões & Revisão)**: Solicitação a professores (modal), geração com IA, importação de questões anteriores e **Modal de Revisão de Questões**.
-- **Criação de Novo Instrumento (Etapa 3 — Aplicação)**: Criação da `Application` vinculada ao caderno existente e persistência dos parâmetros de aplicação.
-- **Edição de Instrumento Existente**: Carregamento de dados pré-existentes, detecção de alterações com borda/ring (`v-changed`), botão "Salvar alterações" e "Continuar".
+- **Criação de Novo Instrumento (Etapa 2 — Questões & Revisão)**: Solicitação a professores, geração com IA, cadernos anteriores e modal de revisão.
+- **Criação de Novo Instrumento (Etapa 3 — Aplicação & Participantes)**: Configurações de horários, tolerâncias, seleção de turmas com alunos recolhíveis e inclusão de alunos avulsos.
+- **Conferência e Geração de Malote (Etapa 5 — Conferência)**: Resumo de pendências da aplicação e de questões; geração de malote completo, apenas gabaritos e folha avulsa; acompanhamento do status e porcentagem de geração ao vivo.
+- **Edição de Instrumento Existente**: Hidratação de caderno, aplicação e participantes; detecção de alterações com `v-changed` e botão "Salvar alterações".
+- **Foco Automático em Erros de Validação**: Redirecionamento automático do foco para o primeiro campo inválido ao tentar avançar ou salvar.
 
 ### O QUE AINDA NÃO FOI IMPLEMENTADO (OUT OF SCOPE — NÃO validar no momento)
-Conforme documentado na OpenSpec (`tasks.md`), nos comentários do ClickUp e repassado para a task de finalização `17tu7rp42zh`:
-- **Definição de Participantes da Aplicação (Turmas/Alunos)**: A seção 2 da etapa 3 ("Aplicação") está propositalmente vazia no momento (item 6.13 do OpenSpec). A aplicação é criada e editada sem a seleção de participantes. Na edição de aplicação existente que já possui turmas, as turmas são preservadas no banco, mas não há formulário de seleção na tela.
 - **Ação "Utilizar caderno existente" no Cabeçalho**: O seletor de cadernos prontos a partir de "Meus cadernos" no topo da nova criação ainda não foi implementado (item 6.7 do OpenSpec).
-- **Etapas de Diagramação (Etapa 4) e Conferência (Etapa 5)**: Essas etapas continuam com painéis vazios/bloqueados no fluxo atual (item 6.8 do OpenSpec).
-- **Modos de Exibição "Quadro" (Kanban) e "Compacto"**: Os botões de alternância de modo na listagem permanecem comentados no template (item 4.3). Apenas a visualização em tabela está ativa.
-- **Distribuição de Colaboradores Responsáveis por Etapa**: Alinhado no ClickUp como funcionalidade inexistente no backend atual ("Lógica de colaboradores responsáveis não existe hoje — nova implementação complexa"); não foi implementada.
-- **Retomada de Caderno sem Aplicação na Listagem**: A listagem consulta a tabela `Application`. Se um caderno foi criado e o usuário fechou o navegador antes de avançar na etapa Aplicação, o caderno não é listado na tela de instrumentos (item 6.2 do OpenSpec).
-- **Pesquisa In-App e Medição de CSAT**: A coleta de notas/satisfação pós-criação mencionada na descrição da task do ClickUp não faz parte do código entregue nesta branch.
+- **Etapa de Diagramação (Etapa 4)**: Continua com painel vazio/bloqueado no fluxo atual (item 6.8 do OpenSpec).
+- **Modos de Exibição "Quadro" (Kanban) e "Compacto"**: Os botões de alternância de modo na listagem permanecem desativados. Apenas a visualização em tabela está ativa.
+- **Distribuição de Colaboradores Responsáveis por Etapa**: Funcionalidade inexistente no backend atual; mantida fora de escopo.
 - **Fluxo Legado (`application_list_new.html`)**: A listagem antiga e o cadastro antigo continuam intactos e não devem ser afetados.
 
 ---
@@ -380,32 +372,90 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-### 5.8 Criação Unificada: Etapa 3 (Aplicação, Tempos e Divulgação) [Automatizável ✅]
+### 5.8 Criação Unificada: Etapa 3 (Aplicação, Tempos, Divulgação e Participantes) [Automatizável ✅]
 
-#### Cenário 13 — Configuração de parâmetros e persistência da Aplicação
+#### Cenário 13 — Configuração de parâmetros e persistência da Aplicação com Participantes
 **Ação humana:**
 - [ ] Clicar no botão `"**Continuar**"` da Etapa 2 para avançar para a Etapa 3 (`"**Aplicação**"`).
-- [ ] Selecionar o formato `"**Online**"`.
-- [ ] Confirmar que o switch `"**Habilitar tokens online**"` aparece na tela. Marcar o switch.
+- [ ] Selecionar o formato `"**Presencial**"` (ou `"**Online**"`).
 - [ ] Preencher Horário de Início (`08:00`), Término (`12:00`), tolerância de atraso e tempo mínimo.
 - [ ] Configurar a data de divulgação dos resultados.
+- [ ] Na seção **Participantes**, marcar ao menos uma turma na listagem de turmas.
 - [ ] Clicar no botão `"**Continuar**"`.
-- [ ] Confirmar que a aplicação é salva no banco (`POST /aplicacoes/api/instrumentos/aplicacoes/`) vinculada ao caderno da Etapa 1.
+- [ ] Confirmar que a aplicação é salva no banco (`POST /aplicacoes/api/instrumentos/aplicacoes/`) vinculando o caderno da Etapa 1 e os participantes selecionados.
+- [ ] Confirmar que o sistema avança para a **Etapa 5: Conferência**.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
-- Seletor: `button:has-text("Online")`, `#application-enable-online-token`, `#application-start`, `#application-end`, `button:has-text("Continuar")`
-- Estado esperado: `POST /aplicacoes/api/instrumentos/aplicacoes/` retorna 201 com `application.id`
-- Fixture: `exam.id` presente no estado Vue
+- Seletor: `button:has-text("Presencial")`, `#application-start`, `#application-end`, `.instrument-participants input[type="checkbox"]`, `button:has-text("Continuar")`
+- Estado esperado: `POST /aplicacoes/api/instrumentos/aplicacoes/` retorna 201 com `application.id`, `students` e `school_classes` vinculados; `currentStep` vira 5
+- Fixture: `exam.id` presente no estado Vue, turmas e alunos cadastrados
+
+#### Cenário 17 — Gestão de Participantes: Seleção em Lote, Alunos sob Demanda e Alunos Avulsos
+**Ação humana:**
+- [ ] Na Etapa 3, na seção **Participantes**, localizar uma turma e clicar no botão expansor de alunos.
+- [ ] Confirmar que a lista de alunos daquela turma é carregada sob demanda (`v-if`) e exibida de forma recolhível.
+- [ ] Desmarcar um aluno individual dentro da turma e verificar se o checkbox da turma assume estado indeterminado (parcial).
+- [ ] Na seção **Alunos individuais**, utilizar o campo de busca de alunos (`search-students-component`) para adicionar um aluno avulso (não pertencente às turmas selecionadas).
+- [ ] Confirmar que o aluno adicionado aparece na lista de participantes individuais.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
+- Seletor: `.instrument-participants-expand`, `.instrument-individual-students search-students-component`
+- Estado esperado: `participantSelectedStudentIds` e `participantIndividualStudents` sincronizados no estado Vue
+
+#### Cenário 18 — Validação de Seleção Vazia e Foco Automático no Erro
+**Ação humana:**
+- [ ] Na Etapa 3, desmarcar todas as turmas e remover qualquer aluno avulso (deixar participantes completamente vazio).
+- [ ] Clicar no botão `"**Continuar**"` (ou `"**Salvar alterações**"`).
+- [ ] Verificar se o sistema impede o envio e exibe mensagem de alerta informando a obrigatoriedade de ao menos um participante.
+- [ ] Confirmar que a tela executa scroll automático e posiciona o foco diretamente sobre a seção com erro.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
+- Seletor: `button:has-text("Continuar")`, `[role="alert"]`
+- Estado esperado: `POST` bloqueado no frontend com foco levado ao campo; caso enviado, API retorna 400 Bad Request
 
 ---
 
-### 5.9 Edição Unificada: Hidratação, `v-changed` e Salvamento [Automatizável ✅]
+### 5.9 Etapa 5: Conferência e Geração de Malote [Automatizável ✅]
+
+#### Cenário 19 — Painel de Conferência: Pendências e Visualização dos Cards de Malote
+**Ação humana:**
+- [ ] Na navegação superior de etapas, clicar na **Etapa 5: Conferência** (liberada após criar caderno e aplicação).
+- [ ] Verificar os cards de resumo:
+  - Card **Aplicação**: exibe status `"Pendente"` ou `"Concluído"` (clicar nele deve redirecionar para a etapa correspondente).
+  - Card **Questões**: exibe contagem de pendências/reprovações de questões.
+- [ ] Para aplicação com formato Presencial, confirmar a exibição da seção **Malote** com os 3 cards:
+  - Card 1: `"**Malote completo**"` (com botão *"Gerar malote"*).
+  - Card 2: `"**Apenas gabaritos**"` (com botão *"Gerar malote"*).
+  - Card 3: `"**Aluno específico**"` (com botão *"Gerar malote"*).
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 5)
+- Seletor: `button:has-text("Aplicação")`, `button:has-text("Questões")`, `#instrument-conference-bundle-title`
+- Estado esperado: `currentStep === 5`, 3 cards de geração renderizados quando `application.category === 1` ou `3`
+
+#### Cenário 20 — Abertura dos Diálogos de Impressão e Acompanhamento de Progresso
+**Ação humana:**
+- [ ] No card `"**Malote completo**"`, clicar em `"**Gerar malote**"`.
+- [ ] Verificar se o diálogo `.instrument-print-dialog` abre com cabeçalho e rodapé fixos, seleção de modelo de folha (radios clicáveis em laranja) e switches.
+- [ ] Confirmar o disparo da geração e fechar o modal.
+- [ ] Verificar se a barra de progresso da geração surge na tela (`div[role="progressbar"]`), exibindo o status `"Gerando malote"` e a porcentagem dinâmica `${ instrumentPrintStatus.progress }%`.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 5)
+- Seletor: `.instrument-print-dialog`, `div[role="progressbar"]`
+- Estado esperado: requisição disparada para geração de malote e polling de status em `/aplicacoes/api/aplicacao/<uuid>/status-malote/`
+
+---
+
+### 5.10 Edição Unificada: Hidratação, `v-changed` e Gestão de Participantes [Automatizável ✅]
 
 #### Cenário 14 — Hidratação e detecção visual de alterações (`v-changed`)
 **Ação humana:**
 - [ ] Acessar diretamente a rota de edição de uma aplicação existente: `/aplicacoes/instrumento-avaliativo/<uuid>/`.
-- [ ] Verificar se o cabeçalho exibe o botão `"**Salvar alterações**"` e se todos os campos vêm preenchidos com os dados salvos.
+- [ ] Verificar se o cabeçalho exibe o botão `"**Salvar alterações**"` e se todos os campos (inclusive turmas e participantes) vêm preenchidos com os dados salvos.
 - [ ] Alterar o título da prova no input `"**Título da prova**"`.
 - [ ] Verificar se o campo recebe imediatamente um destaque visual (borda/ring) indicando alteração não salva (`v-changed`).
 - [ ] Passar o mouse sobre o campo e confirmar o tooltip informativo orientando a salvar.
@@ -420,7 +470,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-### 5.10 Responsividade e Comportamento Visual [Apenas Manual 👁]
+### 5.11 Responsividade e Comportamento Visual [Apenas Manual 👁]
 
 #### Cenário 15 — Validação de layout em 1333x1080 e telas menores
 **Ação humana:**
@@ -431,20 +481,20 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [ ] Reduzir a largura para `768px` e `390px` (mobile):
   - [ ] Verificar se a barra de etapas do cadastro (`application-instrument-steps`) permite scroll horizontal ou compactação legível.
   - [ ] Confirmar que os cards de opções avançadas e seletores de horário não quebram o grid horizontal.
+  - [ ] Confirmar que os cards de malote e os modelos de folha no diálogo passam para formato responsivo/empilhado.
 
 ---
 
-### 5.11 Itens Pendentes (Não Testar / Fora de Escopo no Momento) [Apenas Manual 👁]
+### 5.12 Itens Pendentes (Não Testar / Fora de Escopo no Momento) [Apenas Manual 👁]
 
 > [!NOTE]
-> Os itens a seguir foram conscientemente deixados para a task de finalização `17tu7rp42zh`. O QA NÃO deve apontar bug nem reprovar o fluxo caso observe as condições abaixo:
+> Os itens a seguir continuam conscientemente fora do escopo desta branch e foram mantidos para tasks futuras:
 
 #### Cenário 16 — Conferência de itens declaradamente pendentes
 **Ação humana:**
-- [ ] **Seção 2 de Participantes na Etapa 3:** Observar que não há seleção de turmas/alunos. O QA **não deve** bloquear o teste por falta dessa seção.
-- [ ] **Ação "Utilizar caderno existente":** Notar ausência do seletor de cadernos prontos no cabeçalho. Item planejado para etapa posterior.
-- [ ] **Etapas 4 (Diagramação) e 5 (Conferência):** Os painéis estão vazios e bloqueados. Não considerar como falha.
-- [ ] **Modos Quadro/Compacto na Listagem:** Os botões continuam desabilitados/comentados.
+- [ ] **Ação "Utilizar caderno existente":** Notar ausência do seletor de cadernos prontos no cabeçalho da criação.
+- [ ] **Etapa 4 (Diagramação):** O painel permanece vazio e bloqueado. Não considerar como falha.
+- [ ] **Modos Quadro/Compacto na Listagem:** Os botões continuam desabilitados/comentados no template.
 
 ---
 
@@ -476,16 +526,12 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 
 > [!NOTE]
-> **[WONTFIX / Futuro — Task 17tu7rp42zh] Seleção de Participantes da Aplicação**  
-> A seleção de turmas e alunos na etapa 3 será entregue na task de fechamento do fluxo 2.0.
-
-> [!NOTE]
 > **[WONTFIX / Futuro — Task 17tu7rp42zh] Utilizar Caderno Existente**  
-> A importação de um caderno pronto a partir de "Meus cadernos" no cabeçalho será tratada na próxima entrega.
+> A importação rápida de um caderno pronto a partir de "Meus cadernos" no cabeçalho será tratada na próxima entrega.
 
 > [!NOTE]
-> **[WONTFIX / Futuro — Task 17tu7rp42zh] Diagramação e Conferência**  
-> As etapas 4 e 5 serão implementadas após a consolidação das etapas de elaboração e aplicação.
+> **[WONTFIX / Futuro — Task 17tu7rp42zh] Etapa de Diagramação (Etapa 4)**  
+> A ferramenta de diagramação integrada à criação continuará desabilitada até a consolidação dos fluxos de elaboração e conferência.
 
 > [!NOTE]
 > **[WONTFIX / Futuro — Task 17tu7rp42zh] Modos Quadro (Kanban) e Compacto na Listagem**  

@@ -113,16 +113,39 @@ app = mixer.blend(Application, client=client, coordination=coord, exam=exam, cat
 | Switch Liberar resultado ao fim | `#application-release-result-at-end` | Toggle `application.release_result_at_end`. |
 | Data de divulgação do resultado | `#application-student-stats-permission-date` | Input `type="datetime-local"`. |
 
-### 3.5. Marcadores de Alteração (`v-changed`)
-Na edição, campos alterados em relação ao snapshot original recebem a diretiva `v-changed`, aplicando uma borda/ring visual laranja e tooltip indicando que há alterações não salvas.
+### 3.5. Etapa 3 — Participantes da Aplicação (Turmas e Alunos)
+| Elemento / Ação | Seletor DOM estável | Descrição |
+|---|---|---|
+| Contêiner de Participantes | `div.instrument-participants` | Componente `instrument_participants`. |
+| Checkbox de Turma | `input[type="checkbox"]` na linha da turma | Seleciona/desmarca todos os alunos da turma. |
+| Botão Expandir Alunos | `button.instrument-participants-expand` | Abre o painel retrátil de alunos da turma. |
+| Checkbox de Aluno Individual na Turma | `input[type="checkbox"]` dentro do collapse | Seleciona/desmarca aluno específico. |
+| Seção Alunos Individuais | `section.instrument-individual-students` | Alunos avulsos sem vínculo obrigatório à turma. |
+| Seletor de Busca de Alunos | `search-students-component` | Input com autocomplete para inclusão avulsa. |
+
+### 3.6. Etapa 5 — Conferência e Geração de Malote
+| Elemento / Ação | Seletor DOM estável | Descrição |
+|---|---|---|
+| Botão Status Aplicação | `button:has-text("Aplicação")` no resumo | Exibe status "Pendente" ou "Concluído", direciona para Etapa 2/3. |
+| Botão Status Questões | `button:has-text("Questões")` no resumo | Exibe contagem de pendências/reprovações de questões. |
+| Card Malote Completo | `button:has-text("Gerar malote")` no card 1 | `@click="openInstrumentPrint('complete')"`. Caderno + gabaritos. |
+| Card Apenas Gabaritos | `button:has-text("Gerar malote")` no card 2 | `@click="openInstrumentPrint('answers')"`. Folhas de resposta. |
+| Card Aluno Específico | `button:has-text("Gerar malote")` no card 3 | `@click="openInstrumentPrint('student')"`. Folha avulsa nominal. |
+| Barra de Progresso do Malote | `div[role="progressbar"]` | Exibe porcentagem `${ instrumentPrintStatus.progress }%` ao vivo. |
+| Diálogo de Impressão | `.instrument-print-dialog` | Modal refatorado com seleção de modelo de folha e switches. |
+
+### 3.7. Marcadores de Alteração (`v-changed`) e Foco em Erros
+- **Destaque Visual:** Na edição, campos alterados em relação ao snapshot original recebem a diretiva `v-changed`, aplicando uma borda/ring visual laranja e tooltip indicando alterações não salvas.
+- **Foco Automático:** Ao tentar avançar ou salvar com campos obrigatórios pendentes, o formulário rola e foca automaticamente no primeiro campo com erro (`baf731264`).
 
 ---
 
 ## 4. Rotas de API Críticas
 - `POST /aplicacoes/api/instrumentos/cadernos/` (criação do Exam no primary com transação e lock).
 - `PUT /aplicacoes/api/instrumentos/cadernos/<uuid>/` (edição do Exam existente).
-- `POST /aplicacoes/api/instrumentos/aplicacoes/` (criação da Application vinculada ao Exam).
-- `PUT /aplicacoes/api/instrumentos/aplicacoes/<uuid>/` (edição da Application existente).
+- `POST /aplicacoes/api/instrumentos/aplicacoes/` (criação da Application com `students` e `school_classes`).
+- `PUT /aplicacoes/api/instrumentos/aplicacoes/<uuid>/` (edição da Application e sincronização M2M de participantes).
 - `GET /aplicacoes/api/instrumentos/cadernos/<uuid>/` (hidratação do Exam na edição).
-- `GET /aplicacoes/api/instrumentos/aplicacoes/<uuid>/` (hidratação da Application na edição).
+- `GET /aplicacoes/api/instrumentos/aplicacoes/<uuid>/` (hidratação da Application e `participants` na edição).
+- `GET /aplicacoes/api/aplicacao/<uuid>/status-malote/` (acompanhamento de progresso do malote).
 
