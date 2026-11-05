@@ -63,6 +63,13 @@ Marque os itens que foram verificados **antes de abrir este PR**:
     
     full_url = f"{base_url}?quick_pull=1&title={encoded_title}&body={encoded_body}"
     print(full_url)
+    
+    if "--open" in sys.argv:
+        try:
+            subprocess.Popen(["google-chrome", full_url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            print("🚀 Aberto com sucesso no Google Chrome!")
+        except Exception as e:
+            print(f"Erro ao abrir Chrome: {e}")
 
 if __name__ == "__main__":
     main()
