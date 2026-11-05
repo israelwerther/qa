@@ -66,9 +66,19 @@ A IA deve rodar comandos pontuais para coletar os metadados da branch atual:
 - Checar se makemigrations está limpo: `python manage.py makemigrations --check --dry-run` (ou constatar que a tarefa não alterou modelos).
 
 ### 3. Montar a Saída
-Apresentar ao usuário:
-1. **Link direto de abertura do PR**:
-   `https://github.com/LizeEdu/lizeedu/compare/master...<nome-da-branch>?expand=1`
-2. **Título do PR** no padrão Conventional Commits com o ID da task (ex: `fix(exams): descrição CU-17tu7rpaqj8`).
-3. **Bloco de código Markdown com o corpo do PR** 100% preenchido e com os checkboxes marcados (com `- [x]` no bug fix se for bug, ou `- [ ]` se não for).
+A IA executa o gerador automatizado:
+```bash
+python3 .ai_qa_acervo/scripts/generate_pr_link.py
+```
+
+O script gera a URL perfeita utilizando:
+- `quick_pull=1` (força a abertura do formulário do PR diretamente).
+- Cabeçalhos Setext (`-------------------`) para evitar o bug `%23%23` causado pelo `decodeURI` do GitHub.
+- Parâmetro `safe='?'` para evitar o bug `%3F` no checklist.
+- Checkboxes pré-marcados (`[x]`), com tratamento inteligente de bug fix.
+
+A IA apresenta ao usuário:
+1. **Link direto preenchido para abrir no navegador**:
+   O link gerado pelo script que já carrega o título e a descrição 100% preenchidos no GitHub.
+2. **Título do PR** e **Bloco de Código Markdown** para referência e cópia rápida se necessário.
 
