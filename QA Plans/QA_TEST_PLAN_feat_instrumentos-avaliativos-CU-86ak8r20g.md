@@ -188,14 +188,19 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 **Ação humana:**
 - [x] Logar com o usuário de teste da Coordenação Piloto (`coord.piloto@lize.local`).
 - [x] Expandir o menu **"Aplicações"** na barra lateral (sidebar esquerda).
-- [ ] Verificar se o item de menu exibido se chama `"**Avaliações**"` (ou `"**Instrumentos avaliativos**"`). *(Ver Obs na Seção 7)*
-- [ ] Clicar no item e verificar se a navegação direciona para a URL `/aplicacoes/instrumentos-avaliativos/`.
+- [x] Verificar se o item de menu exibido se chama `"**Instrumentos avaliativos**"` (em ambiente local com `DEBUG=True`, o atalho `"**Aplicação legada**"` também é exibido abaixo).
+- [x] Clicar no item e verificar se a navegação direciona para a URL `/aplicacoes/instrumentos-avaliativos/`.
 
 **Referência técnica (para automação):**
-- URL: `/aplicacoes/instrumentos-avaliativos/`
-- Seletor: `nav a[href*="/aplicacoes/instrumentos-avaliativos/"]`
-- Estado esperado: `status_code === 200`, título contém "Aplicações" ou "Instrumentos avaliativos"
-- Fixture: `user.client.has_new_application_experience = True`
+- URL de destino: `/aplicacoes/instrumentos-avaliativos/`
+- Seletor da sidebar: `a.sidebar-menu-submenu-item[href="/aplicacoes/instrumentos-avaliativos/"]` (ou `a:has-text("Instrumentos avaliativos")`)
+- Estado esperado:
+  - `status_code === 200`
+  - Item ativo na sidebar: classe `.sidebar-menu-submenu-item-active`
+  - Cabeçalho e Título: `<title>` contém `"Instrumentos avaliativos"`, `<h1>` exibe `"Aplicações"` e breadcrumb contém `"Aplicações > Instrumentos avaliativos"`
+- Requisitos de Fixture / Permissão:
+  - `user.client_has_new_application_experience = True` (`client.has_new_application_experience = True` ou `user.has_new_application_experience = True`)
+  - Permissão de acesso: `applications.view_application` (papel de Coordenação ou Professor)
 
 #### Cenário 2 — Isolamento para clientes sem Feature Flag (Retrocompatibilidade)
 **Ação humana:**
