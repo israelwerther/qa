@@ -186,8 +186,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 1 — Visibilidade do novo menu com Feature Flag ativa
 **Ação humana:**
-- [ ] Logar com o usuário de teste da Coordenação Piloto (`coord.piloto@lize.local`).
-- [ ] Expandir o menu **"Aplicações"** na barra lateral (sidebar esquerda).
+- [x] Logar com o usuário de teste da Coordenação Piloto (`coord.piloto@lize.local`).
+- [x] Expandir o menu **"Aplicações"** na barra lateral (sidebar esquerda).
 - [ ] Verificar se o item de menu exibido se chama `"**Avaliações**"` (ou `"**Instrumentos avaliativos**"`). *(Ver Obs na Seção 7)*
 - [ ] Clicar no item e verificar se a navegação direciona para a URL `/aplicacoes/instrumentos-avaliativos/`.
 

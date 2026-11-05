@@ -53,12 +53,25 @@
       "problemMatcher": []
     },
     {
+      "label": "QA: Checklist Server",
+      "type": "shell",
+      "command": "python3 .ai_qa_acervo/scripts/checklist_server.py",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Start All Services",
       "dependsOn": [
         "Sync QA Tools",
         "Django: Runserver",
         "Celery: Worker",
-        "PDF Service"
+        "PDF Service",
+        "QA: Checklist Server"
       ],
       "dependsOrder": "parallel",
       "group": {
