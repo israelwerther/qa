@@ -249,8 +249,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 **Ação humana:**
 - [x] Digitar parte do nome da avaliação no campo de busca com ícone de lupa (`placeholder="Buscar"`).
 - [x] Aguardar brevemente (debounce de 300ms) e confirmar que a listagem filtra em tempo real sem recarregar a tela inteira.
-- [ ] Selecionar um ano específico no dropdown `"**Ano**"` e uma unidade no dropdown `"**Unidade**"`.
-- [ ] Confirmar que o filtro por URL/API é aplicado corretamente.
+- [x] Selecionar um ano específico no dropdown `"**Ano**"` e uma unidade no dropdown `"**Unidade**"`.
+- [x] Confirmar que o filtro por URL/API é aplicado corretamente (validado com ano 2025, retornando os mesmos 4.096 registros da listagem legada).
 
 > [!NOTE]
 > *Observação de QA / UX:* A busca atual via API (`ApplicationInstrumentFilterSet`) exige correspondência literal contínua de caracteres (`exam__name__icontains`), falhando quando o usuário digita fragmentos de palavras separadas (ex.: `"simu mul"` retorna vazio mesmo existindo `"Simulado Multi-Áreas"`). Na busca global do cabeçalho (`/api/v1/search/`), os termos são divididos e combinados via `AND`, localizando com facilidade. Melhoria registrada na Seção 8.1.
@@ -271,6 +271,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [ ] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**2 turmas**"` com ícone chevron).
 - [ ] Clicar no botão expansor de turmas.
 - [ ] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
+
+> [!WARNING]
+> *Bug Crítico Identificado:* Provas que possuem apenas alunos avulsos (sem turmas vinculadas) omitem completamente a indicação e contagem de participantes (ex.: `4 aluno(s) avulso(s)`), exibindo apenas o badge da categoria. Documentado na Seção 7.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -592,6 +595,22 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Evidência de Resolução:**  
 > ![Evidência de Resolução - Coluna Situação Limpa](../evidencias/image-33.png)
 
+> [!WARNING] [Bug / Regressão Funcional] Omissão da exibição e contagem de alunos avulsos na listagem
+> **Evidência/Reprodução:** Ao listar aplicações realizadas diretamente para alunos específicos (sem turma vinculada, como provas finais/recuperação ex.: `EXAME FINAL_Geografia_F9_ANGLO_2025`), a nova tela renderiza apenas o badge de modalidade (`Presencial`), ocultando completamente a informação de que existem alunos participantes vinculados.  
+> Na listagem legada (`/aplicacoes/`), a interface exibia com clareza a etiqueta informativa (ex.: `4 aluno(s) avulso(s)`, `14 aluno(s) avulso(s)`).
+> 
+> **Causa Raiz Técnica:**
+> - No serializer `ApplicationInstrumentListSerializer` (`fiscallizeon/applications/serializers/application_instrument.py`), o campo de contagem de alunos avulsos (`students_count`) não foi implementado nem retornado no payload JSON.
+> - No template `application_instrument_list.html` (linhas 306-315), a exibição de participantes abaixo do título do caderno condiciona-se unicamente a `application.school_classes.length`. Quando não há turmas (`school_classes: []`), nenhum indicador de estudantes é renderizado.
+>
+> **Comportamento Esperado:** Quando `school_classes` estiver vazio mas houver estudantes vinculados à aplicação (`app.students.exists()`), o serializer deve fornecer a contagem e o front deve renderizar a badge correspondente `${ application.students_count } aluno(s) avulso(s)`, mantendo a paridade com a tela legada.
+>
+> **Evidências Comparativas:**  
+> 1. *Nova tela omitindo os estudantes avulsos:*  
+>    ![Omissão de alunos avulsos na nova listagem](../evidencias/omissao_alunos_avulsos_nova_listagem.png)  
+> 2. *Tela legada exibindo a tag de alunos avulsos:*  
+>    ![Exibição de alunos avulsos na tela legada](../evidencias/exibicao_alunos_avulsos_tela_legada.png)
+
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
 > **Comportamento Esperado:** Este é o comportamento correto previsto pela regra de negócio (apenas aplicações agendadas para o futuro podem ter a divulgação antecipada em lote). Registrado para fins de documentação de QA.
@@ -635,6 +654,18 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Sugestão de Implementação / Melhoria:**
 > - Refatorar o método `filter_search` em `ApplicationInstrumentFilterSet` para dividir o termo digitado em palavras (`term.split()`) e aplicar múltiplos filtros `exam__name__icontains` encadeados, ou reutilizar o utilitário `normalize_query` já consolidado na plataforma. Dessa forma, a busca torna-se tolerante a fragmentos, mais amigável e 100% consistente com o comportamento global do Lize Edu.
 
+> [!TIP] [Melhoria de UX / Paginação] Exibição do Totalizador de Resultados na Paginação da Listagem
+> **Cenário Observado:** No rodapé da nova listagem de instrumentos avaliativos (`/aplicacoes/instrumentos-avaliativos/`), a paginação apresenta apenas os controles de navegação (`Anterior`, botões numéricos com reticências `1 ... 205`, `Próximo`).  
+> O total de resultados encontrados (ex.: *"Mostrando de 1 até 20 de 4.096 resultados"*), que existia na tela legada, foi omitido na nova interface, dificultando a percepção da coordenação sobre o volume total de provas filtradas.
+>
+> **Causa Raiz Técnica:**
+> - O backend (`SimpleAPIPagination` em `fiscallizeon/core/utils.py`) já retorna o atributo `count` com o total de registros (ex.: `4096`).
+> - O frontend (`application_instrument_list.js`) consome `data.count` estritamente para computar a quantidade de páginas (`this.total`), mas o template `application_instrument_list.html` não renderiza um elemento textual com esse totalizador.
+>
+> **Sugestão de Implementação / Melhoria:**  
+> Incluir no rodapé (à esquerda ou centralizado junto à paginação) uma legenda formatada no padrão do Design System:  
+> `Mostrando de ${ (page - 1) * pageSize + 1 } até ${ Math.min(page * pageSize, totalCount) } de ${ totalCount } resultados`.
+![alt text](../evidencias/image-34.png)
 ---
 
 ### 8.2 Débitos Técnicos e Funcionalidades Posteriores
