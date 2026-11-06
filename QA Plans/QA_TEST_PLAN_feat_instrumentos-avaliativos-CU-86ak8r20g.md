@@ -274,6 +274,21 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Estado esperado: texto copiado para o clipboard com sucesso
 - Fixture: `mixer.blend(Application, category=2, is_token_online=True)`
 
+#### Cenário 6.1 — Coluna Situação sem duplicidade de status em aplicações Online [Validação de Fix Commit 30133d412]
+**Ação humana:**
+- [ ] Na aba `"**Online**"` da listagem, inspecionar a coluna `"**Situação**"` de várias aplicações.
+- [ ] Confirmar que **NÃO** há duplicidade de indicadores na mesma célula (ex.: não deve haver o texto `"✓ Pronto para impressão"` colado abaixo do badge de status do caderno).
+- [ ] Verificar que cada linha exibe um indicador único e limpo:
+  - Para cadernos em elaboração: badge azul `"Elaborando"`.
+  - Para cadernos concluídos: badge verde `"Fechada"`.
+- [ ] Certificar-se de que a célula está alinhada, sem poluição visual ou concorrência de mensagens verdes.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumentos-avaliativos/?category=online`
+- Seletor: `tr.application-instruments-row td:nth-child(4)`
+- Estado esperado: não existe elemento `<p>` com texto `"Pronto para impressão"` na coluna quando a aplicação for Online; exibe apenas o badge correspondente ou malote
+- Fixture: aplicação Online vinculada a caderno com status `CLOSED` ou `ELABORATING` e `print_ready=True`
+
 ---
 
 ### 5.4 Nova Listagem: Menu Unitário de Opções (`...`) [Automatizável ✅]
@@ -521,6 +536,12 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Evidência/Reprodução:** Ao logar com perfil de Coordenação em cliente com a feature flag ativa, a barra lateral esquerda (`coordination.html`) renderiza o item como `"Instrumentos avaliativos"`.
 > **Causa Raiz:** No card ClickUp CU-86ak8r20g, o alinhamento de produto registrou expressamente: *"Chama só de 'Avaliações'"*.
 > **Comportamento Esperado:** O rótulo da sidebar deve refletir a nomenclatura de produto acordada: `"Avaliações"`.
+
+> [!CAUTION] [Bug UI/Regra de Negócio] Duplicidade de status e concorrência indevida na coluna "Situação" da nova listagem [RESOLVIDO no commit 30133d412]
+> **Evidência/Reprodução:** Ao comparar a listagem legada (`/aplicacoes/?category=online`) com a nova listagem (`/aplicacoes/instrumentos-avaliativos/`), a coluna "Situação" de aplicações de categoria Online estava renderizando simultaneamente o badge de status do caderno (ex.: verde `"Fechada"`) e logo abaixo o texto verde `"✓ Pronto para impressão"`. Em provas futuras (ex.: maio/2026), o termo "Fechada" gerava ambiguidade grave de que a aplicação inteira estava encerrada, além de poluição visual na mesma célula.
+> **Causa Raiz:** No template `application_instrument_list.html`, havia um bloco `<p v-if="application.print_ready">` concorrendo diretamente abaixo do `${ application.exam_status }`.
+> **Resolução Aplicada:** O desenvolvedor removeu o bloco redundante no commit `30133d412`, garantindo que a coluna exiba um indicador único e limpo.
+> **Validação de QA:** Cenário 6.1 incluído no roteiro para homologação da correção. ![alt text](../evidencias/image-33.png)
 
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
