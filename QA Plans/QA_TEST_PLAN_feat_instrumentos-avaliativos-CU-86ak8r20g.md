@@ -220,7 +220,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 3 — Filtragem por categoria nas abas e persistência no localStorage
 **Ação humana:**
-- [ ] Na tela `/aplicacoes/instrumentos-avaliativos/`, observar a barra de abas superiores (`"**Todas**"`, `"**Presencial**"`, `"**Online**"`, `"**Exercícios**"`, `"**Híbrida**"`).
+- [x] Na tela `/aplicacoes/instrumentos-avaliativos/`, observar a barra de abas superiores (`"**Todas**"`, `"**Presencial**"`, `"**Online**"`, `"**Exercícios**"`, `"**Híbrida**"`).
 - [ ] Clicar na aba `"**Presencial**"`.
 - [ ] Verificar visualmente se a aba selecionada recebe a borda inferior laranja e se a listagem exibe apenas aplicações presenciais.
 - [ ] Recarregar a página (F5) e confirmar que a aba `"**Presencial**"` permaneceu selecionada automaticamente.
@@ -276,12 +276,12 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 6.1 — Coluna Situação sem duplicidade de status em aplicações Online [Validação de Fix Commit 30133d412]
 **Ação humana:**
-- [ ] Na aba `"**Online**"` da listagem, inspecionar a coluna `"**Situação**"` de várias aplicações.
-- [ ] Confirmar que **NÃO** há duplicidade de indicadores na mesma célula (ex.: não deve haver o texto `"✓ Pronto para impressão"` colado abaixo do badge de status do caderno).
-- [ ] Verificar que cada linha exibe um indicador único e limpo:
+- [x] Na aba `"**Online**"` da listagem, inspecionar a coluna `"**Situação**"` de várias aplicações.
+- [x] Confirmar que **NÃO** há duplicidade de indicadores na mesma célula (ex.: não deve haver o texto `"✓ Pronto para impressão"` colado abaixo do badge de status do caderno).
+- [x] Verificar que cada linha exibe um indicador único e limpo:
   - Para cadernos em elaboração: badge azul `"Elaborando"`.
   - Para cadernos concluídos: badge verde `"Fechada"`.
-- [ ] Certificar-se de que a célula está alinhada, sem poluição visual ou concorrência de mensagens verdes.
+- [x] Certificar-se de que a célula está alinhada, sem poluição visual ou concorrência de mensagens verdes.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/?category=online`
@@ -537,11 +537,13 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Causa Raiz:** No card ClickUp CU-86ak8r20g, o alinhamento de produto registrou expressamente: *"Chama só de 'Avaliações'"*.
 > **Comportamento Esperado:** O rótulo da sidebar deve refletir a nomenclatura de produto acordada: `"Avaliações"`.
 
-> [!CAUTION] [Bug UI/Regra de Negócio] Duplicidade de status e concorrência indevida na coluna "Situação" da nova listagem [RESOLVIDO no commit 30133d412]
+> [!TIP] [Bug UI/Regra de Negócio] Duplicidade de status e concorrência indevida na coluna "Situação" [RESOLVIDO E HOMOLOGADO ✅]
 > **Evidência/Reprodução:** Ao comparar a listagem legada (`/aplicacoes/?category=online`) com a nova listagem (`/aplicacoes/instrumentos-avaliativos/`), a coluna "Situação" de aplicações de categoria Online estava renderizando simultaneamente o badge de status do caderno (ex.: verde `"Fechada"`) e logo abaixo o texto verde `"✓ Pronto para impressão"`. Em provas futuras (ex.: maio/2026), o termo "Fechada" gerava ambiguidade grave de que a aplicação inteira estava encerrada, além de poluição visual na mesma célula.
 > **Causa Raiz:** No template `application_instrument_list.html`, havia um bloco `<p v-if="application.print_ready">` concorrendo diretamente abaixo do `${ application.exam_status }`.
 > **Resolução Aplicada:** O desenvolvedor removeu o bloco redundante no commit `30133d412`, garantindo que a coluna exiba um indicador único e limpo.
-> **Validação de QA:** Cenário 6.1 incluído no roteiro para homologação da correção. ![alt text](../evidencias/image-33.png)
+> **Status de Homologação:** Homologado com sucesso via Cenário 6.1. A célula agora renderiza de forma limpa apenas o badge correto da situação.
+> **Evidência de Resolução:**  
+> ![Evidência de Resolução - Coluna Situação Limpa](../evidencias/image-33.png)
 
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
