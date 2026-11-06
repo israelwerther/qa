@@ -237,7 +237,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Na tela `/aplicacoes/instrumentos-avaliativos/`, observar a barra de abas superiores (`"**Todas**"`, `"**Presencial**"`, `"**Online**"`, `"**Exercícios**"`, `"**Híbrida**"`).
 - [x] Clicar na aba `"**Presencial**"`.
 - [x] Verificar visualmente se a aba selecionada recebe a borda inferior laranja e se a listagem exibe apenas aplicações presenciais.
-- [ ] Recarregar a página (F5) e confirmar que a aba `"**Presencial**"` permaneceu selecionada automaticamente.
+- [x] Recarregar a página (F5) e confirmar que a aba `"**Presencial**"` permaneceu selecionada automaticamente.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -597,6 +597,25 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 
+### 8.1 Sugestões de Melhorias Visuais e de UX (Feedback de Produto & Design)
+
+> [!TIP] [Melhoria de UX / Carregamento] Skeleton Screen e Prevenção de Layout Shift (CLS) na Listagem de Instrumentos
+> **Cenário Observado:** Ao acessar ou recarregar a tela (`/aplicacoes/instrumentos-avaliativos/`), os elementos visuais são renderizados em estágios dessincronizados ("carregamento picado"):
+> 1. O cabeçalho (breadcrumb e botões de ação) e a barra de filtros surgem imediatamente via Django SSR;
+> 2. As abas superiores de modalidades de prova (*Todas*, *Presencial*, *Online*, etc.) e a tabela de dados demoram alguns instantes para montar via Vue.js, deixando um espaço em branco transitório;
+> 3. Quando os dados chegam, os elementos "saltam" na tela (Cumulative Layout Shift - CLS), dando sensação de instabilidade ou lentidão visual.
+>
+> **Evidência Visual:**  
+> ![Layout Shift no carregamento inicial da listagem](../evidencias/melhoria_skeleton_layout_shift_listagem.png)
+>
+> **Sugestão de Implementação / Melhoria:**
+> - Adicionar um componente de **Skeleton Screen / Shimmer** (espaço reservado animado em cinza claro) simulando as abas e as linhas da tabela enquanto o Vue monta e a API responde;
+> - Ou renderizar o esqueleto das abas estaticamente no template HTML, ativando a interatividade com `v-cloak` e transição suave de opacidade (`fade-in`), garantindo que o usuário veja a estrutura completa da página desde o primeiro milissegundo de carregamento.
+
+---
+
+### 8.2 Débitos Técnicos e Funcionalidades Posteriores
+
 > [!NOTE]
 > **[WONTFIX / Futuro — Task 17tu7rp42zh] Utilizar Caderno Existente**  
 > A importação rápida de um caderno pronto a partir de "Meus cadernos" no cabeçalho será tratada na próxima entrega.
@@ -611,7 +630,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
+## 8.3. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 
 - [x] O arquivo de mapeamento foi nomeado refletindo exatamente o template HTML (Django), e não a View.
 - 🔗 **[Mapeamento: application_instrument_list.html](docs/tests/usability/application_instrument_list.md)**
