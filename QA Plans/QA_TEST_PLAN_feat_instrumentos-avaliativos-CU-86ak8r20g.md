@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | **Data de Criação:** | 2026-11-03 |
-| **Última Revisão (v2):** | 2026-11-05 (Sincronização pós-commits de Participantes e Malote) |
+| **Última Revisão (v3):** | 2026-11-06 (Conferência dinâmica por categoria, Acompanhamento Online e renomeação da etapa Caderno — commit `30133d412`) |
 | **Natureza da Tarefa:** | `[Business Feature]` |
 | **Área da Feature:** | Applications / Exams / Instrumentos Avaliativos |
 | **Nível de Risco:** | Alto |
@@ -13,25 +13,36 @@
 
 ## 1. Summary of Changes (Resumo das Alterações Atualizado)
 
-Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `CU-86ak8r20g` (**"Versão 2.0 da criação de avaliações"**). A mudança unifica a criação e acompanhamento de cadernos e aplicações a partir de um fluxo centralizado ("Instrumentos Avaliativos"). 
+Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `CU-86ak8r20g` (**"Versão 2.0 da criação de avaliações"**) e `17tu7rp42zh` (**"Finalizar fluxo de caderno 2.0"**). A mudança unifica a criação e acompanhamento de cadernos e aplicações a partir de um fluxo centralizado ("Instrumentos Avaliativos"). 
 
-*Atualização de 04/11 e 05/11/2026:* O escopo foi ampliado com a inclusão de **Participantes (turmas e alunos avulsos na Etapa 3)**, **Etapa 5 (Conferência com 3 cards de Malote e Acompanhamento de Progresso)** e **UX com foco automático em erros de validação**.
+*Atualização de 06/11/2026 (Commit 30133d412):*
+- **Renomeação da Etapa 1**: De *"Configurações"* para **`"Caderno"`** no stepper e em todos os tooltips/mensagens de validação.
+- **Conferência Dinâmica por Categoria (Etapa 5)**:
+  - **Presencial (`category = 3`)**: Exibe os 3 cards de malote (*Malote completo*, *Apenas gabaritos*, *Aluno específico*).
+  - **Híbrida (`category = 5`)**: Exibe apenas o card *Malote completo*.
+  - **Online (`category = 2`) e Lista de Exercícios (`category = 4`)**: Substitui os cards de malote físico pelo **Painel de Acompanhamento Online**, consumindo `/resumo-online/` com métricas de alunos iniciados, concluídos, não presentes, duração média, além de pausas solicitadas e saídas de tela (específicos de Online).
+- **Listagem de Instrumentos**: Remoção da duplicidade do rótulo "Pronto para impressão" na coluna Situação, mantendo exibição limpa de indicadores.
+- **Preservação de Coordenação**: API do caderno aceita manter o ID da coordenação existente ao editar.
 
 ### Backend (`fiscallizeon/applications/`, `accounts/`, `clients/`)
 - **Controle de Feature Flag (`has_new_application_experience`)**: Adicionados campos em `Client` e `User` (sobrescrita individual), migrações `clients.0217` e `accounts.0049`.
 - **API de Caderno no Instrumento (`ApplicationInstrumentExamViewSet`)**: Em `/aplicacoes/api/instrumentos/cadernos/` (POST) e `/cadernos/<uuid>/` (GET/PUT). Criação atômica no primary com lock de cliente, validação de unicidade de nome por ano e opções avançadas.
 - **API de Aplicação e Participantes (`ApplicationInstrumentApplicationViewSet`)**: Em `/aplicacoes/api/instrumentos/aplicacoes/` (POST/PUT). Recebe `students` e `school_classes`, grava relações M2M, valida permissão de gestão de alunos e sincroniza turmas via `sync_school_classes_from_students()`.
+- **API de Resumo Online (`application_instrument_online_summary`)**: Em `/aplicacoes/api/instrumentos/aplicacoes/<uuid>/resumo-online/` (GET). Retorna contagens de alunos inscritos, iniciados, concluídos, ausências, duração média de prova e dados de anti-cola (pausas e saídas da aplicação).
 - **API de Listagem de Instrumentos (`ApplicationInstrumentViewSet`)**: Em `/aplicacoes/api/instrumentos/`. Busca com debounce, paginação, filtros por ano, unidade, turmas, etapas e situação do malote.
-- **Serializers**: `ApplicationInstrumentExamSerializer` e `ApplicationInstrumentApplicationSerializer` (validações ricas de participantes, antecedência e datas).
+- **Serializers**: `ApplicationInstrumentExamSerializer`, `ApplicationInstrumentApplicationSerializer` e `ApplicationInstrumentOnlineSummarySerializer`.
 
 ### Frontend & UI (`fiscallizeon/applications/templates/`, `components/`)
 - **Sidebar Dinâmica**: Itens de Coordenação e Professor adaptados para exibir `"**Avaliações**"` sob Aplicações.
-- **Nova Listagem (`application_instrument_list.html`)**: Abas de categoria com `localStorage`, filtros estilizados, linhas com turmas expansíveis, badges de malote, dropdown unitário em 2 colunas e card flutuante de ações em lote.
+- **Nova Listagem (`application_instrument_list.html`)**: Abas de categoria com `localStorage`, filtros estilizados, linhas com turmas expansíveis, badges de malote/situação limpos, dropdown unitário em 2 colunas e card flutuante de ações em lote.
 - **Nova Tela Unificada (`complete_application_instrument.html`)**:
-  - **Etapa 1 (Configurações)**: Dados do caderno, nota, prazos e sanfona de opções avançadas.
+  - **Etapa 1 (Caderno)**: Dados do caderno, nota, prazos e sanfona de opções avançadas (renomeada de "Configurações" para "Caderno").
   - **Etapa 2 (Questões)**: Solicitações a docentes, IA, cadernos anteriores e modal de revisão de questões (só abre após entrega concluída).
   - **Etapa 3 (Aplicação & Participantes)**: Formato (presencial/online/híbrida), horários, tokens, componente `instrument_participants` (seleção por turma com collapse de alunos sob demanda) e seção de alunos avulsos com `search-students-component`.
-  - **Etapa 5 (Conferência & Malote)**: Cards de status da aplicação e das questões com link direto para correção; seção de Malote com 3 modalidades: **Malote completo**, **Apenas gabaritos** e **Aluno específico**; diálogo de impressão refatorado (`instrument_print_dialogs.html`); barra de progresso em tempo real da geração do malote.
+  - **Etapa 5 (Conferência Dinâmica)**:
+    - Para **Presencial**: 3 cards de Malote (*Malote completo*, *Apenas gabaritos*, *Aluno específico*), diálogo de impressão refatorado (`instrument_print_dialogs.html`) e barra de progresso em tempo real.
+    - Para **Híbrida**: Apenas card de *Malote completo*.
+    - Para **Online / Exercícios**: Painel com métricas de execução em tempo real (`resumo-online`) e botão *"Acompanhar aplicação"*.
   - **UX & Validações**: Foco e scroll automático no primeiro campo com erro; bloqueio inteligente de abas; detecção de alterações `v-changed`.
 
 ---
@@ -42,13 +53,16 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 - **Ativação da Feature Flag**: Alternância no Admin e exibição condicional do menu na sidebar.
 - **Nova Listagem de Instrumentos Avaliativos**: Carregamento assíncrono via API, paginação, busca com debounce e filtros de ano, unidade, turmas, etapas e malote.
 - **Persistência da Aba de Categoria**: Seleção da aba (Presencial, Online, Exercícios, Híbrida) salva no `localStorage`.
-- **Coluna Malote e Detalhes da Linha**: Badges de status do malote, turmas expansíveis e token online com botão de copiar.
+- **Coluna Situação Limpa**: Exibição limpa de status do caderno ou malote, sem concorrência com "Pronto para impressão" (fix validado).
 - **Menu Unitário de Opções (Dropdown em 2 colunas)**: Ações de Editar, Duplicar, Divulgar resultado e ações de impressão.
 - **Card de Ações em Lote**: Seleção múltipla, contagem dinâmica, marcar para impressão, divulgar resultados e gerar malotes.
-- **Criação de Novo Instrumento (Etapa 1 — Caderno)**: Criação do `Exam` ao clicar em Continuar, validação de nome e persistência das opções avançadas.
+- **Criação de Novo Instrumento (Etapa 1 — Caderno)**: Criação do `Exam` ao clicar em Continuar, validação de nome e persistência das opções avançadas (etapa renomeada para "Caderno").
 - **Criação de Novo Instrumento (Etapa 2 — Questões & Revisão)**: Solicitação a professores, geração com IA, cadernos anteriores e modal de revisão.
 - **Criação de Novo Instrumento (Etapa 3 — Aplicação & Participantes)**: Configurações de horários, tolerâncias, seleção de turmas com alunos recolhíveis e inclusão de alunos avulsos.
-- **Conferência e Geração de Malote (Etapa 5 — Conferência)**: Resumo de pendências da aplicação e de questões; geração de malote completo, apenas gabaritos e folha avulsa; acompanhamento do status e porcentagem de geração ao vivo.
+- **Conferência Dinâmica por Categoria (Etapa 5)**:
+  - Presencial: 3 cards de malote e barra de progresso.
+  - Híbrida: card de malote completo.
+  - Online / Exercícios: painel de acompanhamento online com métricas de participantes, ausências, duração média, pausas e saídas de tela.
 - **Edição de Instrumento Existente**: Hidratação de caderno, aplicação e participantes; detecção de alterações com `v-changed` e botão "Salvar alterações".
 - **Foco Automático em Erros de Validação**: Redirecionamento automático do foco para o primeiro campo inválido ao tentar avançar ou salvar.
 
@@ -221,7 +235,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 #### Cenário 3 — Filtragem por categoria nas abas e persistência no localStorage
 **Ação humana:**
 - [x] Na tela `/aplicacoes/instrumentos-avaliativos/`, observar a barra de abas superiores (`"**Todas**"`, `"**Presencial**"`, `"**Online**"`, `"**Exercícios**"`, `"**Híbrida**"`).
-- [ ] Clicar na aba `"**Presencial**"`.
+- [x] Clicar na aba `"**Presencial**"`.
 - [ ] Verificar visualmente se a aba selecionada recebe a borda inferior laranja e se a listagem exibe apenas aplicações presenciais.
 - [ ] Recarregar a página (F5) e confirmar que a aba `"**Presencial**"` permaneceu selecionada automaticamente.
 
@@ -345,8 +359,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 #### Cenário 10 — Preenchimento inicial e persistência do Caderno (Exam)
 **Ação humana:**
 - [ ] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
-- [ ] Confirmar que a tela abre na Etapa 1: `"**Configurações**"` (com o passo marcado em laranja).
-- [ ] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando que o caderno deve ser criado antes.
+- [ ] Confirmar que a tela abre na Etapa 1 intitulada **`"Caderno"`** (com o passo marcado em laranja).
+- [ ] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
 - [ ] Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`.
 - [ ] Selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
 - [ ] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
@@ -438,27 +452,57 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-### 5.9 Etapa 5: Conferência e Geração de Malote [Automatizável ✅]
+### 5.9 Etapa 5: Conferência e Geração de Malote vs Acompanhamento Online [Automatizável ✅]
 
-#### Cenário 19 — Painel de Conferência: Pendências e Visualização dos Cards de Malote
+#### Cenário 19 — Painel de Conferência: Cards de Malote por Categoria (Presencial vs Híbrida)
 **Ação humana:**
 - [ ] Na navegação superior de etapas, clicar na **Etapa 5: Conferência** (liberada após criar caderno e aplicação).
-- [ ] Verificar os cards de resumo:
+- [ ] Verificar os cards superiores de status:
   - Card **Aplicação**: exibe status `"Pendente"` ou `"Concluído"` (clicar nele deve redirecionar para a etapa correspondente).
-  - Card **Questões**: exibe contagem de pendências/reprovações de questões.
-- [ ] Para aplicação com formato Presencial, confirmar a exibição da seção **Malote** com os 3 cards:
-  - Card 1: `"**Malote completo**"` (com botão *"Gerar malote"*).
-  - Card 2: `"**Apenas gabaritos**"` (com botão *"Gerar malote"*).
-  - Card 3: `"**Aluno específico**"` (com botão *"Gerar malote"*).
+  - Card **Questões**: exibe contagem de pendências/reprovações de questões com link direto para revisão.
+- [ ] **Validação em Formato Presencial (`category = 3`):**
+  - Confirmar a exibição da seção **Malote** com os 3 cards:
+    - Card 1: `"**Malote completo**"` (com botão *"Gerar malote"*).
+    - Card 2: `"**Apenas gabaritos**"` (com botão *"Gerar malote"*).
+    - Card 3: `"**Aluno específico**"` (com botão *"Gerar malote"*).
+- [ ] **Validação em Formato Híbrido (`category = 5`):**
+  - Mudar para uma aplicação Híbrida ou editar o formato.
+  - Confirmar que a seção de Malote exibe **exclusivamente** o card `"**Malote completo**"`, ocultando os cards de gabarito avulso e aluno específico (regra de híbrida onde não se imprime cartão de resposta isolado).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 5)
 - Seletor: `button:has-text("Aplicação")`, `button:has-text("Questões")`, `#instrument-conference-bundle-title`
-- Estado esperado: `currentStep === 5`, 3 cards de geração renderizados quando `application.category === 1` ou `3`
+- Estado esperado: `currentStep === 5`; quando `category === 3` renderiza 3 cards; quando `category === 5` renderiza apenas 1 card (Malote completo)
 
-#### Cenário 20 — Abertura dos Diálogos de Impressão e Acompanhamento de Progresso
+#### Cenário 19.1 — Painel de Conferência: Acompanhamento Online e Métricas de Anti-cola (Online e Lista de Exercícios)
 **Ação humana:**
-- [ ] No card `"**Malote completo**"`, clicar em `"**Gerar malote**"`.
+- [ ] Acessar a Etapa 5 (Conferência) de uma aplicação com formato **Online (`category = 2`)** ou **Lista de exercícios (`category = 4`)**.
+- [ ] Confirmar que os cards de geração de malote físico **NÃO são exibidos**.
+- [ ] Verificar a exibição do **Painel de Acompanhamento**:
+  - Título `"**Acompanhamento**"`.
+  - Botão secundário `"**Acompanhar aplicação**"` com link para a tela de fiscalização online (`/aplicacoes/<uuid>/acompanhamento/`).
+- [ ] Confirmar a renderização dos cards com as métricas em tempo real (`/resumo-online/`):
+  - `"**Alunos que iniciaram**"`
+  - `"**Alunos que concluíram**"`
+  - `"**Alunos não presentes**"`
+  - `"**Duração média de prova**"`
+- [ ] **Validação específica de Formato Online (`category = 2`):**
+  - Confirmar que a tela exibe adicionalmente os 3 blocos de auditoria/anti-cola:
+    - `"**Pausas solicitadas**"`
+    - `"**Alunos com saídas da aplicação**"`
+    - `"**Duração média das pausas**"`
+- [ ] **Validação específica de Lista de Exercícios (`category = 4`):**
+  - Confirmar que os blocos de pausas e saídas da aplicação são ocultados, mantendo apenas as métricas de início, conclusão e ausência.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 5)
+- Endpoint consumido: `GET /aplicacoes/api/instrumentos/aplicacoes/<uuid>/resumo-online/`
+- Seletor: `dt:has-text("Alunos que iniciaram")`, `button:has-text("Acompanhar aplicação")`
+- Estado esperado: status 200 na API; cards de malote ausentes; quando `category === 2` exibe `dt:has-text("Pausas solicitadas")`; quando `category === 4` omite pausas e saídas
+
+#### Cenário 20 — Abertura dos Diálogos de Impressão e Acompanhamento de Progresso (Fluxo Presencial)
+**Ação humana:**
+- [ ] Em aplicação Presencial ou Híbrida, no card `"**Malote completo**"`, clicar em `"**Gerar malote**"`.
 - [ ] Verificar se o diálogo `.instrument-print-dialog` abre com cabeçalho e rodapé fixos, seleção de modelo de folha (radios clicáveis em laranja) e switches.
 - [ ] Confirmar o disparo da geração e fechar o modal.
 - [ ] Verificar se a barra de progresso da geração surge na tela (`div[role="progressbar"]`), exibindo o status `"Gerando malote"` e a porcentagem dinâmica `${ instrumentPrintStatus.progress }%`.
