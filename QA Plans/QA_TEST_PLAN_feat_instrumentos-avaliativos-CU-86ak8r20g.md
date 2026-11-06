@@ -247,10 +247,13 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 4 — Busca textual e filtros combinados
 **Ação humana:**
-- [ ] Digitar parte do nome da avaliação no campo de busca com ícone de lupa (`placeholder="Buscar"`).
-- [ ] Aguardar brevemente (debounce de 300ms) e confirmar que a listagem filtra em tempo real sem recarregar a tela inteira.
+- [x] Digitar parte do nome da avaliação no campo de busca com ícone de lupa (`placeholder="Buscar"`).
+- [x] Aguardar brevemente (debounce de 300ms) e confirmar que a listagem filtra em tempo real sem recarregar a tela inteira.
 - [ ] Selecionar um ano específico no dropdown `"**Ano**"` e uma unidade no dropdown `"**Unidade**"`.
 - [ ] Confirmar que o filtro por URL/API é aplicado corretamente.
+
+> [!NOTE]
+> *Observação de QA / UX:* A busca atual via API (`ApplicationInstrumentFilterSet`) exige correspondência literal contínua de caracteres (`exam__name__icontains`), falhando quando o usuário digita fragmentos de palavras separadas (ex.: `"simu mul"` retorna vazio mesmo existindo `"Simulado Multi-Áreas"`). Na busca global do cabeçalho (`/api/v1/search/`), os termos são divididos e combinados via `AND`, localizando com facilidade. Melhoria registrada na Seção 8.1.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -611,6 +614,26 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Sugestão de Implementação / Melhoria:**
 > - Adicionar um componente de **Skeleton Screen / Shimmer** (espaço reservado animado em cinza claro) simulando as abas e as linhas da tabela enquanto o Vue monta e a API responde;
 > - Ou renderizar o esqueleto das abas estaticamente no template HTML, ativando a interatividade com `v-cloak` e transição suave de opacidade (`fade-in`), garantindo que o usuário veja a estrutura completa da página desde o primeiro milissegundo de carregamento.
+
+> [!TIP] [Melhoria de UX / Busca Flexível] Busca Multi-termo com Quebra de Palavras (Consistência com a Busca Global)
+> **Cenário Observado / Divergência de Usabilidade:**  
+> Ao digitar múltiplos termos ou fragmentos de palavras separados por espaço no campo de busca da listagem (ex.: `"simu mul"`), o sistema exibe *"Nenhuma aplicação encontrada"*, mesmo existindo na listagem a aplicação com o nome correspondente (*"Simulado Multi-Áreas (Natureza, Humanas e Matemática) - QA"*).  
+> Em contrapartida, a **Busca Global do cabeçalho da plataforma** localiza perfeitamente tanto o caderno quanto a aplicação ao receber exatamente os mesmos termos (`"simu mul"`), gerando uma inconsistência de experiência para o usuário.
+>
+> **Causa Raiz Técnica Identificada:**
+> - No filtro da nova listagem (`ApplicationInstrumentFilterSet.filter_search` em `fiscallizeon/applications/filters.py`), a busca executa uma correspondência literal estrita: `exam__name__icontains=term`. Como `"Simulado Multi-Áreas"` contém `"lado "` entre `"Simu"` e `"mul"`, a string contínua falha.
+> - Já a Busca Global (`SearchView` em `fiscallizeon/core/apis.py`) normaliza e quebra a entrada em termos individuais (`normalize_query`), combinando-os dinamicamente com operador `&` (AND): `Q(exam__name__icontains='simu') & Q(exam__name__icontains='mul')`.
+>
+> **Evidências Visuais Comparativas:**
+> 1. *Busca Global reconhecendo os fragmentos e trazendo resultados:*  
+>    ![Busca Global com múltiplos termos](../evidencias/busca_global_multi_termo.png)
+> 2. *Busca na Listagem de Instrumentos falhando com o mesmo termo:*  
+>    ![Busca local falhando](../evidencias/busca_instrumentos_sem_resultado_multi_termo.png)
+> 3. *Aplicação presente na listagem ativa (Presencial):*  
+>    ![Aplicação presente na listagem](../evidencias/listagem_instrumentos_presencial_com_simulado.jpg)
+>
+> **Sugestão de Implementação / Melhoria:**
+> - Refatorar o método `filter_search` em `ApplicationInstrumentFilterSet` para dividir o termo digitado em palavras (`term.split()`) e aplicar múltiplos filtros `exam__name__icontains` encadeados, ou reutilizar o utilitário `normalize_query` já consolidado na plataforma. Dessa forma, a busca torna-se tolerante a fragmentos, mais amigável e 100% consistente com o comportamento global do Lize Edu.
 
 ---
 
