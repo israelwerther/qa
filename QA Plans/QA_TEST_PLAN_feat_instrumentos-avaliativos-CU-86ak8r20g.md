@@ -267,19 +267,33 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 5 — Visualização compacta e expansão de turmas
 **Ação humana:**
-- [ ] Localizar uma avaliação que possua mais de uma turma vinculada.
-- [ ] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**2 turmas**"` com ícone chevron).
+- [x] Localizar uma avaliação que possua mais de uma turma vinculada (ex.: `P6_LÍNGUA INGLESA_F3_MACMILLAN_2026`).
+- [x] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**13 turmas**"`).
 - [ ] Clicar no botão expansor de turmas.
 - [ ] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
 
-> [!WARNING]
-> *Bug Crítico Identificado:* Provas que possuem apenas alunos avulsos (sem turmas vinculadas) omitem completamente a indicação e contagem de participantes (ex.: `4 aluno(s) avulso(s)`), exibindo apenas o badge da categoria. Documentado na Seção 7.
+> [!NOTE]
+> *Achado de Validação (Paridade de Turmas):* Na tela legada, a mesma avaliação exibia 3 tags e `+ 9` (totalizando 12). A investigação direta no banco de dados confirmou que **existem exatamente 13 turmas vinculadas**. A divergência foi causada por um bug histórico de *off-by-one* no componente Vue legado (`tooltip-component` em `vue-tooltip.html`, que usava `slice(showNumber, length - 1)` descartando o último item). A contagem da nova tela (`13 turmas`) é a correta.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `button.application-instrument-expand`
 - Estado esperado: elemento de popover visível contendo os nomes das turmas vinculadas
 - Fixture: `application.classes.add(turma1, turma2)`
+
+#### Cenário 5.1 — Exibição e contagem de alunos avulsos na ausência de turmas [BUG CRÍTICO ABERTO ❌]
+**Ação humana:**
+- [x] Localizar na listagem uma avaliação aplicada diretamente para estudantes individuais sem turmas vinculadas (ex.: `EXAME FINAL_Geografia_F9_ANGLO_2025`).
+- [ ] Verificar se abaixo do nome do caderno é exibido o selo de participantes com o total de alunos avulsos (ex.: `"**4 aluno(s) avulso(s)**"`).
+  - **Comportamento Atual (Falha):** A linha renderiza unicamente o badge da modalidade (`Presencial`), ocultando completamente a informação de alunos vinculados.
+  - **Comportamento Esperado:** Paridade com a tela legada (`application.studentsCount aluno(s) avulso(s)`).
+- [ ] Após a correção do desenvolvedor, retestar e homologar a exibição da tag de alunos avulsos.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumentos-avaliativos/`
+- Endpoint API: `/aplicacoes/api/instrumentos/`
+- Problema identificado: O serializer `ApplicationInstrumentListSerializer` não retorna `students_count` e o template `application_instrument_list.html` só renderiza participantes se `school_classes.length > 0`.
+- Detalhes e evidências comparativas: [**Seção 7 (Bugs Encontrados)**](#7-bugs-and-observations-problemas-encontrados-na-validação-prática)
 
 #### Cenário 6 — Copiar token online diretamente na listagem
 **Ação humana:**
@@ -595,7 +609,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Evidência de Resolução:**  
 > ![Evidência de Resolução - Coluna Situação Limpa](../evidencias/image-33.png)
 
-> [!WARNING] [Bug / Regressão Funcional] Omissão da exibição e contagem de alunos avulsos na listagem
+> [!WARNING] [Bug Crítico / Regressão Funcional] Omissão da exibição e contagem de alunos avulsos na listagem [BUG ABERTO ❌]
+> **Cenário de Homologação:** [Cenário 5.1](#cenário-51--exibição-e-contagem-de-alunos-avulsos-na-ausência-de-turmas-bug-crítico-aberto-)
 > **Evidência/Reprodução:** Ao listar aplicações realizadas diretamente para alunos específicos (sem turma vinculada, como provas finais/recuperação ex.: `EXAME FINAL_Geografia_F9_ANGLO_2025`), a nova tela renderiza apenas o badge de modalidade (`Presencial`), ocultando completamente a informação de que existem alunos participantes vinculados.  
 > Na listagem legada (`/aplicacoes/`), a interface exibia com clareza a etiqueta informativa (ex.: `4 aluno(s) avulso(s)`, `14 aluno(s) avulso(s)`).
 > 
@@ -610,6 +625,26 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 >    ![Omissão de alunos avulsos na nova listagem](../evidencias/omissao_alunos_avulsos_nova_listagem.png)  
 > 2. *Tela legada exibindo a tag de alunos avulsos:*  
 >    ![Exibição de alunos avulsos na tela legada](../evidencias/exibicao_alunos_avulsos_tela_legada.png)
+
+> [!TIP] [Paridade de Dados / Bug Legado Identificado] Divergência na contagem de turmas vinculadas (12 no legado vs 13 na nova tela)
+> **Evidência/Reprodução:** Ao comparar a mesma avaliação com múltiplas turmas (`P6_LÍNGUA INGLESA_F3_MACMILLAN_2026`) entre as duas listagens:
+> - **Na listagem legada:** A interface exibia 3 tags de turmas e um badge `+ 9`, totalizando **12 turmas**.
+> - **Na nova listagem:** A interface exibe o resumo **`13 turmas`**.
+>
+> **Causa Raiz Técnica Identificada:**
+> - Uma consulta direta ao banco de dados (`Application.objects.get(...).school_classes.count()`) confirmou que **existem exatamente 13 turmas reais** vinculadas a essa aplicação.
+> - A tela legada utilizava o componente Vue `tooltip-component` (`fiscallizeon/core/templates/includes/vue-tooltip.html`), que continha um erro clássico de cálculo de array (*off-by-one*):
+>   ```javascript
+>   configs.objects.slice(configs.showNumber, configs.objects.length - 1)
+>   ```
+>   Como o método `.slice(start, end)` do JS não inclui o índice final (`end`), subtrair `- 1` do tamanho total (`13 - 1 = 12`) fez com que a última turma (índice 12) fosse descartada silenciosamente na tela legada (`slice(3, 12)` retornando 9 itens em vez de 10).
+> - **Status no Novo Fluxo:** A nova tela (`application_instrument_list.html`) calcula diretamente `${ application.school_classes.length + ' turmas' }`, exibindo a quantidade **13** com 100% de precisão e corrigindo o bug visual do sistema legado.
+>
+> **Evidências Comparativas:**  
+> 1. *Tela legada exibindo 3 tags + 9 turmas (total 12):*  
+>    ![Contagem no Legado](../evidencias/contagem_turmas_tela_legada_12.png)  
+> 2. *Nova listagem exibindo 13 turmas (correto):*  
+>    ![Contagem na Nova Tela](../evidencias/contagem_turmas_tela_nova_13.png)
 
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
