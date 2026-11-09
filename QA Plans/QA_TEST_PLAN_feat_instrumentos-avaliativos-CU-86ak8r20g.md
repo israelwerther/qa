@@ -421,17 +421,17 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 #### Cenário 13 — Configuração de parâmetros e persistência da Aplicação com Participantes
 **Ação humana:**
 - [x] Confirmar que a tela está na Etapa 2 intitulada **`"Aplicação"`** (com o passo marcado em laranja).![alt text](../evidencias/image-40.png)
-- [ ] **Card 1 (Data e horário):**
+- [x] **Card 1 (Data e horário):**
   - Preencher a **Data da aplicação** (ex.: data corrente ou futura válida).
   - Preencher o **Horário da aplicação** (`De [08:00] às [12:00]`).
   - *(Condicional)*: Em avaliações Online ou Híbridas (cujo formato foi definido na Etapa 1), informar tempo mínimo para finalizar e tempo de tolerância para início; em Exercícios, preencher data final e tempo máximo de realização.
-- [ ] **Card 2 (Participantes):**
+- [x] **Card 2 (Participantes):**
   - Selecionar a unidade (ex.: `GRU - Rede Decisão`), a série e marcar ao menos uma turma participante.
-- [ ] **Card 3 (Divulgação e configurações):**
+- [x] **Card 3 (Divulgação e configurações):**
   - Configurar a data de divulgação dos resultados, prazo para envio das folhas/respostas, prazo de correção e opções de visualização do gabarito.
-- [ ] Clicar no botão `"**Continuar**"` no cabeçalho superior direito.
-- [ ] Confirmar que a aplicação é salva no banco (`POST /aplicacoes/api/instrumentos/aplicacoes/`) vinculando o caderno da Etapa 1 e os participantes selecionados.
-- [ ] Confirmar que o sistema transiciona automaticamente para a **Etapa 3 (`"Questões"`)**.
+- [x] Clicar no botão `"**Continuar**"` no cabeçalho superior direito.
+- [x] Confirmar que a aplicação é salva no banco (`POST /aplicacoes/api/instrumentos/aplicacoes/`) vinculando o caderno da Etapa 1 e os participantes selecionados.
+- [x] Confirmar que o sistema transiciona automaticamente para a **Etapa 3 (`"Questões"`)**.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
