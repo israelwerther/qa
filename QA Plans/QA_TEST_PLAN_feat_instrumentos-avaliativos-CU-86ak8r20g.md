@@ -397,7 +397,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
 - [x] Confirmar que a tela abre na Etapa 1 intitulada **`"Caderno"`** (com o passo marcado em laranja).
 - [x] Tentar clicar nas etapas seguintes no stepper (Aplicação, Questões, etc.): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
-- [x] **Card 1 (Informações do caderno):** Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`, selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
+- [x] **Card 1 (Informações do caderno):** Selecionar o Formato da avaliação (Presencial, Online, Exercícios ou Híbrida). Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`, selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
 - [x] **Card 2 (Prazos):** Clicar no acordeão `"**Prazos**"` para expandir o card:
   - Preencher a Data de elaboração (`De` e `Até`) com prazo futuro válido.
   - (Opcional) Informar prazos de Revisão e testar o toggle `"Alteração automática de status"`.
@@ -420,14 +420,15 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 13 — Configuração de parâmetros e persistência da Aplicação com Participantes
 **Ação humana:**
-- [ ] Confirmar que a tela está na Etapa 2 intitulada **`"Aplicação"`** (com o passo marcado em laranja).
+- [x] Confirmar que a tela está na Etapa 2 intitulada **`"Aplicação"`** (com o passo marcado em laranja).![alt text](../evidencias/image-40.png)
 - [ ] **Card 1 (Data e horário):**
-  - Selecionar o formato `"**Presencial**"` (ou `"**Online**"`).
-  - Preencher Horário de Início (`08:00`), Término (`12:00`), tolerância de atraso e tempo mínimo para entrega.
+  - Preencher a **Data da aplicação** (ex.: data corrente ou futura válida).
+  - Preencher o **Horário da aplicação** (`De [08:00] às [12:00]`).
+  - *(Condicional)*: Em avaliações Online ou Híbridas (cujo formato foi definido na Etapa 1), informar tempo mínimo para finalizar e tempo de tolerância para início; em Exercícios, preencher data final e tempo máximo de realização.
 - [ ] **Card 2 (Participantes):**
   - Selecionar a unidade (ex.: `GRU - Rede Decisão`), a série e marcar ao menos uma turma participante.
 - [ ] **Card 3 (Divulgação e configurações):**
-  - Configurar a data de divulgação dos resultados e opções de visualização do gabarito.
+  - Configurar a data de divulgação dos resultados, prazo para envio das folhas/respostas, prazo de correção e opções de visualização do gabarito.
 - [ ] Clicar no botão `"**Continuar**"` no cabeçalho superior direito.
 - [ ] Confirmar que a aplicação é salva no banco (`POST /aplicacoes/api/instrumentos/aplicacoes/`) vinculando o caderno da Etapa 1 e os participantes selecionados.
 - [ ] Confirmar que o sistema transiciona automaticamente para a **Etapa 3 (`"Questões"`)**.
