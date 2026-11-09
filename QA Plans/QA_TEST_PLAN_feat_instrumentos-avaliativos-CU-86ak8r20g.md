@@ -403,9 +403,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
   - (Opcional) Informar prazos de Revisão e testar o toggle `"Alteração automática de status"`.
   - (Validação de conflito) Simular data de início de revisão anterior ao fim da elaboração e confirmar a exibição do alerta de sobreposição de etapas (`Prazos de etapas sobrepostos`).
 - [x] **Card 3 (Opções avançadas):** Clicar no acordeão `"**Opções avançadas**"`: confirmar que o card expande exibindo as configurações (textos base, embaralhar questões/alternativas, IA para discursivas, sigilo, etc.). Testado preenchimento e expansão de campos dinâmicos (ex.: editor de Orientações da prova).
-- [ ] Clicar no botão `"**Continuar**"` no cabeçalho superior direito da tela (registrada sugestão de botão de rodapé na Seção 8.1).
-- [ ] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`).
-- [ ] Confirmar que o sistema transiciona automaticamente para a **Etapa 2 (`"Aplicação"`)**, liberando o acesso no stepper.
+- [x] Clicar no botão `"**Continuar**"` no cabeçalho superior direito da tela (registrada sugestão de botão de rodapé na Seção 8.1).
+- [x] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`).
+- [x] Confirmar que o sistema transiciona automaticamente para a **Etapa 2 (`"Aplicação"`)**, liberando o acesso no stepper.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/`
@@ -771,6 +771,26 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 >    ![Botão Continuar no cabeçalho](../evidencias/melhoria_botao_continuar_topo.png)  
 > 2. *Fim do formulário sem botão de ação para avançar:*  
 >    ![Rodapé sem botão de avançar](../evidencias/melhoria_botao_continuar_rodape_ausente.png)
+
+> [!TIP] [Melhoria de UX / Consistência no Fluxo Unificado] Pré-seleção ou Destaque das Unidades das Coordenações do Caderno na Etapa 2 (Participantes)
+> **Cenário Observado:** [Cenário 13 (Criação da Aplicação — Etapa 2: Aplicação & Participantes)](#cenário-13--configuração-de-horários-tolerância-e-participantes)  
+> **Comportamento em Tela:**  
+> Na Etapa 1 (*"Caderno"*), o usuário define as *Coordenações autorizadas* vinculadas à prova (ex.: marcando apenas a unidade `GRU - Rede Decisão`).  
+> Ao avançar para a Etapa 2 (*"Aplicação"*), no card de *Participantes*, o campo *"Selecione uma unidade"* carrega e exibe todas as unidades da rede às quais o usuário logado possui acesso (`GRU`, `OSB`, `UNI`, `MAS`, `DAF`, etc.), sem nenhuma indicação ou pré-seleção alinhada à escolha feita no passo anterior.
+>
+> **Análise Técnica e de Domínio:**  
+> - **Regra de Negócio Válida:** O comportamento atual é funcionalmente correto e intencional para permitir que um caderno elaborado por uma coordenação específica (ex.: polo pedagógico GRU) possa ser aplicado a alunos de toda a rede de escolas (`Application` multi-unidades).  
+> - **Atrito de Usabilidade:** No entanto, no modelo mental do usuário dentro de um assistente unificado (Stepper), a ausência de conexão entre as duas etapas gera a percepção de desconexão de dados e obriga o usuário a rolar e buscar manualmente a mesma unidade que acabou de selecionar na etapa anterior.
+>
+> **Sugestão de Implementação para a Versão 2.0:**  
+> 1. **Pré-seleção Inteligente:** Ao carregar a Etapa 2 pela primeira vez em uma nova criação, preencher o valor inicial de `participantFilters.unities` automaticamente com as unidades correspondentes às coordenações selecionadas no Caderno (mantendo o dropdown aberto para que o usuário possa marcar ou desmarcar livremente outras unidades da rede se desejar); OU  
+> 2. **Agrupamento/Destaque Visual:** Posicionar no topo do selectpicker (ou com uma badge/seção de destaque *"Unidades da elaboração"*) as unidades que foram vinculadas na Etapa 1, facilitando a seleção rápida sem rolagem extensa em clientes de grande porte.
+>
+> **Evidências Visuais (Registro Jam [8f2e009d](https://jam.dev/c/8f2e009d-2f08-4bf9-af38-649daa786459)):**  
+> 1. *Coordenação restrita selecionada na Etapa 1 (ex.: apenas GRU):*  
+>    ![Coordenações autorizadas Etapa 1](../evidencias/melhoria_etapa1_coordenacoes_gru.png)  
+> 2. *Todas as unidades da rede disponíveis sem pré-filtro na Etapa 2:*  
+>    ![Todas as unidades da rede listadas na Etapa 2](../evidencias/melhoria_etapa2_unidades_todas_disponiveis.png)
 
 
 ---
