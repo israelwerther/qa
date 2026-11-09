@@ -394,11 +394,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 10 — Preenchimento inicial e persistência do Caderno (Exam)
 **Ação humana:**
-- [ ] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
-- [ ] Confirmar que a tela abre na Etapa 1 intitulada **`"Caderno"`** (com o passo marcado em laranja).
-- [ ] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
-- [ ] Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`.
-- [ ] Selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
+- [x] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
+- [x] Confirmar que a tela abre na Etapa 1 intitulada **`"Caderno"`** (com o passo marcado em laranja).
+- [x] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
+- [x] Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`.
+- [x] Selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
 - [ ] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
 - [ ] Preencher uma data limite de elaboração válida.
 - [ ] Clicar no botão inferior `"**Continuar**"`.
