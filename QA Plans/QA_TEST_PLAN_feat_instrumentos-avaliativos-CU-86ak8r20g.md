@@ -390,25 +390,27 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-### 5.6 Criação Unificada: Etapa 1 (Caderno & Opções Avançadas) [Automatizável ✅]
+### 5.6 Criação Unificada: Etapa 1 (Caderno, Prazos & Opções Avançadas) [Automatizável ✅]
 
 #### Cenário 10 — Preenchimento inicial e persistência do Caderno (Exam)
 **Ação humana:**
 - [x] Na listagem, clicar no botão laranja `"**+ Nova aplicação**"`.
 - [x] Confirmar que a tela abre na Etapa 1 intitulada **`"Caderno"`** (com o passo marcado em laranja).
-- [x] Tentar clicar na Etapa 2 (`"Questões"`) ou Etapa 3 (`"Aplicação"`): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
-- [x] Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`.
-- [x] Selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
-- [ ] Clicar no toggle `"**Opções avançadas**"`: confirmar que o card sanfona expande exibindo as configurações (textos base, embaralhar questões, IA para discursivas, sigilo, etc.).
-- [ ] Preencher uma data limite de elaboração válida.
+- [x] Tentar clicar nas etapas seguintes no stepper (Aplicação, Questões, etc.): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
+- [x] **Card 1 (Informações do caderno):** Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`, selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
+- [ ] **Card 2 (Prazos):** Clicar no acordeão `"**Prazos**"` para expandir o card:
+  - Preencher a Data de elaboração (`De` e `Até`) com prazo futuro válido.
+  - (Opcional) Informar prazos de Revisão e testar o toggle `"Alteração automática de status"`.
+  - (Validação de conflito) Simular data de início de revisão anterior ao fim da elaboração e confirmar a exibição do alerta de sobreposição de etapas (`Prazos de etapas sobrepostos`).
+- [ ] **Card 3 (Opções avançadas):** Clicar no acordeão `"**Opções avançadas**"`: confirmar que o card expande exibindo as configurações (textos base, embaralhar questões/alternativas, IA para discursivas, sigilo, etc.).
 - [ ] Clicar no botão inferior `"**Continuar**"`.
 - [ ] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`).
-- [ ] Confirmar que o sistema transiciona automaticamente para a Etapa 2 (`"Questões"`), liberando o acesso às etapas 2 e 3.
+- [ ] Confirmar que o sistema transiciona automaticamente para a **Etapa 2 (`"Aplicação"`)**, liberando o acesso no stepper.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/`
 - Seletor: `#application-title`, `#application-total-grade`, `#exam-advanced-options-toggle`, `button:has-text("Continuar")`
-- Estado esperado: `POST /aplicacoes/api/instrumentos/cadernos/` retorna 201 com `exam.id`, `currentStep` vira 2
+- Estado esperado: `POST /aplicacoes/api/instrumentos/cadernos/` retorna 201 com `exam.id`, `currentStep` vira 2 (Etapa de Aplicação)
 - Fixture: dados básicos de cliente e coordenação
 
 
