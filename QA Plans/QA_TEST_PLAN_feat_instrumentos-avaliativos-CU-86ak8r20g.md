@@ -371,15 +371,15 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Estado esperado: `.application-instruments-bulk` renderiza condicionalmente com base em `selectionList.length > 0`
 - Fixture: ao menos 3 aplicações cadastradas
 
-#### Cenário 9 — Operação em lote: Divulgar resultados [BUG FRONT-END ABERTO ❌]
+#### Cenário 9 — Operação em lote: Divulgar resultados [Comportamento Legado / Sugestão UX 💡]
 **Ação humana:**
 - [x] Selecionar duas aplicações cuja divulgação de resultado esteja agendada para o futuro (ex.: `P6_LITERATURA_M2_SAE_2026` e `[QA] Caderno Rayssa Rodrigues - 02`).
 - [x] No card flutuante, clicar no botão `"**Divulgar resultados**"`.![alt text](../evidencias/image-38.png)
 - [x] Confirmar o diálogo/modal de confirmação.![alt text](../evidencias/image-39.png)
-- [ ] Verificar se o status de divulgação é atualizado na listagem para `"Divulgado em: [Data atual]"`.
-  - **Comportamento no Backend (Sucesso):** Ambas as aplicações foram antecipadas com sucesso no banco de dados para a data atual (`09/11/2026`).
-  - **Comportamento no Front-end (Falha/Bug):** Ao confirmar o modal, as aplicações **desaparecem imediatamente da tabela** como se tivessem sido deletadas (arquivo: `cenario9_cadernos_sumiram_bug.jpg`). Elas só voltam a ser exibidas se o usuário der F5 na página.
-  - **Detalhes técnicos e código:** Registrado na [Seção 7 (Bugs Encontrados)](#7-bugs-and-observations-problemas-encontrados-na-validação-prática).
+- [x] Verificar se o status de divulgação é atualizado na listagem para `"Divulgado em: [Data atual]"`.
+  - **Comportamento no Backend (Sucesso):** Ambas as aplicações foram antecipadas com sucesso no banco de dados para a data atual (`09/11/2026`). Ao recarregar a tela (F5), o texto `"Divulgado em: 09/11/2026"` é exibido perfeitamente.
+  - **Comportamento em Tela (Paridade com Legado):** No front-end (sem recarregar), a linha é removida da tabela pelo callback (`.filter()`), reproduzindo exatamente o comportamento histórico da tela legada (`application_list_new.html:1817` via jQuery `.remove()`).
+  - **Registro de Melhoria de UX:** Registrado como oportunidade de melhoria para a versão 2.0 na [Seção 8.1 (Sugestões de Melhorias de UX)](#81-sugestões-de-melhorias-visuais-e-de-ux-feedback-de-produto--design).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -693,34 +693,6 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-> [!WARNING] [Bug Front-end / UX] Aplicações somem da listagem após divulgação de resultados em lote [BUG ABERTO ❌]
-> **Cenário de Homologação:** [Cenário 9 (Operação em lote: Divulgar resultados)](#cenário-9--operação-em-lote-divulgar-resultados-bug-front-end-aberto-)  
-> **Evidência/Reprodução:** Ao selecionar aplicações com divulgação agendada para o futuro e executar a ação em lote `"Divulgar resultados"`:
-> 1. O modal de confirmação abre e a requisição POST é disparada com sucesso para a API (`POST /aplicacoes/<uuid>/divulgar/`).
-> 2. No banco de dados, o campo `student_stats_permission_date` é atualizado corretamente para a data/hora atual.
-> 3. **Porém, na interface do usuário (SPA), as linhas das aplicações divulgadas desaparecem imediatamente da listagem**, dando a falsa impressão de que os cadernos foram excluídos ou que ocorreu um erro grave.
-> 4. As aplicações só reaparecem na tela caso o usuário faça um recarregamento forçado (F5).
->
-> **Causa Raiz Técnica Identificada:**
-> No arquivo `fiscallizeon/applications/static/applications/js/application_instrument_list.js` (linhas 508-512), o método `bulkDisseminationOfResults` implementou erroneamente uma lógica de remoção de array (provavelmente copiada de `bulkDeleteApplications`):
-> ```javascript
-> itemsToProcess.forEach((item) => {
->   axios.post(this.replaceUrlId(applicationOptionsConfig.discloseUrl, item.id), {}).then(() => {
->     this.applications = this.applications.filter((app) => app.id !== item.id) // <--- REMOVE A APLICAÇÃO DA LISTAGEM
->     this.selectionList = []
->   })
-> })
-> ```
->
-> **Comportamento Esperado:** As aplicações NÃO devem sumir da listagem. O callback de sucesso deve:
-> - Atualizar os atributos locais da aplicação (`item.student_stats_permission_date = moment().toISOString()`) para que a coluna de data passe a exibir `"Divulgado em: [Data atual]"`; OU
-> - Executar `this.loadApplications(this.buildListUrl(this.page))` para recarregar a página da tabela mantendo os registros visíveis e com o status atualizado.
->
-> **Evidência Visual:**  
-> ![Cadernos sumiram após divulgação em lote](../evidencias/cenario9_cadernos_sumiram_bug.jpg)
-
----
-
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 
 ### 8.1 Sugestões de Melhorias Visuais e de UX (Feedback de Produto & Design)
@@ -770,6 +742,17 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > Incluir no rodapé (à esquerda ou centralizado junto à paginação) uma legenda formatada no padrão do Design System:  
 > `Mostrando de ${ (page - 1) * pageSize + 1 } até ${ Math.min(page * pageSize, totalCount) } de ${ totalCount } resultados`.
 ![alt text](../evidencias/image-34.png)
+
+> [!TIP] [Melhoria de UX / Paridade com Legado] Manter linhas na listagem com status atualizado após divulgação em lote
+> **Cenário Observado:** [Cenário 9 (Operação em lote: Divulgar resultados)](#cenário-9--operação-em-lote-divulgar-resultados-comportamento-legado--sugestão-ux-)  
+> **Comportamento em Tela:** Ao divulgar resultados em lote via card flutuante, a requisição é processada com sucesso no backend e a data atualizada para o momento atual. Porém, na interface SPA, as linhas das aplicações divulgadas desaparecem imediatamente da listagem, reaparecendo apenas após recarregamento manual (F5).
+> **Origem / Paridade Histórica:** A análise do código legado confirmou que esse comportamento é uma reprodução fiel da tela legada (`application_list_new.html`, linha 1817), onde o callback de sucesso chamava `$(`#tr-${item.id}`).remove()`. Na nova tela, o desenvolvedor converteu essa instrução diretamente para `this.applications = this.applications.filter((app) => app.id !== item.id)`.
+> **Sugestão de Implementação para a Versão 2.0:** Em vez de remover a linha da tabela (o que causa no usuário a impressão errônea de exclusão do caderno), sugere-se:
+> 1. Atualizar a propriedade reativa local da aplicação (`item.student_stats_permission_date = moment().toISOString()`), fazendo com que o texto da coluna de datas passe imediatamente para `"Divulgado em: [Data atual]"`; OU
+> 2. Disparar `this.loadApplications(this.buildListUrl(this.page))` no fechamento da ação em lote para recarregar a listagem preservando a visibilidade dos cadernos na página.
+>
+> **Evidência Visual:**  
+> ![Cadernos sumiram após divulgação em lote](../evidencias/cenario9_cadernos_sumiram_bug.jpg)
 
 ---
 
