@@ -441,11 +441,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 17 — Gestão de Participantes: Seleção em Lote, Alunos sob Demanda e Alunos Avulsos
 **Ação humana:**
-- [ ] Na Etapa 2, no Card **Participantes**, localizar uma turma e clicar no botão expansor de alunos.
-- [ ] Confirmar que a lista de alunos daquela turma é carregada sob demanda (`v-if`) e exibida de forma recolhível.
-- [ ] Desmarcar um aluno individual dentro da turma e verificar se o checkbox da turma assume estado indeterminado (parcial).
-- [ ] Na seção **Alunos individuais**, utilizar o campo de busca de alunos (`search-students-component`) para adicionar um aluno avulso (não pertencente às turmas selecionadas).
-- [ ] Confirmar que o aluno adicionado aparece na lista de participantes individuais.
+- [x] Na Etapa 2, no Card **Participantes**, localizar uma turma e clicar no botão expansor de alunos.
+- [x] Confirmar que a lista de alunos daquela turma é carregada sob demanda (`v-if`) e exibida de forma recolhível.
+- [x] Desmarcar um aluno individual dentro da turma e verificar se o checkbox da turma assume estado indeterminado (parcial).
+- [x] Na seção **Alunos individuais**, utilizar o campo de busca de alunos (`search-students-component`) para adicionar um aluno avulso (não pertencente às turmas selecionadas).
+- [x] Confirmar que o aluno adicionado aparece na lista de participantes individuais.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
@@ -454,10 +454,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 18 — Validação de Seleção Vazia e Foco Automático no Erro
 **Ação humana:**
-- [ ] Na Etapa 2, desmarcar todas as turmas e remover qualquer aluno avulso (deixar participantes completamente vazio).
-- [ ] Clicar no botão `"**Continuar**"` (ou `"**Salvar alterações**"`).
-- [ ] Verificar se o sistema impede o envio e exibe mensagem de alerta informando a obrigatoriedade de ao menos um participante.
-- [ ] Confirmar que a tela executa scroll automático e posiciona o foco diretamente sobre a seção com erro.
+- [x] Na Etapa 2, desmarcar todas as turmas e remover qualquer aluno avulso (deixar participantes completamente vazio).
+- [x] Clicar no botão `"**Continuar**"` (ou `"**Salvar alterações**"`).
+- [x] Verificar se o sistema impede o envio e exibe mensagem de alerta informando a obrigatoriedade de ao menos um participante.
+- [x] Confirmar que a tela executa scroll automático e posiciona o foco diretamente sobre a seção com erro.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
