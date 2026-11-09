@@ -9,6 +9,7 @@
 | **Nível de Risco:** | Alto |
 | **Qualidade da OpenSpec:** | ⭐⭐⭐⭐⭐ |
 
+
 ---
 
 ## 1. Summary of Changes (Resumo das Alterações Atualizado)
@@ -45,6 +46,7 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
     - Para **Online / Exercícios**: Painel com métricas de execução em tempo real (`resumo-online`) e botão *"Acompanhar aplicação"*.
   - **UX & Validações**: Foco e scroll automático no primeiro campo com erro; bloqueio inteligente de abas; detecção de alterações `v-changed`.
 
+
 ---
 
 ## 2. Scope Boundaries (Diferenças de Escopo Atualizadas)
@@ -73,6 +75,7 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 - **Distribuição de Colaboradores Responsáveis por Etapa**: Funcionalidade inexistente no backend atual; mantida fora de escopo.
 - **Fluxo Legado (`application_list_new.html`)**: A listagem antiga e o cadastro antigo continuam intactos e não devem ser afetados.
 
+
 ---
 
 ## 3. Navegação e Camada Técnica (Navigation and Technical Layer)
@@ -95,6 +98,7 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 - [x] O arquivo de mapeamento foi nomeado refletindo exatamente o template HTML (Django), e não a View.
 - 🔗 **[Ver Mapeamento de Tela: Listagem](docs/tests/usability/application_instrument_list.md)**
 - 🔗 **[Ver Mapeamento de Tela: Cadastro e Edição](docs/tests/usability/complete_application_instrument.md)**
+
 
 ---
 
@@ -192,6 +196,7 @@ app.classes.add(turma)
 print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | App ID: {app.id}")
 ```
 
+
 ---
 
 ## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
@@ -228,6 +233,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Estado esperado: não existe link para `application_instruments`
 - Fixture: `user.client.has_new_application_experience = False`
 
+
 ---
 
 ### 5.2 Nova Listagem: Filtros, Abas e Busca [Automatizável ✅]
@@ -260,6 +266,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Seletor: `#instruments-search`, `select[name="year"]`, `select[name="units"]`
 - Estado esperado: requisição disparada para `/aplicacoes/api/instrumentos/?search=...&year=...` com dados correspondentes
 - Fixture: duas aplicações com nomes e anos distintos
+
 
 ---
 
@@ -325,6 +332,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Estado esperado: não existe elemento `<p>` com texto `"Pronto para impressão"` na coluna quando a aplicação for Online; exibe apenas o badge correspondente ou malote
 - Fixture: aplicação Online vinculada a caderno com status `CLOSED` ou `ELABORATING` e `print_ready=True`
 
+
 ---
 
 ### 5.4 Nova Listagem: Menu Unitário de Opções (`Opções ⌵`) [Automatizável ✅]
@@ -344,36 +352,41 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Redirecionamento de Editar: URL corresponde a `/aplicacoes/instrumento-avaliativo/[a-f0-9-]+/editar/`
 - Fixture: aplicação com caderno diagramado e malote permitido
 
+
 ---
 
 ### 5.5 Nova Listagem: Ações em Lote e Card Flutuante [Automatizável ✅]
 
 #### Cenário 8 — Seleção múltipla e exibição do card flutuante
 **Ação humana:**
-- [ ] Marcar o checkbox na primeira linha da tabela.
-- [ ] Verificar se o card flutuante de ações em lote surge no topo/base da listagem (`.application-instruments-bulk`).
-- [ ] Confirmar o texto de contagem: `"**1 selecionado**"`.
-- [ ] Marcar mais duas linhas e verificar se a contagem atualiza para `"**3 selecionados**"`.
-- [ ] Clicar no link `"**Limpar seleção**"` e confirmar que todos os checkboxes são desmarcados e o card flutuante desaparece.
-
+- [x] Marcar o checkbox na primeira linha da tabela.
+- [x] Verificar se o card flutuante de ações em lote surge no topo/base da listagem (`.application-instruments-bulk`).
+- [x] Confirmar o texto de contagem: `"**1 selecionado**"`.
+- [x] Marcar mais duas linhas e verificar se a contagem atualiza para `"**3 selecionados**"`.
+- [x] Clicar no link `"**Limpar seleção**"` e confirmar que todos os checkboxes são desmarcados e o card flutuante desaparece.
+![alt text](../evidencias/image-37.png)
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `input[type="checkbox"]`, `.application-instruments-bulk`, `button:has-text("Limpar seleção")`
 - Estado esperado: `.application-instruments-bulk` renderiza condicionalmente com base em `selectionList.length > 0`
 - Fixture: ao menos 3 aplicações cadastradas
 
-#### Cenário 9 — Operação em lote: Divulgar resultados
+#### Cenário 9 — Operação em lote: Divulgar resultados [BUG FRONT-END ABERTO ❌]
 **Ação humana:**
-- [ ] Selecionar duas aplicações cuja divulgação de resultado esteja agendada para o futuro.
-- [ ] No card flutuante, clicar no botão `"**Divulgar resultados**"`.
-- [ ] Confirmar o diálogo/modal de confirmação.
+- [x] Selecionar duas aplicações cuja divulgação de resultado esteja agendada para o futuro (ex.: `P6_LITERATURA_M2_SAE_2026` e `[QA] Caderno Rayssa Rodrigues - 02`).
+- [x] No card flutuante, clicar no botão `"**Divulgar resultados**"`.![alt text](../evidencias/image-38.png)
+- [x] Confirmar o diálogo/modal de confirmação.![alt text](../evidencias/image-39.png)
 - [ ] Verificar se o status de divulgação é atualizado na listagem para `"Divulgado em: [Data atual]"`.
+  - **Comportamento no Backend (Sucesso):** Ambas as aplicações foram antecipadas com sucesso no banco de dados para a data atual (`09/11/2026`).
+  - **Comportamento no Front-end (Falha/Bug):** Ao confirmar o modal, as aplicações **desaparecem imediatamente da tabela** como se tivessem sido deletadas (arquivo: `cenario9_cadernos_sumiram_bug.jpg`). Elas só voltam a ser exibidas se o usuário der F5 na página.
+  - **Detalhes técnicos e código:** Registrado na [Seção 7 (Bugs Encontrados)](#7-bugs-and-observations-problemas-encontrados-na-validação-prática).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `.application-instruments-bulk button:has-text("Divulgar resultados")`
 - Estado esperado: requisição POST de divulgação disparada com sucesso
 - Fixture: `Application` com `student_stats_permission_date > now()`
+
 
 ---
 
@@ -397,6 +410,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Seletor: `#application-title`, `#application-total-grade`, `#exam-advanced-options-toggle`, `button:has-text("Continuar")`
 - Estado esperado: `POST /aplicacoes/api/instrumentos/cadernos/` retorna 201 com `exam.id`, `currentStep` vira 2
 - Fixture: dados básicos de cliente e coordenação
+
 
 ---
 
@@ -426,6 +440,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Seletor: `button:has-text("Revisar questões")`, `#modal-review`
 - Estado esperado: modal renderizado com mixin `application_instrument_review.js` ativo
 - Fixture: `Exam` com ao menos uma questão vinculada
+
 
 ---
 
@@ -472,6 +487,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
 - Seletor: `button:has-text("Continuar")`, `[role="alert"]`
 - Estado esperado: `POST` bloqueado no frontend com foco levado ao campo; caso enviado, API retorna 400 Bad Request
+
 
 ---
 
@@ -535,6 +551,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Seletor: `.instrument-print-dialog`, `div[role="progressbar"]`
 - Estado esperado: requisição disparada para geração de malote e polling de status em `/aplicacoes/api/aplicacao/<uuid>/status-malote/`
 
+
 ---
 
 ### 5.10 Edição Unificada: Hidratação, `v-changed` e Gestão de Participantes [Automatizável ✅]
@@ -555,6 +572,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Estado esperado: `changedFields.has('exam.name') === true` antes do submit; `PUT` bem-sucedido e `changedFields.size === 0` após resposta
 - Fixture: `Application` e `Exam` criados via mixer
 
+
 ---
 
 ### 5.11 Responsividade e Comportamento Visual [Apenas Manual 👁]
@@ -571,6 +589,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
   - [ ] Confirmar que os cards de opções avançadas e seletores de horário não quebram o grid horizontal.
   - [ ] Confirmar que os cards de malote e os modelos de folha no diálogo passam para formato responsivo/empilhado.
 
+
 ---
 
 ### 5.12 Itens Pendentes (Não Testar / Fora de Escopo no Momento) [Apenas Manual 👁]
@@ -584,6 +603,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [ ] **Etapa 4 (Diagramação):** O painel permanece vazio e bloqueado. Não considerar como falha.
 - [ ] **Modos Quadro/Compacto na Listagem:** Os botões continuam desabilitados/comentados no template.
 
+
 ---
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
@@ -595,6 +615,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
   - Garantir que nomes longos de cadernos ou turmas extensas apliquem reticências (`truncate`), sem quebrar a altura das linhas da tabela (altura fixa de `94px`).
 - [ ] **Alinhamento do Dropdown de Opções:**
   - O dropdown de opções unitárias deve se posicionar corretamente via Popper, respeitando o limite direito da tela.
+
 
 ---
 
@@ -669,6 +690,35 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Evidência Visual:**  
 > ![Quebra de responsividade na listagem mobile](../evidencias/responsividade_mobile_quebra_listagem.jpg)
 
+
+---
+
+> [!WARNING] [Bug Front-end / UX] Aplicações somem da listagem após divulgação de resultados em lote [BUG ABERTO ❌]
+> **Cenário de Homologação:** [Cenário 9 (Operação em lote: Divulgar resultados)](#cenário-9--operação-em-lote-divulgar-resultados-bug-front-end-aberto-)  
+> **Evidência/Reprodução:** Ao selecionar aplicações com divulgação agendada para o futuro e executar a ação em lote `"Divulgar resultados"`:
+> 1. O modal de confirmação abre e a requisição POST é disparada com sucesso para a API (`POST /aplicacoes/<uuid>/divulgar/`).
+> 2. No banco de dados, o campo `student_stats_permission_date` é atualizado corretamente para a data/hora atual.
+> 3. **Porém, na interface do usuário (SPA), as linhas das aplicações divulgadas desaparecem imediatamente da listagem**, dando a falsa impressão de que os cadernos foram excluídos ou que ocorreu um erro grave.
+> 4. As aplicações só reaparecem na tela caso o usuário faça um recarregamento forçado (F5).
+>
+> **Causa Raiz Técnica Identificada:**
+> No arquivo `fiscallizeon/applications/static/applications/js/application_instrument_list.js` (linhas 508-512), o método `bulkDisseminationOfResults` implementou erroneamente uma lógica de remoção de array (provavelmente copiada de `bulkDeleteApplications`):
+> ```javascript
+> itemsToProcess.forEach((item) => {
+>   axios.post(this.replaceUrlId(applicationOptionsConfig.discloseUrl, item.id), {}).then(() => {
+>     this.applications = this.applications.filter((app) => app.id !== item.id) // <--- REMOVE A APLICAÇÃO DA LISTAGEM
+>     this.selectionList = []
+>   })
+> })
+> ```
+>
+> **Comportamento Esperado:** As aplicações NÃO devem sumir da listagem. O callback de sucesso deve:
+> - Atualizar os atributos locais da aplicação (`item.student_stats_permission_date = moment().toISOString()`) para que a coluna de data passe a exibir `"Divulgado em: [Data atual]"`; OU
+> - Executar `this.loadApplications(this.buildListUrl(this.page))` para recarregar a página da tabela mantendo os registros visíveis e com o status atualizado.
+>
+> **Evidência Visual:**  
+> ![Cadernos sumiram após divulgação em lote](../evidencias/cenario9_cadernos_sumiram_bug.jpg)
+
 ---
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
@@ -720,6 +770,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > Incluir no rodapé (à esquerda ou centralizado junto à paginação) uma legenda formatada no padrão do Design System:  
 > `Mostrando de ${ (page - 1) * pageSize + 1 } até ${ Math.min(page * pageSize, totalCount) } de ${ totalCount } resultados`.
 ![alt text](../evidencias/image-34.png)
+
 ---
 
 ### 8.2 Débitos Técnicos e Funcionalidades Posteriores
@@ -736,6 +787,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **[WONTFIX / Futuro — Task 17tu7rp42zh] Modos Quadro (Kanban) e Compacto na Listagem**  
 > Visualizações alternativas da listagem foram adiadas para priorizar o modo Tabela com ações em lote.
 
+
 ---
 
 ## 8.3. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
@@ -744,6 +796,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - 🔗 **[Mapeamento: application_instrument_list.html](docs/tests/usability/application_instrument_list.md)**
 - 🔗 **[Mapeamento: complete_application_instrument.html](docs/tests/usability/complete_application_instrument.md)**
 
+
 ---
 
 ## 9. QA Retrospective (Retrospectiva de QA)
@@ -751,6 +804,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - **Principal gargalo:** Amplo volume de regras distribuídas entre criação de caderno, criação de aplicação e listagem em lote no mesmo PR.
 - **Relação entre especificação e código:** A separação clara entre o escopo da task de origem `86ak8r20g` e a task de finalização `17tu7rp42zh` no OpenSpec evitou que itens pendentes por design (ex.: participantes e diagramação) fossem classificados erroneamente como bugs.
 - **Pontos de atenção para CI:** Garantir a cobertura dos novos testes de view e API nos fluxos de `predeploy.sh`.
+
 
 ---
 
