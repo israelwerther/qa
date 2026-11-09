@@ -471,10 +471,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 11 — Solicitar questão ao professor e listar na tabela
 **Ação humana:**
-- [ ] Na Etapa 3 (`"Questões"`), clicar no card `"**+ Solicitar ao professor**"`.
-- [ ] Verificar se o modal em tela cheia é aberto com os campos de Série, Disciplina, Professor, Quantidade de questões e Configurações avançadas.
-- [ ] Preencher a solicitação para um professor existente e clicar em Salvar.
-- [ ] Confirmar que a solicitação aparece na listagem de professores da tela (`selectedTeachers`) com os botões de editar e remover.
+- [x] Na Etapa 3 (`"Questões"`), clicar no card `"**+ Solicitar ao professor**"`.
+- [x] Verificar se o modal em tela cheia é aberto com os campos de Série, Disciplina, Professor, Quantidade de questões e Configurações avançadas.
+- [x] Preencher a solicitação para um professor existente e clicar em Salvar.
+- [x] Confirmar que a solicitação aparece na listagem de professores da tela (`selectedTeachers`) com os botões de editar e remover.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
@@ -484,9 +484,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 12 — Modal de Revisão de Questões no Instrumento
 **Ação humana:**
-- [ ] Na Etapa 3, clicar no botão de revisão de questões.
-- [ ] Verificar se o modal de revisão abre renderizando o conteúdo completo de questões, com suporte a troca de status, ajuste de notas e reordenação.
-- [ ] Fechar o modal e confirmar que o estado geral da tela é mantido sem recarregar.
+- [x] Na Etapa 3, clicar no botão de revisão de questões.
+- [x] Verificar se o modal de revisão abre renderizando o conteúdo completo de questões, com suporte a troca de status, ajuste de notas e reordenação.
+- [x] Fechar o modal e confirmar que o estado geral da tela é mantido sem recarregar.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
