@@ -38,8 +38,8 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 - **Nova Listagem (`application_instrument_list.html`)**: Abas de categoria com `localStorage`, filtros estilizados, linhas com turmas expansíveis, badges de malote/situação limpos, dropdown unitário em 2 colunas e card flutuante de ações em lote.
 - **Nova Tela Unificada (`complete_application_instrument.html`)**:
   - **Etapa 1 (Caderno)**: Dados do caderno, nota, prazos e sanfona de opções avançadas (renomeada de "Configurações" para "Caderno").
-  - **Etapa 2 (Questões)**: Solicitações a docentes, IA, cadernos anteriores e modal de revisão de questões (só abre após entrega concluída).
-  - **Etapa 3 (Aplicação & Participantes)**: Formato (presencial/online/híbrida), horários, tokens, componente `instrument_participants` (seleção por turma com collapse de alunos sob demanda) e seção de alunos avulsos com `search-students-component`.
+  - **Etapa 2 (Aplicação & Participantes)**: Formato (presencial/online/híbrida), horários, tokens, componente `instrument_participants` (seleção por turma com collapse de alunos sob demanda) e seção de alunos avulsos com `search-students-component`.
+  - **Etapa 3 (Questões & Revisão)**: Solicitações a docentes, IA, cadernos anteriores e modal de revisão de questões.
   - **Etapa 5 (Conferência Dinâmica)**:
     - Para **Presencial**: 3 cards de Malote (*Malote completo*, *Apenas gabaritos*, *Aluno específico*), diálogo de impressão refatorado (`instrument_print_dialogs.html`) e barra de progresso em tempo real.
     - Para **Híbrida**: Apenas card de *Malote completo*.
@@ -59,8 +59,8 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 - **Menu Unitário de Opções (Dropdown em 2 colunas)**: Ações de Editar, Duplicar, Divulgar resultado e ações de impressão.
 - **Card de Ações em Lote**: Seleção múltipla, contagem dinâmica, marcar para impressão, divulgar resultados e gerar malotes.
 - **Criação de Novo Instrumento (Etapa 1 — Caderno)**: Criação do `Exam` ao clicar em Continuar, validação de nome e persistência das opções avançadas (etapa renomeada para "Caderno").
-- **Criação de Novo Instrumento (Etapa 2 — Questões & Revisão)**: Solicitação a professores, geração com IA, cadernos anteriores e modal de revisão.
-- **Criação de Novo Instrumento (Etapa 3 — Aplicação & Participantes)**: Configurações de horários, tolerâncias, seleção de turmas com alunos recolhíveis e inclusão de alunos avulsos.
+- **Criação de Novo Instrumento (Etapa 2 — Aplicação & Participantes)**: Configurações de horários, tolerâncias, seleção de turmas com alunos recolhíveis e inclusão de alunos avulsos.
+- **Criação de Novo Instrumento (Etapa 3 — Questões & Revisão)**: Solicitação a professores, geração com IA, cadernos anteriores e modal de revisão.
 - **Conferência Dinâmica por Categoria (Etapa 5)**:
   - Presencial: 3 cards de malote e barra de progresso.
   - Híbrida: card de malote completo.
@@ -416,79 +416,82 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-### 5.7 Criação Unificada: Etapa 2 (Questões, Solicitações e Revisão) [Automatizável ✅]
-
-#### Cenário 11 — Solicitar questão ao professor e listar na tabela
-**Ação humana:**
-- [ ] Na Etapa 2 (`"Questões"`), clicar no card `"**+ Solicitar ao professor**"`.
-- [ ] Verificar se o modal em tela cheia é aberto com os campos de Série, Disciplina, Professor, Quantidade de questões e Configurações avançadas.
-- [ ] Preencher a solicitação para um professor existente e clicar em Salvar.
-- [ ] Confirmar que a solicitação aparece na listagem de professores da tela (`selectedTeachers`) com os botões de editar e remover.
-
-**Referência técnica (para automação):**
-- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
-- Seletor: `button:has-text("Solicitar ao professor")`, modal `#request-question-modal`, lista `.instrument-selected-teachers`
-- Estado esperado: solicitação persistida vinculada ao `exam.id`
-- Fixture: `Exam` previamente criado no passo anterior
-
-#### Cenário 12 — Modal de Revisão de Questões no Instrumento
-**Ação humana:**
-- [ ] Na Etapa 2, clicar no botão de revisão de questões.
-- [ ] Verificar se o modal de revisão abre renderizando o conteúdo completo de questões, com suporte a troca de status, ajuste de notas e reordenação.
-- [ ] Fechar o modal e confirmar que o estado geral da tela é mantido sem recarregar.
-
-**Referência técnica (para automação):**
-- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
-- Seletor: `button:has-text("Revisar questões")`, `#modal-review`
-- Estado esperado: modal renderizado com mixin `application_instrument_review.js` ativo
-- Fixture: `Exam` com ao menos uma questão vinculada
-
-
----
-
-### 5.8 Criação Unificada: Etapa 3 (Aplicação, Tempos, Divulgação e Participantes) [Automatizável ✅]
+### 5.7 Criação Unificada: Etapa 2 (Aplicação, Tempos, Divulgação e Participantes) [Automatizável ✅]
 
 #### Cenário 13 — Configuração de parâmetros e persistência da Aplicação com Participantes
 **Ação humana:**
-- [ ] Clicar no botão `"**Continuar**"` da Etapa 2 para avançar para a Etapa 3 (`"**Aplicação**"`).
-- [ ] Selecionar o formato `"**Presencial**"` (ou `"**Online**"`).
-- [ ] Preencher Horário de Início (`08:00`), Término (`12:00`), tolerância de atraso e tempo mínimo.
-- [ ] Configurar a data de divulgação dos resultados.
-- [ ] Na seção **Participantes**, marcar ao menos uma turma na listagem de turmas.
-- [ ] Clicar no botão `"**Continuar**"`.
+- [ ] Confirmar que a tela está na Etapa 2 intitulada **`"Aplicação"`** (com o passo marcado em laranja).
+- [ ] **Card 1 (Data e horário):**
+  - Selecionar o formato `"**Presencial**"` (ou `"**Online**"`).
+  - Preencher Horário de Início (`08:00`), Término (`12:00`), tolerância de atraso e tempo mínimo para entrega.
+- [ ] **Card 2 (Participantes):**
+  - Selecionar a unidade (ex.: `GRU - Rede Decisão`), a série e marcar ao menos uma turma participante.
+- [ ] **Card 3 (Divulgação e configurações):**
+  - Configurar a data de divulgação dos resultados e opções de visualização do gabarito.
+- [ ] Clicar no botão `"**Continuar**"` no cabeçalho superior direito.
 - [ ] Confirmar que a aplicação é salva no banco (`POST /aplicacoes/api/instrumentos/aplicacoes/`) vinculando o caderno da Etapa 1 e os participantes selecionados.
-- [ ] Confirmar que o sistema avança para a **Etapa 5: Conferência**.
+- [ ] Confirmar que o sistema transiciona automaticamente para a **Etapa 3 (`"Questões"`)**.
 
 **Referência técnica (para automação):**
-- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
-- Seletor: `button:has-text("Presencial")`, `#application-start`, `#application-end`, `.instrument-participants input[type="checkbox"]`, `button:has-text("Continuar")`
-- Estado esperado: `POST /aplicacoes/api/instrumentos/aplicacoes/` retorna 201 com `application.id`, `students` e `school_classes` vinculados; `currentStep` vira 5
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
+- Seletor: `button:has-text("Presencial")`, `#application-start`, `#application-end`, `#participant-unities`, `button:has-text("Continuar")`
+- Estado esperado: `POST /aplicacoes/api/instrumentos/aplicacoes/` retorna 201 com `application.id`, `students` e `school_classes` vinculados; `currentStep` vira 3
 - Fixture: `exam.id` presente no estado Vue, turmas e alunos cadastrados
 
 #### Cenário 17 — Gestão de Participantes: Seleção em Lote, Alunos sob Demanda e Alunos Avulsos
 **Ação humana:**
-- [ ] Na Etapa 3, na seção **Participantes**, localizar uma turma e clicar no botão expansor de alunos.
+- [ ] Na Etapa 2, no Card **Participantes**, localizar uma turma e clicar no botão expansor de alunos.
 - [ ] Confirmar que a lista de alunos daquela turma é carregada sob demanda (`v-if`) e exibida de forma recolhível.
 - [ ] Desmarcar um aluno individual dentro da turma e verificar se o checkbox da turma assume estado indeterminado (parcial).
 - [ ] Na seção **Alunos individuais**, utilizar o campo de busca de alunos (`search-students-component`) para adicionar um aluno avulso (não pertencente às turmas selecionadas).
 - [ ] Confirmar que o aluno adicionado aparece na lista de participantes individuais.
 
 **Referência técnica (para automação):**
-- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
 - Seletor: `.instrument-participants-expand`, `.instrument-individual-students search-students-component`
 - Estado esperado: `participantSelectedStudentIds` e `participantIndividualStudents` sincronizados no estado Vue
 
 #### Cenário 18 — Validação de Seleção Vazia e Foco Automático no Erro
 **Ação humana:**
-- [ ] Na Etapa 3, desmarcar todas as turmas e remover qualquer aluno avulso (deixar participantes completamente vazio).
+- [ ] Na Etapa 2, desmarcar todas as turmas e remover qualquer aluno avulso (deixar participantes completamente vazio).
 - [ ] Clicar no botão `"**Continuar**"` (ou `"**Salvar alterações**"`).
 - [ ] Verificar se o sistema impede o envio e exibe mensagem de alerta informando a obrigatoriedade de ao menos um participante.
 - [ ] Confirmar que a tela executa scroll automático e posiciona o foco diretamente sobre a seção com erro.
 
 **Referência técnica (para automação):**
-- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
 - Seletor: `button:has-text("Continuar")`, `[role="alert"]`
 - Estado esperado: `POST` bloqueado no frontend com foco levado ao campo; caso enviado, API retorna 400 Bad Request
+
+
+---
+
+### 5.8 Criação Unificada: Etapa 3 (Questões, Solicitações e Revisão) [Automatizável ✅]
+
+#### Cenário 11 — Solicitar questão ao professor e listar na tabela
+**Ação humana:**
+- [ ] Na Etapa 3 (`"Questões"`), clicar no card `"**+ Solicitar ao professor**"`.
+- [ ] Verificar se o modal em tela cheia é aberto com os campos de Série, Disciplina, Professor, Quantidade de questões e Configurações avançadas.
+- [ ] Preencher a solicitação para um professor existente e clicar em Salvar.
+- [ ] Confirmar que a solicitação aparece na listagem de professores da tela (`selectedTeachers`) com os botões de editar e remover.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
+- Seletor: `button:has-text("Solicitar ao professor")`, modal `#request-question-modal`, lista `.instrument-selected-teachers`
+- Estado esperado: solicitação persistida vinculada ao `exam.id`
+- Fixture: `Exam` previamente criado no passo anterior
+
+#### Cenário 12 — Modal de Revisão de Questões no Instrumento
+**Ação humana:**
+- [ ] Na Etapa 3, clicar no botão de revisão de questões.
+- [ ] Verificar se o modal de revisão abre renderizando o conteúdo completo de questões, com suporte a troca de status, ajuste de notas e reordenação.
+- [ ] Fechar o modal e confirmar que o estado geral da tela é mantido sem recarregar.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 3)
+- Seletor: `button:has-text("Revisar questões")`, `#modal-review`
+- Estado esperado: modal renderizado com mixin `application_instrument_review.js` ativo
+- Fixture: `Exam` com ao menos uma questão vinculada
 
 
 ---
