@@ -302,6 +302,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Observar abaixo da data a indicação do token (ex.: `"**Token: ABC-123**"` acompanhado de um ícone de cópia).
 - [x] Clicar no ícone de cópia.
 - [x] Verificar se há feedback visual de confirmação (tooltip `"Copiado!"`).
+  - **Evidência validada:** Token `QA77TEST` exibido com ícone de cópia na aplicação online `Caderno pra rayssa colocar audio` (arquivo: `cenario6_token_online_sucesso.png`).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -326,11 +327,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
-### 5.4 Nova Listagem: Menu Unitário de Opções (`...`) [Automatizável ✅]
+### 5.4 Nova Listagem: Menu Unitário de Opções (`Opções ⌵`) [Automatizável ✅]
 
 #### Cenário 7 — Estrutura em 2 colunas do menu de opções
 **Ação humana:**
-- [ ] Em qualquer linha da listagem, clicar no botão de três pontos ou engrenagem no canto direito (`...`).
+- [ ] Em qualquer linha da listagem, clicar no botão **"Opções ⌵"** no canto direito da linha.
 - [ ] Verificar se o menu dropdown abre alinhado à direita, organizado em até duas colunas:
   - Coluna 1: `"**GERAL**"` (com ações de Editar, Duplicar, Divulgar resultado, etc.).
   - Coluna 2: `"**IMPRESSÃO**"` (com ações de configurações de impressão, malote e folhas avulsas).
