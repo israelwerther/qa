@@ -501,16 +501,16 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 19 — Painel de Conferência: Cards de Malote por Categoria (Presencial vs Híbrida)
 **Ação humana:**
-- [ ] Na navegação superior de etapas, clicar na **Etapa 5: Conferência** (liberada após criar caderno e aplicação).
-- [ ] Verificar os cards superiores de status:
+- [x] Na navegação superior de etapas, clicar na **Etapa 5: Conferência** (liberada após criar caderno e aplicação).
+- [x] Verificar os cards superiores de status:
   - Card **Aplicação**: exibe status `"Pendente"` ou `"Concluído"` (clicar nele deve redirecionar para a etapa correspondente).
   - Card **Questões**: exibe contagem de pendências/reprovações de questões com link direto para revisão.
-- [ ] **Validação em Formato Presencial (`category = 3`):**
+- [x] **Validação em Formato Presencial (`category = 3`):**
   - Confirmar a exibição da seção **Malote** com os 3 cards:
     - Card 1: `"**Malote completo**"` (com botão *"Gerar malote"*).
     - Card 2: `"**Apenas gabaritos**"` (com botão *"Gerar malote"*).
     - Card 3: `"**Aluno específico**"` (com botão *"Gerar malote"*).
-- [ ] **Validação em Formato Híbrido (`category = 5`):**
+- [x] **Validação em Formato Híbrido (`category = 5`):**
   - Mudar para uma aplicação Híbrida ou editar o formato.
   - Confirmar que a seção de Malote exibe **exclusivamente** o card `"**Malote completo**"`, ocultando os cards de gabarito avulso e aluno específico (regra de híbrida onde não se imprime cartão de resposta isolado).
 
@@ -521,22 +521,22 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 19.1 — Painel de Conferência: Acompanhamento Online e Métricas de Anti-cola (Online e Lista de Exercícios)
 **Ação humana:**
-- [ ] Acessar a Etapa 5 (Conferência) de uma aplicação com formato **Online (`category = 2`)** ou **Lista de exercícios (`category = 4`)**.
-- [ ] Confirmar que os cards de geração de malote físico **NÃO são exibidos**.
-- [ ] Verificar a exibição do **Painel de Acompanhamento**:
+- [x] Acessar a Etapa 5 (Conferência) de uma aplicação com formato **Online (`category = 2`)** ou **Lista de exercícios (`category = 4`)**.
+- [x] Confirmar que os cards de geração de malote físico **NÃO são exibidos**.
+- [x] Verificar a exibição do **Painel de Acompanhamento**:
   - Título `"**Acompanhamento**"`.
   - Botão secundário `"**Acompanhar aplicação**"` com link para a tela de fiscalização online (`/aplicacoes/<uuid>/acompanhamento/`).
-- [ ] Confirmar a renderização dos cards com as métricas em tempo real (`/resumo-online/`):
+- [x] Confirmar a renderização dos cards com as métricas em tempo real (`/resumo-online/`):
   - `"**Alunos que iniciaram**"`
   - `"**Alunos que concluíram**"`
   - `"**Alunos não presentes**"`
   - `"**Duração média de prova**"`
-- [ ] **Validação específica de Formato Online (`category = 2`):**
+- [x] **Validação específica de Formato Online (`category = 2`):**
   - Confirmar que a tela exibe adicionalmente os 3 blocos de auditoria/anti-cola:
     - `"**Pausas solicitadas**"`
     - `"**Alunos com saídas da aplicação**"`
     - `"**Duração média das pausas**"`
-- [ ] **Validação específica de Lista de Exercícios (`category = 4`):**
+- [x] **Validação específica de Lista de Exercícios (`category = 4`):**
   - Confirmar que os blocos de pausas e saídas da aplicação são ocultados, mantendo apenas as métricas de início, conclusão e ausência.
 
 **Referência técnica (para automação):**
@@ -547,9 +547,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 20 — Abertura dos Diálogos de Impressão e Acompanhamento de Progresso (Fluxo Presencial)
 **Ação humana:**
-- [ ] Em aplicação Presencial ou Híbrida, no card `"**Malote completo**"`, clicar em `"**Gerar malote**"`.
-- [ ] Verificar se o diálogo `.instrument-print-dialog` abre com cabeçalho e rodapé fixos, seleção de modelo de folha (radios clicáveis em laranja) e switches.
-- [ ] Confirmar o disparo da geração e fechar o modal.
+- [x] Em aplicação Presencial ou Híbrida, no card `"**Malote completo**"`, clicar em `"**Gerar malote**"`.
+- [x] Verificar se o diálogo `.instrument-print-dialog` abre com cabeçalho e rodapé fixos, seleção de modelo de folha (radios clicáveis em laranja) e switches.
+- [x] Confirmar o disparo da geração e fechar o modal.
 - [ ] Verificar se a barra de progresso da geração surge na tela (`div[role="progressbar"]`), exibindo o status `"Gerando malote"` e a porcentagem dinâmica `${ instrumentPrintStatus.progress }%`.
 
 **Referência técnica (para automação):**
