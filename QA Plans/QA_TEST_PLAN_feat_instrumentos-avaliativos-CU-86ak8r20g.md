@@ -562,7 +562,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [ ] Na listagem de instrumentos:
   - [ ] Verificar se nenhum texto de caderno, turma ou botão sofre quebra inadequada ou sobreposição.
   - [ ] Confirmar que o dropdown de opções unitárias de 2 colunas não transborda para fora da tela.
-- [ ] Reduzir a largura para `768px` e `390px` (mobile):
+- [x] Reduzir a largura para `768px` e `390px` (mobile - validado em 527x840):
+  - [ ] Verificar a listagem `/aplicacoes/instrumentos-avaliativos/`: filtros colapsam em caixas ilegíveis de 2 caracteres (`Ar...`, `Un...`) e colunas `"Situação"` e `"Opções"` ficam cortadas e inacessíveis ([Bug registrado na Seção 7](#7-bugs-and-observations-problemas-encontrados-na-validação-prática)).
   - [ ] Verificar se a barra de etapas do cadastro (`application-instrument-steps`) permite scroll horizontal ou compactação legível.
   - [ ] Confirmar que os cards de opções avançadas e seletores de horário não quebram o grid horizontal.
   - [ ] Confirmar que os cards de malote e os modelos de folha no diálogo passam para formato responsivo/empilhado.
@@ -649,6 +650,21 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > [!NOTE] [Regra de Negócio / Validação de Lote] Divulgação de resultados em lote restrita a datas futuras
 > **Evidência/Reprodução:** Ao selecionar na tabela avaliações que já possuem `results_release_date` anterior ao momento atual, o botão de "Divulgar resultados" exibe confirmação informando que nenhuma aplicação selecionada é elegível.
 > **Comportamento Esperado:** Este é o comportamento correto previsto pela regra de negócio (apenas aplicações agendadas para o futuro podem ter a divulgação antecipada em lote). Registrado para fins de documentação de QA.
+
+> [!WARNING] [Bug / Responsividade e Layout] Quebra severa de layout na listagem em dispositivos móveis e viewports reduzidas (<= 768px) [BUG ABERTO ❌]
+> **Cenário de Homologação:** [Cenário 15 (Validação Mobile)](#cenário-15--validação-de-layout-em-1333x1080-e-telas-menores)  
+> **Evidência/Reprodução:** Ao acessar `/aplicacoes/instrumentos-avaliativos/` em viewport mobile/reduzida (ex.: `527x840` no DevTools):
+> 1. **Barra de Filtros:** Os seletores de filtro (`Ano`, `Unidade`, `Turmas`, `Etapa de ensino`, `Situação do malote`) colapsam em caixas minúsculas ilegíveis de 2 caracteres (`Ar...`, `Un...`, `Tu...`, `Et...`, `Si...`), sem quebra de linha fluida (`flex-wrap`) ou adaptação de grade.
+> 2. **Tabela de Instrumentos:** A tabela não possui container com rolagem horizontal explícita (`overflow-x-auto`) ou formato adaptado de cards. As colunas críticas `"Situação"` e o menu `"Opções"` ficam completamente cortadas para fora da tela, impossibilitando a visualização do status e o acesso às ações de edição e malote pelo celular.
+> 3. **Cabeçalho de Ações e Abas:** Os botões de importação e criação empilham desordenadamente e as abas superiores de modalidade cortam lateralmente.
+>
+> **Comportamento Esperado:** Em telas menores (<= 768px):
+> - A barra de filtros deve empilhar em largura total (`w-full`) ou colapsar em um botão/offcanvas de filtros;
+> - A tabela deve permitir rolagem horizontal suave com indicador de scroll ou converter as linhas em cards verticais no mobile;
+> - Os botões de ação do cabeçalho devem se estender para preencher a largura total (`w-full sm:w-auto`).
+>
+> **Evidência Visual:**  
+> ![Quebra de responsividade na listagem mobile](../evidencias/responsividade_mobile_quebra_listagem.jpg)
 
 ---
 
