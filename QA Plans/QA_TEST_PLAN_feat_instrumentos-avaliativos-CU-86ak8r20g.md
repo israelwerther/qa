@@ -242,7 +242,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `button:has-text("Presencial")`
-- Estado esperado: `button[aria-selected="true"]`, `localStorage.getItem('application_instrument_category') === 'presential'`
+- Estado esperado: `button[aria-selected="true"]`, `localStorage.getItem('applicationInstrumentListCategory') === 'presential'`
 - Fixture: `mixer.blend(Application, category=1)` e `mixer.blend(Application, category=2)`
 
 #### Cenário 4 — Busca textual e filtros combinados
@@ -269,8 +269,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 **Ação humana:**
 - [x] Localizar uma avaliação que possua mais de uma turma vinculada (ex.: `P6_LÍNGUA INGLESA_F3_MACMILLAN_2026`).
 - [x] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**13 turmas**"`).
-- [x] Clicar no botão expansor de turmas.
-- [x] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
+- [x] Clicar no botão expansor de turmas (ícone chevron `v` na primeira coluna da linha).
+- [x] Confirmar que uma sub-linha acordeão (`sub-row`) é aberta logo abaixo com detalhe laranja lateral, exibindo os badges de todas as turmas vinculadas.
 ![alt text](../evidencias/image-35.png)
 
 > [!NOTE]
@@ -279,7 +279,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `button.application-instrument-expand`
-- Estado esperado: elemento de popover visível contendo os nomes das turmas vinculadas
+- Estado esperado: sub-linha `tr` visível contendo container `.tw-border-primary-600` com os badges `.tw-rounded-full` das turmas vinculadas
 - Fixture: `application.classes.add(turma1, turma2)`
 
 #### Cenário 5.1 — Exibição e contagem de alunos avulsos na ausência de turmas [BUG CRÍTICO ABERTO ❌]
@@ -299,15 +299,15 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 #### Cenário 6 — Copiar token online diretamente na listagem
 **Ação humana:**
 - [x] Na aba `"**Online**"`, localizar uma aplicação online que tenha o token aleatório habilitado.
-- [x] Observar abaixo da data a indicação do token (ex.: `"**Token: ABC-123**"` acompanhado de um ícone de cópia).
+- [x] Observar abaixo da data a indicação do token (ex.: `"**Token QA77TEST**"` acompanhado de um ícone de cópia).
 - [x] Clicar no ícone de cópia.
-- [x] Verificar se há feedback visual de confirmação (tooltip `"Copiado!"`).
+- [x] Verificar se há feedback visual de confirmação (alerta toast no topo `"Token copiado."`, ícone alternando para o check verde e `title="Token copiado"` por ~1.6s).
   - **Evidência validada:** Token `QA77TEST` exibido com ícone de cópia na aplicação online `Caderno pra rayssa colocar audio` (arquivo: `cenario6_token_online_sucesso.png`).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `button.application-instrument-copy`
-- Estado esperado: texto copiado para o clipboard com sucesso
+- Estado esperado: texto copiado para o clipboard, `copiedTokenId === application.id` disparando SVG de check com classe `.tw-text-primary-600` e toast `.alertTop('Token copiado.')`
 - Fixture: `mixer.blend(Application, category=2, is_token_online=True)`
 
 #### Cenário 6.1 — Coluna Situação sem duplicidade de status em aplicações Online [Validação de Fix Commit 30133d412]
@@ -335,12 +335,13 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [ ] Verificar se o menu dropdown abre alinhado à direita, organizado em até duas colunas:
   - Coluna 1: `"**GERAL**"` (com ações de Editar, Duplicar, Divulgar resultado, etc.).
   - Coluna 2: `"**IMPRESSÃO**"` (com ações de configurações de impressão, malote e folhas avulsas).
-- [ ] Clicar em `"**Editar**"` e certificar-se de que a página é redirecionada para `/aplicacoes/instrumento-avaliativo/<uuid>/`.
+- [ ] Clicar em `"**Editar**"` e certificar-se de que a página é redirecionada para `/aplicacoes/instrumento-avaliativo/<uuid>/editar/`.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
-- Seletor: `tr.application-instruments-row button[data-toggle="dropdown"]`, `.application-instrument-options`
-- Estado esperado: `.application-instrument-options` visível com colunas Geral e Impressão
+- Seletor: `button.application-instrument-options-toggle[data-toggle="dropdown"]`, `.dropdown-menu.application-instrument-options`
+- Estado esperado: `.application-instrument-options` visível com colunas Geral e Impressão (via CSS grid quando colunas secundárias existirem)
+- Redirecionamento de Editar: URL corresponde a `/aplicacoes/instrumento-avaliativo/[a-f0-9-]+/editar/`
 - Fixture: aplicação com caderno diagramado e malote permitido
 
 ---
