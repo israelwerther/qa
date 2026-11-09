@@ -269,8 +269,9 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 **Ação humana:**
 - [x] Localizar uma avaliação que possua mais de uma turma vinculada (ex.: `P6_LÍNGUA INGLESA_F3_MACMILLAN_2026`).
 - [x] Observar abaixo do nome do caderno a linha secundária: verificar se exibe um selo cinza com a categoria e um resumo de turmas (ex.: `"**13 turmas**"`).
-- [ ] Clicar no botão expansor de turmas.
-- [ ] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
+- [x] Clicar no botão expansor de turmas.
+- [x] Confirmar que um popover/painel é aberto exibindo os nomes de todas as turmas vinculadas.
+![alt text](../evidencias/image-35.png)
 
 > [!NOTE]
 > *Achado de Validação (Paridade de Turmas):* Na tela legada, a mesma avaliação exibia 3 tags e `+ 9` (totalizando 12). A investigação direta no banco de dados confirmou que **existem exatamente 13 turmas vinculadas**. A divergência foi causada por um bug histórico de *off-by-one* no componente Vue legado (`tooltip-component` em `vue-tooltip.html`, que usava `slice(showNumber, length - 1)` descartando o último item). A contagem da nova tela (`13 turmas`) é a correta.
