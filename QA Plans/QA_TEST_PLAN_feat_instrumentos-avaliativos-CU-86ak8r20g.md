@@ -331,12 +331,12 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 7 — Estrutura em 2 colunas do menu de opções
 **Ação humana:**
-- [ ] Em qualquer linha da listagem, clicar no botão **"Opções ⌵"** no canto direito da linha.
-- [ ] Verificar se o menu dropdown abre alinhado à direita, organizado em até duas colunas:
+- [x] Em qualquer linha da listagem, clicar no botão **"Opções ⌵"** no canto direito da linha.
+- [x] Verificar se o menu dropdown abre alinhado à direita, organizado em até duas colunas:
   - Coluna 1: `"**GERAL**"` (com ações de Editar, Duplicar, Divulgar resultado, etc.).
   - Coluna 2: `"**IMPRESSÃO**"` (com ações de configurações de impressão, malote e folhas avulsas).
-- [ ] Clicar em `"**Editar**"` e certificar-se de que a página é redirecionada para `/aplicacoes/instrumento-avaliativo/<uuid>/editar/`.
-
+- [x] Clicar em `"**Editar**"` e certificar-se de que a página é redirecionada para `/aplicacoes/instrumento-avaliativo/<uuid>/editar/`.
+![alt text](../evidencias/image-36.png)
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
 - Seletor: `button.application-instrument-options-toggle[data-toggle="dropdown"]`, `.dropdown-menu.application-instrument-options`
