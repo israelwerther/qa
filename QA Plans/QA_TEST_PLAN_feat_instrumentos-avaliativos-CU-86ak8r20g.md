@@ -398,12 +398,12 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Confirmar que a tela abre na Etapa 1 intitulada **`"Caderno"`** (com o passo marcado em laranja).
 - [x] Tentar clicar nas etapas seguintes no stepper (Aplicação, Questões, etc.): confirmar que o cursor exibe ícone de bloqueio e tooltip informando: *"Crie o caderno para abrir esta etapa."*.
 - [x] **Card 1 (Informações do caderno):** Preencher o campo `"**Título da prova**"` com `"Simulado Geral 2026"`, selecionar a Etapa de ensino e informar Nota geral (ex.: `10.0`).
-- [ ] **Card 2 (Prazos):** Clicar no acordeão `"**Prazos**"` para expandir o card:
+- [x] **Card 2 (Prazos):** Clicar no acordeão `"**Prazos**"` para expandir o card:
   - Preencher a Data de elaboração (`De` e `Até`) com prazo futuro válido.
   - (Opcional) Informar prazos de Revisão e testar o toggle `"Alteração automática de status"`.
   - (Validação de conflito) Simular data de início de revisão anterior ao fim da elaboração e confirmar a exibição do alerta de sobreposição de etapas (`Prazos de etapas sobrepostos`).
-- [ ] **Card 3 (Opções avançadas):** Clicar no acordeão `"**Opções avançadas**"`: confirmar que o card expande exibindo as configurações (textos base, embaralhar questões/alternativas, IA para discursivas, sigilo, etc.).
-- [ ] Clicar no botão inferior `"**Continuar**"`.
+- [x] **Card 3 (Opções avançadas):** Clicar no acordeão `"**Opções avançadas**"`: confirmar que o card expande exibindo as configurações (textos base, embaralhar questões/alternativas, IA para discursivas, sigilo, etc.). Testado preenchimento e expansão de campos dinâmicos (ex.: editor de Orientações da prova).
+- [ ] Clicar no botão `"**Continuar**"` no cabeçalho superior direito da tela (registrada sugestão de botão de rodapé na Seção 8.1).
 - [ ] Observar o estado de loading e confirmar que o caderno é criado com sucesso (`POST /aplicacoes/api/instrumentos/cadernos/`).
 - [ ] Confirmar que o sistema transiciona automaticamente para a **Etapa 2 (`"Aplicação"`)**, liberando o acesso no stepper.
 
@@ -755,6 +755,23 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 >
 > **Evidência Visual:**  
 > ![Cadernos sumiram após divulgação em lote](../evidencias/cenario9_cadernos_sumiram_bug.jpg)
+
+> [!TIP] [Melhoria de UX / Usabilidade e Ergonomia] Botão de ação "Continuar" duplicado ou fixo no rodapé da página
+> **Cenário Observado:** [Cenário 10 (Preenchimento do Caderno, Prazos & Opções Avançadas)](#cenário-10--preenchimento-inicial-e-persistência-do-caderno-exam)  
+> **Problema de Usabilidade (Scroll Reverso Obrigatório):**  
+> Na tela de criação/edição de instrumentos avaliativos (`/aplicacoes/instrumento-avaliativo/`), os formulários são extensos e compostos por múltiplos cards empilhados (Informações básicas, Prazos detalhados e Opções avançadas com 16 campos).  
+> O único botão disponível para avançar (`"Continuar"`) está localizado exclusivamente no cabeçalho superior direito da página. Após preencher todos os campos e descer até o final da tela, o usuário é obrigado a rolar a página inteira de volta para o topo apenas para conseguir clicar em `"Continuar"`, gerando atrito desnecessário e esforço repetitivo de navegação.
+>
+> **Sugestão de Implementação / Melhoria:**  
+> 1. **Botão Duplicado no Rodapé:** Incluir um botão secundário/primário de `"Continuar"` alinhado à direita no rodapé, logo abaixo do último card da seção ativa; OU
+> 2. **Barra Fixa (Sticky Footer/Header):** Tornar a barra de ações com o botão `"Continuar"` fixa no rodapé (`tw-sticky tw-bottom-0`) ou preservar o cabeçalho fixo no topo durante o scroll longo, permitindo avançar de qualquer ponto da tela sem rolagem reversa.
+>
+> **Evidências Visuais Comparativas:**  
+> 1. *Botão "Continuar" isolado no cabeçalho superior:*  
+>    ![Botão Continuar no cabeçalho](../evidencias/melhoria_botao_continuar_topo.png)  
+> 2. *Fim do formulário sem botão de ação para avançar:*  
+>    ![Rodapé sem botão de avançar](../evidencias/melhoria_botao_continuar_rodape_ausente.png)
+
 
 ---
 
