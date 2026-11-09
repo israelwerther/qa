@@ -298,10 +298,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 6 — Copiar token online diretamente na listagem
 **Ação humana:**
-- [ ] Na aba `"**Online**"`, localizar uma aplicação online que tenha o token aleatório habilitado.
-- [ ] Observar abaixo da data a indicação do token (ex.: `"**Token: ABC-123**"` acompanhado de um ícone de cópia).
-- [ ] Clicar no ícone de cópia.
-- [ ] Verificar se há feedback visual de confirmação (tooltip `"Copiado!"`).
+- [x] Na aba `"**Online**"`, localizar uma aplicação online que tenha o token aleatório habilitado.
+- [x] Observar abaixo da data a indicação do token (ex.: `"**Token: ABC-123**"` acompanhado de um ícone de cópia).
+- [x] Clicar no ícone de cópia.
+- [x] Verificar se há feedback visual de confirmação (tooltip `"Copiado!"`).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
