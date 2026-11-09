@@ -84,7 +84,7 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 
 | Destino | Rótulo real no menu UI | URL Django | View name |
 |---|---|---|---|
-| Nova Listagem de Instrumentos | **Avaliações** (sidebar Aplicações) [verificar] | `/aplicacoes/instrumentos-avaliativos/` | `applications:application_instruments` |
+| Nova Listagem de Instrumentos | **Avaliações** (sidebar Aplicações) [validado ✅] | `/aplicacoes/instrumentos-avaliativos/` | `applications:application_instruments` |
 | Criação de Novo Instrumento | **Nova aplicação** (botão laranja no cabeçalho) | `/aplicacoes/instrumento-avaliativo/` | `applications:application_instrument` |
 | Edição de Instrumento Existente | **Editar** (no menu de opções `...` da linha) | `/aplicacoes/instrumento-avaliativo/<uuid>/` | `applications:application_instrument_update` |
 | Importar Alunos (Legado) | **Importar alunos** (botão secundário) | `/aplicacoes/importar-alunos/` | `applications:application_students_import` |
@@ -289,13 +289,12 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - Estado esperado: sub-linha `tr` visível contendo container `.tw-border-primary-600` com os badges `.tw-rounded-full` das turmas vinculadas
 - Fixture: `application.classes.add(turma1, turma2)`
 
-#### Cenário 5.1 — Exibição e contagem de alunos avulsos na ausência de turmas [BUG CRÍTICO ABERTO ❌]
+#### Cenário 5.1 — Exibição e contagem de alunos avulsos na ausência de turmas [RESOLVIDO E HOMOLOGADO ✅]
 **Ação humana:**
 - [x] Localizar na listagem uma avaliação aplicada diretamente para estudantes individuais sem turmas vinculadas (ex.: `EXAME FINAL_Geografia_F9_ANGLO_2025`).
-- [ ] Verificar se abaixo do nome do caderno é exibido o selo de participantes com o total de alunos avulsos (ex.: `"**4 aluno(s) avulso(s)**"`).
-  - **Comportamento Atual (Falha):** A linha renderiza unicamente o badge da modalidade (`Presencial`), ocultando completamente a informação de alunos vinculados.
-  - **Comportamento Esperado:** Paridade com a tela legada (`application.studentsCount aluno(s) avulso(s)`).
-- [ ] Após a correção do desenvolvedor, retestar e homologar a exibição da tag de alunos avulsos.
+- [x] Verificar se abaixo do nome do caderno é exibido o selo de participantes com o total de alunos avulsos (ex.: `"**4 aluno(s) avulso(s)**"`).
+  - **Status de Homologação:** Homologado com sucesso. A listagem agora consome `application.students_count` e renderiza `${ application.students_count } aluno(s) avulso(s)` com ícone descritivo quando a aplicação não possui turmas vinculadas.
+- [x] Após a correção do desenvolvedor (commit `ffa18edfde`), retestado e homologado a exibição da tag de alunos avulsos.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumentos-avaliativos/`
@@ -627,10 +626,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ## 7. Bugs and Observations (Problemas Encontrados na Validação Prática)
 
-> [!WARNING] [UX/UI / Label] Discrepância entre rótulo da sidebar e especificação do produto
-> **Evidência/Reprodução:** Ao logar com perfil de Coordenação em cliente com a feature flag ativa, a barra lateral esquerda (`coordination.html`) renderiza o item como `"Instrumentos avaliativos"`.
+> [!TIP] [UX/UI / Label] Discrepância entre rótulo da sidebar e especificação do produto [RESOLVIDO E HOMOLOGADO ✅]
+> **Evidência/Reprodução:** Ao logar com perfil de Coordenação ou Professor em cliente com a feature flag ativa, a barra lateral esquerda renderizava o item como `"Instrumentos avaliativos"`.
 > **Causa Raiz:** No card ClickUp CU-86ak8r20g, o alinhamento de produto registrou expressamente: *"Chama só de 'Avaliações'"*.
-> **Comportamento Esperado:** O rótulo da sidebar deve refletir a nomenclatura de produto acordada: `"Avaliações"`.
+> **Resolução Aplicada:** O desenvolvedor ajustou os templates de sidebar (`coordination.html` e `teacher.html`) no commit `ffa18edfde`, alterando o rótulo exibido para `"Avaliações"`.
+> **Status de Homologação:** Homologado com sucesso. A sidebar agora exibe `"Avaliações"` com navegação funcional para a rota de instrumentos avaliativos.
 
 > [!TIP] [Bug UI/Regra de Negócio] Duplicidade de status e concorrência indevida na coluna "Situação" [RESOLVIDO E HOMOLOGADO ✅]
 > **Evidência/Reprodução:** Ao comparar a listagem legada (`/aplicacoes/?category=online`) com a nova listagem (`/aplicacoes/instrumentos-avaliativos/`), a coluna "Situação" de aplicações de categoria Online estava renderizando simultaneamente o badge de status do caderno (ex.: verde `"Fechada"`) e logo abaixo o texto verde `"✓ Pronto para impressão"`. Em provas futuras (ex.: maio/2026), o termo "Fechada" gerava ambiguidade grave de que a aplicação inteira estava encerrada, além de poluição visual na mesma célula.
@@ -640,16 +640,17 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > **Evidência de Resolução:**  
 > ![Evidência de Resolução - Coluna Situação Limpa](../evidencias/image-33.png)
 
-> [!WARNING] [Bug Crítico / Regressão Funcional] Omissão da exibição e contagem de alunos avulsos na listagem [BUG ABERTO ❌]
-> **Cenário de Homologação:** [Cenário 5.1](#cenário-51--exibição-e-contagem-de-alunos-avulsos-na-ausência-de-turmas-bug-crítico-aberto-)
-> **Evidência/Reprodução:** Ao listar aplicações realizadas diretamente para alunos específicos (sem turma vinculada, como provas finais/recuperação ex.: `EXAME FINAL_Geografia_F9_ANGLO_2025`), a nova tela renderiza apenas o badge de modalidade (`Presencial`), ocultando completamente a informação de que existem alunos participantes vinculados.  
+> [!TIP] [Bug Crítico / Regressão Funcional] Omissão da exibição e contagem de alunos avulsos na listagem [RESOLVIDO E HOMOLOGADO ✅]
+> **Cenário de Homologação:** [Cenário 5.1](#cenário-51--exibição-e-contagem-de-alunos-avulsos-na-ausência-de-turmas-resolvido-e-homologado-)  
+> **Evidência/Reprodução:** Ao listar aplicações realizadas diretamente para alunos específicos (sem turma vinculada, como provas finais/recuperação ex.: `EXAME FINAL_Geografia_F9_ANGLO_2025`), a nova tela renderizava apenas o badge de modalidade (`Presencial`), ocultando a informação de que existem alunos participantes vinculados.  
 > Na listagem legada (`/aplicacoes/`), a interface exibia com clareza a etiqueta informativa (ex.: `4 aluno(s) avulso(s)`, `14 aluno(s) avulso(s)`).
 > 
 > **Causa Raiz Técnica:**
 > - No serializer `ApplicationInstrumentListSerializer` (`fiscallizeon/applications/serializers/application_instrument.py`), o campo de contagem de alunos avulsos (`students_count`) não foi implementado nem retornado no payload JSON.
-> - No template `application_instrument_list.html` (linhas 306-315), a exibição de participantes abaixo do título do caderno condiciona-se unicamente a `application.school_classes.length`. Quando não há turmas (`school_classes: []`), nenhum indicador de estudantes é renderizado.
+> - No template `application_instrument_list.html`, a exibição de participantes abaixo do título do caderno condicionava-se unicamente a `application.school_classes.length`.
 >
-> **Comportamento Esperado:** Quando `school_classes` estiver vazio mas houver estudantes vinculados à aplicação (`app.students.exists()`), o serializer deve fornecer a contagem e o front deve renderizar a badge correspondente `${ application.students_count } aluno(s) avulso(s)`, mantendo a paridade com a tela legada.
+> **Resolução Aplicada:** O desenvolvedor implementou o método `get_students_count` no serializer e adicionou no template a renderização condicional do ícone e tag `${ application.students_count } aluno(s) avulso(s)` no commit `ffa18edfde`.
+> **Status de Homologação:** Validado e homologado pelo usuário em 09/11/2026. A tag com a quantidade de alunos avulsos está sendo exibida com clareza na listagem.
 >
 > **Evidências Comparativas:**  
 > 1. *Nova tela omitindo os estudantes avulsos:*  
