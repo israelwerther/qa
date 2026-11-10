@@ -184,8 +184,8 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 - [x] Confirmar que o tooltip abre com o texto: `"Total de questões objetivas que você respondeu nas avaliações e listas do ano letivo com resultado já liberado."`.
 ![alt text](../evidencias/image-26.png)
 - [x] Passar o cursor sobre o ícone ⓘ do card `"Desempenho"`.
-- [x] Confirmar que o tooltip abre com o texto: `"Percentual de acertos nas questões objetivas que você respondeu no ano letivo. A seta compara suas 5 últimas avaliações com as 5 anteriores."`.
-![alt text](../evidencias/image-27.png)
+- [x] Confirmar que o tooltip abre com o texto atualizado após alinhamento de janelas: `"Percentual de acertos nas questões objetivas que você respondeu no ano letivo. A seta compara as mesmas 5 últimas avaliações da média com as 5 anteriores, contando só as questões objetivas dessas avaliações."`.
+![Evidência Tooltip Desempenho](../evidencias/evidencia_sarah_tooltip_corrigido.jpg)
 - [x] Passar o cursor sobre o ícone ⓘ do card `"Média das notas"`.
 - [x] Confirmar que o tooltip abre com o texto: `"Média das notas que você obteve nas avaliações e listas do ano letivo. A seta compara suas 5 últimas avaliações com as 5 anteriores."`.
 ![alt text](../evidencias/image-28.png)
@@ -279,9 +279,9 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 7 — Tendência Estável (Valores Idênticos nas Janelas)
 
 **Ação humana:**
-- [ ] Preparar aluno com avaliações cuja média das 5 recentes seja idêntica (arredondada a 2 casas) à média das anteriores.
-- [ ] Recarregar o Painel do Aluno.
-- [ ] Confirmar que **nenhuma seta** é exibida (o sistema não exibe seta de traço ou neutra, preservando a limpeza do layout).
+- [x] Preparar aluno com avaliações cuja média das 5 recentes seja idêntica (arredondada a 2 casas) à média das anteriores.
+- [x] Recarregar o Painel do Aluno.
+- [x] Confirmar que **nenhuma seta** é exibida (o sistema não exibe seta de traço ou neutra, preservando a limpeza do layout).
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
@@ -325,13 +325,14 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 
 ## 7. Bugs and Observations (Problemas Encontrados)
 
-### 7.1. ⚠️ Inconsistência Crítica: Dessincronização de Janelas entre Média de Notas e Desempenho
+### 7.1. ✅ [RESOLVIDO / VALIDADO] Dessincronização de Janelas entre Média de Notas e Desempenho
 
 | Item | Descrição |
 |---|---|
 | **Tipo:** | Inconsistência na Regra de Negócio / Lógica de Agregação |
-| **Componente:** | Backend (`fiscallizeon/app/students/performance_summary.py`) |
-| **Gravidade:** | Média (Não quebra a tela, mas gera dados temporalmente incoerentes entre cards) |
+| **Componente:** | Backend (`fiscallizeon/app/students/performance_summary.py`) e Frontend (`src/components/dashboard/stats-cards.tsx`) |
+| **Gravidade:** | Média (Resolvido) |
+| **Status:** | **Validado com Sucesso em 10/11/2026** |
 
 #### 1. Descrição do Problema
 Os cards de **"Média das notas"** e **"Desempenho"** são apresentados lado a lado no dashboard com a premissa de indicar a tendência recente do aluno ("baseado nas últimas 5 avaliações"). No entanto, os dois cálculos utilizam conjuntos de dados diferentes no banco:
@@ -344,10 +345,12 @@ Os cards de **"Média das notas"** e **"Desempenho"** são apresentados lado a l
 
 **Efeito visível na tela:** O card de notas olha para Setembro e o card de desempenho olha para Junho. O aluno vê ao mesmo tempo uma seta vermelha $\downarrow$ e uma seta verde $\uparrow$ que referenciam momentos totalmente distintos da sua vida escolar.
 
-#### 3. Sugestão de Melhoria para o Time de Desenvolvimento
-Unificar a lista base de aplicações antes de calcular as janelas móveis:
-* Determinar primeiro as 5 últimas `ApplicationStudent` finalizadas no ano letivo;
-* Calcular a média de notas **e** a taxa de acertos objetivas referentes a **esse mesmo conjunto fixo de aplicações**.
+#### 3. Correção Implementada e Validação de QA
+* **Backend:** Implementada função `finished_applications_current_year` garantindo que ambas as séries utilizem rigorosamente as mesmas aplicações finalizadas cronológicas. Provas sem questões objetivas na janela permanecem como `(0, 0)` e não recuam mais no tempo. Quando não há respostas objetivas na janela recente, o Desempenho omite a seta (`trend = None`). Cache atualizado para `v3`.
+* **Frontend:** Atualizado o tooltip com a explicação explícita sobre a sincronização da janela.
+* **Resultado do Re-teste:** Validado no perfil da aluna Sarah Rizziolli (`sarah.a44286@aluno.decisaovirtual.com.br`). O card de Desempenho não exibe mais a seta indevida de Junho e o tooltip reflete perfeitamente a nova regra.
+
+![Evidência Sarah Tooltip e Tendência Corrigida](../evidencias/evidencia_sarah_tooltip_corrigido.jpg)
 
 ---
 
