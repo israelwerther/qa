@@ -549,7 +549,7 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] Em aplicação Presencial ou Híbrida, no card `"**Malote completo**"`, clicar em `"**Gerar malote**"`.
 - [x] Verificar se o diálogo `.instrument-print-dialog` abre com cabeçalho e rodapé fixos, seleção de modelo de folha (radios clicáveis em laranja) e switches.
 - [x] Confirmar o disparo da geração e fechar o modal.
-- [ ] Verificar se a barra de progresso da geração surge na tela (`div[role="progressbar"]`), exibindo o status `"Gerando malote"` e a porcentagem dinâmica `${ instrumentPrintStatus.progress }%`.
+- [x] Verificar se a barra de progresso da geração surge na tela (`div[role="progressbar"]`), exibindo o status `"Gerando malote"` e a porcentagem dinâmica `${ instrumentPrintStatus.progress }%`.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 5)
@@ -563,13 +563,14 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 14 — Hidratação e detecção visual de alterações (`v-changed`)
 **Ação humana:**
-- [ ] Acessar diretamente a rota de edição de uma aplicação existente: `/aplicacoes/instrumento-avaliativo/<uuid>/`.
-- [ ] Verificar se o cabeçalho exibe o botão `"**Salvar alterações**"` e se todos os campos (inclusive turmas e participantes) vêm preenchidos com os dados salvos.
-- [ ] Alterar o título da prova no input `"**Título da prova**"`.
-- [ ] Verificar se o campo recebe imediatamente um destaque visual (borda/ring) indicando alteração não salva (`v-changed`).
-- [ ] Passar o mouse sobre o campo e confirmar o tooltip informativo orientando a salvar.
-- [ ] Clicar no botão `"**Salvar alterações**"` no cabeçalho.
-- [ ] Confirmar que uma requisição PUT é enviada e que o destaque visual de alteração desaparece após o sucesso.
+- [x] Acessar diretamente a rota de edição de uma aplicação existente: `/aplicacoes/instrumento-avaliativo/<uuid>/`.
+- [x] Verificar se o cabeçalho exibe o botão `"**Salvar alterações**"` e se todos os campos (inclusive turmas e participantes) vêm preenchidos com os dados salvos.
+- [x] Alterar o título da prova no input `"**Título da prova**"`.
+- [x] Verificar se o campo recebe imediatamente um destaque visual (borda/ring) indicando alteração não salva (`v-changed`).
+- [x] Passar o mouse sobre o campo e confirmar o tooltip informativo orientando a salvar.
+![alt text](../evidencias/image-41.png)
+- [x] Clicar no botão `"**Salvar alterações**"` no cabeçalho.
+- [x] Confirmar que uma requisição PUT é enviada e que o destaque visual de alteração desaparece após o sucesso.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/<uuid>/`
