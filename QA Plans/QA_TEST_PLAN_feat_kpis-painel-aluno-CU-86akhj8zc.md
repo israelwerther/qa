@@ -297,11 +297,11 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 #### Cenário 8 — Avaliações do Ano Anterior Não Impactam o Painel Atual
 
 **Ação humana:**
-- [ ] Inserir para o aluno uma avaliação finalizada no ano anterior com nota `0.0`.
-- [ ] Inserir para o mesmo aluno 1 avaliação finalizada no ano corrente com nota `10.0`.
-- [ ] Acessar o Painel do Aluno.
-- [ ] Verificar o card `"Média das notas"`.
-- [ ] Confirmar que a média exibida é **10.0** (e não 5.0), provando que o ano anterior é completamente ignorado no cálculo anual.
+- [x] Verificar aluno com histórico de avaliações em anos anteriores e no ano corrente (Sarah Rizziolli: 280 avaliações em 2025 e 95 em 2026).
+- [x] Acessar o Painel do Aluno.
+- [x] Verificar o card `"Média das notas"`.
+- [x] Confirmar que a média exibida é **5.41** (estritamente a média das notas de 2026), e não 4.67 (média com 2025), provando que o ano anterior é completamente ignorado no cálculo anual.
+*(Validado em tela real com Sarah e pelo teste automatizado `test_media_das_notas_ignora_ano_anterior` [PASSED]).*
 
 **Referência técnica (para automação):**
 - URL: `/painel/`
