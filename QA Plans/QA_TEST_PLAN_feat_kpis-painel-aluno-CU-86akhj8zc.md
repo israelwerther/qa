@@ -313,13 +313,15 @@ Persona: Aluno logado (`cloud.student@lize.local`).
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Alinhamento do Card Desktop:** O valor numérico e o emoji ficam alinhados horizontalmente à esquerda, enquanto a seta de tendência se posiciona à direita sem quebrar a altura do card.
-- [ ] **Alinhamento no Mobile:** A seta de tendência fica posicionada ao lado do emoji de forma compacta, sem empurrar o rótulo para fora da coluna.
-- [ ] **Contraste e Cores:**
+- [x] **Alinhamento do Card Desktop:** O valor numérico e o emoji ficam alinhados horizontalmente à esquerda, enquanto a seta de tendência se posiciona à direita sem quebrar a altura do card.
+- [x] **Alinhamento no Mobile:** A seta de tendência fica posicionada ao lado do emoji de forma compacta, sem empurrar o rótulo para fora da coluna.
+- [x] **Contraste e Cores:**
   - Seta de alta: verde nítido (`text-green-600`).
   - Seta de queda: vermelho nítido (`text-red-600`).
   - Botão ⓘ: cinza suave (`text-muted-foreground`), escurecendo no hover (`hover:text-foreground`).
-- [ ] **Comparação com Mockups do ClickUp:** Conferir se a disposição dos elementos reflete fielmente as imagens anexadas na tarefa `CU-86akhj8zc`.
+- [x] **Comparação com Mockups do ClickUp:** Conferir se a disposição dos elementos reflete fielmente as imagens anexadas na tarefa `CU-86akhj8zc`.
+
+![Evidência Layout Mobile](../evidencias/evidencia_sarah_mobile_layout.jpg)
 
 ---
 
