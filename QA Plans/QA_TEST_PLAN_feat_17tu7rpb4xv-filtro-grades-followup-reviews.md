@@ -234,8 +234,8 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Caderno Alvo:** `Caderno Multi-Série Álgebra` (Caderno com 2 solicitações: uma para o 1º Ano e outra para o 2º Ano)
 
 **Ação humana:**
-- [ ] No ambiente, criar um caderno de Álgebra compartilhado contendo 2 solicitações de elaboração solicitadas para Cláudia: uma para o `1º Ano` e outra para o `2º Ano`.
-- [ ] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`, atualizar a listagem de revisão (`Cadernos ➔ Para você revisar` ou aba `"Revisar"`).
+- [x] Logado como **Coordenador (`admin123@admin.com`)**, criar um caderno de Álgebra contendo 2 solicitações de elaboração para a **Cláudia** dentro do mesmo caderno: uma para o `1º Ano` e outra para o `2º Ano` (e inserir ao menos 1 questão em cada solicitação).
+- [x] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`, atualizar a listagem de revisão (`Cadernos ➔ Para você revisar` ou aba `"Revisar"`).
 - [ ] Verificar que o caderno é exibido na lista com o card/solicitação da série do `"1º Ano"`.
 - [ ] Garantir que **NÃO** existe um segundo card ou item para a solicitação do `"2º Ano"`.
 - [ ] Se houver um coordenador que leciona no `2º Ano`, confirmar que este vê apenas a solicitação do `2º Ano`.
