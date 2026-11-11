@@ -89,18 +89,33 @@ source venv/bin/activate && pytest fiscallizeon/inspectors/tests/test_models.py 
 ```
 
 ### 4.2. Personas Envolvidas
-- **Persona 1: Coordenador 1ª Série (`coord.1em@lize.local`)**
-  - Professor com `is_discipline_coordinator = True` na disciplina de Física.
-  - Leciona na turma `101-A` (1ª Série do Ensino Médio) no ano corrente.
-- **Persona 2: Coordenador 2ª Série (`coord.2em@lize.local`)**
-  - Professor com `is_discipline_coordinator = True` na mesma disciplina de Física.
-  - Leciona na turma `201-A` (2ª Série do Ensino Médio) no ano corrente.
-- **Persona 3: Coordenador Sem Turmas (`coord.semturma@lize.local`)**
-  - Professor com `is_discipline_coordinator = True` na disciplina de Física.
-  - Possui `TeacherSubject` ativo no ano corrente, mas sem turmas vinculadas (`classes` vazio).
-- **Persona 4: Coordenador Geral da Escola (`coord.geral@lize.local`)**
-  - Usuário com papel de Coordenação (`user_type = 'coordination'`) e permissão `accounts.view_dashboards`.
-  - Acessa o Dashboard da Escola e visualiza os cards de acompanhamento (Followup).
+- **Persona Principal / Revisor de Álgebra: Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)**
+  - Professora com `is_discipline_coordinator = True` na disciplina de **Álgebra - Matemática**.
+  - Leciona turmas do **1º Ano** no ano letivo corrente (2026).
+  - É a coordenadora de disciplina responsável por revisar itens de Álgebra do 1º Ano.
+- **Persona Elaborador Neutro: Cláudia Pereira (`claudia.pereira@rededecisao.com.br`)**
+  - Professora da mesma disciplina (**Álgebra - Matemática**).
+  - Elabora questões sob demanda para as provas criadas pela coordenação.
+- **Persona Administrador / Coordenação: Administrador QA (`admin123@admin.com`)**
+  - Usuário com papel de Coordenação/Admin na instituição (Rede Decisão / Colégio QA).
+  - Cria cadernos, solicita elaborações e visualiza os cards de acompanhamento (Followup no Dashboard `/`).
+
+### 4.3. Cadernos Cadastrados para Validação no Ambiente (Staging)
+1. **`Caderno Cláudia Teste 1`** (Teste Positivo de Filtro):
+   - **Disciplina:** Álgebra - Matemática.
+   - **Série:** **1º Ano** (série que Rayssa leciona).
+   - **Elaborador Solicitado:** Cláudia Pereira.
+   - **Expectativa:** **DEVE APARECER** na fila de revisão da Rayssa (`/painel/professor/` aba *"Revisar"* e menu lateral *"Para você revisar"*).
+2. **`Caderno Cláudia Teste 2`** (Teste Negativo de Filtro):
+   - **Disciplina:** Álgebra - Matemática.
+   - **Série:** **2º Ano** (série que Rayssa NÃO leciona).
+   - **Elaborador Solicitado:** Cláudia Pereira.
+   - **Expectativa:** **NÃO DEVE APARECER** na fila de revisão da Rayssa.
+3. **`Caderno Rayssa Teste`** (Auto-revisão bloqueada / Solicitação direta):
+   - **Disciplina:** Álgebra - Matemática.
+   - **Série:** 1º Ano.
+   - **Elaborador Solicitado:** Rayssa Rodrigues da Silva.
+   - **Expectativa:** Aparece na aba **"Elaborar"** da Rayssa. Não entra em sua própria fila de revisão.
 
 ### 4.3. Fixture Base via Mixer (Setup Completo)
 Snippet em Python para recriar os dados de teste no shell do Django (`python manage.py shell`):
@@ -170,44 +185,46 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 ### 5.1 Fila Pessoal de Revisão (LizeEdu - Django) [Automatizável ✅]
 
-#### Cenário 1 — Coordenador leciona a série da solicitação (Caderno Visível)
-**Persona:** `coord.1em@lize.local` (Leciona 1ª Série na disciplina Física)
+#### Cenário 1 — Coordenador leciona a série da solicitação (Caderno Visível - Teste Positivo)
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`) — Coordenadora de Álgebra lecionando 1º Ano
+**Caderno Alvo:** `Caderno Cláudia Teste 1` (Álgebra - 1º Ano, elaborado por Cláudia)
 
 **Ação humana:**
-- [x] Fazer login com o usuário `"coord.1em@lize.local"` (senha `123456`).
+- [x] Fazer login ou impersonar a professora `"Rayssa Rodrigues da Silva"` (`rayssa.silva@rededecisao.com.br`).
 - [x] Acessar a fila de revisão por um dos dois caminhos canônicos da UI:
   - **Opção A (Menu Lateral):** No menu lateral, expandir `"Cadernos"` e clicar no item submenu `"Para você revisar"` (redireciona para `/provas/professor/revisar/`).
-  - **Opção B (Painel Principal):** Na tela inicial do professor (`/painel/professor/`), clicar na aba central `"Revisar"`.
+  - **Opção B (Painel Principal):** Na tela inicial da professora (`/painel/professor/`), clicar na aba central `"Revisar"`.
 - [x] Validar que o contador exibe 1 solicitação/revisão pendente.
-- [x] Localizar o card correspondente ao caderno `"Prova 1 EM - Física"`.
-- [x] Verificar que no corpo do card consta a disciplina `"Física Geral"` e a série `"1ª Série EM"`.
+- [x] Localizar o card correspondente ao caderno `"Caderno Cláudia Teste 1"`.
+- [x] Verificar que no corpo do card consta a disciplina `"Álgebra"` e a série `"1º Ano"`.
 - [x] Clicar no botão para revisar o caderno (`"Revisar questões"` na listagem completa ou `"Continuar"` na aba do painel).
 - [x] Garantir que a tela de revisão de questões do exame abre sem erros 403 ou 500.
 
 **Referência técnica (para automação):**
-- URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("Prova 1 EM - Física")`
-- Estado esperado: `p:has-text("1ª Série EM")` visível; link para `/provas/<exam_1em_id>/revisar/?exam_teacher_subject=<ets_1em_id>`
-- Fixture: `ets_1em` com `grade=grade_1em` e `rev_1em` lecionando `grade_1em`
+- URL: `/provas/professor/revisar/` ou `/painel/professor/`
+- Seletor: `.card.card-body:has-text("Caderno Cláudia Teste 1")` ou `div:has(h2:has-text("Caderno Cláudia Teste 1"))`
+- Estado esperado: Série `"1º Ano"` visível; link para `/provas/<exam_id>/revisar/?exam_teacher_subject=<ets_id>`
+- Fixture: `ets` com `grade = 1º Ano` e revisor com turmas do `1º Ano`
 
 ---
 
-#### Cenário 2 — Coordenador leciona outra série da mesma disciplina (Caderno Oculto)
-**Persona:** `coord.2em@lize.local` (Leciona apenas 2ª Série na disciplina Física)
+#### Cenário 2 — Coordenador NÃO leciona a série da solicitação (Caderno Oculto - Teste Negativo)
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`) — NÃO leciona no 2º Ano
+**Caderno Alvo:** `Caderno Cláudia Teste 2` (Álgebra - 2º Ano, elaborado por Cláudia)
 
 **Ação humana:**
-- [ ] Fazer login com o usuário `"coord.2em@lize.local"` (senha `123456`).
+- [ ] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`.
 - [ ] Acessar a fila de revisão (via menu `Cadernos ➔ Para você revisar` ou no `/painel/professor/` ➔ aba `"Revisar"`).
-- [ ] Verificar na listagem de cadernos que o caderno `"Prova 1 EM - Física"` **NÃO** está visível.
-- [ ] Na tela completa (`/provas/professor/revisar/`), digitar `"Prova 1 EM"` no campo `"Buscar por nome do caderno"` e submeter a busca.
-- [ ] Confirmar que o contador exibe `"Exibindo 0 solicitações"` e nenhum card é apresentado.
-- [ ] Limpar o campo de busca e confirmar que apenas a `"Prova 2 EM - Física"` consta na tela.
+- [ ] Verificar na listagem de cadernos que o caderno `"Caderno Cláudia Teste 2"` **NÃO** está visível.
+- [ ] Na tela completa (`/provas/professor/revisar/`), digitar `"Caderno Cláudia Teste 2"` no campo de busca e submeter.
+- [ ] Confirmar que o caderno do 2º Ano **não é retornado** para a Rayssa.
+- [ ] Confirmar que apenas o `"Caderno Cláudia Teste 1"` (1º Ano) consta na fila de revisão dela.
 
 **Referência técnica (para automação):**
-- URL: `/provas/professor/revisar/?q_name=Prova+1+EM`
-- Seletor: `.card.card-body:has-text("Prova 1 EM - Física")`
+- URL: `/provas/professor/revisar/?q_name=Caderno+Cláudia+Teste+2`
+- Seletor: `:has-text("Caderno Cláudia Teste 2")`
 - Estado esperado: Elemento não presente no DOM (`count == 0`)
-- Fixture: `rev_2em` com turmas da `grade_2em` tentando listar `ets_1em` (`grade_1em`)
+- Fixture: `revisor` sem turmas no `2º Ano` tentando listar caderno da série `2º Ano`
 
 ---
 
@@ -318,14 +335,14 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 ### 5.2 Card de Revisão no Dashboard de Acompanhamento (Lize Analytics) [Automatizável ✅]
 
 #### Cenário 9 — Exibição e contadores do Card de Revisões da Escola (`who=school`)
-**Persona:** `coord.geral@lize.local` (Coordenador Geral da Escola)
+**Persona:** Administrador QA (`admin123@admin.com`) — Coordenação Geral da Escola
 
 **Ação humana:**
-- [ ] Fazer login com o usuário de Coordenação Geral.
-- [ ] Acessar a página inicial do Dashboard `/` `(visão da escola/unidade)`.
+- [ ] Fazer login ou voltar para a sessão do usuário `"admin123@admin.com"`.
+- [ ] Acessar a página inicial do Dashboard `/` `(visão da escola/coordenação)`.
 - [ ] Rolar até a seção de cards de acompanhamento e localizar o card com o título `"Revisões"`.
-- [ ] Verificar o texto do contador: `"Há X revisões aguardando"` `(onde X deve incluir cadernos nomeados + cadernos em limbo dentro do prazo de 120 dias)`.
-- [ ] Verificar o gráfico circular SVG à direita com o percentual de conclusão das revisões `(ex: "75%")`.
+- [ ] Verificar o texto do contador: `"Há X revisões aguardando"` `(onde X inclui os cadernos da Cláudia dentro do prazo de 120 dias)`.
+- [ ] Verificar o gráfico circular SVG à direita com o percentual de conclusão das revisões `(ex: "0%" ou percentual correspondente)`.
 - [ ] Passar o mouse sobre o ícone de interrogação `(i)` ao lado do título e validar o tooltip: `"Os dados analisados nesse cartão são apenas os que estão dentro no prazo."`.
 - [ ] Garantir que o link inferior `"Acompanhe"` está visível.
 
@@ -338,13 +355,13 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 ---
 
 #### Cenário 10 — Ordenação cronológica dos prazos no modal de Acompanhamento
-**Persona:** `coord.geral@lize.local`
+**Persona:** Administrador QA (`admin123@admin.com`)
 
 **Ação humana:**
 - [ ] No card `"Revisões"`, clicar no link inferior `"Acompanhe"`.
 - [ ] Observar a abertura do modal de Acompanhamento de Revisões.
 - [ ] Conferir o cabeçalho do modal exibindo o título `"Revisões"` e o total de pendências.
-- [ ] Na tabela de prazos de revisão, inspecionar a coluna de datas/prazos.
+- [ ] Na tabela de prazos de revisão, inspecionar a coluna de datas/prazos (ex: prazo definido para `12 de Dezembro de 2026`).
 - [ ] Validar que as datas estão ordenadas em ordem cronológica ascendente `(da data mais antiga/próxima para a mais distante)`.
 - [ ] Garantir que prazos com 100% de conclusão **não** aparecem na listagem de pendências.
 
