@@ -69,8 +69,9 @@
 
 | Destino | Rótulo real no menu UI | URL Django / Endpoint | View name |
 |---|---|---|---|
-| Fila Pessoal de Revisão | "**Para você revisar**" (aba ao lado de "Elaboradas por você") | `/provas/professor/revisar/` | `exams:exam-teacher-subject-to-review-list` (`ExamTeacherSubjectToReviewListView`) |
-| Revisão de Questões do Caderno | Botão "**Revisar questões**" | `/provas/<exam_id>/revisar/?exam_teacher_subject=<ets_id>` | `exams:exam_review` (`exam_review`) |
+| Painel do Professor (Home) | Aba "**Revisar**" (ao lado de "Elaborar" e "Corrigir") | `/painel/professor/` | `core:dashboard-teacher` (`DashboardTeacherView` / `teacher_tabs.html`) |
+| Fila Completa de Revisão | Botão "**Todas as revisões**" / Menu | `/provas/professor/revisar/` | `exams:exam-teacher-subject-to-review-list` (`ExamTeacherSubjectToReviewListView`) |
+| Revisão de Questões do Caderno | Botão "**Continuar**" (no card) ou "**Revisar questões**" | `/provas/<exam_id>/revisar/?exam_teacher_subject=<ets_id>` | `exams:exam_review` (`exam_review`) |
 | Dashboard Principal da Coordenação | Menu lateral → "**Dashboard**" / Home | `/` (ou `/dashboards/escola/`) | `core:dashboard-coordination` (`DashboardCoordinationView`) |
 | Modal de Acompanhamento (Followup) | Link "**Acompanhe**" no card "**Revisões**" | Disparado via JS (`followupDetail('reviews')`) | Modal `#modal-followup` (`school.html`) |
 | API Analytics — Card de Revisões | N/A (chamada assíncrona) | `POST /dashboards/api/get-data-from-service/<client_id>/` | Operação `get_card_followup_reviews` |
@@ -434,7 +435,8 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 
 - [x] O arquivo de mapeamento foi nomeado refletindo exatamente o template HTML (Django) ou rota/componente (SPA Aluno), e não a View.
-🔗 **[Ver Mapeamento de Tela (Fila de Revisão)](docs/tests/usability/teacher_exam_to_review_list.md)**
+🔗 **[Ver Mapeamento de Tela (Painel do Professor - Tabs)](docs/tests/usability/teacher_tabs.md)**
+🔗 **[Ver Mapeamento de Tela (Fila de Revisão Completa)](docs/tests/usability/teacher_exam_to_review_list.md)**
 🔗 **[Ver Mapeamento de Tela (Dashboard Followup)](docs/tests/usability/school.md)**
 
 ### Automation Snippet (Python / Playwright + Mixer Data Setup)
