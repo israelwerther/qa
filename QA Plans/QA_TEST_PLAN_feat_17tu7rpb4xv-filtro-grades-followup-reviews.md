@@ -213,12 +213,13 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Caderno Alvo:** `Caderno Cláudia Teste 2` (Álgebra - 2º Ano, elaborado por Cláudia)
 
 **Ação humana:**
-- [ ] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`.
-- [ ] Acessar a fila de revisão (via menu `Cadernos ➔ Para você revisar` ou no `/painel/professor/` ➔ aba `"Revisar"`).
-- [ ] Verificar na listagem de cadernos que o caderno `"Caderno Cláudia Teste 2"` **NÃO** está visível.
-- [ ] Na tela completa (`/provas/professor/revisar/`), digitar `"Caderno Cláudia Teste 2"` no campo de busca e submeter.
-- [ ] Confirmar que o caderno do 2º Ano **não é retornado** para a Rayssa.
-- [ ] Confirmar que apenas o `"Caderno Cláudia Teste 1"` (1º Ano) consta na fila de revisão dela.
+- [x] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`.
+- [x] Acessar a fila de revisão (via menu `Cadernos ➔ Para você revisar` ou no `/painel/professor/` ➔ aba `"Revisar"`).
+- [x] Verificar na listagem de cadernos que o caderno `"Caderno Cláudia Teste 2"` **NÃO** está visível.
+- [x] Na tela completa (`/provas/professor/revisar/`), digitar `"Caderno Cláudia Teste 2"` no campo de busca e submeter.
+![alt text](../evidencias/image-42.png)
+- [x] Confirmar que o caderno do 2º Ano **não é retornado** para a Rayssa.
+- [x] Confirmar que apenas o `"Caderno Cláudia Teste 1"` (1º Ano) consta na fila de revisão dela.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/?q_name=Caderno+Cláudia+Teste+2`
