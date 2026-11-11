@@ -175,14 +175,14 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 **Ação humana:**
 - [x] Fazer login com o usuário `"coord.1em@lize.local"` (senha `123456`).
-- [ ] Acessar no menu superior ou lateral a aba `"Elaboração de provas"`.
-- [ ] Clicar no botão azul `"Para você revisar"` `(ao lado de "Elaboradas por você")`.
-- [ ] Validar que o contador exibe `"Exibindo 1 solicitações"`.
-- [ ] Localizar o card correspondente ao caderno `"Prova 1 EM - Física"`.
-- [ ] Verificar que no corpo do card consta a disciplina `"Física Geral"` e a série `"1ª Série EM"`.
-- [ ] Conferir a badge azul `"Aguarda revisão"` `(topo esquerdo do card)`.
-- [ ] Clicar no botão verde `"Revisar questões"` `(com ícone de olho)`.
-- [ ] Garantir que a tela de revisão de questões do exame abre sem erros 403 ou 500.
+- [x] Acessar a fila de revisão por um dos dois caminhos canônicos da UI:
+  - **Opção A (Menu Lateral):** No menu lateral, expandir `"Cadernos"` e clicar no item submenu `"Para você revisar"` (redireciona para `/provas/professor/revisar/`).
+  - **Opção B (Painel Principal):** Na tela inicial do professor (`/painel/professor/`), clicar na aba central `"Revisar"`.
+- [x] Validar que o contador exibe 1 solicitação/revisão pendente.
+- [x] Localizar o card correspondente ao caderno `"Prova 1 EM - Física"`.
+- [x] Verificar que no corpo do card consta a disciplina `"Física Geral"` e a série `"1ª Série EM"`.
+- [x] Clicar no botão para revisar o caderno (`"Revisar questões"` na listagem completa ou `"Continuar"` na aba do painel).
+- [x] Garantir que a tela de revisão de questões do exame abre sem erros 403 ou 500.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
@@ -197,9 +197,9 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 **Ação humana:**
 - [ ] Fazer login com o usuário `"coord.2em@lize.local"` (senha `123456`).
-- [ ] Acessar a tela `"Para você revisar"`.
+- [ ] Acessar a fila de revisão (via menu `Cadernos ➔ Para você revisar` ou no `/painel/professor/` ➔ aba `"Revisar"`).
 - [ ] Verificar na listagem de cadernos que o caderno `"Prova 1 EM - Física"` **NÃO** está visível.
-- [ ] Digitar `"Prova 1 EM"` no campo `"Buscar por nome do caderno"` e submeter a busca.
+- [ ] Na tela completa (`/provas/professor/revisar/`), digitar `"Prova 1 EM"` no campo `"Buscar por nome do caderno"` e submeter a busca.
 - [ ] Confirmar que o contador exibe `"Exibindo 0 solicitações"` e nenhum card é apresentado.
 - [ ] Limpar o campo de busca e confirmar que apenas a `"Prova 2 EM - Física"` consta na tela.
 

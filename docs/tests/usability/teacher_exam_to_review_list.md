@@ -9,7 +9,10 @@
 - **Busca por Nome de Caderno:** `/provas/professor/revisar/?q_name=<termo>`
 - **Exportação em PDF da Fila:** `/provas/professor/revisar-pdf/`
 - **Revisão de Questões do Caderno:** `/provas/<exam_id>/revisar/?exam_teacher_subject=<ets_id>`
-- **Navegação UI:** Menu lateral ou superior → "Instrumentos Avaliativos" (ou "Elaboração de provas") → Botão/Aba "**Para você revisar**" (ao lado de "**Elaboradas por você**").
+- **Navegação UI:** 
+  - **Menu Lateral:** Expandir `"Cadernos"` ➔ Clicar no item submenu `"Para você revisar"`.
+  - **Painel do Professor (`/painel/professor/`):** Clicar na aba central `"Revisar"` e, caso queira ver a listagem completa, clicar em `"Todas as revisões"` no rodapé.
+  - **Versões legadas:** Botão/Aba `"Para você revisar"` ao lado de `"Elaboradas por você"` dentro de `"Elaboração de provas"`.
 
 ## 2. Pré-requisitos para Automação (Fixtures e Permissões)
 - **Persona:** Usuário autenticado com perfil Professor (`settings.TEACHER`) e coordenador de disciplina (`user.inspector.is_discipline_coordinator = True`).
