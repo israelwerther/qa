@@ -101,15 +101,18 @@ source venv/bin/activate && pytest fiscallizeon/inspectors/tests/test_models.py 
   - Cria cadernos, solicita elaborações e visualiza os cards de acompanhamento (Followup no Dashboard `/`).
 
 ### 4.3. Cadernos Cadastrados para Validação no Ambiente (Staging)
+> [!IMPORTANT]
+> **Pré-requisito obrigatório de revisão:** Para que qualquer caderno entre na fila de revisão (`get_exams_to_review`), ele **precisa ter pelo menos 1 questão inserida** na solicitação (questão com status em aberto/aguardando revisão). Cadernos com `0 questões` permanecem apenas na fila de elaboração.
+
 1. **`Caderno Cláudia Teste 1`** (Teste Positivo de Filtro):
    - **Disciplina:** Álgebra - Matemática.
    - **Série:** **1º Ano** (série que Rayssa leciona).
-   - **Elaborador Solicitado:** Cláudia Pereira.
+   - **Elaborador Solicitado:** Cláudia Pereira (com ao menos 1 questão inserida).
    - **Expectativa:** **DEVE APARECER** na fila de revisão da Rayssa (`/painel/professor/` aba *"Revisar"* e menu lateral *"Para você revisar"*).
 2. **`Caderno Cláudia Teste 2`** (Teste Negativo de Filtro):
    - **Disciplina:** Álgebra - Matemática.
    - **Série:** **2º Ano** (série que Rayssa NÃO leciona).
-   - **Elaborador Solicitado:** Cláudia Pereira.
+   - **Elaborador Solicitado:** Cláudia Pereira (com ao menos 1 questão inserida).
    - **Expectativa:** **NÃO DEVE APARECER** na fila de revisão da Rayssa.
 3. **`Caderno Rayssa Teste`** (Auto-revisão bloqueada / Solicitação direta):
    - **Disciplina:** Álgebra - Matemática.
@@ -117,7 +120,7 @@ source venv/bin/activate && pytest fiscallizeon/inspectors/tests/test_models.py 
    - **Elaborador Solicitado:** Rayssa Rodrigues da Silva.
    - **Expectativa:** Aparece na aba **"Elaborar"** da Rayssa. Não entra em sua própria fila de revisão.
 
-### 4.3. Fixture Base via Mixer (Setup Completo)
+### 4.4. Fixture Base via Mixer (Setup Completo)
 Snippet em Python para recriar os dados de teste no shell do Django (`python manage.py shell`):
 
 ```python
@@ -236,9 +239,10 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Ação humana:**
 - [x] Logado como **Coordenador (`admin123@admin.com`)**, criar um caderno de Álgebra contendo 2 solicitações de elaboração para a **Cláudia** dentro do mesmo caderno: uma para o `1º Ano` e outra para o `2º Ano` (e inserir ao menos 1 questão em cada solicitação).
 - [x] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`, atualizar a listagem de revisão (`Cadernos ➔ Para você revisar` ou aba `"Revisar"`).
-- [ ] Verificar que o caderno é exibido na lista com o card/solicitação da série do `"1º Ano"`.
-- [ ] Garantir que **NÃO** existe um segundo card ou item para a solicitação do `"2º Ano"`.
-- [ ] Se houver um coordenador que leciona no `2º Ano`, confirmar que este vê apenas a solicitação do `2º Ano`.
+- [x] Verificar que o caderno é exibido na lista com o card/solicitação da série do `"1º Ano"`.
+![alt text](../evidencias/image-43.png)
+- [x] Garantir que **NÃO** existe um segundo card ou item para a solicitação do `"2º Ano"`.
+- [x] Se houver um coordenador que leciona no `2º Ano`, confirmar que este vê apenas a solicitação do `2º Ano`.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
