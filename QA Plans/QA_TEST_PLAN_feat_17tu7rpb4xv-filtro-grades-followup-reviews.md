@@ -230,104 +230,107 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 ---
 
 #### Cenário 3 — Mesmo exame com solicitações em séries distintas (Corte Cirúrgico por ETS)
-**Persona:** `coord.1em@lize.local`
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`) — Leciona apenas no 1º Ano de Álgebra
+**Caderno Alvo:** `Caderno Multi-Série Álgebra` (Caderno com 2 solicitações: uma para o 1º Ano e outra para o 2º Ano)
 
 **Ação humana:**
-- [ ] No banco de testes, criar um exame compartilhado com 2 ETS de Física: um para a `1ª Série EM` e outro para a `2ª Série EM`.
-- [ ] Estando logado como `"coord.1em@lize.local"`, atualizar a listagem `"Para você revisar"`.
-- [ ] Verificar que o exame compartilhado é exibido na lista com o card da solicitação da `"1ª Série EM"`.
-- [ ] Garantir que **NÃO** existe um segundo card para a solicitação da `"2ª Série EM"`.
-- [ ] Logar como `"coord.2em@lize.local"` e confirmar que ele vê apenas o card da `"2ª Série EM"`.
+- [ ] No ambiente, criar um caderno de Álgebra compartilhado contendo 2 solicitações de elaboração solicitadas para Cláudia: uma para o `1º Ano` e outra para o `2º Ano`.
+- [ ] Estando logado/impersonado como `"Rayssa Rodrigues da Silva"`, atualizar a listagem de revisão (`Cadernos ➔ Para você revisar` ou aba `"Revisar"`).
+- [ ] Verificar que o caderno é exibido na lista com o card/solicitação da série do `"1º Ano"`.
+- [ ] Garantir que **NÃO** existe um segundo card ou item para a solicitação do `"2º Ano"`.
+- [ ] Se houver um coordenador que leciona no `2º Ano`, confirmar que este vê apenas a solicitação do `2º Ano`.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("1ª Série EM")` presente e `:has-text("2ª Série EM")` ausente para `rev_1em`
+- Seletor: `.card.card-body:has-text("1º Ano")` presente e `:has-text("2º Ano")` ausente para a Rayssa
 - Estado esperado: `Inspector.get_exams_to_review(return_exam_teacher_subjects=True)` retorna apenas o ETS da série lecionada
 - Fixture: `test_get_exams_to_review_same_exam_two_grades_is_cut_per_ets`
 
 ---
 
 #### Cenário 4 — Revisor designado no M2M `reviewed_by` (Soberania de Designação)
-**Persona:** `coord.1em@lize.local`
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)
+**Caderno Alvo:** `Caderno Cláudia Teste 2` (Álgebra - 2º Ano, série que Rayssa NÃO leciona)
 
 **Ação humana:**
-- [ ] Associar o usuário `"coord.1em@lize.local"` ao M2M `reviewed_by` da solicitação do exame `"Prova 2 EM - Física"` `(série que ele NÃO leciona)`.
-- [ ] Atualizar a página `"Para você revisar"` logado como `"coord.1em@lize.local"`.
-- [ ] Verificar que agora o card da `"Prova 2 EM - Física"` **aparece** na fila de revisão deste professor.
-- [ ] Confirmar que o card exibe a série `"2ª Série EM"` e permite clicar em `"Revisar questões"`.
+- [ ] Logado como Admin (`admin123@admin.com`), editar a solicitação de elaboração do `"Caderno Cláudia Teste 2"` (ou via Django Admin em `ExamTeacherSubject.reviewed_by`) e adicionar `"Rayssa Rodrigues da Silva"` como revisora explicitamente designada.
+- [ ] Acessar novamente a plataforma como `"Rayssa Rodrigues da Silva"` e atualizar a página `"Para você revisar"`.
+- [ ] Verificar que agora o card do `"Caderno Cláudia Teste 2"` **passa a aparecer** na fila de revisão da Rayssa, mesmo sendo do 2º Ano.
+- [ ] Confirmar que o card exibe a série `"2º Ano"` e permite clicar em `"Continuar"` / `"Revisar questões"`.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("Prova 2 EM - Física")`
-- Estado esperado: Presente no DOM apesar de `grade_2em != grade_1em`
-- Fixture: `ets_2em.reviewed_by.add(rev_1em)`
+- Seletor: `.card.card-body:has-text("Caderno Cláudia Teste 2")`
+- Estado esperado: Presente no DOM apesar de `grade != 1º Ano`
+- Fixture: `ets_2em.reviewed_by.add(rayssa)`
 
 ---
 
 #### Cenário 5 — Fallback para solicitação sem série cadastrada (`grade IS NULL`)
-**Persona:** `coord.1em@lize.local`
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)
+**Caderno Alvo:** `Caderno Álgebra Sem Série` (Solicitação de Álgebra onde o campo Série foi deixado em branco / nulo)
 
 **Ação humana:**
-- [ ] Criar um exame de Física com a solicitação contendo `grade = None`.
-- [ ] Estando logado como `"coord.1em@lize.local"`, atualizar a página `"Para você revisar"`.
-- [ ] Verificar que o caderno sem série **é exibido normalmente** na fila de revisão.
+- [ ] Criar um caderno de Álgebra com a solicitação contendo série não preenchida (`grade = None`).
+- [ ] Estando logado como `"Rayssa Rodrigues da Silva"`, atualizar a página `"Para você revisar"`.
+- [ ] Verificar que o caderno sem série **é exibido normalmente** na fila de revisão dela (mantendo o fallback tradicional por disciplina).
 - [ ] Garantir que o sistema não gerou erro de tela ou quebra de layout por ausência de série.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("Física Geral")`
+- Seletor: `:has-text("Caderno Álgebra Sem Série")`
 - Estado esperado: Card renderizado com campo de série vazio ou `None` sem quebrar
 - Fixture: `test_get_exams_to_review_null_grade_keeps_subject_match`
 
 ---
 
 #### Cenário 6 — Fallback para Coordenador com disciplina ativa mas sem turmas no ano corrente
-**Persona:** `coord.semturma@lize.local`
+**Persona:** Professor Coordenador de Disciplina sem turmas vinculadas em 2026
 
 **Ação humana:**
-- [ ] Fazer login com o usuário `"coord.semturma@lize.local"` (possui disciplina Física ativa, mas sem turmas vinculadas).
-- [ ] Acessar a tela `"Para você revisar"`.
-- [ ] Verificar que o professor visualiza **todos** os cadernos da disciplina de Física da sua coordenação, independentemente da série (`1ª Série EM`, `2ª Série EM`).
-- [ ] Validar que o fallback tradicional por disciplina foi ativado integralmente.
+- [ ] Cadastrar ou alterar um professor para ser coordenador de disciplina em Álgebra, mas sem nenhuma turma associada no ano letivo de 2026.
+- [ ] Acessar a tela `"Para você revisar"` com esse professor.
+- [ ] Verificar que o professor visualiza **todos** os cadernos da disciplina de Álgebra da sua coordenação, independentemente da série (`1º Ano`, `2º Ano`).
+- [ ] Validar que o fallback tradicional por disciplina foi ativado integralmente para quem não possui turmas.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("Física Geral")`
-- Estado esperado: Todos os cadernos de Física da coordenação visíveis
+- Seletor: `:has-text("Álgebra")`
+- Estado esperado: Todos os cadernos de Álgebra da coordenação visíveis
 - Fixture: `test_get_exams_to_review_empty_grades_keeps_subject_match`
 
 ---
 
 #### Cenário 7 — Caderno em série sem turma no colégio / Limbo (Não visível para nenhum professor)
-**Persona:** `coord.1em@lize.local` e `coord.2em@lize.local`
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)
+**Caderno Alvo:** `Caderno Álgebra - 3º Ano` (Série onde nenhum professor do colégio leciona no ano de 2026)
 
 **Ação humana:**
-- [ ] Observar o caderno `"Prova 3 EM - Física (Limbo)"` cuja série (`3ª Série EM`) não é lecionada por nenhum professor do colégio.
-- [ ] Estando logado como `"coord.1em@lize.local"`, verificar que o caderno **NÃO** aparece na fila.
-- [ ] Fazer logout e logar como `"coord.2em@lize.local"`.
-- [ ] Verificar que o caderno também **NÃO** aparece na fila deste professor.
-- [ ] Confirmar que nenhum usuário professor tem acesso ao caderno em sua fila pessoal.
+- [ ] Observar ou criar um caderno de Álgebra cuja série (ex: `3º Ano`) não é lecionada por nenhum professor do colégio.
+- [ ] Estando logado como `"Rayssa Rodrigues da Silva"`, verificar que o caderno **NÃO** aparece na fila dela.
+- [ ] Logar com outros professores de Álgebra e confirmar que o caderno também **NÃO** aparece na fila de nenhum deles.
+- [ ] Confirmar que o caderno em limbo não polui a fila de nenhum professor, ficando reservado para o agrupamento da Coordenação Geral no Analytics.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("Prova 3 EM - Física (Limbo)")`
+- Seletor: `:has-text("Caderno Álgebra - 3º Ano")`
 - Estado esperado: Ausente do DOM para todos os revisores não vinculados ao M2M `reviewed_by`
-- Fixture: ETS com série `3ª Série EM` sem turmas no ano
+- Fixture: ETS com série `3º Ano` sem turmas no ano
 
 ---
 
 #### Cenário 8 — Turmas vinculadas a `TeacherSubject` ativo de ano anterior
-**Persona:** `coord.1em@lize.local`
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)
 
 **Ação humana:**
-- [ ] No banco de testes, vincular a turma da `1ª Série EM` a um `TeacherSubject` ativo cujo `school_year` seja do ano anterior `(now.year - 1)`.
-- [ ] Atualizar a página `"Para você revisar"` logado como `"coord.1em@lize.local"`.
-- [ ] Verificar que a `"Prova 1 EM - Física"` continua sendo exibida na fila do professor.
+- [ ] No banco de testes/staging, caso haja vínculo da turma do `1º Ano` a um `TeacherSubject` ativo com ano letivo anterior `(now.year - 1)`.
+- [ ] Atualizar a página `"Para você revisar"` logado como `"Rayssa Rodrigues da Silva"`.
+- [ ] Verificar que o `"Caderno Cláudia Teste 1"` continua sendo exibido na fila da professora.
 - [ ] Confirmar que o sistema considerou o ano da turma (`SchoolClass.school_year = now.year`) e não o ano do cadastro do `TeacherSubject`.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
-- Seletor: `.card.card-body:has-text("Prova 1 EM - Física")`
+- Seletor: `:has-text("Caderno Cláudia Teste 1")`
 - Estado esperado: Presente no DOM
 - Fixture: `test_get_exams_to_review_grades_from_older_teacher_subject`
 
@@ -375,14 +378,14 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 ---
 
 #### Cenário 11 — Detalhamento por unidade e agrupamento "Sem professor responsável" (`who=school`)
-**Persona:** `coord.geral@lize.local`
+**Persona:** Administrador QA (`admin123@admin.com`) — Coordenação Geral
 
 **Ação humana:**
-- [ ] Dentro do modal de acompanhamento, clicar sobre a linha de um prazo que contenha cadernos em limbo `(como o exame de 3ª série sem revisor)`.
+- [ ] Dentro do modal de acompanhamento de Revisões, clicar sobre a linha de um prazo que contenha cadernos em limbo (ex: cadernos cujos coordenadores não lecionam aquela série específica).
 - [ ] Localizar o card da unidade escolar correspondente.
 - [ ] Clicar sobre a unidade para abrir a lista detalhada de cadernos e professores.
 - [ ] Na aba de professores da unidade, localizar o agrupamento com o nome `"Sem professor responsável"`.
-- [ ] Verificar que os cadernos da `3ª Série EM` cujos coordenadores não lecionam a série estão agrupados sob esta identificação sentinela.
+- [ ] Verificar que os cadernos em limbo estão agrupados sob esta identificação sentinela.
 - [ ] Conferir a quantidade de questões solicitadas e pendentes listadas nesse grupo.
 
 **Referência técnica (para automação):**
@@ -393,14 +396,14 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 ---
 
-#### Cenário 12 — Isolamento de pendências na visão do Professor (`who=teacher`)
-**Persona:** Professor acessando dashboard analítico com `who=teacher`
+#### Cenário 12 — Isolamento de pendências na visão da Professora Rayssa (`who=teacher`)
+**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`) — Acessando acompanhamento
 
 **Ação humana:**
-- [ ] Acessar a visão de acompanhamento sob a perspectiva do professor `(who=teacher)`.
+- [ ] Acessar a visão de acompanhamento sob a perspectiva da professora Rayssa `(who=teacher)`.
 - [ ] Verificar os dados do card e do detalhamento de revisões.
-- [ ] Garantir que o professor visualiza **apenas** as revisões sob sua responsabilidade direta `(nomeadas ou designadas)`.
-- [ ] Validar que o grupo `"Sem professor responsável"` **NÃO** é exibido para o professor em hipótese alguma.
+- [ ] Garantir que a Rayssa visualiza **apenas** as revisões sob sua responsabilidade direta (no caso, cadernos do 1º Ano como `Caderno Cláudia Teste 1`).
+- [ ] Validar que o grupo `"Sem professor responsável"` **NÃO** é exibido para a professora em hipótese alguma.
 
 **Referência técnica (para automação):**
 - URL: Endpoint de operações analíticas com `who: "teacher"`, `who_ids: ["<teacher_id>"]`
