@@ -362,12 +362,12 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Persona:** Administrador QA (`admin123@admin.com`)
 
 **Ação humana:**
-- [ ] No card `"Revisões"`, clicar no link inferior `"Acompanhe"`.
-- [ ] Observar a abertura do modal de Acompanhamento de Revisões.
-- [ ] Conferir o cabeçalho do modal exibindo o título `"Revisões"` e o total de pendências.
-- [ ] Na tabela de prazos de revisão, inspecionar a coluna de datas/prazos (ex: prazo definido para `12 de Dezembro de 2026`).
-- [ ] Validar que as datas estão ordenadas em ordem cronológica ascendente `(da data mais antiga/próxima para a mais distante)`.
-- [ ] Garantir que prazos com 100% de conclusão **não** aparecem na listagem de pendências.
+- [x] No card `"Revisões"`, clicar no link inferior `"Acompanhe"`.
+- [x] Observar a abertura do modal de Acompanhamento de Revisões.
+- [x] Conferir o cabeçalho do modal exibindo o título `"Revisões"` e o total de pendências.
+- [x] Na tabela de prazos de revisão, inspecionar a coluna de datas/prazos (ex: prazo definido para `12 de Dezembro de 2026`).
+- [x] Validar que as datas estão ordenadas em ordem cronológica ascendente `(da data mais antiga/próxima para a mais distante)`.
+- [x] Garantir que prazos com 100% de conclusão **não** aparecem na listagem de pendências.
 
 **Referência técnica (para automação):**
 - URL: `/` (Modal Followup)
@@ -381,12 +381,13 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Persona:** Administrador QA (`admin123@admin.com`) — Coordenação Geral
 
 **Ação humana:**
-- [ ] Dentro do modal de acompanhamento de Revisões, clicar sobre a linha de um prazo que contenha cadernos em limbo (ex: cadernos cujos coordenadores não lecionam aquela série específica).
-- [ ] Localizar o card da unidade escolar correspondente.
-- [ ] Clicar sobre a unidade para abrir a lista detalhada de cadernos e professores.
-- [ ] Na aba de professores da unidade, localizar o agrupamento com o nome `"Sem professor responsável"`.
-- [ ] Verificar que os cadernos em limbo estão agrupados sob esta identificação sentinela.
-- [ ] Conferir a quantidade de questões solicitadas e pendentes listadas nesse grupo.
+- [x] No modal de acompanhamento de Revisões (aberto via link `"Acompanhe"`), localizar na listagem um prazo de revisão.
+- [x] Clicar sobre a linha do prazo.
+- [x] Localizar e clicar sobre o card da Unidade escolar (ex: unidade `CRE`).
+- [x] Na tela de detalhamento da unidade, abrir a aba **"Professores"**.
+- [x] Localizar o agrupamento com o nome **`"Sem professor responsável"`**:
+  - [x] Validar que cadernos em limbo/sem coordenador elegível para a série (ex: caderno `Teste Treinamento Professor Autor`) estão alocados sob esse grupo sentinela.
+- [x] Conferir a quantidade de questões solicitadas e pendentes listadas nesse grupo (ex: `5` questões).
 
 **Referência técnica (para automação):**
 - URL: `/` (Modal Followup - Drill-Down de Unidade)
