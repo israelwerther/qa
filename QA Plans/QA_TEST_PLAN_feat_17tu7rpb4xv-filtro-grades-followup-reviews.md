@@ -270,15 +270,19 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 ---
 
-#### Cenário 5 — Fallback para solicitação sem série cadastrada (`grade IS NULL`)
+#### Cenário 5 — Fallback para solicitação sem série cadastrada (`grade IS NULL` - Caso Legado / Admin)
 **Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)
-**Caderno Alvo:** `Caderno Álgebra Sem Série` (Solicitação de Álgebra onde o campo Série foi deixado em branco / nulo)
+**Caderno Alvo:** `Caderno Cláudia Teste 2` (ou qualquer solicitação editada via Django Admin para ficar com `grade = None`)
 
-**Ação humana:**
-- [ ] Criar um caderno de Álgebra com a solicitação contendo série não preenchida (`grade = None`).
-- [ ] Estando logado como `"Rayssa Rodrigues da Silva"`, atualizar a página `"Para você revisar"`.
-- [ ] Verificar que o caderno sem série **é exibido normalmente** na fila de revisão dela (mantendo o fallback tradicional por disciplina).
-- [ ] Garantir que o sistema não gerou erro de tela ou quebra de layout por ausência de série.
+> [!NOTE]
+> **Limitação da UI:** Na interface do sistema (`Solicitar ao professor`), o campo **Série** é obrigatório (`required`) e serve de gatilho para carregar a lista de disciplinas. Portanto, não é possível criar uma solicitação sem série pela tela normal — esse cenário existe para proteger cadernos legados no banco de dados e só pode ser simulado no ambiente removendo a série via **Django Admin** (`/admin/exams/examteachersubject/`) ou validado via teste automatizado (`pytest`).
+
+**Ação humana (Opcional via Django Admin):**
+- [x] No Django Admin (`/admin/exams/examteachersubject/`), localizar uma solicitação de Álgebra da Cláudia, deixar o campo **Série (Grade)** em branco (`---------`) e salvar.
+- [x] Estando logado como `"Rayssa Rodrigues da Silva"`, atualizar a página `"Para você revisar"`.
+- [x] Verificar que o caderno sem série **é exibido normalmente** na fila de revisão dela (mantendo o fallback tradicional por disciplina).
+- [x] Garantir que o sistema não gerou erro de tela ou quebra de layout por ausência de série.
+![alt text](../evidencias/image-44.png)
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
