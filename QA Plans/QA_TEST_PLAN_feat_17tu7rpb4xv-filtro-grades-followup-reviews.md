@@ -257,10 +257,10 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Caderno Alvo:** `Caderno Cláudia Teste 2` (Álgebra - 2º Ano, série que Rayssa NÃO leciona)
 
 **Ação humana:**
-- [ ] Logado como Admin (`admin123@admin.com`), editar a solicitação de elaboração do `"Caderno Cláudia Teste 2"` (ou via Django Admin em `ExamTeacherSubject.reviewed_by`) e adicionar `"Rayssa Rodrigues da Silva"` como revisora explicitamente designada.
-- [ ] Acessar novamente a plataforma como `"Rayssa Rodrigues da Silva"` e atualizar a página `"Para você revisar"`.
-- [ ] Verificar que agora o card do `"Caderno Cláudia Teste 2"` **passa a aparecer** na fila de revisão da Rayssa, mesmo sendo do 2º Ano.
-- [ ] Confirmar que o card exibe a série `"2º Ano"` e permite clicar em `"Continuar"` / `"Revisar questões"`.
+- [x] Logado como Admin (`admin123@admin.com`), editar a solicitação de elaboração do `"Caderno Cláudia Teste 2"` (ou via Django Admin em `ExamTeacherSubject.reviewed_by`) e adicionar `"Rayssa Rodrigues da Silva"` como revisora explicitamente designada.
+- [x] Acessar novamente a plataforma como `"Rayssa Rodrigues da Silva"` e atualizar a página `"Para você revisar"`.
+- [x] Verificar que agora o card do `"Caderno Cláudia Teste 2"` **passa a aparecer** na fila de revisão da Rayssa, mesmo sendo do 2º Ano.
+- [x] Confirmar que o card exibe a série `"2º Ano"` e permite clicar em `"Continuar"` / `"Revisar questões"`.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
