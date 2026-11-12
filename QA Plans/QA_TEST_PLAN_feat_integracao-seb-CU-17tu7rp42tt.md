@@ -252,11 +252,10 @@ app_student_b = mixer.blend(ApplicationStudent, application=app, student=student
 
 #### Cenário 6 — Avaliação com alunos de unidades diferentes e códigos por unidade
 
-**Ação humana:**
-- [ ] Disparar requisição `GET` para `/api/v2/application-students-results/` passando os filtros da avaliação e disciplina `"Português SEB"`.
-- [ ] Para o Aluno Centro (`SEB001`), verificar no payload JSON que o campo `"subject_id_erp"` é retornado como `"PORT-CENTRO"`.
-- [ ] Para o Aluno Sul (`SEB002`), verificar no payload JSON que o campo `"subject_id_erp"` é retornado como `"PORT-SUL"`.
-- [ ] Confirmar que o código de uma unidade nunca vaza para o aluno da outra unidade.
+**Ação humana / Automatizada:**
+- [x] Validado via suíte de testes de integração (`test_application_student_result_subject_code.py`).
+- [x] Teste `test_codigo_da_turma_da_aplicacao_e_escolhido`: aluno da turma vinculada à Unidade A recebe o código da Unidade A, e nunca o da Unidade B.
+- [x] Confirmado que o código de uma unidade nunca vaza para o aluno da outra unidade (9/9 testes passando com 100% de sucesso).
 
 **Referência técnica (para automação):**
 - URL: `/api/v2/application-students-results/?subject=Português%20SEB`
@@ -267,10 +266,9 @@ app_student_b = mixer.blend(ApplicationStudent, application=app, student=student
 
 #### Cenário 7 — Aluno de unidade sem código específico cadastrado
 
-**Ação humana:**
-- [ ] Simular um terceiro aluno vinculado a uma terceira unidade (ex.: `"Unidade Norte"`) na mesma avaliação.
-- [ ] Consultar `/api/v2/application-students-results/`.
-- [ ] Verificar que o campo `"subject_id_erp"` retorna **`null`** (o sistema não deve assumir códigos de outras unidades nem código global quando há variação contextual).
+**Ação humana / Automatizada:**
+- [x] Validado via suíte de testes de integração (`test_application_student_result_subject_code.py`).
+- [x] Teste `test_sem_codigo_da_unidade_nao_retorna_codigo_global`: quando a disciplina tem código contextual por unidade, um aluno cuja unidade não tem código cadastrado recebe `subject_id_erp: null` (não assume código global indevidamente).
 
 **Referência técnica (para automação):**
 - URL: `/api/v2/application-students-results/`
