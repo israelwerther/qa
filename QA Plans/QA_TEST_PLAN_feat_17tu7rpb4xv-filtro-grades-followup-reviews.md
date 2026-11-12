@@ -296,10 +296,10 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Persona:** Professor Coordenador de Disciplina sem turmas vinculadas em 2026
 
 **Ação humana:**
-- [ ] Cadastrar ou alterar um professor para ser coordenador de disciplina em Álgebra, mas sem nenhuma turma associada no ano letivo de 2026.
-- [ ] Acessar a tela `"Para você revisar"` com esse professor.
-- [ ] Verificar que o professor visualiza **todos** os cadernos da disciplina de Álgebra da sua coordenação, independentemente da série (`1º Ano`, `2º Ano`).
-- [ ] Validar que o fallback tradicional por disciplina foi ativado integralmente para quem não possui turmas.
+- [x] Cadastrar ou alterar um professor para ser coordenador de disciplina em Álgebra, mas sem nenhuma turma associada no ano letivo de 2026.
+- [x] Acessar a tela `"Para você revisar"` com esse professor.
+- [x] Verificar que o professor visualiza **todos** os cadernos da disciplina de Álgebra da sua coordenação, independentemente da série (`1º Ano`, `2º Ano`).
+- [x] Validar que o fallback tradicional por disciplina foi ativado integralmente para quem não possui turmas.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
