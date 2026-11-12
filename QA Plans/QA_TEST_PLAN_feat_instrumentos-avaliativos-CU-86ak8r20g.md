@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | **Data de Criação:** | 2026-11-03 |
-| **Última Revisão (v3):** | 2026-11-06 (Conferência dinâmica por categoria, Acompanhamento Online e renomeação da etapa Caderno — commit `30133d412`) |
+| **Última Revisão (v4):** | 2026-11-12 (Complemento da Task 17tu7rp42zh: Caderno existente, Diagramação integrada e Importação de alunos por matrícula) |
 | **Natureza da Tarefa:** | `[Business Feature]` |
 | **Área da Feature:** | Applications / Exams / Instrumentos Avaliativos |
 | **Nível de Risco:** | Alto |
@@ -16,14 +16,22 @@
 
 Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `CU-86ak8r20g` (**"Versão 2.0 da criação de avaliações"**) e `17tu7rp42zh` (**"Finalizar fluxo de caderno 2.0"**). A mudança unifica a criação e acompanhamento de cadernos e aplicações a partir de um fluxo centralizado ("Instrumentos Avaliativos"). 
 
-*Atualização de 06/11/2026 (Commit 30133d412):*
+*Atualização de 12/11/2026 (Complemento da Task ClickUp 17tu7rp42zh / Commits 4ab0b630, 2b1449ef, 86ff8f07, 5b6f2a1b):*
+- **Aproveitamento de Caderno Existente (`useExistingInstrumentExam`)**:
+  - Na criação de novo instrumento, o cabeçalho/topo da Etapa 1 integra o componente `search-exams-component` (`#search-exams`).
+  - Permite pesquisar e selecionar um caderno já existente; o sistema consulta `/aplicacoes/api/instrumentos/cadernos/<uuid>/`, hidrata os dados do caderno (`name`, `coordinations`, `orientations`, `selectedTeachers`, `elaboration_deadline`, etc.) e avança automaticamente para a Etapa 2 (Aplicação).
+- **Etapa 4: Diagramação Integrada no Instrumento (`diagram_sidebar` + `diagram_preview`)**:
+  - Quando a URL traz o parâmetro `?caderno=<uuid>` (ou ao navegar para a Etapa 4 com caderno vinculado), a view `ApplicationInstrumentTemplateView` injeta o contexto oficial da diagramação (`_instrument_diagram_view`).
+  - Renderiza lado a lado os painéis de configuração de templates (`#templates-section`, 540px) e pré-visualização de páginas (`#preview-section`), com suporte ao botão **"Baixar como PDF"** (`download-pdf-preview`).
+- **Importação de Alunos por Matrícula (`instrument_student_import`)**:
+  - Na Etapa 2 (Participantes), inclusão do componente de card recolhível `instrument_student_import`.
+  - Inicia fechado por padrão; ao expandir, disponibiliza download da planilha modelo (`modelo_importacao_alunos_matricula.csv`) e upload via componente `search-students-component` consumindo `/aplicacoes/api/upload-alunos`.
+  - Alunos importados por matrícula são incorporados imediatamente a `participantIndividualStudents` e salvos na aplicação via POST/PUT.
+
+*Atualizações anteriores de 06/11/2026 (Commit 30133d412):*
 - **Renomeação da Etapa 1**: De *"Configurações"* para **`"Caderno"`** no stepper e em todos os tooltips/mensagens de validação.
-- **Conferência Dinâmica por Categoria (Etapa 5)**:
-  - **Presencial (`category = 3`)**: Exibe os 3 cards de malote (*Malote completo*, *Apenas gabaritos*, *Aluno específico*).
-  - **Híbrida (`category = 5`)**: Exibe apenas o card *Malote completo*.
-  - **Online (`category = 2`) e Lista de Exercícios (`category = 4`)**: Substitui os cards de malote físico pelo **Painel de Acompanhamento Online**, consumindo `/resumo-online/` com métricas de alunos iniciados, concluídos, não presentes, duração média, além de pausas solicitadas e saídas de tela (específicos de Online).
-- **Listagem de Instrumentos**: Remoção da duplicidade do rótulo "Pronto para impressão" na coluna Situação, mantendo exibição limpa de indicadores.
-- **Preservação de Coordenação**: API do caderno aceita manter o ID da coordenação existente ao editar.
+- **Conferência Dinâmica por Categoria (Etapa 5)**: Presencial (3 cards), Híbrida (1 card) e Online/Lista (Painel de Acompanhamento).
+- **Listagem de Instrumentos**: Remoção da duplicidade do rótulo "Pronto para impressão" e exibição de contagem de alunos avulsos na ausência de turmas (`ffa18edfde`).
 
 ### Backend (`fiscallizeon/applications/`, `accounts/`, `clients/`)
 - **Controle de Feature Flag (`has_new_application_experience`)**: Adicionados campos em `Client` e `User` (sobrescrita individual), migrações `clients.0217` e `accounts.0049`.
@@ -52,15 +60,18 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 ## 2. Scope Boundaries (Diferenças de Escopo Atualizadas)
 
 ### O QUE FOI IMPLEMENTADO (IN SCOPE — Deve ser testado agora)
-- **Ativação da Feature Flag**: Alternância no Admin e exibição condicional do menu na sidebar.
-- **Nova Listagem de Instrumentos Avaliativos**: Carregamento assíncrono via API, paginação, busca com debounce e filtros de ano, unidade, turmas, etapas e malote.
+- **Ativação da Feature Flag**: Alternância no Admin e exibição condicional do menu na sidebar (`"Avaliações"`).
+- **Nova Listagem de Instrumentos Avaliativos**: Carregamento assíncrono via API, paginação, busca com debounce, filtros de ano, unidade, turmas, etapas e malote, além de contagem explícita de alunos avulsos na ausência de turmas.
 - **Persistência da Aba de Categoria**: Seleção da aba (Presencial, Online, Exercícios, Híbrida) salva no `localStorage`.
 - **Coluna Situação Limpa**: Exibição limpa de status do caderno ou malote, sem concorrência com "Pronto para impressão" (fix validado).
 - **Menu Unitário de Opções (Dropdown em 2 colunas)**: Ações de Editar, Duplicar, Divulgar resultado e ações de impressão.
 - **Card de Ações em Lote**: Seleção múltipla, contagem dinâmica, marcar para impressão, divulgar resultados e gerar malotes.
-- **Criação de Novo Instrumento (Etapa 1 — Caderno)**: Criação do `Exam` ao clicar em Continuar, validação de nome e persistência das opções avançadas (etapa renomeada para "Caderno").
-- **Criação de Novo Instrumento (Etapa 2 — Aplicação & Participantes)**: Configurações de horários, tolerâncias, seleção de turmas com alunos recolhíveis e inclusão de alunos avulsos.
-- **Criação de Novo Instrumento (Etapa 3 — Questões & Revisão)**: Solicitação a professores, geração com IA, cadernos anteriores e modal de revisão.
+- **Criação de Novo Instrumento — Utilizar Caderno Existente (Etapa 1)**: Seletor `search-exams-component` no topo da Etapa 1 para carregar caderno pronto via API e avançar direto para Aplicação (novo no commit `86ff8f0737` / item 6.7).
+- **Criação de Novo Instrumento — Caderno Novo (Etapa 1)**: Criação do `Exam` ao clicar em Continuar, validação de nome e persistência das opções avançadas.
+- **Criação de Novo Instrumento — Aplicação & Participantes (Etapa 2)**: Configurações de horários, tolerâncias, seleção de turmas com alunos recolhíveis e inclusão de alunos avulsos.
+- **Importação de Alunos por Planilha de Matrículas (Etapa 2)**: Card recolhível `instrument_student_import` com planilha modelo `modelo_importacao_alunos_matricula.csv` e upload de matrículas adicionando alunos avulsos (novo no commit `4ab0b630ec` / item 6.17).
+- **Criação de Novo Instrumento — Questões & Revisão (Etapa 3)**: Solicitação a professores, geração com IA, cadernos anteriores e modal de revisão.
+- **Etapa 4 — Diagramação do Caderno Integrada**: Exibição do editor de diagramação (`templates-section` e `preview-section`) ao acessar a Etapa 4 com caderno vinculado ou via URL `?caderno=<uuid>`, com botão de download de PDF (novo no commit `2b1449ef0e` / item 6.8).
 - **Conferência Dinâmica por Categoria (Etapa 5)**:
   - Presencial: 3 cards de malote e barra de progresso.
   - Híbrida: card de malote completo.
@@ -69,10 +80,9 @@ Branch `feat/instrumentos-avaliativos-CU-86ak8r20g` referente à task ClickUp `C
 - **Foco Automático em Erros de Validação**: Redirecionamento automático do foco para o primeiro campo inválido ao tentar avançar ou salvar.
 
 ### O QUE AINDA NÃO FOI IMPLEMENTADO (OUT OF SCOPE — NÃO validar no momento)
-- **Ação "Utilizar caderno existente" no Cabeçalho**: O seletor de cadernos prontos a partir de "Meus cadernos" no topo da nova criação ainda não foi implementado (item 6.7 do OpenSpec).
-- **Etapa de Diagramação (Etapa 4)**: Continua com painel vazio/bloqueado no fluxo atual (item 6.8 do OpenSpec).
-- **Modos de Exibição "Quadro" (Kanban) e "Compacto"**: Os botões de alternância de modo na listagem permanecem desativados. Apenas a visualização em tabela está ativa.
-- **Distribuição de Colaboradores Responsáveis por Etapa**: Funcionalidade inexistente no backend atual; mantida fora de escopo.
+- **Modos de Exibição "Quadro" (Kanban) e "Compacto"**: Conforme decisão de produto em 11/11/2026, os modos alternativos foram descartados desta change; a listagem permanece em formato de tabela.
+- **Distribuição de Colaboradores Responsáveis por Etapa**: Funcionalidade não contemplada no backend atual; mantida fora de escopo.
+- **Retomada de Caderno sem Aplicação na Listagem**: A listagem consulta estritamente `Application`, cadernos isolados continuam sendo gerenciados pelo módulo de provas legado.
 - **Fluxo Legado (`application_list_new.html`)**: A listagem antiga e o cadastro antigo continuam intactos e não devem ser afetados.
 
 
@@ -415,6 +425,86 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 ---
 
+### 5.6.1 Reaproveitamento de Caderno Existente no Instrumento (Task 17tu7rp42zh) [Automatizável ✅]
+
+#### Cenário 21 — Selecionar caderno já existente e avançar automaticamente para Aplicação
+**Ação humana:**
+- [ ] Acessar `/aplicacoes/instrumento-avaliativo/` para criar um novo instrumento.
+- [ ] No topo da Etapa 1 (*"Caderno"*), localizar o componente `"**Buscar cadernos**"` (`search-exams-component`).
+- [ ] Pesquisar por um caderno já existente e com questões cadastradas (ex.: criado previamente ou via mixer).
+- [ ] Selecionar o caderno na lista de resultados.
+- [ ] Confirmar que o sistema exibe feedback de carregamento (`isSavingExam = true`), consome a API do caderno (`GET /aplicacoes/api/instrumentos/cadernos/<uuid>/`) e:
+  - Preenche automaticamente o título da prova (`exam.name`);
+  - Preenche as coordenações autorizadas (`exam.coordinations`);
+  - Preenche orientações do caderno (`exam.orientations`) se houver;
+  - Carrega a lista de solicitações e professores (`selectedTeachers`);
+  - Limpa erros de validação (`examErrors = {}`);
+  - **Avança automaticamente para a Etapa 2: Aplicação** (`currentStep = 2`).
+- [ ] Na Etapa 2, verificar se as etapas 2, 3, 4 e 5 tornam-se acessíveis.
+- [ ] Voltar na Etapa 1 e confirmar que os dados do caderno selecionado permanecem refletidos nos inputs.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 1)
+- Seletor: `search-exams-component`, `#search-exams`, `.search-exams-result`
+- Estado esperado: `useExistingInstrumentExam([examId])` dispara requisição para `/aplicacoes/api/instrumentos/cadernos/<uuid>/`, hidrata `this.exam`, define `this.currentStep = 2`
+- Fixture: `Exam` com coordenações e professores previamente criado no banco
+
+
+---
+
+### 5.7.1 Importação de Alunos por Matrícula na Aplicação (Task 17tu7rp42zh) [Automatizável ✅]
+
+#### Cenário 22 — Importação de alunos via planilha modelo CSV
+**Ação humana:**
+- [ ] Acessar a Etapa 2 (*"Aplicação"*) na criação ou edição de um instrumento avaliativo.
+- [ ] Rolar até a seção de participantes, abaixo da lista de turmas, e localizar o card `"**Importar alunos**"` (`instrument_student_import`).
+- [ ] Confirmar que o card inicia colapsado (fechado) por padrão, exibindo o título *"Importar alunos"* e a descrição *"Envie uma planilha de matrículas para incluir alunos já cadastrados nesta aplicação."*.
+- [ ] Clicar no cabeçalho do card para expandi-lo.
+- [ ] Confirmar que ao abrir são exibidos:
+  - Botão secundário `"**Baixar planilha modelo**"` (`a[href*="modelo_importacao_alunos_matricula.csv"]`);
+  - Seletor e componente de upload de alunos (`search-students-component`).
+- [ ] Clicar em `"**Baixar planilha modelo**"` e verificar o download do arquivo CSV modelo.
+- [ ] Submeter um arquivo CSV contendo matrículas válidas de alunos cadastrados na instituição.
+- [ ] Confirmar que o sistema processa a planilha via `POST /aplicacoes/api/upload-alunos` e lista os alunos reconhecidos.
+- [ ] Clicar em confirmar/importar e verificar que:
+  - Os alunos importados são adicionados à contagem e à lista de participantes avulsos (`participantIndividualStudents`);
+  - O resumo superior atualiza dinamicamente o total de alunos selecionados (`${ participantTotalSelectedStudents } alunos selecionados no total`);
+  - Ao salvar ou continuar, os IDs dos alunos são enviados no payload (`students: [...]`).
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
+- Seletor: `.instrument-student-import button`, `a:has-text("Baixar planilha modelo")`, `.instrument-student-import search-students-component`
+- Estado esperado: `studentImportOpen = true`, upload bem-sucedido adicionando IDs em `participantIndividualStudents`, payload PUT/POST incluindo os estudantes
+- Fixture: Alunos previamente cadastrados com matrícula na mesma unidade/cliente
+
+
+---
+
+### 5.8.1 Diagramação Integrada no Instrumento Avaliativo (Task 17tu7rp42zh) [Automatizável ✅]
+
+#### Cenário 23 — Acesso à Etapa 4 (Diagramação) e geração de prévia / download de PDF
+**Ação humana:**
+- [ ] Em um instrumento que já possui caderno vinculado e com questões cadastradas, clicar na **Etapa 4: Diagramação** no stepper superior.
+- [ ] Confirmar que o sistema navega para a URL contendo o parâmetro `?caderno=<uuid>` correspondente ao caderno ativo.
+- [ ] Verificar que a tela não fica em branco nem exibe erro:
+  - O contêiner de diagramação `.instrument-diagram-panels` é renderizado;
+  - O painel esquerdo `#templates-section` exibe os controles de configuração de cabeçalho, fontes, margens e numeração (largura de 540px em desktop);
+  - O painel direito `#preview-section` renderiza as páginas diagramadas da prova com o conteúdo das questões;
+  - No cabeçalho superior direito da aba de diagramação, é exibido o botão secundário `"**Baixar como PDF**"`.
+- [ ] Clicar no botão `"**Baixar como PDF**"`.
+- [ ] Confirmar que o evento `download-pdf-preview` é disparado e o download do PDF do caderno diagramado é iniciado com sucesso.
+- [ ] Alterar uma configuração no painel esquerdo (ex.: fonte ou numeração) e confirmar a atualização imediata no painel de pré-visualização.
+- [ ] Clicar no stepper para ir para outra etapa (ex.: Etapa 5: Conferência) e confirmar navegação fluida sem perda de dados.
+
+**Referência técnica (para automação):**
+- URL: `/aplicacoes/instrumento-avaliativo/?caderno=<uuid>` (currentStep = 4)
+- Seletor: `.instrument-diagram-panels`, `#templates-section`, `#preview-section`, `button:has-text("Baixar como PDF")`
+- Estado esperado: `instrument_diagram === true`, `currentStep === 4`, `window.dispatchEvent('download-pdf-preview')` disparado com `{ documentType: 'exam' }`
+- Fixture: `Exam` com questões e diagramação configurada
+
+
+---
+
 ### 5.7 Criação Unificada: Etapa 2 (Aplicação, Tempos, Divulgação e Participantes) [Automatizável ✅]
 
 #### Cenário 13 — Configuração de parâmetros e persistência da Aplicação com Participantes
@@ -603,11 +693,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 > [!NOTE]
 > Os itens a seguir continuam conscientemente fora do escopo desta branch e foram mantidos para tasks futuras:
 
-#### Cenário 16 — Conferência de itens declaradamente pendentes
+#### Cenário 16 — Conferência de itens descartados / fora de escopo
 **Ação humana:**
-- [ ] **Ação "Utilizar caderno existente":** Notar ausência do seletor de cadernos prontos no cabeçalho da criação.
-- [ ] **Etapa 4 (Diagramação):** O painel permanece vazio e bloqueado. Não considerar como falha.
-- [ ] **Modos Quadro/Compacto na Listagem:** Os botões continuam desabilitados/comentados no template.
+- [ ] **Modos Quadro/Compacto na Listagem:** Confirmar que os botões continuam desabilitados ou omitidos no template (descartados da change por alinhamento de produto).
+- [ ] **Colaboradores por Etapa:** Confirmar que a atribuição de responsáveis por etapa não consta no fluxo (fora de escopo).
+- [ ] **Cadernos sem aplicação na listagem:** Confirmar que a nova listagem exibe exclusivamente `Application` vinculadas.
 
 
 ---
@@ -804,12 +894,11 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 ### 8.2 Débitos Técnicos e Funcionalidades Posteriores
 
 > [!NOTE]
-> **[WONTFIX / Futuro — Task 17tu7rp42zh] Utilizar Caderno Existente**  
-> A importação rápida de um caderno pronto a partir de "Meus cadernos" no cabeçalho será tratada na próxima entrega.
-
-> [!NOTE]
-> **[WONTFIX / Futuro — Task 17tu7rp42zh] Etapa de Diagramação (Etapa 4)**  
-> A ferramenta de diagramação integrada à criação continuará desabilitada até a consolidação dos fluxos de elaboração e conferência.
+> **[IMPLEMENTADO E ENTREGUE ✅ — Task 17tu7rp42zh] Utilizar Caderno Existente**  
+> Implementado via componente `search-exams-component` no topo da Etapa 1 (`complete_application_instrument.html`), consumindo `useExistingInstrumentExam` e detalhe da API do caderno.
+> 
+> **[IMPLEMENTADO E ENTREGUE ✅ — Task 17tu7rp42zh] Etapa de Diagramação (Etapa 4)**  
+> Implementado com suporte a `?caderno=<uuid>` e renderização dos painéis `diagram_sidebar` e `diagram_preview`, além de ação de download do PDF.
 
 > [!NOTE]
 > **[WONTFIX / Futuro — Task 17tu7rp42zh] Modos Quadro (Kanban) e Compacto na Listagem**  

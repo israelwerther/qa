@@ -19,8 +19,8 @@
    - **Etapa 1:** `"Configurações"` (Configurações do Caderno / Exam). Sempre liberada.
    - **Etapa 2:** `"Questões"` (Solicitações, IA, Cadernos anteriores e Revisão). Bloqueada até o `Exam` ser criado.
    - **Etapa 3:** `"Aplicação"` (Configurações de data, horários, dispositivos e divulgação da Application). Bloqueada até o `Exam` ser criado.
-   - **Etapa 4:** `"Diagramação"`. Bloqueada e vazia no momento (pendência de produto).
-   - **Etapa 5:** `"Conferência"`. Bloqueada e vazia no momento (pendência de produto).
+   - **Etapa 4:** `"Diagramação"`. Reutiliza o componente oficial de diagramação quando a URL traz o parâmetro `?caderno=<uuid>` (ou ao avançar com caderno já vinculado). Oferece `"Baixar como PDF"`.
+   - **Etapa 5:** `"Conferência"`. Dinâmica por categoria (Presencial: 3 cards de malote; Híbrida: 1 card; Online/Lista: Acompanhamento em tempo real).
 2. Na criação nova:
    - O usuário preenche a Etapa 1 e clica em `"**Continuar**"`. O frontend executa `POST /aplicacoes/api/instrumentos/cadernos/`.
    - Com o `exam.id` retornado, as etapas 2 e 3 são desbloqueadas (`canOpenStep(...) === true`).
@@ -82,6 +82,7 @@ app = mixer.blend(Application, client=client, coordination=coord, exam=exam, cat
 ### 3.2. Etapa 1 — Configurações do Caderno (Exam)
 | Campo / Ação | Seletor DOM estável | Descrição |
 |---|---|---|
+| Seletor Utilizar caderno existente | `search-exams-component` / `#search-exams` | Seletor legado de cadernos prontos no topo da Etapa 1 (apenas nova criação). Preenche o `exam` e avança para a Etapa 2. |
 | Título da Prova | `#application-title` | Input textual (`v-model="exam.name"`). |
 | Categoria | `#application-category` | Select de categoria da prova (`exam.category`). |
 | Etapa de Ensino | `#application-teaching-stage` | Select da etapa escolar (`exam.teaching_stage`). |
@@ -113,17 +114,26 @@ app = mixer.blend(Application, client=client, coordination=coord, exam=exam, cat
 | Switch Liberar resultado ao fim | `#application-release-result-at-end` | Toggle `application.release_result_at_end`. |
 | Data de divulgação do resultado | `#application-student-stats-permission-date` | Input `type="datetime-local"`. |
 
-### 3.5. Etapa 3 — Participantes da Aplicação (Turmas e Alunos)
+### 3.5. Etapa 2 — Participantes da Aplicação (Turmas, Alunos e Importação por Matrícula)
 | Elemento / Ação | Seletor DOM estável | Descrição |
 |---|---|---|
 | Contêiner de Participantes | `div.instrument-participants` | Componente `instrument_participants`. |
 | Checkbox de Turma | `input[type="checkbox"]` na linha da turma | Seleciona/desmarca todos os alunos da turma. |
 | Botão Expandir Alunos | `button.instrument-participants-expand` | Abre o painel retrátil de alunos da turma. |
 | Checkbox de Aluno Individual na Turma | `input[type="checkbox"]` dentro do collapse | Seleciona/desmarca aluno específico. |
-| Seção Alunos Individuais | `section.instrument-individual-students` | Alunos avulsos sem vínculo obrigatório à turma. |
-| Seletor de Busca de Alunos | `search-students-component` | Input com autocomplete para inclusão avulsa. |
+| Card Importar alunos | `section.instrument-student-import` | Componente `instrument_student_import`. Card recolhível (abre com clique no botão/cabeçalho). |
+| Link Planilha Modelo | `a:has-text("Baixar planilha modelo")` | Baixa `modelo_importacao_alunos_matricula.csv`. |
+| Seletor de Alunos por Planilha / Busca | `search-students-component` | Componente legado com botão para upload de planilha CSV de matrículas e busca textual de alunos. |
 
-### 3.6. Etapa 5 — Conferência e Geração de Malote
+### 3.6. Etapa 4 — Diagramação do Caderno
+| Elemento / Ação | Seletor DOM estável | Descrição |
+|---|---|---|
+| Contêiner de Diagramação | `.instrument-diagram-panels` | Contêiner lado a lado (`#templates-section` e `#preview-section`). |
+| Painel de Configurações | `#templates-section` | Configurações de cabeçalho, fontes, espaçamento e numeração da diagramação. |
+| Painel de Pré-visualização | `#preview-section` | Pré-visualização das páginas diagramadas do caderno. |
+| Botão Baixar como PDF | `button:has-text("Baixar como PDF")` | Dispara evento `download-pdf-preview` para download do PDF do caderno diagramado. |
+
+### 3.7. Etapa 5 — Conferência e Geração de Malote
 | Elemento / Ação | Seletor DOM estável | Descrição |
 |---|---|---|
 | Botão Status Aplicação | `button:has-text("Aplicação")` no resumo | Exibe status "Pendente" ou "Concluído", direciona para Etapa 2/3. |
