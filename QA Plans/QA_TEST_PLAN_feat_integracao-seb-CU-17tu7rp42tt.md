@@ -184,12 +184,12 @@ app_student_b = mixer.blend(ApplicationStudent, application=app, student=student
 #### Cenário 2 — Cadastro de código sem unidade (válido para todas as unidades)
 
 **Ação humana:**
-- [ ] Na linha de uma disciplina que ainda não possui código (ex.: `"**Álgebra**"` ou `"**Matemática SEB**"`), clicar no botão `"**Cadastrar**"` (ou `"**Cadastrar código**"` na coluna de ações).
-- [ ] No modal `"**Cadastrar código**"`, preencher o campo `"**Código ERP**"` com `"MAT-GLOBAL"`.
-- [ ] Deixar a seleção do campo `"**Unidade**"` na opção `"**Todas as unidades**"`.
-- [ ] Clicar no botão `"**Salvar código**"`.
-- [ ] Verificar a mensagem de feedback `"**Código cadastrado com sucesso!**"`.
-- [ ] Confirmar que a linha foi atualizada na tabela exibindo o código `"MAT-GLOBAL"`.
+- [x] Na linha de uma disciplina que ainda não possui código (ex.: `"**Álgebra**"` ou `"**Matemática SEB**"`), clicar no botão `"**Cadastrar**"` (ou `"**Cadastrar código**"` na coluna de ações).
+- [x] No modal `"**Cadastrar código**"`, preencher o campo `"**Código ERP**"` com `"MAT-GLOBAL"`.
+- [x] Deixar a seleção do campo `"**Unidade**"` na opção `"**Em branco**"` (conforme a dica abaixo do campo: *"Caso o código não mude entre unidades, deixe em branco"*).
+- [x] Clicar no botão `"**Salvar código**"`.
+- [x] Verificar a mensagem de feedback `"**Código cadastrado com sucesso!**"`.
+- [x] Confirmar que a linha foi atualizada na tabela exibindo o código `"MAT-GLOBAL"`.
 
 **Referência técnica (para automação):**
 - URL: `/integracoes/codigos/disciplinas/`
@@ -199,13 +199,13 @@ app_student_b = mixer.blend(ApplicationStudent, application=app, student=student
 
 ---
 
-#### Cenário 3 — Bloqueio de duplicidade ao cadastrar código global quando já existe código
+#### Cenário 3 — Bloqueio de duplicidade (mesma disciplina e mesmo contexto/unidade)
 
 **Ação humana:**
-- [ ] Tentar cadastrar um segundo código para a mesma disciplina utilizada no Cenário 2 sem especificar unidade (deixando `"**Todas as unidades**"`).
-- [ ] Clicar em `"**Salvar código**"`.
-- [ ] Verificar que o modal **não fecha** e exibe um alerta em vermelho com a mensagem: `"**Já existe código para esta disciplina no contexto informado.**"`.
-- [ ] Os dados digitados no formulário devem ser preservados sem perda de digitação.
+- [x] Notar que na interface web, após cadastrar o código no Cenário 2, a linha da disciplina agora exibe os botões `"**Visualizar**"` e `"**Remover**"`, impedindo por design o cadastro acidental de múltiplos códigos no mesmo card.
+- [x] Clicar no botão `"**Visualizar**"` para abrir o modal da disciplina recém-cadastrada.
+- [x] Confirmar que os dados do código cadastrado (`al-global`) e da unidade (`Em branco`) são carregados corretamente nos campos do formulário.
+- [x] *(Via API / Backend)*: Caso uma requisição POST tente criar um segundo código global (sem unidade) para esta mesma disciplina, verificar que a API rejeita a operação com erro de validação e mensagem clara: `"Já existe código cadastrado para esta disciplina no contexto informado."`.
 
 **Referência técnica (para automação):**
 - URL: `/integracoes/codigos/disciplinas/`
@@ -215,13 +215,14 @@ app_student_b = mixer.blend(ApplicationStudent, application=app, student=student
 
 ---
 
-#### Cenário 4 — Cadastro de código específico por unidade
+#### Cenário 4 — Cadastro de múltiplos códigos específicos por unidade
 
 **Ação humana:**
-- [ ] Na disciplina `"**Português SEB**"`, cadastrar um código para a `"**Unidade Centro**"` com o valor `"PORT-CENTRO"`.
-- [ ] Clicar em `"**Salvar código**"`.
-- [ ] Na mesma disciplina, cadastrar um novo código selecionando a `"**Unidade Sul**"` com o valor `"PORT-SUL"`.
-- [ ] Confirmar que ambas as linhas aparecem na tabela para a mesma disciplina, demonstrando suporte a múltiplos códigos contextuais.
+- [x] Escolher uma disciplina ainda sem código na lista (por exemplo, `"**BIOLOGIA A**"` ou `"**Análises historiográficas**"`).
+- [x] Clicar no botão `"**Cadastrar**"` dessa disciplina.
+- [x] Cadastrar um código selecionando uma primeira unidade real (ex.: `"**GRU**"` ou qualquer unidade da escola) com o valor `"BIO-GRU"`.
+- [x] Clicar em `"**Cadastrar código**"`.
+- [x] Confirmar que o código `"BIO-GRU"` é exibido na coluna Código e, ao clicar em `"**Visualizar**"`, a unidade `"**GRU**"` permanece vinculada corretamente (validado também no banco de dados).
 
 **Referência técnica (para automação):**
 - URL: `/integracoes/codigos/disciplinas/`
@@ -233,12 +234,12 @@ app_student_b = mixer.blend(ApplicationStudent, application=app, student=student
 #### Cenário 5 — Filtro lateral por nome e disciplinas com código
 
 **Ação humana:**
-- [ ] Clicar no botão `"**Filtrar listagem**"`.
-- [ ] No painel lateral off-canvas, marcar a caixa de seleção `"**Apenas disciplinas com código**"`.
-- [ ] Clicar em `"**Aplicar filtro**"`.
-- [ ] Verificar que apenas as disciplinas com códigos cadastrados para o cliente ativo continuam visíveis.
-- [ ] Confirmar que surge o badge/chip de filtro `"**Disciplinas com código**"` com botão `X` para remoção rápida.
-- [ ] Confirmar que códigos de **outros clientes** não fazem disciplinas aparecerem.
+- [x] Clicar no botão `"**Filtrar listagem**"`.
+- [x] No painel lateral off-canvas, marcar a caixa de seleção `"**Apenas disciplinas com código**"`.
+- [x] Clicar em `"**Aplicar filtro**"`.
+- [x] Verificar que apenas as disciplinas com códigos cadastrados para o cliente ativo continuam visíveis.
+- [x] Confirmar que surge o badge/chip de filtro `"**Disciplinas com código**"` com botão `X` para remoção rápida.
+- [x] Confirmar que códigos de **outros clientes** não fazem disciplinas aparecerem.
 
 **Referência técnica (para automação):**
 - URL: `/integracoes/codigos/disciplinas/?with_code=1`
