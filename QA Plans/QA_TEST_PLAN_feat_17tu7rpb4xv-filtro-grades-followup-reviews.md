@@ -342,13 +342,13 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Persona:** Administrador QA (`admin123@admin.com`) — Coordenação Geral da Escola
 
 **Ação humana:**
-- [ ] Fazer login ou voltar para a sessão do usuário `"admin123@admin.com"`.
-- [ ] Acessar a página inicial do Dashboard `/` `(visão da escola/coordenação)`.
-- [ ] Rolar até a seção de cards de acompanhamento e localizar o card com o título `"Revisões"`.
-- [ ] Verificar o texto do contador: `"Há X revisões aguardando"` `(onde X inclui os cadernos da Cláudia dentro do prazo de 120 dias)`.
-- [ ] Verificar o gráfico circular SVG à direita com o percentual de conclusão das revisões `(ex: "0%" ou percentual correspondente)`.
-- [ ] Passar o mouse sobre o ícone de interrogação `(i)` ao lado do título e validar o tooltip: `"Os dados analisados nesse cartão são apenas os que estão dentro no prazo."`.
-- [ ] Garantir que o link inferior `"Acompanhe"` está visível.
+- [x] Fazer login ou voltar para a sessão do usuário `"admin123@admin.com"`.
+- [x] Acessar a página inicial do Dashboard `/` `(visão da escola/coordenação)`.
+- [x] Rolar até a seção de cards de acompanhamento e localizar o card com o título `"Revisões"`.
+- [x] Verificar que o card exibe um contador de revisões (`"Há X revisões aguardando"`) e um percentual coerentes, sem erro de carregamento. O valor de X é a soma de toda a escola e não é conferível por inspeção; o efeito da PR é validado nos drill-downs do Cenário 11.
+- [x] Verificar o gráfico circular SVG à direita com o percentual de conclusão das revisões `(ex: "0%" ou percentual correspondente)`.
+- [x] Passar o mouse sobre o ícone de interrogação `(i)` ao lado do título e validar o tooltip: `"Os dados analisados nesse cartão são apenas os que estão dentro no prazo."`.
+- [x] Garantir que o link inferior `"Acompanhe"` está visível.
 
 **Referência técnica (para automação):**
 - URL: `/`
