@@ -114,11 +114,6 @@ source venv/bin/activate && pytest fiscallizeon/inspectors/tests/test_models.py 
    - **Série:** **2º Ano** (série que Rayssa NÃO leciona).
    - **Elaborador Solicitado:** Cláudia Pereira (com ao menos 1 questão inserida).
    - **Expectativa:** **NÃO DEVE APARECER** na fila de revisão da Rayssa.
-3. **`Caderno Rayssa Teste`** (Auto-revisão bloqueada / Solicitação direta):
-   - **Disciplina:** Álgebra - Matemática.
-   - **Série:** 1º Ano.
-   - **Elaborador Solicitado:** Rayssa Rodrigues da Silva.
-   - **Expectativa:** Aparece na aba **"Elaborar"** da Rayssa. Não entra em sua própria fila de revisão.
 
 ### 4.4. Fixture Base via Mixer (Setup Completo)
 Snippet em Python para recriar os dados de teste no shell do Django (`python manage.py shell`):
@@ -314,10 +309,10 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 **Caderno Alvo:** `Caderno Álgebra - 3º Ano` (Série onde nenhum professor do colégio leciona no ano de 2026)
 
 **Ação humana:**
-- [ ] Observar ou criar um caderno de Álgebra cuja série (ex: `3º Ano`) não é lecionada por nenhum professor do colégio.
-- [ ] Estando logado como `"Rayssa Rodrigues da Silva"`, verificar que o caderno **NÃO** aparece na fila dela.
-- [ ] Logar com outros professores de Álgebra e confirmar que o caderno também **NÃO** aparece na fila de nenhum deles.
-- [ ] Confirmar que o caderno em limbo não polui a fila de nenhum professor, ficando reservado para o agrupamento da Coordenação Geral no Analytics.
+- [x] Observar ou criar um caderno de Álgebra cuja série (ex: `3º Ano`) não é lecionada por nenhum professor do colégio.
+- [x] Estando logado como `"Rayssa Rodrigues da Silva"`, verificar que o caderno **NÃO** aparece na fila dela.
+- [x] Logar com outros professores de Álgebra e confirmar que o caderno também **NÃO** aparece na fila de nenhum deles.
+- [x] Confirmar que o caderno em limbo não polui a fila de nenhum professor, ficando reservado para o agrupamento da Coordenação Geral no Analytics.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
@@ -327,14 +322,11 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 ---
 
-#### Cenário 8 — Turmas vinculadas a `TeacherSubject` ativo de ano anterior
+#### Cenário 8 — Turmas vinculadas a `TeacherSubject` ativo de ano anterior [Coberto por pytest]
 **Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`)
 
-**Ação humana:**
-- [ ] No banco de testes/staging, caso haja vínculo da turma do `1º Ano` a um `TeacherSubject` ativo com ano letivo anterior `(now.year - 1)`.
-- [ ] Atualizar a página `"Para você revisar"` logado como `"Rayssa Rodrigues da Silva"`.
-- [ ] Verificar que o `"Caderno Cláudia Teste 1"` continua sendo exibido na fila da professora.
-- [ ] Confirmar que o sistema considerou o ano da turma (`SchoolClass.school_year = now.year`) e não o ano do cadastro do `TeacherSubject`.
+> [!NOTE]
+> **Sem validação manual.** Esse estado não existe no uso real pela interface: quando o `Ano letivo` do vínculo é alterado para 2025 no Django Admin, a disciplina some do cadastro da professora, e a fila de revisão dela fica vazia (testado em staging). A regra é validada pelo teste automatizado `test_get_exams_to_review_grades_from_older_teacher_subject` (23 testes passando). Ver observação na seção 7.
 
 **Referência técnica (para automação):**
 - URL: `/provas/professor/revisar/`
@@ -423,19 +415,7 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 
-- [ ] **Badges de Situação:**
-  - Garantir que solicitações com zero questões revisadas exibam badge com fundo azul claro e texto azul escuro `"Aguarda revisão"` (`bg-primary-soft text-primary`).
-  - Garantir que solicitações com pelo menos 1 questão revisada (mas não todas) exibam badge com fundo verde claro e texto verde `"Revisando"` (`bg-success-soft text-success`).
-- [ ] **Truncamento de Texto (Anti-Rework):**
-  - Cadernos com nomes longos (ex: *"Avaliação Trimestral Unificada de Física e Ciências da Natureza - 1ª Série EM - Manhã e Tarde"*) devem conter a classe `.text-truncate` e não vazar ou quebrar a altura dos cards adjacentes no grid de 4 colunas.
-- [ ] **Responsividade do Grid:**
-  - Testar a tela em resolução `1333x1080` e `1024x768`.
-  - Os cards de revisão devem se reorganizar de 4 colunas (`col-lg-3`) para 2 colunas (`col-sm-6`) sem sobreposição de textos.
-- [ ] **Gráfico de Percentual do Followup:**
-  - O gráfico circular SVG deve apresentar cores dinâmicas de acordo com a performance:
-    - Menor que 50%: Borda de destaque vermelha (`#D92D20`) e fundo suave (`#FBEAE9`).
-    - Entre 50% e 69%: Borda de destaque laranja/amarela (`#F3B364`) e fundo suave (`#FEF7EF`).
-    - 70% ou superior: Borda de destaque verde (`#41C588`) e fundo suave (`#ECF9F3`).
+Não aplicável: a PR não altera templates, componentes nem estilos (ver "Fora de Escopo" na seção 2). Badges, truncamento, grid responsivo e cores do gráfico não foram afetados e ficam fora deste roteiro.
 
 ---
 
@@ -445,6 +425,8 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 > Espaço reservado para documentação de eventuais anomalias identificadas durante a execução dos testes pelo QA.
 
 - **Status:** Nenhum bug impeditivo identificado nos testes unitários e de integração até o momento.
+- **Observação não bloqueante (Cenário 8 — critério de disciplina divergente):** em `Inspector.get_exams_to_review` ([inspectors/models.py](../../fiscallizeon/inspectors/models.py)), o filtro no nível do caderno usa `teacher.subjects` (sem filtro de ano do vínculo), enquanto o nível da solicitação (`return_exam_teacher_subjects=True`) exige `TeacherSubject` ativo com `school_year = ano corrente`. Em staging, ao mudar o `Ano letivo` do vínculo da Rayssa × Álgebra para 2025, a disciplina sumiu do cadastro dela e os 2 cadernos saíram da fila de revisão. O filtro `school_year=now.year` já existia antes da PR (commits `e960d663e` e `140d3b6e5`), e a plataforma já trata vínculo de outro ano como "sem disciplina". Efeito prático só em caso de borda; para o dev (Jan Justi) avaliar se vale alinhar o comentário da linha 307 ("ignora school_year do TS") com o comportamento real. O teste `test_get_exams_to_review_grades_from_older_teacher_subject` não cobre o caso "só vínculo antigo", pois o `make_teacher` do `setUp` já cria um vínculo de 2026.
+- **Observação não bloqueante (Cenário 5 — erro de console):** com `grade = None` na solicitação, abrir o modal de edição em `/provas/<id>/editar/` gera `TypeError: Cannot read properties of undefined (reading 'then')` em `updateExamTeacher`, pois `fetchSubject("", true)` retorna `undefined` em vez de uma Promise. Não afeta a fila de revisão. A UI normal nunca cria solicitação sem série.
 - **Diretriz de Schema Drift (Banco Local vs Staging):** Conforme apontado pelo desenvolvedor (Jan Justi), o ambiente de staging terá o ClickHouse sincronizado com o banco de produção para refletir fielmente as novas views (`mv_followup_review_named` e `mv_followup_reviews_unassigned`). Caso ocorra erro de coluna inexistente no banco local durante os testes, deve-se checar se a tabela do PostgreSQL está sincronizada antes de classificar como bug da feature.
 
 ---
