@@ -397,20 +397,17 @@ mixer.blend(ExamQuestion, exam=exam_limbo, exam_teacher_subject=ets_limbo, quest
 
 ---
 
-#### Cenário 12 — Isolamento de pendências na visão da Professora Rayssa (`who=teacher`)
-**Persona:** Rayssa Rodrigues da Silva (`rayssa.silva@rededecisao.com.br`) — Acessando acompanhamento
+#### Cenário 12 — Isolamento de pendências na visão de Professor (`who=teacher` - Regra de Backend API) [Coberto por Ibis/Engine]
+**Persona:** Professor acessando endpoint com `who=teacher`
 
-**Ação humana:**
-- [ ] Acessar a visão de acompanhamento sob a perspectiva da professora Rayssa `(who=teacher)`.
-- [ ] Verificar os dados do card e do detalhamento de revisões.
-- [ ] Garantir que a Rayssa visualiza **apenas** as revisões sob sua responsabilidade direta (no caso, cadernos do 1º Ano como `Caderno Cláudia Teste 1`).
-- [ ] Validar que o grupo `"Sem professor responsável"` **NÃO** é exibido para a professora em hipótese alguma.
+> [!NOTE]
+> **Sem tela correspondente na UI do professor:** Na interface da plataforma, o modal de acompanhamento (Followup) com o botão *"Acompanhe"* existe exclusivamente no Dashboard da Coordenação Geral (`/dashboards/escola/`). O painel do professor (`/painel/professor/`) não consome operações de followup com `who=teacher`. A regra de isolamento é contratual no motor analítico: a operação aplica `df.filter(df.teacher_id == who_id)` em `_apply_teacher_who_filter()`, descartando o sentinela `"Sem professor responsável"` automaticamente.
 
-**Referência técnica (para automação):**
-- URL: Endpoint de operações analíticas com `who: "teacher"`, `who_ids: ["<teacher_id>"]`
-- Seletor: N/A (validação de resposta de payload ou UI do professor)
-- Estado esperado: `teacher_id` nulo descartado pelo filtro `who=teacher`
-- Fixture: `table = self.apply_who_filter(..., "teacher", teacher_id)`
+**Referência técnica (para automação de API):**
+- Endpoint: `POST /dashboards/api/get-data-from-service/<client_id>/`
+- Payload: `{"operation": "get_card_followup_reviews", "who": "teacher", "who_ids": ["<teacher_id>"]}`
+- Estado esperado: `teacher_id` nulo/sentinela descartado pelo filtro de igualdade estrita (`df.teacher_id == who_id`)
+- Fixture: `dashboards/operations/base.py::_apply_teacher_who_filter`
 
 ---
 
@@ -538,12 +535,12 @@ def test_teacher_exam_to_review_grade_filter(page: Page, live_server):
     page.fill('input[name="password"]', "123456")
     page.click('button[type="submit"]')
 
-    # Navegação para a fila de revisão
+    # Navegação para a fila de revisão (rota direta ou via painel)
     page.goto(f"{live_server.url}/provas/professor/revisar/")
 
-    # 3. Asserções
-    expect(page.locator('.card.card-body:has-text("Avaliação História 1ª Série")')).to_be_visible()
-    expect(page.locator('.card.card-body:has-text("Avaliação História 2ª Série")')).not_to_be_visible()
+    # 3. Asserções (compatíveis com listagem completa ou cards do painel do professor)
+    expect(page.locator(':is(.card.card-body, div):has-text("Avaliação História 1ª Série")')).to_be_visible()
+    expect(page.locator(':is(.card.card-body, div):has-text("Avaliação História 2ª Série")')).not_to_be_visible()
 ```
 
 ---
