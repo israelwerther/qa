@@ -429,10 +429,10 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 21 — Selecionar caderno já existente e avançar automaticamente para Aplicação
 **Ação humana:**
-- [ ] Acessar `/aplicacoes/instrumento-avaliativo/` para criar um novo instrumento.
-- [ ] No topo da Etapa 1 (*"Caderno"*), localizar o componente `"**Buscar cadernos**"` (`search-exams-component`).
-- [ ] Pesquisar por um caderno já existente e com questões cadastradas (ex.: criado previamente ou via mixer).
-- [ ] Selecionar o caderno na lista de resultados.
+- [x] Acessar `/aplicacoes/instrumento-avaliativo/` para criar um novo instrumento.
+- [x] No topo da Etapa 1 (*"Caderno"*), localizar o componente `"**Buscar cadernos**"` (`search-exams-component`).
+- [x] Pesquisar por um caderno já existente e com questões cadastradas (ex.: criado previamente ou via mixer).
+- [x] Selecionar o caderno na lista de resultados.
 - [ ] Confirmar que o sistema exibe feedback de carregamento (`isSavingExam = true`), consome a API do caderno (`GET /aplicacoes/api/instrumentos/cadernos/<uuid>/`) e:
   - Preenche automaticamente o título da prova (`exam.name`);
   - Preenche as coordenações autorizadas (`exam.coordinations`);
@@ -456,20 +456,21 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 22 — Importação de alunos via planilha modelo CSV
 **Ação humana:**
-- [ ] Acessar a Etapa 2 (*"Aplicação"*) na criação ou edição de um instrumento avaliativo.
-- [ ] Rolar até a seção de participantes, abaixo da lista de turmas, e localizar o card `"**Importar alunos**"` (`instrument_student_import`).
-- [ ] Confirmar que o card inicia colapsado (fechado) por padrão, exibindo o título *"Importar alunos"* e a descrição *"Envie uma planilha de matrículas para incluir alunos já cadastrados nesta aplicação."*.
-- [ ] Clicar no cabeçalho do card para expandi-lo.
-- [ ] Confirmar que ao abrir são exibidos:
+- [x] Acessar a Etapa 2 (*"Aplicação"*) na criação ou edição de um instrumento avaliativo.
+- [x] Rolar até a seção de participantes, abaixo da lista de turmas, e localizar o card `"**Importar alunos**"` (`instrument_student_import`).
+- [x] Confirmar que o card inicia colapsado (fechado) por padrão, exibindo o título *"Importar alunos"* e a descrição *"Envie uma planilha de matrículas para incluir alunos já cadastrados nesta aplicação."*.
+- [x] Clicar no cabeçalho do card para expandi-lo.
+- [x] Confirmar que ao abrir são exibidos:
   - Botão secundário `"**Baixar planilha modelo**"` (`a[href*="modelo_importacao_alunos_matricula.csv"]`);
   - Seletor e componente de upload de alunos (`search-students-component`).
-- [ ] Clicar em `"**Baixar planilha modelo**"` e verificar o download do arquivo CSV modelo.
-- [ ] Submeter um arquivo CSV contendo matrículas válidas de alunos cadastrados na instituição.
-- [ ] Confirmar que o sistema processa a planilha via `POST /aplicacoes/api/upload-alunos` e lista os alunos reconhecidos.
-- [ ] Clicar em confirmar/importar e verificar que:
+- [x] Clicar em `"**Baixar planilha modelo**"` e verificar o download do arquivo CSV modelo.
+- [x] Submeter um arquivo CSV contendo matrículas válidas de alunos cadastrados na instituição.
+- [x] Confirmar que o sistema processa a planilha via `POST /aplicacoes/api/upload-alunos` e lista os alunos reconhecidos.
+- [x] Clicar em confirmar/importar e verificar que:
   - Os alunos importados são adicionados à contagem e à lista de participantes avulsos (`participantIndividualStudents`);
   - O resumo superior atualiza dinamicamente o total de alunos selecionados (`${ participantTotalSelectedStudents } alunos selecionados no total`);
   - Ao salvar ou continuar, os IDs dos alunos são enviados no payload (`students: [...]`).
+![alt text](../evidencias/image-8.png)
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 2)
@@ -484,15 +485,15 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 
 #### Cenário 23 — Acesso à Etapa 4 (Diagramação) e geração de prévia / download de PDF
 **Ação humana:**
-- [ ] Em um instrumento que já possui caderno vinculado e com questões cadastradas, clicar na **Etapa 4: Diagramação** no stepper superior.
-- [ ] Confirmar que o sistema navega para a URL contendo o parâmetro `?caderno=<uuid>` correspondente ao caderno ativo.
-- [ ] Verificar que a tela não fica em branco nem exibe erro:
+- [x] Em um instrumento que já possui caderno vinculado e com questões cadastradas, clicar na **Etapa 4: Diagramação** no stepper superior.
+- [x] Confirmar que o sistema navega para a URL contendo o parâmetro `?caderno=<uuid>` correspondente ao caderno ativo.
+- [x] Verificar que a tela não fica em branco nem exibe erro:
   - O contêiner de diagramação `.instrument-diagram-panels` é renderizado;
   - O painel esquerdo `#templates-section` exibe os controles de configuração de cabeçalho, fontes, margens e numeração (largura de 540px em desktop);
   - O painel direito `#preview-section` renderiza as páginas diagramadas da prova com o conteúdo das questões;
   - No cabeçalho superior direito da aba de diagramação, é exibido o botão secundário `"**Baixar como PDF**"`.
-- [ ] Clicar no botão `"**Baixar como PDF**"`.
-- [ ] Confirmar que o evento `download-pdf-preview` é disparado e o download do PDF do caderno diagramado é iniciado com sucesso.
+- [x] Clicar no botão `"**Baixar como PDF**"`.
+- [x] Confirmar que o evento `download-pdf-preview` é disparado e o download do PDF do caderno diagramado é iniciado com sucesso.
 - [ ] Alterar uma configuração no painel esquerdo (ex.: fonte ou numeração) e confirmar a atualização imediata no painel de pré-visualização.
 - [ ] Clicar no stepper para ir para outra etapa (ex.: Etapa 5: Conferência) e confirmar navegação fluida sem perda de dados.
 
