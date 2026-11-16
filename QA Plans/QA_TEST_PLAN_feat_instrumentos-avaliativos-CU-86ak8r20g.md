@@ -433,15 +433,15 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
 - [x] No topo da Etapa 1 (*"Caderno"*), localizar o componente `"**Buscar cadernos**"` (`search-exams-component`).
 - [x] Pesquisar por um caderno já existente e com questões cadastradas (ex.: criado previamente ou via mixer).
 - [x] Selecionar o caderno na lista de resultados.
-- [ ] Confirmar que o sistema exibe feedback de carregamento (`isSavingExam = true`), consome a API do caderno (`GET /aplicacoes/api/instrumentos/cadernos/<uuid>/`) e:
+- [x] Confirmar que o sistema exibe feedback de carregamento (`isSavingExam = true`), consome a API do caderno (`GET /aplicacoes/api/instrumentos/cadernos/<uuid>/`) e:
   - Preenche automaticamente o título da prova (`exam.name`);
   - Preenche as coordenações autorizadas (`exam.coordinations`);
   - Preenche orientações do caderno (`exam.orientations`) se houver;
   - Carrega a lista de solicitações e professores (`selectedTeachers`);
   - Limpa erros de validação (`examErrors = {}`);
   - **Avança automaticamente para a Etapa 2: Aplicação** (`currentStep = 2`).
-- [ ] Na Etapa 2, verificar se as etapas 2, 3, 4 e 5 tornam-se acessíveis.
-- [ ] Voltar na Etapa 1 e confirmar que os dados do caderno selecionado permanecem refletidos nos inputs.
+- [x] Na Etapa 2, verificar se as etapas 2, 3, 4 e 5 tornam-se acessíveis.
+- [x] Voltar na Etapa 1 e confirmar que os dados do caderno selecionado permanecem refletidos nos inputs.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/` (currentStep = 1)
@@ -494,8 +494,8 @@ print(f"✅ Setup concluído! Login: coord.piloto@lize.local | Senha: 123456 | A
   - No cabeçalho superior direito da aba de diagramação, é exibido o botão secundário `"**Baixar como PDF**"`.
 - [x] Clicar no botão `"**Baixar como PDF**"`.
 - [x] Confirmar que o evento `download-pdf-preview` é disparado e o download do PDF do caderno diagramado é iniciado com sucesso.
-- [ ] Alterar uma configuração no painel esquerdo (ex.: fonte ou numeração) e confirmar a atualização imediata no painel de pré-visualização.
-- [ ] Clicar no stepper para ir para outra etapa (ex.: Etapa 5: Conferência) e confirmar navegação fluida sem perda de dados.
+- [x] Alterar uma configuração no painel esquerdo (ex.: fonte ou numeração) e confirmar a atualização imediata no painel de pré-visualização.
+- [x] Clicar no stepper para ir para outra etapa (ex.: Etapa 5: Conferência) e confirmar navegação fluida sem perda de dados.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/instrumento-avaliativo/?caderno=<uuid>` (currentStep = 4)
