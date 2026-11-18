@@ -130,15 +130,10 @@ DEBUG=True pytest --cov=fiscallizeon/students/individual_tracking --cov=fiscalli
    - Coordenador de uma instituição diferente (`client_b`).
    - Permissão esperada: HTTP 403 / 404 estrito ao tentar acessar qualquer URL ou API com o UUID do aluno de `client_a` (Anti-IDOR).
 
-### Pré-condições de Tenant & Feature Flags (Módulos do Cliente)
-Para que o módulo de Relatórios e o Acompanhamento Individual fiquem disponíveis na interface web e nas APIs:
-- **Flag do Cliente:** O modelo `Client` associado ao usuário DEVE ter o campo `has_reports = True` (`user.client_has_reports`).
-- **Sintoma se desativado:** O item `"Relatórios"` fica completamente invisível no menu lateral esquerdo (sidebar) e qualquer tentativa de acessar `/dashboards/reports/` ou `/alunos/<uuid>/acompanhamento/` é bloqueada pelo backend com redirecionamento e a mensagem *"Cliente não possui este módulo"*.
-- **Comando rápido para ativação local via terminal:**
-  ```bash
-  source venv/bin/activate && unset DEBUG && python manage.py shell -c "from fiscallizeon.clients.models import Client; from django.core.cache import cache; Client.objects.all().update(has_reports=True); cache.clear(); print('✅ Módulo has_reports ativado em todos os clientes!')"
-  ```
-  *(Alternativa via Admin: acesse `http://localhost:8000/admin/clients/client/`, edite a instituição e marque a caixa "Tem acesso à aba de relatórios").*
+### Pré-condições de Tenant & Módulos no Admin
+- **Módulo necessário:** `has_reports` (Acesso à aba de relatórios).
+- **Onde ativar no Admin:** Acesse `/admin/clients/client/` ➔ Abra a instituição do usuário ➔ Marque o checkbox `"Tem acesso à aba de relatórios"` e salve.
+- **Sintoma se inativo:** O menu `"Relatórios"` fica completamente oculto na barra lateral esquerda e o acesso direto a `/dashboards/reports/` é bloqueado pelo backend.
 
 ### Setup de Dados via Mixer (Python Shell)
 ```python
@@ -194,8 +189,7 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 1 — Abertura do modal a partir do Hub de Relatórios
 **Ação humana:**
-- [ ] **Passo 0 (Pré-condição de Tenant):** Confirmar que a instituição/cliente logada possui a flag `has_reports=True` ativa. Se o menu 📄 `"**Relatórios**"` não constar no menu lateral esquerdo (entre *Dashboards* e *Gerenciamento*), executar no terminal o comando rápido de ativação:
-  `source venv/bin/activate && unset DEBUG && python manage.py shell -c "from fiscallizeon.clients.models import Client; from django.core.cache import cache; Client.objects.all().update(has_reports=True); cache.clear()"` e recarregar a página (F5).
+- [ ] **Passo 0 (Pré-condição no Admin):** No Django Admin (`/admin/clients/client/`), certificar-se de que a instituição do usuário está com o checkbox `"**Tem acesso à aba de relatórios**"` marcado. *(Caso esteja desmarcado, o menu "Relatórios" não é renderizado na barra lateral).*
 - [x] Logar como Coordenador (`coord_user`) no sistema Lize.
 - [ ] Localizar no menu lateral esquerdo o item 📄 `"**Relatórios**"` *(ícone de documento com gráfico de barras/linhas)* e clicar para acessar `/dashboards/reports/`.
 - [ ] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja)*.
