@@ -192,14 +192,14 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - [x] **Passo 0 (Pré-condição no Admin):** No Django Admin (`/admin/clients/client/`), certificar-se de que a instituição do usuário está com o checkbox `"**Tem acesso à aba de relatórios**"` marcado. *(Caso esteja desmarcado, o menu "Relatórios" não é renderizado na barra lateral).*
 - [x] Logar como Coordenador (`coord_user`) no sistema Lize.
 - [x] Localizar no menu lateral esquerdo o item 📄 `"**Relatórios**"` *(ícone de documento com gráfico de barras/linhas)* e clicar para acessar `/dashboards/reports/`.
-- [x] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja)*.
+- [x] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja e descrição "Visão detalhada da evolução de cada estudante")*.
 - [x] Clicar no card `"**Acompanhamento Individual de Alunos**"`.
-- [ ] Verificar se o modal se abre centralizado na tela exibindo o título `"**Acompanhamento Individual de Alunos**"` e o subtítulo `"Visão detalhada da evolução de cada estudante"`.
+- [ ] Verificar se o modal se abre centralizado na tela exibindo o título `"**Acompanhamento Individual**"` *(com ícone laranja de usuário)* e o subtítulo `"**Qual aluno você quer acompanhar? Selecione o nível de ensino, a turma e depois o aluno para visualizar o relatório completo.**"`.
 - [ ] Verificar se o primeiro passo exibido é `"**NÍVEL DE ENSINO**"`, listando os níveis disponíveis (ex.: `"**Ensino Médio**"`).
 
 **Referência técnica (para automação):**
 - URL: `/dashboards/reports/`
-- Seletor: `button:has-text("Acompanhamento Individual de Alunos")` ➔ `div#student-tracking-modal`
+- Seletor: `button:has-text("Acompanhamento Individual de Alunos")` ➔ `div#student-tracking-modal` (título: `h2:has-text("Acompanhamento Individual")`)
 - Estado esperado: Modal visível com classe `tw-flex` e atributo `aria-modal="true"`.
 - Fixture: `mixer.blend(Client, has_reports=True)` + `CoordinationMember`.
 

@@ -124,7 +124,8 @@ app_student = mixer.blend(
 | Elemento | Seletor Estável | Tipo | Finalidade |
 |---|---|---|---|
 | Card de Disparo | `[data-component="report_card_grid"] button:has-text("Acompanhamento Individual de Alunos")` | Click | Abre o modal no Hub de Relatórios |
-| Título do Modal | `h2:has-text("Acompanhamento Individual de Alunos")` | Texto | Validação de abertura |
+| Título do Modal | `h2:has-text("Acompanhamento Individual")` | Texto | Validação de abertura do modal |
+| Subtítulo do Modal | `p:has-text("Qual aluno você quer acompanhar?")` | Texto | Orientação de preenchimento do modal |
 | Passo 1: Nível | `button:has-text("Ensino Médio")` (ou outro nível) | Click | Seleciona o nível de ensino |
 | Passo 2: Busca Turma | `input#student-tracking-search-class` | Digitação | Filtra lista de turmas por nome |
 | Passo 2: Botão Turma | `div[x-show="step === 2"] button:has-text("1º Ano A")` | Click | Seleciona a turma desejada |
