@@ -195,6 +195,7 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - [x] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja e descrição "Visão detalhada da evolução de cada estudante")*.
 - [x] Clicar no card `"**Acompanhamento Individual de Alunos**"`.
 - [ ] Verificar se o modal se abre centralizado na tela exibindo o título `"**Acompanhamento Individual**"` *(com ícone laranja de usuário)* e o subtítulo `"**Qual aluno você quer acompanhar? Selecione o nível de ensino, a turma e depois o aluno para visualizar o relatório completo.**"`.
+![alt text](../evidencias/image-46.png)
 - [ ] Verificar se o primeiro passo exibido é `"**NÍVEL DE ENSINO**"`, listando os níveis disponíveis (ex.: `"**Ensino Médio**"`).
 
 **Referência técnica (para automação):**
