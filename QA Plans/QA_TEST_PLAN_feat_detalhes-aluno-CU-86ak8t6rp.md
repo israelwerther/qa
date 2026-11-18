@@ -189,11 +189,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 1 — Abertura do modal a partir do Hub de Relatórios
 **Ação humana:**
-- [ ] **Passo 0 (Pré-condição no Admin):** No Django Admin (`/admin/clients/client/`), certificar-se de que a instituição do usuário está com o checkbox `"**Tem acesso à aba de relatórios**"` marcado. *(Caso esteja desmarcado, o menu "Relatórios" não é renderizado na barra lateral).*
+- [x] **Passo 0 (Pré-condição no Admin):** No Django Admin (`/admin/clients/client/`), certificar-se de que a instituição do usuário está com o checkbox `"**Tem acesso à aba de relatórios**"` marcado. *(Caso esteja desmarcado, o menu "Relatórios" não é renderizado na barra lateral).*
 - [x] Logar como Coordenador (`coord_user`) no sistema Lize.
-- [ ] Localizar no menu lateral esquerdo o item 📄 `"**Relatórios**"` *(ícone de documento com gráfico de barras/linhas)* e clicar para acessar `/dashboards/reports/`.
-- [ ] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja)*.
-- [ ] Clicar no card `"**Acompanhamento Individual de Alunos**"`.
+- [x] Localizar no menu lateral esquerdo o item 📄 `"**Relatórios**"` *(ícone de documento com gráfico de barras/linhas)* e clicar para acessar `/dashboards/reports/`.
+- [x] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja)*.
+- [x] Clicar no card `"**Acompanhamento Individual de Alunos**"`.
 - [ ] Verificar se o modal se abre centralizado na tela exibindo o título `"**Acompanhamento Individual de Alunos**"` e o subtítulo `"Visão detalhada da evolução de cada estudante"`.
 - [ ] Verificar se o primeiro passo exibido é `"**NÍVEL DE ENSINO**"`, listando os níveis disponíveis (ex.: `"**Ensino Médio**"`).
 
