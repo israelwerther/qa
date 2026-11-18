@@ -87,6 +87,25 @@ mixer.blend(ExamQuestion, exam_teacher_subject=exam_teacher_subject, question=qu
 - **Botão Salvar alterações (topo):**
   - Seletor: `button.lize-btn-primary:has-text("Salvar alterações")`
 
+### Revisão ortográfica no conjunto (CU-86akt81t1)
+
+Painel lateral Vue (`spelling-review-panel` com `scope="ets"`) montado somente quando `spellingReview.open`. O botão do header só aparece na versão nova da tela (`exam_request_teacher_subject_edit_new.html`); a tela legada continua sem o recurso.
+
+| Elemento | Seletor estável | Ação / Observação |
+|----------|-----------------|-------------------|
+| Botão do header | `[data-spelling-review-open]` | `aria-label="Revisão ortográfica"`; alterna `spellingReview.open`; `:aria-expanded` reflete o estado. |
+| Rótulo do botão | `[data-spelling-review-open] span.d-none.d-lg-inline` | Texto `Revisão ortográfica`; oculto em telas menores que `lg`. |
+| Badge total | `[data-spelling-review-open] span.badge` | `x-text="spellingPendingTotal"`; só aparece se houver pendências. |
+| Ponto por questão | `[data-spelling-dot]` | Renderizado ao lado do número da questão quando `spellingReview.pendingByEq[examQuestion.id]` existe. |
+| Painel | `<spelling-review-panel>` | Props: `:urls`, `:ets-id`, `:question-numbers`; eventos `@close` e `@pending-changed`. |
+| Componente registrado | `'spelling-review-panel': Vue.component(` | Incluído via `core/templates/includes/components/vue-spelling-review-panel.html`. |
+| Bootstrapping | `#spelling-review-urls` (`json_script`) | URLs das rotas de revisão. |
+
+- O painel não é modal: não escurece a tela nem trava o scroll; fecha no **X** ou **ESC**.
+- O botão **Revisar o conjunto** inicia a revisão com `{"ets": "<uuid>"}` (ou `examTeacherSubject`), não com `exam`.
+- A revisão do conjunto é exclusiva do professor dono da solicitação; coordenação não usa esse escopo.
+- O bloqueio de aprovação por pendência ortográfica é uma regra da escola e se aplica à questão, não ao conjunto.
+
 ---
 
 ### Barra de configuração discursiva/redação (CU-86ajqpbw5)
@@ -152,6 +171,7 @@ Barra compacta **logo abaixo** de `.question-type-options` e **acima** do editor
 
 ## 4. API Routes, Eventos e Comportamento de Lifecycle
 
+- **Revisão ortográfica (escopo `ets`):** rotas sob `/provas/api/revisao-ortografica/` (`summary`, `create`, `suggestions`, `apply`, `ignore`, `apply-many`, `detail`, `stop`, `retry`), com `{"ets": "<uuid>"}` ou `{"examTeacherSubject": "<uuid>"}`. Respostas em camelCase (`pendingByExamQuestion`, `blockApproval`, etc.).
 - **Upload/Parse API (DOCX):** `POST /exams/prova/<uuid:pk>/importar-docx/` — Envia o arquivo `.docx` multipart e retorna JSON das questões extraídas.
 - **Inserção de Questões (Backend API):** `POST /ai/import/` (`ai:import-questions-import`) — Submete cada questão para salvamento no caderno.
   - *Bug Conhecido (UX/Z-Index):* Caso a API retorne `HTTP 400 Bad Request` (ex: questão sem resposta correta), o erro é capturado e chama `alertTop`, mas a notificação fica **oculta atrás da camada z-index** do `fullscreen_layout` (`z-[99990]`).
