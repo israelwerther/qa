@@ -194,9 +194,9 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - [x] Localizar no menu lateral esquerdo o item 📄 `"**Relatórios**"` *(ícone de documento com gráfico de barras/linhas)* e clicar para acessar `/dashboards/reports/`.
 - [x] Rolar a página até a seção de Cards de Atalho e localizar o card `"**Acompanhamento Individual de Alunos**"` *(card com ícone de usuário em círculo laranja e descrição "Visão detalhada da evolução de cada estudante")*.
 - [x] Clicar no card `"**Acompanhamento Individual de Alunos**"`.
-- [ ] Verificar se o modal se abre centralizado na tela exibindo o título `"**Acompanhamento Individual**"` *(com ícone laranja de usuário)* e o subtítulo `"**Qual aluno você quer acompanhar? Selecione o nível de ensino, a turma e depois o aluno para visualizar o relatório completo.**"`.
+- [x] Verificar se o modal se abre centralizado na tela exibindo o título `"**Acompanhamento Individual**"` *(com ícone laranja de usuário)* e o subtítulo `"**Qual aluno você quer acompanhar? Selecione o nível de ensino, a turma e depois o aluno para visualizar o relatório completo.**"`.
 ![alt text](../evidencias/image-46.png)
-- [ ] Verificar se o primeiro passo exibido é `"**NÍVEL DE ENSINO**"`, listando os níveis disponíveis (ex.: `"**Ensino Médio**"`).
+- [x] Verificar se o primeiro passo exibido é `"**NÍVEL DE ENSINO**"`, listando os níveis disponíveis (ex.: `"**Ensino Médio**"`).
 
 **Referência técnica (para automação):**
 - URL: `/dashboards/reports/`
@@ -506,6 +506,12 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 
+> [!NOTE]
+> **[UX/UI] Padronização Visual dos Nomes dos Alunos na Listagem:**
+> Durante os testes no modal de seleção de alunos, observou-se uma variação visual na listagem: alguns estudantes aparecem com o nome completamente em maiúsculas (ex.: `BENJAMIM SOARES BASTOS LIMA`), enquanto outros aparecem em caixa mista / inicial maiúscula (ex.: `Davi Komatsu Rodrigues`).
+> 
+> **Visão de Usuário:** Do ponto de vista de consistência visual para quem está operando o sistema, seria mais agradável padronizar a exibição para que todos os nomes apareçam em maiúsculas de maneira uniforme, mantendo um padrão coeso em toda a lista. Deixamos a cargo da equipe de desenvolvimento a decisão de onde e como aplicar essa padronização da melhor forma.
+![alt text](../evidencias/image-47.png)
 > [!NOTE]
 > **Definição de Produto para Professor na Exportação:** Atualmente a exportação está vinculada aos mesmos critérios de coordenação e turmas ativas de `TeacherSubject`. Uma permissão independente no `CustomGroup` para exportação pode ser avaliada em ciclos futuros caso o produto deseje desvincular a exportação da visualização da ficha.
 
