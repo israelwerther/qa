@@ -105,7 +105,11 @@ Example format:
 ## 4. Automated Tests & Fixtures (Testes Automatizados e Setup de Dados)
 Provide the exact CLI command(s) needed to run the automated tests locally that cover this new functionality (e.g., the specific pytest command).
 **CRITICAL RULE (Personas):** You MUST explicitly define the "Persona" executing the test (e.g., "Logged in as Coordinator of Unit X" or "Teacher of Class Y"). Tests without clear permission scopes are invalid.
-**CRITICAL RULE (Mixer):** If manual QA requires specific data setup, document the exact `mixer.blend()` Python snippet or database setup steps required to reach the initial state, *including creating the user persona with correct permissions*. This trains the AI on how to setup tests using the project's Mixer capabilities later.
+**CRITICAL RULE (Pré-condições de Tenant & Feature Flags):** Se a feature depender de flags ou módulos no modelo `Client` (ex.: `has_reports`, `has_diagramation`, `has_tri`, `has_omr`, `has_new_diagram_experience`, etc.) para que rotas ou elementos visuais apareçam (como itens na sidebar ou botões de ação), você DEVE obrigatoriamente documentar:
+1. O campo exato em `Client` e sua propriedade correspondente em `User` (ex.: `Client.has_reports` / `user.client_has_reports`).
+2. O sintoma visual caso a flag esteja desativada (ex.: *"O item 'Relatórios' fica totalmente oculto na barra lateral e o acesso direto via URL redireciona com mensagem de módulo ausente"*).
+3. O comando CLI rápido de 1 linha (via `python manage.py shell`) e/ou caminho no Django Admin para o QA ativar o módulo no banco local antes de iniciar os testes manuais.
+**CRITICAL RULE (Mixer):** If manual QA requires specific data setup, document the exact `mixer.blend()` Python snippet or database setup steps required to reach the initial state, *including creating the user persona with correct permissions and required client flags*. This trains the AI on how to setup tests using the project's Mixer capabilities later.
 
 ## 5. Roteiro de Testes com Checkboxes (Human-Centric Test Script)
 Write detailed, step-by-step test scenarios focusing 100% on the human tester's perspective and visual confirmation.
@@ -145,6 +149,7 @@ Write detailed, step-by-step test scenarios focusing 100% on the human tester's 
 - **CRITICAL RULE 3 (No Technical Noise):** NEVER inline raw DOM selectors (e.g. `div > button.tw-bg-orange`), Alpine stores, or raw JS events inside Section 5 checkboxes. Keep the test script clean, intuitive, and visually precise for human QA.
 - **CRITICAL RULE 4 (Technical Layer Decoupling):** All technical references (DOM selectors, Playwright locators, Alpine stores, API intercepts) MUST be placed exclusively in **Section 4 (Fixtures/Mixer)** or **Section 8.1 (Usability Mapping / Knowledge Base)**.
 - **CRITICAL RULE 5 (Persona):** Declare the active Persona at the beginning of Section 5 or at the scenario level.
+- **CRITICAL RULE 6 (Passo Zero — Pré-condições de Tenant & Feature Flags no Checklist Humano):** Sempre que a feature depender de flags no modelo `Client` para que a tela ou seus menus existam no DOM, o Cenário 1 (ou o início da Seção 5) DEVE conter checkboxes explícitos de pré-requisito de ambiente instruindo o QA humano a verificar e ativar a flag caso o menu ou botão não esteja visível, com o comando CLI pronto para copiar/colar. Evita falso-positivo e perda de tempo procurando elementos de UI ocultados pelo backend por configuração de tenant.
 
 ## 6. Visual and Layout Validation (Validação Visual e de Layout)
 If the branch involves User Interface (UI) changes, you MUST include a dedicated checklist section requiring the QA to take screenshots/prints of the implemented screens, mandating a side-by-side comparison with Figma/OpenSpec mockups.
