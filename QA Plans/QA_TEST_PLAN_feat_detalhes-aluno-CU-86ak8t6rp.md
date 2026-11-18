@@ -507,11 +507,23 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 
 > [!NOTE]
-> **[UX/UI] Padronização Visual dos Nomes dos Alunos na Listagem:**
-> Durante os testes no modal de seleção de alunos, observou-se uma variação visual na listagem: alguns estudantes aparecem com o nome completamente em maiúsculas (ex.: `BENJAMIM SOARES BASTOS LIMA`), enquanto outros aparecem em caixa mista / inicial maiúscula (ex.: `Davi Komatsu Rodrigues`).
+> **[UX/UI] Padronização Visual das Opções de Nível de Ensino (Passo 1 do Modal):**
+> Durante os testes no Passo 1 do modal de seleção, observou-se uma despadronização no padrão de capitalização das opções listadas:
+> - `"Anos iniciais"` (inicial maiúscula apenas na primeira palavra: "A" maiúsculo e "i" minúsculo)
+> - `"Anos finais"` (inicial maiúscula apenas na primeira palavra: "A" maiúsculo e "f" minúsculo)
+> - `"Ensino Médio"` (ambas as palavras com inicial maiúscula: "E" e "M" maiúsculos)
+> 
+> **Visão de Usuário:** Do ponto de vista de consistência e harmonia visual para quem está operando o sistema, seria mais agradável padronizar a exibição para que todas as opções apareçam em maiúsculas (ex.: `"ANOS INICIAIS"`, `"ANOS FINAIS"`, `"ENSINO MÉDIO"`) de maneira uniforme, mantendo um padrão coeso. Deixamos a cargo da equipe de desenvolvimento a decisão de onde e como aplicar essa padronização da melhor forma.
+> 
+> ![alt text](../evidencias/image-48.png)
+
+> [!NOTE]
+> **[UX/UI] Padronização Visual dos Nomes dos Alunos na Listagem (Passo 3 do Modal):**
+> Durante os testes no Passo 3 do modal de seleção de alunos, observou-se uma variação visual na listagem: alguns estudantes aparecem com o nome completamente em maiúsculas (ex.: `BENJAMIM SOARES BASTOS LIMA`), enquanto outros aparecem em caixa mista / inicial maiúscula (ex.: `Davi Komatsu Rodrigues`).
 > 
 > **Visão de Usuário:** Do ponto de vista de consistência visual para quem está operando o sistema, seria mais agradável padronizar a exibição para que todos os nomes apareçam em maiúsculas de maneira uniforme, mantendo um padrão coeso em toda a lista. Deixamos a cargo da equipe de desenvolvimento a decisão de onde e como aplicar essa padronização da melhor forma.
-![alt text](../evidencias/image-47.png)
+> 
+> ![alt text](../evidencias/image-47.png)
 > [!NOTE]
 > **Definição de Produto para Professor na Exportação:** Atualmente a exportação está vinculada aos mesmos critérios de coordenação e turmas ativas de `TeacherSubject`. Uma permissão independente no `CustomGroup` para exportação pode ser avaliada em ciclos futuros caso o produto deseje desvincular a exportação da visualização da ficha.
 
