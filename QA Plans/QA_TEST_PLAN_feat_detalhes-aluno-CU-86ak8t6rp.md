@@ -247,14 +247,10 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 **Ação humana:**
 - [x] Acessar a ficha do aluno com contexto de turma na URL (`/alunos/1a4a3e92-d559-445e-a387-d75c499776c7/acompanhamento/?class_id=b9f713b7-dc19-49e2-bb06-936b0cade617&grade_id=e0ec150d-0e32-4c3f-928b-207bebcc3d22&school_year=2026`).
 - [x] Verificar no topo da página o botão de retorno `"**Voltar aos relatórios**"` com ícone de seta para a esquerda e o breadcrumb `"**Relatórios** / **Ficha do aluno**"`.
-- [ ] Verificar se o nome `"**Ana Elisa Rodrigues Cesario**"` é exibido em destaque no cabeçalho com suas iniciais `"**AC**"` dentro do avatar circular.
-- [ ] Verificar as informações contextuais abaixo do nome: série e turma (`"**3ª Série 3 ANO A · Ensino Médio**"`), matrícula (`"**2502648**"`) e responsável (`"**Elisângela**"`).
-- [ ] Localizar o componente de Pager no topo direito do cabeçalho.
-- [ ] Verificar se o texto exibe a posição correta: `"**4 de 12 · 3ª Série 3 ANO A**"`.
-- [ ] Verificar que ambos os botões do Pager (`<` e `>`) estão habilitados (pois a aluna está na posição 4 de 12).
-- [ ] Clicar no botão `"**Próximo aluno**"` *(ícone de seta chevron para a direita `>`)*.
-- [ ] Verificar se a página navega com sucesso para a ficha da próxima estudante (`MARINA MORONI GUEDES`), mantendo os parâmetros de turma na URL e atualizando o contador para `"**5 de 12 · 3ª Série 3 ANO A**"`.
-- [ ] Clicar no botão `"**Aluno anterior**"` *(ícone de seta chevron para a esquerda `<`)* para retornar à posição 4 e, em seguida, clicar novamente para avançar ao aluno anterior (`Arthur Keher Araujo`, `"**3 de 12 · 3ª Série 3 ANO A**"`).
+- [x] Verificar se o nome `"**Ana Elisa Rodrigues Cesario**"` é exibido em destaque no cabeçalho com suas iniciais `"**AC**"` dentro do avatar circular.
+- [x] Verificar as informações contextuais abaixo do nome: série e turma (`"**3ª Série 3 ANO A · Ensino Médio**"`), matrícula (`"**2502648**"`) e responsável (`"**Elisângela**"`).
+- [x] Localizar o componente de Pager no topo direito do cabeçalho.
+- [ ] ⚠️ **Falha / Bug 01:** O texto exibe `"**4 de 12 · 3ª Série 3 ANO A**"` e habilita ambos os botões `<` e `>`, divergindo da listagem do modal onde Ana Elisa é a 1ª de 6 alunos ativos (a navegação para o próximo avança para aluna inativa `MARINA MORONI GUEDES`). Ver detalhamento completo no **[Bug 01 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/?class_id=<uuid>`
@@ -495,6 +491,31 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 ---
 
 ## 7. Bugs and Observations (Problemas Encontrados)
+
+### 🐛 Bug 01: [Funcional / UX] Pager exibe contagem total divergente do modal (4 de 12 vs 1 de 6) e navega para alunos inativos
+
+**Classificação:** Funcional / Interface & Navegação  
+**Severidade:** Média (Afeta a consistência da navegação e gera confusão na contagem de alunos da turma)  
+**Status:** Aberto / Aguardando correção  
+
+**Passos para Reproduzir:**
+1. Acessar a listagem de relatórios e abrir o modal de **Acompanhamento Individual**.
+2. Selecionar o nível de ensino e a turma **3ª Série 3 ANO A**.
+3. Na etapa de seleção de alunos, constatar que a lista exibe **6 alunos disponíveis**, com **Ana Elisa Rodrigues Cesario** ocupando a 1ª posição da listagem.
+4. Clicar em Ana Elisa para abrir a ficha do estudante.
+5. Observar o componente de navegação (Pager) localizado no canto superior direito do cabeçalho.
+
+**Comportamento Observado:**
+- O Pager exibe o texto **"4 de 12 · 3ª Série 3 ANO A"**, indicando um total de 12 alunos e posicionando a aluna na 4ª posição, divergindo da listagem do modal onde ela era a 1ª de 6 alunos.
+- Ambos os botões de navegação anterior (`<`) e próximo (`>`) ficam habilitados.
+- Ao clicar no botão de avançar (`>`), a navegação conduz para perfis de alunos inativos da turma que nem sequer constavam na listagem de seleção do modal.
+
+![alt text](../evidencias/image-51.jpg)
+
+**Comportamento Esperado:**
+- O Pager da ficha deve refletir exatamente a mesma lista, ordem e quantidade de alunos apresentada no modal de seleção para aquela turma (apenas alunos ativos e visíveis).
+- Para a aluna selecionada (Ana Elisa), o Pager deve exibir **"1 de 6 · 3ª Série 3 ANO A"**.
+- Por ser a primeira aluna da listagem, o botão anterior (`<`) deve estar desabilitado, e o botão próximo (`>`) deve avançar sequencialmente para o próximo aluno ativo visível no modal.
 
 > [!WARNING]
 > ### ⚠️ ALERTA DE SCHEMA DRIFT NO BANCO DE DADOS LOCAL
