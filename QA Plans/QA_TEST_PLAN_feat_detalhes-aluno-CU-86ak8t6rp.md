@@ -285,11 +285,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 6 — Alternância entre abas Linha do Tempo e Desempenho
 **Ação humana:**
-- [ ] Na ficha do aluno, localizar a barra de abas logo abaixo do cabeçalho.
-- [ ] Verificar se a aba `"**Linha do tempo**"` está ativa por padrão com sublinhado laranja (`#e74a00`).
-- [ ] Clicar na aba `"**Desempenho**"`.
-- [ ] Verificar se o painel da linha do tempo é ocultado e o conteúdo de desempenho (gráficos e tabela) é exibido imediatamente sem recarregamento completo da página (comportamento de SPA Alpine).
-- [ ] Clicar novamente na aba `"**Linha do tempo**"` e verificar o retorno imediato da listagem de eventos.
+- [x] Na ficha do aluno, localizar a barra de abas logo abaixo do cabeçalho.
+- [x] Verificar se a aba `"**Linha do tempo**"` está ativa por padrão com sublinhado laranja (`#e74a00`).
+- [x] Clicar na aba `"**Desempenho**"`.
+- [x] Verificar se o painel da linha do tempo é ocultado e o conteúdo de desempenho (gráficos e tabela) é exibido imediatamente sem recarregamento completo da página (comportamento de SPA Alpine).
+- [x] Clicar novamente na aba `"**Linha do tempo**"` e verificar o retorno imediato da listagem de eventos.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
@@ -299,15 +299,19 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 7 — Filtros e agrupamento mensal na Linha do Tempo
 **Ação humana:**
-- [ ] Na aba `"**Linha do tempo**"`, verificar o agrupador de presença no topo: botões `"**Todas**"`, `"**Presentes**"` e `"**Ausentes**"`.
-- [ ] Clicar no botão `"**Ausentes**"`.
-- [ ] Verificar se a listagem exibe apenas as aplicações em que o aluno esteve ausente, identificadas com ícone e badge amarelo/laranja `"**Ausente**"`.
-- [ ] Clicar no botão `"**Filtros**"` *(botão branco com borda cinza e ícone de funil/linhas)*.
-- [ ] No menu dropdown aberto:
+- [x] Na aba `"**Linha do tempo**"`, verificar o agrupador de presença no topo: botões `"**Todas**"`, `"**Presentes**"` e `"**Ausentes**"`.
+- [x] Clicar no botão `"**Ausentes**"`.
+- [x] Verificar se a listagem exibe apenas as aplicações em que o aluno esteve ausente, diferenciando o tipo de atividade:
+  - Para provas/avaliações presenciais: `"**Faltou a [Nome da Prova]**"` com ícone de aluno/falta.
+  - Para listas de exercícios/tarefas: `"**Não entregou [Nome da Lista] · [Disciplina]**"` com ícone de prancheta.
+- [x] Clicar no botão `"**Filtros**"` *(botão branco com borda cinza e ícone de funil/linhas)*.
+- [x] No menu dropdown aberto:
   - Selecionar uma disciplina no campo seletor `"**Todas as disciplinas**"`.
   - Selecionar o período `"**Últimos 30 dias**"` ou uma etapa letiva.
-- [ ] Verificar se pílulas de filtro ativo surgem acima da linha do tempo com ícone `"**x**"` para remoção rápida.
-- [ ] Verificar se os eventos aparecem agrupados por cabeçalhos de mês (ex.: `"**Novembro de 2026**"`).
+- [x] Verificar se pílulas de filtro ativo surgem acima da linha do tempo com ícone `"**x**"` para remoção rápida.
+- [x] Verificar se os eventos aparecem agrupados por cabeçalhos de mês (ex.: `"**Agosto de 2026**"`, `"**Setembro de 2026**"`).
+
+![alt text](../evidencias/image-54.jpg)
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
