@@ -452,9 +452,9 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
   `/alunos/<student_a_uuid>/acompanhamento/`
 - [x] Verificar se o sistema bloqueia o acesso, respondendo com página de erro de permissão (HTTP 403) ou Não Encontrado (HTTP 404).
 ![alt text](../evidencias/image-53.png)
-- [ ] Tentar disparar requisição manual via API para buscar disciplinas da aplicação daquele aluno:
+- [x] Tentar disparar requisição manual via API para buscar disciplinas da aplicação daquele aluno:
   `GET /alunos/api/acompanhamento/<student_a_uuid>/aplicacoes/<app_student_a_uuid>/disciplinas/`
-- [ ] Verificar se a API responde estritamente com status HTTP 403 ou 404 sem vazar nenhum dado do estudante ou da instituição externa.
+- [x] Verificar se a API responde estritamente com status HTTP 403 ou 404 sem vazar nenhum dado do estudante ou da instituição externa.
 ![alt text](../evidencias/image-55.png)
 
 **Referência técnica (para automação):**
@@ -465,11 +465,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 14 — Restrição de escopo para perfil Professor
 **Ação humana:**
-- [ ] Logar como Professor (`teacher_user`) que leciona apenas para a Turma A.
-- [ ] Acessar a ficha de um aluno matriculado na Turma A e também em atividades da Turma B.
-- [ ] Verificar se o professor consegue visualizar a ficha do aluno para o contexto da Turma A.
-- [ ] Tentar alterar o parâmetro de URL para a Turma B (`?class_id=<turma_b_uuid>`).
-- [ ] Verificar se o sistema não autoriza o acesso ao contexto da turma não lecionada pelo docente, mantendo o escopo restrito exclusivamente às suas turmas e disciplinas autorizadas.
+- [x] Logar como Professor (`teacher_user`) que leciona apenas para a Turma A.
+- [x] Acessar a ficha de um aluno matriculado na Turma A e também em atividades da Turma B.
+- [x] Verificar se o professor consegue visualizar a ficha do aluno para o contexto da Turma A.
+- [x] Tentar alterar o parâmetro de URL para a Turma B (`?class_id=<turma_b_uuid>`).
+- [x] Verificar se o sistema não autoriza o acesso ao contexto da turma não lecionada pelo docente, mantendo o escopo restrito exclusivamente às suas turmas e disciplinas autorizadas.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/?class_id=<unauthorized_class_id>`
@@ -483,12 +483,12 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 15 — Responsividade e Visual em Resolução Intermediária (1333×1080)
 **Ação humana:**
-- [ ] Ajustar a viewport do navegador para a resolução de teste padrão corporativo (1333×1080 px).
-- [ ] Acessar a ficha do aluno (`/alunos/<uuid>/acompanhamento/`).
-- [ ] Verificar o cabeçalho: o nome do aluno, dados cadastrais, botões de ação e cards de KPI não devem sobrepor elementos nem quebrar o alinhamento.
-- [ ] Verificar se textos longos (nomes compostos de alunos, nomes de turmas extensas) recebem truncamento elegante com reticências (`...`) sem estourar os contêineres.
-- [ ] Verificar a renderização dos gráficos ECharts na aba Desempenho: os gráficos devem redimensionar dinamicamente respeitando as margens e a legibilidade dos eixos.
-- [ ] Verificar a tabela de disciplinas na aplicação expandida: deve exibir scroll horizontal (`tw-overflow-x-auto`) suave caso o espaço seja restrito, sem deformar as colunas de notas e contagens.
+- [x] Ajustar a viewport do navegador para a resolução de teste padrão corporativo (1333×1080 px).
+- [x] Acessar a ficha do aluno (`/alunos/<uuid>/acompanhamento/`).
+- [x] Verificar o cabeçalho: o nome do aluno, dados cadastrais, botões de ação e cards de KPI não devem sobrepor elementos nem quebrar o alinhamento.
+- [x] Verificar se textos longos (nomes compostos de alunos, nomes de turmas extensas) recebem truncamento elegante com reticências (`...`) sem estourar os contêineres.
+- [x] Verificar a renderização dos gráficos ECharts na aba Desempenho: os gráficos devem redimensionar dinamicamente respeitando as margens e a legibilidade dos eixos.
+- [x] Verificar a tabela de disciplinas na aplicação expandida: deve exibir scroll horizontal (`tw-overflow-x-auto`) suave caso o espaço seja restrito, sem deformar as colunas de notas e contagens.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
