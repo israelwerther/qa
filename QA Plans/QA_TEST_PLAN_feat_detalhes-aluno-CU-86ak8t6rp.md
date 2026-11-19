@@ -412,11 +412,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - [x] No grupo `"**Período**"`, verificar que `"**Ano letivo 2026**"` vem selecionado por padrão.
 - [x] Clicar no botão `"**Personalizado**"` e verificar a exibição dos campos de data `"**Início**"` e `"**Fim**"`.
 - [x] Retornar para `"**Ano letivo 2026**"`.
-- [ ] No grupo `"**Aplicações**"`, alternar entre `"**Todas**"`, `"**Só presentes**"` e `"**Só ausentes**"`.
-- [ ] Marcar o checkbox `"**Adicionar unidade e turma**"`.
-- [ ] Marcar o checkbox `"**Separar por disciplina**"`.
-- [ ] No formato, selecionar `"**XLSX**"` ou `"**CSV**"`.
-- [ ] Verificar se na prévia inferior é exibido o nome gerado do arquivo (ex.: `historico_aluno_ana_silva_2026.xlsx`) e a quantidade estimada de aplicações.
+- [x] No grupo `"**Aplicações**"`, alternar entre `"**Todas**"`, `"**Só presentes**"` e `"**Só ausentes**"`.
+- [x] Marcar o checkbox `"**Adicionar unidade e turma**"`.
+- [x] Marcar o checkbox `"**Separar por disciplina**"`.
+- [x] No formato, selecionar `"**XLSX**"` ou `"**CSV**"`.
+- [x] Verificar se na prévia inferior é exibido o nome gerado do arquivo (ex.: `historico_aluno_ana_silva_2026.xlsx`) e a quantidade estimada de aplicações.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
