@@ -200,7 +200,7 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 **Referência técnica (para automação):**
 - URL: `/dashboards/reports/`
-- Seletor: `button:has-text("Acompanhamento Individual de Alunos")` ➔ `div#student-tracking-modal` (título: `h2:has-text("Acompanhamento Individual")`)
+- Seletor: `div[modal_id="student-tracking-modal"] button, button:has-text("Acompanhamento Individual de Alunos")` ➔ modal `#student-tracking-modal` (título: `h2:has-text("Acompanhamento Individual")`, subtítulo: `p:has-text("Qual aluno você quer acompanhar?")`)
 - Estado esperado: Modal visível com classe `tw-flex` e atributo `aria-modal="true"`.
 - Fixture: `mixer.blend(Client, has_reports=True)` + `CoordinationMember`.
 
@@ -221,8 +221,12 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 **Referência técnica (para automação):**
 - URL: `/dashboards/reports/` ➔ `/alunos/<student_uuid>/acompanhamento/`
-- Seletor: `button:has-text("Ensino Médio")` ➔ `button:has-text("3º Ano Terceirão")` ➔ `button:has-text("Ana Silva")` ➔ `button:has-text("Confirmar")`
-- Estado esperado: URL final contém `/alunos/<uuid>/acompanhamento/` com parâmetros `class_id`, `grade_id` e `school_year`.
+- Seletor:
+  - Passo 1: `button:has-text("Ensino Médio")` (ou nível correspondente)
+  - Passo 2: `input#student-tracking-search-class` ➔ `button:has-text("3 ANO A")`
+  - Passo 3: `input#student-tracking-search-student` ➔ `button:has-text("Ana Elisa Rodrigues Cesario")` (com `:aria-pressed="true"` e indicador `span:has-text("Selecionado")`)
+  - Ação: `button:has-text("Confirmar"):not([disabled])` ➔ estado transitório `span:has-text("Abrindo…")`
+- Estado esperado: Redirecionamento 302/navegação para `/alunos/<uuid>/acompanhamento/?class_id=<uuid>&grade_id=<uuid>&school_year=<ano>`.
 - Fixture: Setup com `Grade`, `SchoolClass` e `Student` vinculado à classe.
 
 #### Cenário 3 — Turma sem alunos visíveis
@@ -254,8 +258,12 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/?class_id=<uuid>`
-- Seletor: `h1#ficha-aluno-nome` e `nav[aria-label="Outros alunos da turma"] a[aria-label="Próximo aluno"]`
-- Estado esperado: Navegação para a URL do próximo estudante mantendo a turma informada.
+- Seletor:
+  - Nome do Aluno: `h1#ficha-aluno-nome`
+  - Iniciais no Avatar: `span.tw-bg-primary-200`
+  - Breadcrumb: `nav[aria-label="Trilha"] a[aria-label="Voltar aos relatórios"]`
+  - Pager: `nav[aria-label="Outros alunos da turma"]` (contador: `span.tw-tabular-nums`, navegação: `a[aria-label="Próximo aluno"]`, `a[aria-label="Aluno anterior"]` ou botões desabilitados `button[disabled]`)
+- Estado esperado: Navegação para a URL do próximo estudante mantendo os parâmetros de turma (`class_id`).
 - Fixture: Duas instâncias de `Student` vinculadas à mesma `SchoolClass`.
 
 #### Cenário 5 — Validação dos Cards de KPI
@@ -275,9 +283,14 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
-- Seletor: `dl.tw-grid dt:has-text("Média geral") + dd span`
-- Estado esperado: Formato de percentual válido ou texto descritivo de ausência de dados; nunca vazio ou NaN.
-- Fixture: `build_header_kpis` com retornos reais de Analytics ou vazio.
+- Seletor:
+  - Container dos cards: `dl.tw-grid`
+  - Card Média Geral: `dl.tw-grid dt:has-text("Média geral") + dd span.tw-text-2xl` (comparativo: `dl.tw-grid dt:has-text("Média geral") + dd span:has-text("Turma:")`)
+  - Card Taxa de Presença: `dl.tw-grid dt:has-text("Taxa de presença") + dd span.tw-text-2xl`
+  - Card Posição na Turma: `dl.tw-grid dt:has-text("Posição na turma") + dd span.tw-text-2xl`
+  - Estado de Fallback / Erro de Integração: `dl.tw-grid dt + dd p.tw-text-gray-500`
+- Estado esperado: Formato de percentual inteiro com `%` (`ROUND_HALF_UP`) ou mensagem amigável de indisponibilidade; nunca campo em branco, decimal quebrado ou `NaN`.
+- Fixture: `build_header_kpis` com retornos reais de Analytics ou indisponível.
 
 ---
 
@@ -293,8 +306,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
-- Seletor: `button[role="tab"]:has-text("Desempenho")` e `button[role="tab"]:has-text("Linha do tempo")`
-- Estado esperado: Painel `div[data-individual-tracking-tabs] div[tabs.panel id="performance"]` torna-se visível.
+- Seletor:
+  - Gatilhos das abas: `button[data-tab="performance"]` (ou `button:has-text("Desempenho")`) e `button[data-tab="timeline"]` (ou `button:has-text("Linha do tempo")`)
+  - Estado ativo: `button[data-tab="timeline"].tw-border-primary-600`
+  - Painéis de conteúdo: `div[x-show*="performance"]` e `div[x-show*="timeline"]`
+- Estado esperado: Alternância instantânea de visibilidade dos painéis via Alpine.js sem requisição de página inteira.
 - Fixture: `student` criado e visualizado na ficha.
 
 #### Cenário 7 — Filtros e agrupamento mensal na Linha do Tempo
@@ -315,8 +331,14 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
-- Seletor: `button[role="radio"]:has-text("Ausentes")` ➔ `select#timeline-subject` ➔ `h3.tw-sticky`
-- Estado esperado: Dropdown aplica filtros, requisição para `/api/acompanhamento/<uuid>/timeline/` é disparada com parâmetros.
+- Seletor:
+  - Agrupador de presença: `div[role="radiogroup"][aria-label="Presença"] button[role="radio"]:has-text("Ausentes")` (ou `:has-text("Presentes")`, `:has-text("Todas")`)
+  - Botão de Filtros: `button:has-text("Filtros")`
+  - Dropdown de filtros: `select#timeline-subject` e `select#timeline-period`
+  - Pílulas de filtro ativo: `div[x-show*="timelineFilterBadges"] button[aria-label^="Remover filtro"]`
+  - Cabeçalhos de mês: `h3.tw-sticky`
+  - Eventos de aplicação: `div[data-application-student]` (com texto `"Faltou a"` ou `"Não entregou"`)
+- Estado esperado: Reatividade do Alpine.js disparando requisições paginadas para `/api/acompanhamento/<uuid>/timeline/?presence=absent...`.
 - Fixture: Eventos de `ApplicationStudent` presentes e ausentes criados via mixer.
 
 ---
