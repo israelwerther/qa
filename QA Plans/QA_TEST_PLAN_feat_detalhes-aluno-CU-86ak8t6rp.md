@@ -569,6 +569,23 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 - Captura de tela:
 ![alt text](../evidencias/image-56.png)
 
+**Diagnóstico Técnico (Causa Raiz no Front-end):**
+- **Arquivos:** `fiscallizeon/students/components/individual_tracking_average/individual_tracking_average.html` e `individual_tracking_average.js`
+- **Mecanismo da Falha:**
+  1. No template HTML (linha 5), o atributo `data-average-url` está declarado no container raiz `<section x-data="individualTrackingStageFilter()" ...>`.
+  2. O evento de troca de etapa `@change="applyStage()"` está vinculado na tag filha `<select>` (linha 33).
+  3. No Alpine.js, em métodos chamados diretamente por eventos de elementos internos, `this.$el` aponta para o elemento despachante do evento (`<select>`), e não para a raiz do componente onde o `x-data` foi declarado.
+  4. Por conta disso, na linha 60 do arquivo JS, a instrução:
+     ```javascript
+     const base = this.$el.dataset.averageUrl || "";
+     if (!base) return;
+     ```
+     avalia `this.$el.dataset.averageUrl` como `undefined`, abortando a execução prematuramente antes de definir `this.status = "loading"` e antes de invocar o `fetch()`.
+  5. Enquanto os demais componentes da página (gráficos ECharts e listagem de aplicações) escutam o evento global `individual-tracking-stage` e recarregam normalmente, o card da Média Geral nunca efetua a chamada HTTP e permanece com o valor inicial congelado.
+- **Solução Recomendada:**
+  - No método `init()`, persistir a URL no escopo do componente: `this._averageUrl = this.$el.dataset.averageUrl || "";` (pois dentro de `init`, `this.$el` aponta para a tag raiz `<section>`);
+  - No método `applyStage()`, consumir `const base = this._averageUrl || this.$root?.dataset?.averageUrl || "";`.
+
 > [!WARNING]
 > ### ⚠️ ALERTA DE SCHEMA DRIFT NO BANCO DE DADOS LOCAL
 > **Contexto:** Durante a execução dos testes automatizados locais com pytest, foi detectado o seguinte erro de integridade:
