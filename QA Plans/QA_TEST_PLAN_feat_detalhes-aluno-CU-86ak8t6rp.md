@@ -349,8 +349,8 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 **Ação humana:**
 - [x] Clicar na aba `"**Desempenho**"`.
 - [x] Localizar o seletor de etapa letiva à direita da `"**Média geral**"`.
-- [ ] Abrir o select e escolher uma etapa específica (ex.: `"**1º SIMULADO**"` ou `"**1º Bimestre**"`).
-- [ ] Verificar se a Média Geral da aba e os gráficos se atualizam para refletir exclusivamente a etapa escolhida.
+- [x] Abrir o select e escolher uma etapa específica (ex.: `"**1º SIMULADO**"`, `"**PAM**"` ou `"**P1**"`).
+- [ ] ⚠️ **Falha / Bug 02:** A Média Geral permanece estática e não atualiza ao selecionar a etapa letiva. Ver detalhamento no **[Bug 02 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
 - [ ] Verificar se o gráfico `"**Evolução por etapa letiva**"` exibe os rótulos reais de etapas recebidos da API (sem forçar o termo "Bimestre").
 - [ ] Na seção `"**Avaliação a avaliação**"`, clicar na pílula de uma disciplina específica (ex.: `"**Português**"`).
 - [ ] Verificar se o gráfico de barras filtra os dados e apresenta apenas o desempenho naquela matéria.
@@ -545,6 +545,29 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 - O Pager da ficha deve refletir exatamente a mesma lista, ordem e quantidade de alunos apresentada no modal de seleção para aquela turma (apenas alunos ativos e visíveis).
 - Para a aluna selecionada (Ana Elisa), o Pager deve exibir **"1 de 6 · 3ª Série 3 ANO A"**.
 - Por ser a primeira aluna da listagem, o botão anterior (`<`) deve estar desabilitado, e o botão próximo (`>`) deve avançar sequencialmente para o próximo aluno ativo visível no modal.
+
+### 🐛 Bug 02: [Funcional / Front-end] Média Geral não atualiza ao filtrar por Etapa Letiva na aba Desempenho
+
+**Classificação:** Funcional / Reatividade de Interface  
+**Severidade:** Alta (Impede a visualização do desempenho do aluno recortado por etapas letivas)  
+**Status:** Aberto / Aguardando correção  
+
+**Passos para Reproduzir:**
+1. Acessar a ficha de um estudante e navegar até a aba **Desempenho**.
+2. Localizar o cabeçalho interno da aba contendo a **"Média geral"** e, à direita, o seletor de **Etapa letiva**.
+3. Abrir o seletor de etapa letiva (que inicialmente exibe `"Todas as etapas"`) e escolher uma etapa específica (ex.: `"PAM"` ou `"P1"`).
+4. Observar o valor e o comparativo exibidos no card de **Média geral**.
+
+**Comportamento Observado:**
+- A Média Geral permanece estática e inalterada (ex.: congelada em `52% Turma: 54% · 21º de 35`), sem sofrer nenhuma atualização e sem disparar a requisição de busca do valor da etapa selecionada.
+
+**Comportamento Esperado:**
+- Ao selecionar uma etapa letiva específica, a Média Geral deve ser recalculada e atualizada para refletir exclusivamente as avaliações daquela etapa (ou exibir o estado informativo de dados indisponíveis caso não haja notas na etapa).
+
+**Evidência:**
+- Gravação Jam: https://jam.dev/c/db8e7ac8-bf1b-4289-802a-d909b0d8c3e6
+- Captura de tela:
+![alt text](../evidencias/image-56.png)
 
 > [!WARNING]
 > ### ⚠️ ALERTA DE SCHEMA DRIFT NO BANCO DE DADOS LOCAL
