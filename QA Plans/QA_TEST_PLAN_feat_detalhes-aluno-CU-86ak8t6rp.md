@@ -258,17 +258,20 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - Estado esperado: Navegação para a URL do próximo estudante mantendo a turma informada.
 - Fixture: Duas instâncias de `Student` vinculadas à mesma `SchoolClass`.
 
-#### Cenário 5 — Validação rigorosa dos Cards de KPI
+#### Cenário 5 — Validação dos Cards de KPI
 **Ação humana:**
-- [ ] No cabeçalho da ficha, inspecionar os 3 cards de métricas principais posicionados abaixo do nome do aluno:
+- [x] No cabeçalho da ficha, inspecionar os 3 cards de métricas principais posicionados abaixo do nome do aluno:
   - Card 1: `"**Média geral**"`
   - Card 2: `"**Taxa de presença**"`
   - Card 3: `"**Posição na turma**"`
-- [ ] Se o aluno não tiver dados ou o serviço retornar vazio, verificar se os cards exibem o estado informativo `"**Ainda não há dados para este indicador.**"` *(sem inventar notas fictícias ou 0.0 falso)*.
-- [ ] Se houver dados reais calculados:
-  - Verificar se a `"**Média geral**"` exibe o valor percentual (ex.: `"**68%**"`) e ao lado o comparativo com a turma (ex.: `"**Turma: 62%**"`).
-  - Verificar se a `"**Taxa de presença**"` exibe a porcentagem real calculada sobre as aplicações encerradas.
-  - Verificar se a `"**Posição na turma**"` exibe a classificação (ex.: `"**3º de 28**"`).
+- [x] **Tratamento de Indisponibilidade do Serviço (Validado Localmente):** Na ausência do microserviço externo de Analytics (`ANALYTICS_SERVICE_URL` na porta 5000), o sistema trata a falha de conexão de forma graciosa sem quebrar a tela, exibindo a mensagem descritiva de contingência em cada card: `"Não foi possível carregar [métrica]. Tente novamente em instantes."`. (Evidência: `../evidencias/image-52.png`).
+- [x] **Validação com dados reais populados (Homologado em Staging ✅):**
+  - Aluna testada: **ANA JULIA GOMES MARTINS** (`1ª Série M1MA · Ensino Médio`, Rede Decisão).
+  - `"**Média geral**"`: Exibe o percentual inteiro devidamente arredondado e formatado em destaque (`52%`) acompanhado do comparativo com a média da turma (`Turma: 54%`).
+  - `"**Taxa de presença**"`: Exibe o percentual inteiro das aplicações concluídas (`100%`).
+  - `"**Posição na turma**"`: Exibe a colocação ordinal da aluna sobre o total de estudantes ranqueados na turma (`21º de 35`).
+
+![alt text](../evidencias/image-53.jpg)
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
