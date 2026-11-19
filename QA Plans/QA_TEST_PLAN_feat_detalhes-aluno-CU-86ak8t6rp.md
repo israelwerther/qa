@@ -347,8 +347,8 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 8 — Filtro por Etapa Letiva e Gráficos de Desempenho
 **Ação humana:**
-- [ ] Clicar na aba `"**Desempenho**"`.
-- [ ] Localizar o seletor de etapa letiva à direita da `"**Média geral**"`.
+- [x] Clicar na aba `"**Desempenho**"`.
+- [x] Localizar o seletor de etapa letiva à direita da `"**Média geral**"`.
 - [ ] Abrir o select e escolher uma etapa específica (ex.: `"**1º SIMULADO**"` ou `"**1º Bimestre**"`).
 - [ ] Verificar se a Média Geral da aba e os gráficos se atualizam para refletir exclusivamente a etapa escolhida.
 - [ ] Verificar se o gráfico `"**Evolução por etapa letiva**"` exibe os rótulos reais de etapas recebidos da API (sem forçar o termo "Bimestre").
@@ -577,6 +577,14 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 **Sugestão:** Padronizar a exibição de todos os nomes em maiúsculo para manter a lista uniforme e consistente.
 
 ![alt text](../evidencias/image-47.png)
+
+### 💡 Melhoria 03: [UX/UI] Simplificação do Nome do Filtro de Categoria na Linha do Tempo
+
+**Problema:** O filtro de categoria da Linha do Tempo e sua respectiva etiqueta (pílula) utilizam o nome fixo `"Avaliações e ausências"`. Quando o usuário seleciona a aba **"Presentes"**, a pílula ativa exibe `[Avaliações e ausências ✕]` e o menu exibe `Avaliações e ausências (63)`, gerando confusão semântica ao mencionar a palavra "ausências" dentro de uma lista de presenças.
+
+**Sugestão:** Simplificar o nome da categoria para apenas **"Avaliações"** (ou **"Provas"**). Dessa forma, a opção no filtro e a pílula ativa (`[Avaliações ✕]`) ficam naturais e coerentes em qualquer uma das três abas de presença (Todas, Presentes e Ausentes).
+
+![alt text](../evidencias/image-55.jpg)
 
 
 
