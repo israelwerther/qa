@@ -447,13 +447,15 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 13 — Acesso negado para usuário de outra Instituição (Anti-IDOR)
 **Ação humana:**
-- [ ] Efetuar login com usuário Coordenador da Instituição B (`foreign_coord`).
-- [ ] Tentar acessar diretamente via barra de endereço do navegador a URL da ficha do aluno pertencente à Instituição A:
+- [x] Efetuar login com usuário Coordenador da Instituição B (`foreign_coord`).
+- [x] Tentar acessar diretamente via barra de endereço do navegador a URL da ficha do aluno pertencente à Instituição A:
   `/alunos/<student_a_uuid>/acompanhamento/`
-- [ ] Verificar se o sistema bloqueia o acesso, respondendo com página de erro de permissão (HTTP 403) ou Não Encontrado (HTTP 404).
+- [x] Verificar se o sistema bloqueia o acesso, respondendo com página de erro de permissão (HTTP 403) ou Não Encontrado (HTTP 404).
+![alt text](../evidencias/image-53.png)
 - [ ] Tentar disparar requisição manual via API para buscar disciplinas da aplicação daquele aluno:
   `GET /alunos/api/acompanhamento/<student_a_uuid>/aplicacoes/<app_student_a_uuid>/disciplinas/`
 - [ ] Verificar se a API responde estritamente com status HTTP 403 ou 404 sem vazar nenhum dado do estudante ou da instituição externa.
+![alt text](../evidencias/image-55.png)
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid_tenant_a>/acompanhamento/`
