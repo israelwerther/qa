@@ -363,10 +363,10 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 9 — Expansão da Aplicação e Tabela Detalhada por Disciplina
 **Ação humana:**
-- [ ] Na aba `"**Desempenho**"`, rolar até a seção `"**Por aplicação**"`.
-- [ ] Localizar uma aplicação multi-disciplinar (ex.: `"**Simulado Geral 1**"`).
-- [ ] Clicar sobre a linha da aplicação para expandir o acordeão *(linha com data, nome do exame, percentual e seta chevron)*.
-- [ ] Verificar se o acordeão expande revelando a tabela de disciplinas com as seguintes colunas:
+- [x] Na aba `"**Desempenho**"`, rolar até a seção `"**Por aplicação**"`.
+- [x] Localizar uma aplicação multi-disciplinar (ex.: `"**Simulado Geral 1**"`).
+- [x] Clicar sobre a linha da aplicação para expandir o acordeão *(linha com data, nome do exame, percentual e seta chevron)*.
+- [x] Verificar se o acordeão expande revelando a tabela de disciplinas com as seguintes colunas:
   - `"**Disciplina**"`
   - `"**Questões**"`
   - `"**Acertos**"`
@@ -374,11 +374,13 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
   - `"**Erros**"`
   - `"**Desempenho**"`
   - `"**Nota**"`
-- [ ] Verificar se cada disciplina vinculada à prova (ex.: `"**Português**"` e `"**Inglês**"`) possui sua respectiva linha preenchida com valores numéricos corretos.
-- [ ] Verificar se abaixo da tabela constam os links de ação:
+- [x] Verificar se cada disciplina vinculada à prova (ex.: `"**Português**"` e `"**Inglês**"`) possui sua respectiva linha preenchida com valores numéricos corretos.
+- [x] Verificar se abaixo da tabela constam os links de ação:
   - Link `"**Correção questão a questão**"` *(com ícone de seta externa)*.
   - Link `"**Linha do tempo da prova**"`.
-- [ ] Clicar no link `"**Linha do tempo da prova**"` e verificar se o sistema comuta automaticamente para a aba `"**Linha do tempo**"` posicionando a tela sobre o evento daquela aplicação.
+- [x] Clicar no link `"**Linha do tempo da prova**"` e verificar se o sistema comuta automaticamente para a aba `"**Linha do tempo**"` posicionando a tela sobre o evento daquela aplicação.
+
+![alt text](../evidencias/image-57.png)
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
@@ -388,10 +390,10 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 10 — Aplicação de Disciplina Única
 **Ação humana:**
-- [ ] Localizar na lista de aplicações uma prova que contenha apenas uma disciplina (ex.: `"**Avaliação Mensal de Matemática**"`).
-- [ ] Expandir a aplicação clicando sobre a linha.
-- [ ] Verificar se a tabela exibe exatamente uma única linha para `"**Matemática**"`.
-- [ ] Conferir se os números de questões, acertos, erros e nota dessa linha única coincidem exatamente com o total da prova.
+- [x] Localizar na lista de aplicações uma prova que contenha apenas uma disciplina (ex.: `"**Avaliação Mensal de Matemática**"`).
+- [x] Expandir a aplicação clicando sobre a linha.
+- [x] Verificar se a tabela exibe exatamente uma única linha para `"**Matemática**"`.
+- [x] Conferir se os números de questões, acertos, erros e nota dessa linha única coincidem exatamente com o total da prova.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
@@ -405,11 +407,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 11 — Abertura e configuração do modal de exportação
 **Ação humana:**
-- [ ] No cabeçalho da ficha do aluno, clicar no botão `"**Exportar histórico**"` *(botão branco com ícone de download)*.
-- [ ] Verificar se o modal se abre exibindo o título `"**Exportar histórico do aluno**"`.
-- [ ] No grupo `"**Período**"`, verificar que `"**Ano letivo 2026**"` vem selecionado por padrão.
-- [ ] Clicar no botão `"**Personalizado**"` e verificar a exibição dos campos de data `"**Início**"` e `"**Fim**"`.
-- [ ] Retornar para `"**Ano letivo 2026**"`.
+- [x] No cabeçalho da ficha do aluno, clicar no botão `"**Exportar histórico**"` *(botão branco com ícone de download)*.
+- [x] Verificar se o modal se abre exibindo o título `"**Exportar histórico do aluno**"`.
+- [x] No grupo `"**Período**"`, verificar que `"**Ano letivo 2026**"` vem selecionado por padrão.
+- [x] Clicar no botão `"**Personalizado**"` e verificar a exibição dos campos de data `"**Início**"` e `"**Fim**"`.
+- [x] Retornar para `"**Ano letivo 2026**"`.
 - [ ] No grupo `"**Aplicações**"`, alternar entre `"**Todas**"`, `"**Só presentes**"` e `"**Só ausentes**"`.
 - [ ] Marcar o checkbox `"**Adicionar unidade e turma**"`.
 - [ ] Marcar o checkbox `"**Separar por disciplina**"`.
