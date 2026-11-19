@@ -206,16 +206,18 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 2 — Fluxo completo de seleção Nível ➔ Turma ➔ Aluno e navegação
 **Ação humana:**
-- [ ] No modal aberto no passo 1, clicar sobre o nível de ensino `"**Ensino Médio**"`.
-- [ ] Verificar se o modal avança para o passo 2 exibindo a trilha de navegação `"**Níveis**"` ➔ `"**Ensino Médio**"` e o campo `"**Buscar turma...**"`.
-- [ ] Digitar no campo de busca o nome da turma `"**3º Ano Terceirão**"`.
-- [ ] Clicar sobre a turma `"**3º Ano Terceirão**"` na listagem.
-- [ ] Verificar se o modal avança para o passo 3 exibindo o campo `"**Buscar aluno...**"` e a lista de alunos matriculados naquela turma.
-- [ ] Clicar sobre o aluno `"**Ana Silva**"`.
-- [ ] Verificar se o aluno fica marcado com fundo sutilmente destacado e surge a indicação `"**Selecionado**"` em texto laranja.
-- [ ] Verificar se o botão `"**Confirmar**"` no rodapé do modal se torna habilitado (deixa de estar desabilitado/opaco).
-- [ ] Clicar no botão `"**Confirmar**"` *(botão laranja com texto branco)*.
-- [ ] Verificar se o modal exibe o estado `"**Abrindo…**"` e a página é redirecionada para a URL da ficha do aluno (`/alunos/<student_uuid>/acompanhamento/?class_id=...&grade_id=...&school_year=...`).
+- [x] No modal aberto no passo 1, clicar sobre o nível de ensino `"**Ensino Médio**"`.
+- [x] Verificar se o modal avança para o passo 2 exibindo a trilha de navegação `"**Níveis**"` ➔ `"**Ensino Médio**"` e o campo `"**Buscar turma...**"`.
+- [x] Digitar no campo de busca o nome da turma `"**3º Ano Terceirão**"`.
+- [x] Clicar sobre a turma `"**3º Ano Terceirão**"` na listagem.
+- [x] Verificar se o modal avança para o passo 3 exibindo o campo `"**Buscar aluno...**"` e a lista de alunos matriculados naquela turma.
+- [x] Clicar sobre o aluno `"**Ana Silva**"`.
+- [x] Verificar se o aluno fica marcado com fundo sutilmente destacado e surge a indicação `"**Selecionado**"` em texto laranja.
+- [x] Verificar se o botão `"**Confirmar**"` no rodapé do modal se torna habilitado (deixa de estar desabilitado/opaco).
+- [x] Clicar no botão `"**Confirmar**"` *(botão laranja com texto branco)*.
+- [x] Verificar se o modal exibe o estado `"**Abrindo…**"` e a página é redirecionada para a URL da ficha do aluno (`/alunos/<student_uuid>/acompanhamento/?class_id=...&grade_id=...&school_year=...`).
+
+![Ficha do Aluno após redirecionamento](../evidencias/image-49.png)
 
 **Referência técnica (para automação):**
 - URL: `/dashboards/reports/` ➔ `/alunos/<student_uuid>/acompanhamento/`
@@ -225,10 +227,11 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 3 — Turma sem alunos visíveis
 **Ação humana:**
-- [ ] Abrir o modal de seleção e selecionar um nível de ensino.
-- [ ] Selecionar uma turma que não possua nenhum aluno cadastrado.
-- [ ] Verificar se o passo 3 exibe a mensagem amigável `"**Esta turma não possui alunos visíveis.**"`.
-- [ ] Verificar se o botão `"**Confirmar**"` permanece desabilitado, impedindo que o usuário avance sem selecionar um estudante.
+- [x] Abrir o modal de seleção e selecionar um nível de ensino.
+- [x] Selecionar uma turma que não possua nenhum aluno cadastrado.
+- [x] Verificar se o passo 3 exibe a mensagem amigável `"**Esta turma não possui alunos visíveis.**"`.
+- [x] Verificar se o botão `"**Confirmar**"` permanece desabilitado, impedindo que o usuário avance sem selecionar um estudante.
+![alt text](../evidencias/image-50.png)
 
 **Referência técnica (para automação):**
 - URL: `/dashboards/reports/` (modal passo 3)
@@ -242,15 +245,16 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 4 — Exibição dos dados do aluno e navegação via Pager
 **Ação humana:**
-- [ ] Acessar a ficha do aluno com contexto de turma na URL (`/alunos/<ana_uuid>/acompanhamento/?class_id=<class_uuid>`).
-- [ ] Verificar no topo da página o botão de retorno `"**Voltar aos relatórios**"` com ícone de seta para a esquerda e o breadcrumb `"**Relatórios** / **Ficha do aluno**"`.
-- [ ] Verificar se o nome `"**Ana Silva**"` é exibido em destaque no cabeçalho com suas iniciais `"**AS**"` dentro do avatar circular.
-- [ ] Verificar as informações contextuais abaixo do nome: série e turma (ex.: `"**3ª Série 3º Ano Terceirão**"`), matrícula e idade/responsável se informados.
+- [x] Acessar a ficha do aluno com contexto de turma na URL (`/alunos/1a4a3e92-d559-445e-a387-d75c499776c7/acompanhamento/?class_id=b9f713b7-dc19-49e2-bb06-936b0cade617&grade_id=e0ec150d-0e32-4c3f-928b-207bebcc3d22&school_year=2026`).
+- [x] Verificar no topo da página o botão de retorno `"**Voltar aos relatórios**"` com ícone de seta para a esquerda e o breadcrumb `"**Relatórios** / **Ficha do aluno**"`.
+- [ ] Verificar se o nome `"**Ana Elisa Rodrigues Cesario**"` é exibido em destaque no cabeçalho com suas iniciais `"**AC**"` dentro do avatar circular.
+- [ ] Verificar as informações contextuais abaixo do nome: série e turma (`"**3ª Série 3 ANO A · Ensino Médio**"`), matrícula (`"**2502648**"`) e responsável (`"**Elisângela**"`).
 - [ ] Localizar o componente de Pager no topo direito do cabeçalho.
-- [ ] Verificar se o texto exibe a posição correta, ex.: `"**1 de 2 · 3º Ano Terceirão**"`.
-- [ ] Verificar se o botão `"**Aluno anterior**"` está desabilitado *(ícone cinza sem cursor de clique)*, pois Ana é o primeiro registro.
-- [ ] Clicar no botão `"**Próximo aluno**"` *(ícone de seta chevron para a direita)*.
-- [ ] Verificar se a página navega com sucesso para a ficha do próximo aluno (`Bruno Menezes`), mantendo os parâmetros de turma na URL e atualizando o contador para `"**2 de 2 · 3º Ano Terceirão**"`.
+- [ ] Verificar se o texto exibe a posição correta: `"**4 de 12 · 3ª Série 3 ANO A**"`.
+- [ ] Verificar que ambos os botões do Pager (`<` e `>`) estão habilitados (pois a aluna está na posição 4 de 12).
+- [ ] Clicar no botão `"**Próximo aluno**"` *(ícone de seta chevron para a direita `>`)*.
+- [ ] Verificar se a página navega com sucesso para a ficha da próxima estudante (`MARINA MORONI GUEDES`), mantendo os parâmetros de turma na URL e atualizando o contador para `"**5 de 12 · 3ª Série 3 ANO A**"`.
+- [ ] Clicar no botão `"**Aluno anterior**"` *(ícone de seta chevron para a esquerda `<`)* para retornar à posição 4 e, em seguida, clicar novamente para avançar ao aluno anterior (`Arthur Keher Araujo`, `"**3 de 12 · 3ª Série 3 ANO A**"`).
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/?class_id=<uuid>`
