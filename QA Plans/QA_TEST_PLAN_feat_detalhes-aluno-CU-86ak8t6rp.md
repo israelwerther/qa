@@ -426,10 +426,10 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 
 #### Cenário 12 — Submissão e processamento da exportação via Celery
 **Ação humana:**
-- [ ] Com os filtros configurados no modal de exportação, clicar no botão `"**Exportar**"` *(botão laranja com ícone de download)*.
-- [ ] Verificar se o botão entra em estado de carregamento exibindo o texto `"**Exportando…**"` e fica desabilitado para prevenir cliques duplos.
-- [ ] Aguardar a conclusão do processamento assíncrono via Celery.
-- [ ] Verificar se o modal se fecha automaticamente ou apresenta a mensagem de conclusão e o download do arquivo é disparado no navegador.
+- [x] Com os filtros configurados no modal de exportação, clicar no botão `"**Exportar**"` *(botão laranja com ícone de download)*.
+- [x] Verificar se o botão entra em estado de carregamento exibindo o texto `"**Exportando…**"` e fica desabilitado para prevenir cliques duplos.
+- [x] Aguardar a conclusão do processamento assíncrono via Celery.
+- [ ] ⚠️ **Falha / Bug 03:** O modal fecha abruptamente e o download é bloqueado silenciosamente pelo Pop-up Blocker do navegador. Ver detalhamento no **[Bug 03 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
 - [ ] Abrir o arquivo baixado (`.xlsx` ou `.csv`) e auditar:
   - O arquivo contém **apenas** dados do aluno selecionado (`Ana Silva`), sem conter linhas de qualquer outro estudante da turma ou da instituição.
   - Se a opção `"**Separar por disciplina**"` foi marcada, verificar que cada aplicação possui linhas discriminadas por disciplina com as respectivas notas e contagens de acertos/erros.
@@ -587,6 +587,60 @@ O QA humano deve registrar capturas de tela (prints) nos seguintes momentos da h
 - **Solução Recomendada:**
   - No método `init()`, persistir a URL no escopo do componente: `this._averageUrl = this.$el.dataset.averageUrl || "";` (pois dentro de `init`, `this.$el` aponta para a tag raiz `<section>`);
   - No método `applyStage()`, consumir `const base = this._averageUrl || this.$root?.dataset?.averageUrl || "";`.
+
+### 🐛 Bug 03: [Funcional / UX] Download da exportação é bloqueado silenciosamente pelo navegador (Pop-up Blocker) e modal fecha sem feedback
+
+**Classificação:** Funcional / Integração com Navegador & UX  
+**Severidade:** Alta (Impede o download do relatório exportado em navegadores com configurações padrão de segurança)  
+**Status:** Aberto / Aguardando correção  
+
+**Passos para Reproduzir:**
+1. Acessar a ficha de um estudante (ex.: `/alunos/<uuid>/acompanhamento/`).
+2. Clicar no botão **"Exportar histórico"** no cabeçalho.
+3. No modal de exportação, manter os filtros padrão (ou configurar qualquer período/presença) e clicar no botão **"Exportar"**.
+4. Observar o botão entrar em estado de carregamento (`"Exportando…"`) e aguardar a conclusão do processamento assíncrono via Celery.
+
+**Comportamento Observado:**
+- Após alguns segundos de processamento, o modal fecha abruptamente (`open = false`).
+- Nenhum arquivo é baixado para a máquina do usuário e nenhuma nova aba é aberta.
+- O navegador (Google Chrome / Edge) exibe silenciosamente o ícone de aviso de **"Pop-ups bloqueados"** no canto da barra de endereços, pois o script tentou abrir uma nova aba (`<a target="_blank">.click()`) após uma espera assíncrona.
+- Para o usuário final comum, a sensação é de que a funcionalidade falhou ou parou de funcionar do nada, sem nenhum download e sem nenhuma mensagem de feedback de conclusão.
+
+**Comportamento Esperado:**
+- O download da planilha (`.xlsx` ou `.csv`) deve ser iniciado de forma direta e nativa pelo navegador, sem acionar o bloqueador de pop-ups (Pop-up Blocker).
+- O arquivo deve ser salvo diretamente na pasta de downloads do usuário com o nome customizado (ex.: `Dyana Nikaia Marques Saboia - Resultados 2026.xlsx`), ou o modal deve fornecer um botão explícito de download caso haja necessidade de ação do usuário.
+
+**Evidência:**
+- Captura de tela:
+![alt text](../evidencias/image-58.jpg)
+
+**Diagnóstico Técnico (Causa Raiz no Front-end):**
+- **Arquivos:** `fiscallizeon/students/components/individual_tracking_history_export/individual_tracking_history_export.js` (linhas 466-475) e `individual_tracking_history_export.html` (linha 340).
+- **Mecanismo da Falha:**
+  1. No arquivo JS, a função `saveUrl(fileUrl)` tenta disparar o download criando dinamicamente uma tag `<a>` com `target="_blank"` e executando `.click()`:
+     ```javascript
+     saveUrl(fileUrl) {
+       const link = document.createElement("a");
+       link.href = fileUrl;
+       link.target = "_blank";
+       link.rel = "noopener";
+       link.style.display = "none";
+       document.body.appendChild(link);
+       link.click();
+       link.remove();
+     }
+     ```
+  2. Essa chamada ocorre **após várias iterações assíncronas** de polling (`await store.waitForFile(exportId)`), que duram alguns segundos até o worker Celery concluir o arquivo no DigitalOcean Spaces.
+  3. De acordo com as políticas de segurança dos navegadores modernos (Chrome, Firefox, Safari, Edge), a autorização de clique do usuário (`user gesture token`) expira após operações assíncronas. Qualquer tentativa de abrir uma nova aba (`target="_blank"`) sem um gesto imediato do usuário é classificada como abertura não autorizada de janela e **bloqueada pelo Pop-up Blocker nativo**.
+  4. Simultaneamente, no template HTML (linha 340), o handler `@click.stop="...startExport().then((saved) => { if (saved) open = false })"` avalia `saved === true` (pois a API retornou sucesso) e fecha o modal imediatamente, deixando a interface sem o arquivo e sem retorno visual.
+- **Solução Recomendada:**
+  - Substituir a criação de link com `target="_blank"` por navegação de download direto, que não é interceptada pelo pop-up blocker para arquivos binários:
+    ```javascript
+    saveUrl(fileUrl) {
+      window.location.assign(fileUrl); // ou window.location.href = fileUrl;
+    }
+    ```
+  - Alternativamente, baixar o arquivo via `fetch` como `blob` e acionar o método `saveBlob(blob, filename)` já implementado no componente (linha 477), garantindo o download nativo com o nome correto do aluno e ano letivo.
 
 > [!WARNING]
 > ### ⚠️ ALERTA DE SCHEMA DRIFT NO BANCO DE DADOS LOCAL
