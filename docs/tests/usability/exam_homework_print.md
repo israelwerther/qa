@@ -79,3 +79,16 @@ application_student = mixer.blend(
 - **Entidades para render:** `Exam`, `Application`, `ApplicationStudent`, `Student`, `Question`, `ExamQuestion`, `BaseText`.
 - **Condição de template:** o bloco compartilhado aparece quando `object.get_base_text_location_display` ou `object.application.exam.get_base_text_location_display` é `'Texto-base compartilhado com questões embaixo'`.
 - **Observação:** esta tela usa `exam_homework_print.html`, não `exam_print.html`; a validação da opção 4 precisa ser feita separadamente do fluxo “Imprimir caderno”.
+
+## 5. Grafo de Dependências e Impacto Cruzado (Upstream & Downstream)
+
+- **⬆️ Origem das Configurações (Upstream):** 🔗 [exam_request_create_update_new.md](./exam_request_create_update_new.md) (`Exam.base_text_location`) e 🔗 [application_create_update.md](./application_create_update.md) (`Application.HOMEWORK`).
+- **🧩 Partials e JS Compartilhados:** `per_questions.html`, `shared_below.html`, `subjects_top.html`, `exam_top_bottom.html`, `text_relation.html` e `base_texts-functions.js`.
+- **↔️ Telas Irmãs (Mesma Jornada do Aluno):**
+  - 🔗 [student_homework.md](./student_homework.md) — Tela onde o aluno **realiza** a atividade online (`/aplicacoes/<app_student_pk>/realizar-atividade`) antes de poder imprimi-la aqui.
+  - 🔗 [exam_print.md](./exam_print.md) e 🔗 [exam_preview.md](./exam_preview.md).
+
+## 6. Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA (Histórico de Reviews)
+
+- **[Não Confundir Impressão da Lista com Realização da Lista]:** Validar apenas `exam_homework_print.html` **não** garante que a tela de realização pelo aluno (`student-homework.html` / `/realizar-atividade`) funciona! Na task `CU-86akta6jf`, `exam_homework_print.html` havia sido atualizado, mas `student-homework.html` ficou de fora, ocultando o texto-base durante a prova do aluno e gerando `Uncaught TypeError` no Console. Sempre testar **ambas** as telas ([exam_homework_print.md](./exam_homework_print.md) e [student_homework.md](./student_homework.md)).
+- **[Ausência de `printConfig` no Vue]:** Assim como em `exam_preview.html`, esta tela não define `printConfig` no Vue; métodos compartilhados em `base_texts-functions.js` devem sempre verificar `this.printConfig` defensivamente.

@@ -60,3 +60,14 @@ exam = mixer.blend(
 - **Entidades para render:** `Exam`, `ExamQuestion`, `ExamTeacherSubject`, `Question`, `QuestionOption`, `BaseText`.
 - **Condição de template:** `shared_below.html` é incluído quando `object.get_base_text_location_display` é `'Texto-base compartilhado com questões embaixo'`; `text_relation.html` é omitido no mesmo caso.
 - **Observação:** o preview simples (`/visualizar/simples`) e o preview redesign (`/visualizar`) não usam este template e não devem ser usados para validar a opção 4.
+
+## 5. Grafo de Dependências e Impacto Cruzado (Upstream & Downstream)
+
+- **⬆️ Origem das Configurações (Upstream):** 🔗 [exam_request_create_update_new.md](./exam_request_create_update_new.md) (`Exam.base_text_location`).
+- **🧩 Partials e JS Compartilhados:** `per_questions.html`, `shared_below.html`, `subjects_top.html`, `exam_top_bottom.html`, `text_relation.html` e `base_texts-functions.js`.
+- **↔️ Telas Irmãs que Compartilham os Mesmos Partials:** 🔗 [exam_print.md](./exam_print.md), 🔗 [exam_homework_print.md](./exam_homework_print.md) e 🔗 [student_homework.md](./student_homework.md).
+
+## 6. Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA (Histórico de Reviews)
+
+- **[Ausência de `printConfig` no Vue]:** Diferente de `exam_print.html`, a instância Vue de `exam_preview.html` **não define `printConfig`** em `data`. Qualquer função em `base_texts-functions.js` ou partial compartilhado deve checar `this.printConfig && this.printConfig.hideNumbering` de forma defensiva para não lançar `TypeError` nesta tela.
+- **[Cruzamento com `number_is_hidden = True`]:** Validar que questões com `number_is_hidden = True` não geram vírgulas órfãs no rodapé `.text-base-questions-footer` também no preview fiscal.

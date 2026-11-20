@@ -1,8 +1,14 @@
 # Mapeamento de Tela: exam_teacher_create_update.html / exam_teacher_create_update_v2.html
 
+> [!CAUTION]
+> **ARMADILHA DE CÓDIGO MORTO (`exam_teacher_create_update.html` DESCONTINUADO):**
+> O template legado `fiscallizeon/exams/templates/dashboard/exams/exam_create/exam_teacher_create_update.html` (rota sem `?v=2`) está **oficialmente descontinuado** (confirmado em code review na task `CU-86akta6jf`, comentário `1400580000352050`).
+> - **Para Desenvolvedores e IA:** NUNCA edite `exam_teacher_create_update.html` e NUNCA inclua esse arquivo em PRs ou diffs.
+> - **Para Planos de QA:** NUNCA gere cenários de teste acessando `/provas/prova/professor/` sem `?v=2`. Apenas a versão `?v=2` (`exam_teacher_create_update_v2.html`) faz parte do fluxo ativo do sistema.
+
 > Templates:
-> - Legado: `fiscallizeon/exams/templates/dashboard/exams/exam_create/exam_teacher_create_update.html`
-> - Real (`?v=2`): `fiscallizeon/exams/templates/dashboard/exams/exam_create/exam_teacher_create_update_v2.html`
+> - **Ativo (`?v=2`):** `fiscallizeon/exams/templates/dashboard/exams/exam_create/exam_teacher_create_update_v2.html`
+> - **Descontinuado (NÃO USAR):** `fiscallizeon/exams/templates/dashboard/exams/exam_create/exam_teacher_create_update.html`
 
 ## 1. URLs e Navegação
 
@@ -52,23 +58,21 @@ exam = mixer.blend(
 - **Avançar para aplicação:** `button:has-text("Salvar e continuar")` no bloco de aplicação (`controls.expanded = 'application'`)
 - **Atenção:** este template **não contém** `base_text_location`, `#id_shared_below` nem a pergunta **“Onde serão mostrados os textos base?”**. A opção 4 não está disponível no fluxo real do professor.
 
-### Versão legada — `exam_teacher_create_update.html`
-- **Pergunta:** `label:has-text("Onde serão mostrados os textos base?")`
-- **Grupo:** `input[name="base_text_location"]`
-- **Por questão:** `#id_per_question` (`value="0"`)
-- **Por disciplina:** `#id_exam_top` (`value="1"`)
-- **Início do caderno:** `#id_subject_top` (`value="2"`)
-- **Final do caderno:** `#id_subject_bottom` (`value="3"`)
-- **Texto compartilhado com questões embaixo:** `#id_shared_below` (`value="4"`)
-- **Binding:** `@click="exam.base_text_location = 4"`; classe ativa no label via `v-bind:class`.
-- **Salvar Parcialmente:** `button:has-text("Salvar Parcialmente")`
-- **Salvar e criar aplicação:** `button:has-text("Salvar e criar aplicação")`
-- **Salvar parcialmente (rodapé):** `button:has-text("Salvar parcialmente")`
-- **Handler:** `saveExam()` (`exam_teacher_create_update.html:977`)
+### Versão legada DESCONTINUADA — `exam_teacher_create_update.html`
+- **Status:** **DESCONTINUADO — NÃO EDITAR NEM TESTAR.**
+- Mantém apenas as 4 opções originais de `base_text_location` (`0..3`) da `master` por preservação histórica até remoção definitiva do arquivo.
 
 ## 4. API Interception & Fixtures (rotas e entidades críticas)
 
 - A tela é `TemplateView`; a persistência é feita pelo front via API de cadernos (`POST/PUT /provas/api/prova/`).
 - **Entidades para render:** `Inspector`, `TeacherSubject`, `Grade`, `Subject`, `ExamTeacherSubject`, `Exam`.
 - **Campos correlatos:** `category` (`Exam.HOMEWORK = 1`), `created_by`, `base_text_location`, `client_teachers_can_elaborate_exam`.
-- **Gap conhecido:** a opção 4 só pode ser validada pela URL legada sem `?v=2`; o fluxo real `?v=2` precisa de follow-up para incluir o controle.
+
+## 5. Grafo de Dependências e Impacto Cruzado (Upstream & Downstream)
+
+- **⬆️ Tela Canônica de Configuração de Caderno (Coordenação):** 🔗 [exam_request_create_update_new.md](./exam_request_create_update_new.md) (onde configurações avançadas como `base_text_location` são efetivamente gerenciadas).
+- **⬇️ Consumidores do Caderno Gerado:** 🔗 [exam_homework_print.md](./exam_homework_print.md) e 🔗 [student_homework.md](./student_homework.md).
+
+## 6. Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA (Histórico de Reviews)
+
+- **[Review CU-86akta6jf — Falso Positivo de `grep` em Templates Legados]:** Ao buscar por campos de `Exam` via `grep` no repositório, `exam_teacher_create_update.html` aparecerá nos resultados por conter inputs homônimos aos de `exam_request_create_update_new.html`. Se o `/qa-criar-plano` detectar alterações em `exam_teacher_create_update.html` no `git diff`, deve imediatamente emitir um alerta de higiene de escopo recomendando `git checkout master -- fiscallizeon/exams/templates/dashboard/exams/exam_create/exam_teacher_create_update.html`.

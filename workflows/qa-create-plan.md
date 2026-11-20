@@ -32,6 +32,28 @@ O QA humano executa os planos agora **enquanto o acervo é construído**. O obje
 You are an expert Quality Assurance (QA) Engineer Assistant. Your goal is to autonomously generate a comprehensive, structured Markdown test plan file for the current feature branch. 
 You must analyze the differences between the current branch and the `master` branch. You must also actively search for and read any related OpenSpec artifacts (e.g., `proposal.md`, `tasks.md`, `spec.md` inside `openspec/changes/`) to deeply understand the requirements, scope, UI changes, and technical implementation.
 
+## Pre-Plan Investigative Engine: 3D Blind-Spot Discovery & Dependency Graph Traversal (MANDATORY)
+**CRITICAL ANTI-DIFF-BIAS RULE:** Never assume that the developer's `git diff` and `OpenSpec` cover 100% of the impacted system surface. If you only generate test scenarios for the files present in the `git diff`, you inherit all of the developer's blind spots. Before writing the QA Test Plan, you MUST autonomously execute this 4-step investigation in the codebase:
+
+1. **Dimension 1 — Entity & Field Lifecycle Mapping (*"Where does this data enter, travel, and exit?"*):**
+   - For every model, field, choice/enum, partial template, or JS helper touched in the `git diff`, run `grep` across the entire codebase (`fiscallizeon/`) for **sibling choices/constants/templates** (e.g., if a 5th choice was added to a field, grep where choices 1–4 or the existing partial templates are used across all apps).
+   - Map all **Input Ports** (main form, secondary edit forms, batch CSV importers in `tasks/*_imports.py`, API serializers in `api/` and `api2/`, duplication/cloning routines) and all **Output/Consumption Ports** (other personas such as Student view in `applications/templates/`, Teacher view, Inspector preview, PDF/print exports, async tasks).
+   - **Action on Missing Consumers:** If you find an active flow in the codebase that consumes the modified field/partial but was **NOT touched in the `git diff`**, you MUST:
+     1. Include a mandatory test scenario for that flow in **Section 5** so QA validates it; AND
+     2. Pre-register a warning in **Section 7 (`> [!WARNING] [Blind Spot / Consumidor Omitido no Diff]`)** alerting the developer and QA before code review.
+2. **Dimension 2 — Orthogonal Modifiers & Neighboring Conditions (*"What coexists with the changed code?"*):**
+   - Read the surrounding context of every modified View, Service, and Template (not just the diff hunks).
+   - Identify existing query parameters (`request.GET.get(...)`), view modes, and sibling flags (`{% if %}`, `v-if`, boolean model flags on parent/child items such as hidden numbering, grouping, separation modes, randomization).
+   - Generate combinatorial test scenarios in **Section 5** that cross the new feature with those existing modifiers (never test only the isolated happy path).
+3. **Dimension 3 — Cardinality, Heterogeneity & Shared-Contract Stress:**
+   - **Cardinality (`0`, `1`, `N`):** Whenever code filters or formats a list of related items, include scenarios where the filtered result has **0 items** (all hidden/filtered out), **1 item** (singular grammar, no orphan commas/conjunctions), and **N items** (plural grammar).
+   - **Heterogeneity (Mixed Types):** Whenever a shared resource (e.g., base text, group, distribution, block) links multiple items, include a scenario mixing **different item categories/types** (e.g., Item 1 = Discursive + Items 2 & 3 = Objective) combined with grouping/separation modes.
+   - **Shared Partial / JS Contract & Console (`F12`):** When a partial or JS file is shared across multiple parent templates, verify whether all parent templates define the same Vue/Alpine state variables (e.g., `printConfig` exists in `exam_print.html` but is `undefined` in `exam_preview.html`, `exam_homework_print.html`, and `student-homework.html`). Always require checking the browser **DevTools Console (`F12`)** for zero `Uncaught TypeError / ReferenceError`.
+   - **Dead Screen & Scope Hygiene Check:** Verify if any modified template in the diff is marked as deprecated/discontinued in `.ai_qa_acervo/docs/tests/usability/*.md` or lacks an active route, and check for out-of-scope layout/CSS edits in neighboring containers, flagging them in Section 7.
+4. **Usability Dependency Graph Traversal (`.ai_qa_acervo/docs/tests/usability/<screen_name>.md`):**
+   - Before writing Section 5, read the existing usability mapping files for all touched screens, paying special attention to **Section 5 (Grafo de Dependências e Impacto Cruzado)** and **Section 6 (Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA)**.
+   - Automatically pull all linked downstream screens and historical review pitfalls into the QA Test Plan scenarios.
+
 ## Multi-Repository Integration (lize-student)
 When a task involves the Student SPA (`lize-student`) alongside `lizeedu`:
 - **Input Detection**: The user may specify the student branch explicitly via `--student <branch_name>` or in natural language (e.g., `/qa-create-plan --student feat/student-card-answers`, `/qa-create-plan com student na branch feat/student-card-answers`, `/qa-create-plan lizeedu:feat/x student:feat/y`).
@@ -190,10 +212,17 @@ Reserve a separate section (independent from critical bugs) to document items th
         - **3. PROIBIÇÃO TOTAL DE NOMES INVENTADOS / DESCRITIVOS:** É terminantemente proibido inventar nomes arbitrários (como `app_student_minhas_provas_result.md`). O arquivo `.md` DEVE permitir que qualquer pessoa localize o arquivo fonte correspondente no código pelo próprio nome.
     - If it exists, read it and **append/update** your new findings incrementally. 
     - If it does not exist, create it (e.g., `omr_upload_list_new.md` ou `minhas_provas_id.md`).
-    - **Map File Structure:** When creating a new map file, it MUST follow this exact structure to keep the knowledge categorized and ready for use:
+    - **Map File Structure:** When creating or updating a map file, it MUST follow this exact 6-section structure to keep the knowledge categorized, interconnected, and ready for autonomous AI traversal:
         - **1. URLs e Navegação:** All exact URLs (create, list, details) and how to navigate to them.
         - **2. Pré-requisitos para Automação (Fixtures e Permissões):** Exact `mixer` setup snippets and required user permissions (e.g., `is_superuser = True`) to render the UI.
         - **3. Seletores DOM e Ações:** Categorized list of stable DOM selectors (IDs, `v-model` bindings), mapped section by section (e.g., step 1, step 2). Do NOT include troubleshooting or QA execution logs here.
+        - **4. API Interception & Fixtures (rotas e entidades críticas):** Critical API routes, query params, and database entities required by the screen.
+        - **5. Grafo de Dependências e Impacto Cruzado (Upstream & Downstream):**
+            - **⬆️ Fontes Irmãs de Entrada (Upstream / Batch):** Other ways the same data is created/mutated (e.g., CSV import tasks `tasks/*_imports.py`, APIs, cloning).
+            - **⬇️ Consumidores Diretos (Downstream Screens):** Markdown links to all other `<screen_name>.md` files in the acervo that consume or render the data configured on this screen (across Coordinator, Teacher, Student, and Inspector personas).
+            - **🧩 Partials e JS Compartilhados:** Shared `includes/*.html` and `.js` files, explicitly noting Vue/Alpine state differences between parent templates (e.g., variables present in one parent template but `undefined` in another).
+            - **🚫 Telas Irmãs Descontinuadas (Dead Screens):** Deprecated templates that share similar names/inputs but must never be edited or tested.
+        - **6. Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA (Histórico de Reviews):** Concrete edge cases, combinatorial intersections (e.g., `0/1/N` cardinality after filtering, mixed item categories under separation modes, local login/cache caveats), and review lessons that MUST be automatically converted into test scenarios whenever this screen or its shared partials are touched.
 - **In the QA Test Plan:** You must include a checkbox to force the QA to validate the filename, followed by the link:
   `- [x] O arquivo de mapeamento foi nomeado refletindo exatamente o template HTML (Django) ou rota/componente (SPA Aluno), e não a View.`
   `🔗 **[Ver Mapeamento de Tela](docs/tests/usability/<screen_name>.md)**`
