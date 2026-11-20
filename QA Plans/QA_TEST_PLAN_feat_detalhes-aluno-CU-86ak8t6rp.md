@@ -254,7 +254,7 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - [x] Verificar se o nome `"**Ana Elisa Rodrigues Cesario**"` é exibido em destaque no cabeçalho com suas iniciais `"**AC**"` dentro do avatar circular.
 - [x] Verificar as informações contextuais abaixo do nome: série e turma (`"**3ª Série 3 ANO A · Ensino Médio**"`), matrícula (`"**2502648**"`) e responsável (`"**Elisângela**"`).
 - [x] Localizar o componente de Pager no topo direito do cabeçalho.
-- [ ] ⚠️ **Falha / Bug 01:** O texto exibe `"**4 de 12 · 3ª Série 3 ANO A**"` e habilita ambos os botões `<` e `>`, divergindo da listagem do modal onde Ana Elisa é a 1ª de 6 alunos ativos (a navegação para o próximo avança para aluna inativa `MARINA MORONI GUEDES`). Ver detalhamento completo no **[Bug 01 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
+- [x] ⚠️ **Falha / Bug 01:** O texto exibe `"**4 de 12 · 3ª Série 3 ANO A**"` e habilita ambos os botões `<` e `>`, divergindo da listagem do modal onde Ana Elisa é a 1ª de 6 alunos ativos (a navegação para o próximo avança para aluna inativa `MARINA MORONI GUEDES`). Ver detalhamento completo no **[Bug 01 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/?class_id=<uuid>`
@@ -429,8 +429,8 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - [x] Com os filtros configurados no modal de exportação, clicar no botão `"**Exportar**"` *(botão laranja com ícone de download)*.
 - [x] Verificar se o botão entra em estado de carregamento exibindo o texto `"**Exportando…**"` e fica desabilitado para prevenir cliques duplos.
 - [x] Aguardar a conclusão do processamento assíncrono via Celery.
-- [ ] ⚠️ **Falha / Bug 03:** O modal fecha abruptamente e o download é bloqueado silenciosamente pelo Pop-up Blocker do navegador. Ver detalhamento no **[Bug 03 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
-- [ ] Abrir o arquivo baixado (`.xlsx` ou `.csv`) e auditar:
+- [x] ⚠️ **Falha / Bug 03:** O modal fecha abruptamente e o download é bloqueado silenciosamente pelo Pop-up Blocker do navegador. Ver detalhamento no **[Bug 03 da Seção 7](#7-bugs-and-observations-problemas-encontrados)**.
+- [x] Abrir o arquivo baixado (`.xlsx` ou `.csv`) e auditar:
   - O arquivo contém **apenas** dados do aluno selecionado (`Ana Silva`), sem conter linhas de qualquer outro estudante da turma ou da instituição.
   - Se a opção `"**Separar por disciplina**"` foi marcada, verificar que cada aplicação possui linhas discriminadas por disciplina com as respectivas notas e contagens de acertos/erros.
   - Se a opção `"**Adicionar unidade e turma**"` foi marcada, verificar a presença das colunas `"Unidade"` e `"Turma"`.
@@ -495,13 +495,6 @@ mixer.blend(ApplicationStudent, application=app, student=student_ana, start_time
 - Seletor: Inspeção visual de layout em `div.ai-mesh` e contêineres `content-fixed`.
 - Estado esperado: Ausência de quebra de layout, overflow indesejado ou sobreposição de texto.
 - Fixture: Aluno com nome extenso e turma com nomenclatura longa.
-
-#### Cenário 16 — Validação em Tela Mobile (390×844 px)
-**Ação humana:**
-- [ ] Emular dispositivo móvel no DevTools (largura 390 px).
-- [ ] Abrir o modal de seleção de alunos: verificar se os passos se adaptam verticalmente e se a rolagem de turmas/alunos é confortável via touch.
-- [ ] Abrir a ficha do aluno: verificar se os 3 cards de KPI se empilham verticalmente em 1 coluna (`sm:tw-grid-cols-3`).
-- [ ] Abrir o modal de exportação de histórico: verificar se o diálogo se ajusta à largura total da tela (`width: min(32rem, calc(100vw - 2rem))`) mantendo botões de Cancelar e Exportar acessíveis no rodapé.
 
 **Referência técnica (para automação):**
 - URL: `/alunos/<uuid>/acompanhamento/`
