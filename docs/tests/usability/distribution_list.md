@@ -14,6 +14,8 @@
 | Visualizar Alunos do Ensalamento | `/ensalamento/<uuid:pk>/distribuicao/detalhe/` | `distribution:distribution_detail` (`RoomDistributionDetailtView`) |
 | Deletar Ensalamento | `/ensalamento/<uuid:pk>/deletar/` | `distribution:distribution_delete` (`RoomDistributionDeleteView`) |
 | API: Gerar Malote de Ensalamento | `POST /ensalamento/api/exportar/malote/<uuid:distribution_id>/` | `distribution:export_exams_bag` (`ExportDistributionExamsBagAPIView`) |
+| API: Enviar malote para gráfica (CDG) | `POST /ensalamento/api/ensalamentos/<uuid:pk>/grafica/enviar/` | `distribution:printing_order_send` (`RoomDistributionPrintingOrderSendAPIView`) |
+| API: Status do pedido na gráfica (CDG) | `GET /ensalamento/api/ensalamentos/<uuid:pk>/grafica/` | `distribution:printing_order_status` (`RoomDistributionPrintingOrderStatusAPIView`) |
 | Lista de pátio (por sala) | `/ensalamento/<uuid:pk>/lista/patio/` | `distribution:distribution_patio_list` → `patio_list.html` |
 | Lista de pátio (por turma) | `/ensalamento/<uuid:pk>/lista/patio/?by_class=true` | idem → `patio_list_by_class.html` (ver `patio_list_by_class.md`) |
 
@@ -122,6 +124,8 @@ mixer.blend(RoomDistributionStudent, distribution=distribution, room=room, appli
 - **Link Imprimir Malote (Dropdown):** `a:has-text("Imprimir malote")` ou `a:has-text("Imprimir malote novamente")`
   - *Ação:* Abre o modal `#configurePrintModal`.
 - **Badge / Link Baixar Malote (quando gerado):** `a span:has-text("Baixar malote")`
+- **Selo "Gráfica: ..." (CDG/PageFlow):** `[data-test="printing-badge"]` (visível quando `distribution.printingOrder && (hasOrder || inProduction)`)
+- **Ação "Enviar/Reenviar para gráfica" (CDG/PageFlow):** `[data-test="printing-send"]` (visível se `applications.can_print_bag_application`, integração ativa e `examsBagLink`; atenção ao bug `order.bproductionWarning` em vez de `order.blockReason`)
 
 ### Modal de Configuração de Impressão (`#configurePrintModal`)
 - **Container do Modal:** `#configurePrintModal`

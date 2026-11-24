@@ -16,6 +16,8 @@
 | Botão Agendar Várias | `/aplicacoes/cadastrar-multiplas/?category=<category>` | `applications:applications_create_multiple` |
 | API: Imprimir Malote | `POST /aplicacoes/api/aplicacao/<uuid:id>/imprimir-malote/` | `applications:applications_export_exams_bag` |
 | API: Status do Malote | `GET /aplicacoes/api/aplicacao/<uuid:id>/status-malote/` | `applications:applications_export_exams_bag_status` |
+| API: Enviar malote para gráfica (CDG) | `POST /aplicacoes/api/<uuid:pk>/grafica/enviar/` | `applications:printing_order_send` |
+| API: Status do pedido na gráfica (CDG) | `GET /aplicacoes/api/<uuid:pk>/grafica/` | `applications:printing_order_status` |
 
 ### Navegação para a tela
 
@@ -125,6 +127,8 @@ mixer.blend(ApplicationStudent, application=application, student=student)
 | Ação "Todos os alunos" (imprimir malote) | `a:has-text("Todos os alunos")` (`@click="showPrintModal(application)"`) | Abre o modal `#configurePrintModal` |
 | Ação "Detalhes" | `a[href*="/detalhes/"]` | Relatório e métricas da aplicação |
 | Ação "Editar" | `a[href*="/editar/"]` | Abre tela de edição da aplicação |
+| Selo "Gráfica: ..." (CDG/PageFlow) | `[data-test="printing-badge"]` | Exibido quando `application.printingOrder && (hasOrder \|\| inProduction)` |
+| Ação "Enviar/Reenviar para gráfica" (CDG/PageFlow) | `[data-test="printing-send"]` | Visível se `applications.can_print_bag_application`, integração ativa e `answerSheetUrl != ''`; atenção ao bug `order.bproductionWarning` (deveria ser `order.blockReason`) |
 
 ### Modal de Impressão de Malote (`#configurePrintModal`)
 
