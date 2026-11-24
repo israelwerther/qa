@@ -466,47 +466,63 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
 
 ---
 
-## 7. Bugs and Observations (Problemas Encontrados)
+## 7. Problemas Encontrados e Observações
 
-> [!BUG]
-> **[UX/UI] Botão `"Enviar para gráfica"` fica desabilitado logo após gerar o malote até recarregar a página (F5)**
-> - **Title:** `printingOrder.canSend` permanece `false` após conclusão assíncrona da geração do malote em Aplicações e Ensalamento
-> - **Context/Root Cause:** Quando o polling da geração do malote termina com `SUCCESS` em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (`fetchStatus`, L.2497–2501) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (`fetchDistibutionStatus`, L.926–932), o JS atualiza `application.answerSheetUrl` / `distribution.examsBagLink` (fazendo o botão `"Enviar para gráfica"` aparecer no menu), mas **não** consulta `printing_order_status` (`GET .../grafica/`) para atualizar `printingOrder` (`canSend`, `warnings`, `blockReason`). O mesmo ocorre se o malote for regerado enquanto `printingOrder` tinha `blockReason` de manifesto desatualizado.
-> - **Expected Behavior:** Assim que a exportação do malote retornar `SUCCESS` (e também ao remover o malote), o frontend deve chamar `axios.get(item.urls.printing_order_status)` para atualizar `item.printingOrder`, habilitando `"Enviar para gráfica"` imediatamente sem exigir F5.
-> - **Workaround (Gambiarra temporária):** Recarregar a página (`F5`) após a geração do malote para que o backend re-injete `printing_status_json` atualizado (`canSend: true`).
-> - **Evidência:** ![Botão Enviar para gráfica desabilitado logo após geração sem F5](../evidencias/cdg-cu-17tu7rp5vvu/03-bug-enviar-desabilitado-sem-f5.jpg)
+### 🐞 [BUG] [UX/UI] Botão `"Enviar para gráfica"` fica desabilitado logo após gerar o malote até recarregar a página (F5)
 
-> [!BUG]
-> **[UX/UI] Modal `"Não é possível enviar"` e tooltip ficam sem texto (`order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento)**
-> - **Title:** Modal e tooltip de bloqueio de envio exibem mensagem vazia (`undefined`) quando `canSend === false`
-> - **Context/Root Cause:** No backend (`fiscallizeon/integrations/services/printing/orders.py`, método `order_status`, L.374), a chave retornada no JSON é `'blockReason'`. Porém, nos templates `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.560 e L.2206) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (L.319 e L.1054), o Vue referencia `printingOrder.bproductionWarning` (typo provável de substituição de `blockReason` por `productionWarning`).
-> - **Expected Behavior:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, cross-order ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason` (ex.: `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`).
-> - **Workaround (Gambiarra temporária):** Validar a mensagem real de bloqueio diretamente na resposta da API `GET /aplicacoes/api/<uuid>/grafica/` (`blockReason`) ou `POST .../grafica/enviar/` (`detail`), e reportar ao dev para corrigir `bproductionWarning` ➔ `blockReason` nos dois templates antes do merge/produção.
-> - **Evidência:** ![Modal Não é possível enviar sem texto explicativo](../evidencias/cdg-cu-17tu7rp5vvu/11-bug-modal-bloqueio-sem-texto.jpg)
-
-> [!BUG]
-> **[UX/UI] Seta preta órfã (Tippy vazio + tooltip nativo duplicado) ao passar o mouse no selo `"Gráfica: ..."`**
-> - **Title:** Elemento com classe `.tooltips` usa `:title` em vez de `:data-tippy-content`, exibindo seta preta vazia abaixo do selo junto com o tooltip nativo
-> - **Context/Root Cause:** Em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.361), o selo `[data-test="printing-badge"]` recebeu a classe `tooltips` (que inicializa o Tippy.js, como nos selos irmãos das L.309/316/342/353), mas recebeu `:title="printingBadgeTitle(application.printingOrder)"` em vez de `:data-tippy-content`. Ao fazer hover, o Tippy renderiza uma caixinha/seta preta vazia abaixo de `"Grá"` enquanto o navegador abre o `title` nativo separado.
-> - **Expected Behavior:** Usar `:data-tippy-content="printingBadgeTitle(application.printingOrder)"` (sem `:title`) ou remover a classe `tooltips`, exibindo apenas um tooltip limpo e centralizado.
-> - **Workaround (Gambiarra temporária):** O conteúdo do erro ainda pode ser lido normalmente no tooltip nativo exibido ao lado da seta vazia.
-> - **Evidência:** ![Seta preta do Tippy vazia junto ao tooltip nativo](../evidencias/cdg-cu-17tu7rp5vvu/16-bug-tooltip-seta-desalinhada.png)
+- **Título:** `printingOrder.canSend` permanece `false` após conclusão assíncrona da geração do malote em Aplicações e Ensalamento
+- **Contexto / Causa Raiz:** Quando o polling da geração do malote termina com `SUCCESS` em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (`fetchStatus`, L.2497–2501) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (`fetchDistibutionStatus`, L.926–932), o JS atualiza `application.answerSheetUrl` / `distribution.examsBagLink` (fazendo o botão `"Enviar para gráfica"` aparecer no menu), mas **não** consulta `printing_order_status` (`GET .../grafica/`) para atualizar `printingOrder` (`canSend`, `warnings`, `blockReason`). O mesmo ocorre se o malote for regerado enquanto `printingOrder` tinha `blockReason` de manifesto desatualizado.
+- **Comportamento Esperado:** Assim que a exportação do malote retornar `SUCCESS` (e também ao remover o malote), o frontend deve chamar `axios.get(item.urls.printing_order_status)` para atualizar `item.printingOrder`, habilitando `"Enviar para gráfica"` imediatamente sem exigir F5 (inferência de UX — Lacuna na Especificação).
+- **Contorno Temporário:** Recarregar a página (`F5`) após a geração do malote para que o backend re-injete `printing_status_json` atualizado (`canSend: true`).
+- **Evidência:** ![Botão Enviar para gráfica desabilitado logo após geração sem F5](../evidencias/cdg-cu-17tu7rp5vvu/03-bug-enviar-desabilitado-sem-f5.jpg)
 
 ---
 
-## 8. Future Improvements & Tech Debt (Melhorias Futuras)
+### 🐞 [BUG] [UX/UI] Modal `"Não é possível enviar"` e tooltip ficam sem texto (`order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento)
 
-> [!NOTE]
-> **[UX / Desambiguação de Homônimos no ZIP]** Na v1, alunos homônimos na mesma turma geram caminhos idênticos dentro do ZIP (ex.: `caderno_joao-victor-ferreira-do-nascimento.pdf`), o que exige que a gráfica leia as entradas do ZIP sem sobrescrever arquivos em disco e exibe apenas um aviso ao coordenador (`06-aviso-caminhos-repetidos.jpg`). Além disso, no Pedido `#1849` observou-se que os dois homônimos possuem versões randomizadas com quantidades de páginas diferentes (3 e 4 páginas): como `alunos[]` no manifesto é ordenado por `(nome, matricula)` enquanto as entradas do ZIP seguem a ordem de geração, não há como a gráfica saber qual das duas entradas repetidas no ZIP pertence a qual matrícula apenas pelo `path`. Como melhoria futura, incluir a matrícula ou sufixo único no nome do arquivo dentro do ZIP para eliminar colisões e ambiguidade. ![Divergência de ordem entre ZIP e manifesto em homônimos](../evidencias/cdg-cu-17tu7rp5vvu/07-mock-homonimos-ordem-zip.jpg) Além disso, no modal de aviso de caminhos repetidos, ajustar `overflow-wrap: anywhere` / formatação da lista para evitar quebra no meio de palavras curtas (ex.: `f-erreira`) e avaliar o comportamento legado de `safe_string` que remove vogais acentuadas (ex.: `Ensino_Mdio`).
+- **Título:** Modal e tooltip de bloqueio de envio exibem mensagem vazia (`undefined`) quando `canSend === false`
+- **Contexto / Causa Raiz:** No backend (`fiscallizeon/integrations/services/printing/orders.py`, método `order_status`, L.374), a chave retornada no JSON é `'blockReason'`. Porém, nos templates `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.560 e L.2206) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (L.319 e L.1054), o Vue referencia `printingOrder.bproductionWarning` (provável erro de digitação ao substituir `blockReason` por `productionWarning`).
+- **Comportamento Esperado:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, pedido cruzado entre aplicação/ensalamento ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason` (ex.: `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`) (conforme contrato `contrato-integracao-grafica.pdf` Seção 8).
+- **Contorno Temporário:** Validar a mensagem real de bloqueio diretamente na resposta da API `GET /aplicacoes/api/<uuid>/grafica/` (`blockReason`) ou `POST .../grafica/enviar/` (`detail`), e reportar ao desenvolvedor para corrigir `bproductionWarning` ➔ `blockReason` nos dois templates antes do merge/produção.
+- **Evidência:** ![Modal Não é possível enviar sem texto explicativo](../evidencias/cdg-cu-17tu7rp5vvu/11-bug-modal-bloqueio-sem-texto.jpg)
 
-> [!NOTE]
-> **[UX / Operação — ID da Unidade na Gráfica]** O campo `Unity.id_printing_partner` (`"ID na gráfica"`) está exposto apenas no Django Admin (`/admin/clients/unity/`). Embora atenda à v1 (operação pela equipe Lize conforme `contrato-integracao-grafica.pdf` seção 4.3), como melhoria futura pode ser exposto no cadastro de unidades do dashboard ou sincronizado automaticamente caso o PageFlow forneça endpoint.
+---
 
-> [!NOTE]
-> **[Scope Gap / v2 do Contrato]** Suporte a `modelo_impressao` granular por documento individual (previsto inicialmente na descrição do card para `redacao`/`discursiva`, mas explicitamente postergado na seção 4.2 do `contrato-integracao-grafica.pdf` v1) e suporte a malotes `ELIT`.
+### 🐞 [BUG] [UX/UI] Seta preta órfã (Tippy vazio + tooltip nativo duplicado) ao passar o mouse no selo `"Gráfica: ..."`
 
-> [!NOTE]
-> **[Melhoria de QA / Ferramental]** Criar um comando/script local reutilizável de mock PageFlow (ou coleção Postman/Bruno) versionado para validar o contrato `contrato-integracao-grafica.pdf` automaticamente sempre que o gerador de malote (`omr`/`distribution`) ou `payload.py` for alterado.
+- **Título:** Elemento com classe `.tooltips` usa `:title` em vez de `:data-tippy-content`, exibindo seta preta vazia abaixo do selo junto com o tooltip nativo
+- **Contexto / Causa Raiz:** Em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.361), o selo `[data-test="printing-badge"]` recebeu a classe `tooltips` (que inicializa o Tippy.js, como nos selos irmãos das L.309/316/342/353), mas recebeu `:title="printingBadgeTitle(application.printingOrder)"` em vez de `:data-tippy-content`. Ao passar o mouse, o Tippy renderiza uma caixinha/seta preta vazia abaixo de `"Grá"` enquanto o navegador abre o `title` nativo separado.
+- **Comportamento Esperado:** Usar `:data-tippy-content="printingBadgeTitle(application.printingOrder)"` (sem `:title`) ou remover a classe `tooltips`, exibindo apenas um tooltip limpo e centralizado (inferência de UX — Lacuna na Especificação).
+- **Contorno Temporário:** O conteúdo da mensagem ainda pode ser lido normalmente no tooltip nativo exibido ao lado da seta vazia.
+- **Evidência:** ![Seta preta do Tippy vazia junto ao tooltip nativo](../evidencias/cdg-cu-17tu7rp5vvu/16-bug-tooltip-seta-desalinhada.png)
+
+---
+
+## 8. Melhorias Futuras e Dívida Técnica
+
+### 📝 [MELHORIA] [UX / Desambiguação de Homônimos no ZIP]
+
+Na v1, alunos homônimos na mesma turma geram caminhos idênticos dentro do ZIP (ex.: `caderno_joao-victor-ferreira-do-nascimento.pdf`), o que exige que a gráfica leia as entradas do ZIP sem sobrescrever arquivos em disco e exibe apenas um aviso ao coordenador (`06-aviso-caminhos-repetidos.jpg`). Além disso, no Pedido `#1849` observou-se que os dois homônimos possuem versões randomizadas com quantidades de páginas diferentes (3 e 4 páginas): como `alunos[]` no manifesto é ordenado por `(nome, matricula)` enquanto as entradas do ZIP seguem a ordem de geração, não há como a gráfica saber qual das duas entradas repetidas no ZIP pertence a qual matrícula apenas pelo `path`. Como melhoria futura, incluir a matrícula ou sufixo único no nome do arquivo dentro do ZIP para eliminar colisões e ambiguidade. Além disso, no modal de aviso de caminhos repetidos, ajustar `overflow-wrap: anywhere` / formatação da lista para evitar quebra no meio de palavras curtas (ex.: `f-erreira`) e avaliar o comportamento legado de `safe_string` que remove vogais acentuadas (ex.: `Ensino_Mdio`).
+
+![Divergência de ordem entre ZIP e manifesto em homônimos](../evidencias/cdg-cu-17tu7rp5vvu/07-mock-homonimos-ordem-zip.jpg)
+
+---
+
+### 📝 [MELHORIA] [UX / Operação — ID da Unidade na Gráfica]
+
+O campo `Unity.id_printing_partner` (`"ID na gráfica"`) está exposto apenas no Django Admin (`/admin/clients/unity/`). Embora atenda à v1 (operação pela equipe Lize conforme `contrato-integracao-grafica.pdf` seção 4.3), como melhoria futura pode ser exposto no cadastro de unidades do dashboard ou sincronizado automaticamente caso o PageFlow forneça endpoint.
+
+---
+
+### 📝 [MELHORIA] [Escopo Futuro / v2 do Contrato]
+
+Suporte a `modelo_impressao` granular por documento individual (previsto inicialmente na descrição do card para `redacao`/`discursiva`, mas explicitamente postergado na seção 4.2 do `contrato-integracao-grafica.pdf` v1) e suporte a malotes `ELIT`.
+
+---
+
+### 📝 [MELHORIA] [Qualidade / Ferramental de QA]
+
+Criar um comando/script local reutilizável de mock PageFlow (ou coleção Postman/Bruno) versionado para validar o contrato `contrato-integracao-grafica.pdf` automaticamente sempre que o gerador de malote (`omr`/`distribution`) ou `payload.py` for alterado.
 
 ---
 

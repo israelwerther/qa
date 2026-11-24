@@ -40,7 +40,7 @@ You must analyze the differences between the current branch and the `master` bra
    - Map all **Input Ports** (main form, secondary edit forms, batch CSV importers in `tasks/*_imports.py`, API serializers in `api/` and `api2/`, duplication/cloning routines) and all **Output/Consumption Ports** (other personas such as Student view in `applications/templates/`, Teacher view, Inspector preview, PDF/print exports, async tasks).
    - **Action on Missing Consumers:** If you find an active flow in the codebase that consumes the modified field/partial but was **NOT touched in the `git diff`**, you MUST:
      1. Include a mandatory test scenario for that flow in **Section 5** so QA validates it; AND
-     2. Pre-register a warning in **Section 7 (`> [!WARNING] [Blind Spot / Consumidor Omitido no Diff]`)** alerting the developer and QA before code review.
+     2. Pre-register a warning in **Section 7 (`### ⚠️ [ALERTA] [Ponto Cego / Consumidor Omitido no Diff]`)** alerting the developer and QA before code review (100% em Português e sem prefixos `>` de blockquote, pronto para copiar no ClickUp).
 2. **Dimension 2 — Orthogonal Modifiers & Neighboring Conditions (*"What coexists with the changed code?"*):**
    - Read the surrounding context of every modified View, Service, and Template (not just the diff hunks).
    - Identify existing query parameters (`request.GET.get(...)`), view modes, and sibling flags (`{% if %}`, `v-if`, boolean model flags on parent/child items such as hidden numbering, grouping, separation modes, randomization).
@@ -179,16 +179,21 @@ Write detailed, step-by-step test scenarios focusing 100% on the human tester's 
 If the branch involves User Interface (UI) changes, you MUST include a dedicated checklist section requiring the QA to take screenshots/prints of the implemented screens, mandating a side-by-side comparison with Figma/OpenSpec mockups.
 *Note: If the Task Nature is `[Technical/Internal]` (e.g., internal dev dashboards without Figma), focus this section on Data Validation and clear Information Architecture rather than strict Figma comparison. If `[Refactoring]`, focus heavily on Smoke Tests to ensure existing UI was not broken.*
 
-## 7. Bugs and Observations (Problemas Encontrados)
-Reserve a dedicated section to document any bugs or UX issues. 
-- Instruct the QA to use markdown GitHub-style alerts (`> [!WARNING]`, `> [!BUG]`) to format issues.
-- **Categorization:** Categorize bugs using tags: `[UX/UI]`, `[Backend Logic]`, `[Database]`, or `[Spec Gap]`.
-- **CRITICAL RULE (Expected Behavior Attribution):** NEVER say "As per OpenSpec" generically. If a bug's expected behavior comes from the Spec, cite it exactly: `(conforme OpenSpec: spec.md L.XX)`. If the expected behavior was inferred due to missing docs, use: `(inferência de UX — Spec Gap)`.
-- **CRITICAL RULE (Bug Report Format):** Every bug report must be structured with the following fields:
-  1. **Title:** Clear description of the failure.
-  2. **Context/Root Cause:** Explain *why* it happens technically (if known, like checking the backend serialization sequence).
-  3. **Expected Behavior:** What the UI/API should have done.
-  4. **Workaround (Gambiarra temporária):** If a bug completely blocks the testing flow, the AI MUST suggest and document a technical workaround (e.g., "Select the Partners checkbox to bypass DB validation") so the QA can continue the test plan without stopping.
+## 7. Problemas Encontrados e Observações (Bugs and Observations)
+Reserve a dedicated section to document any bugs or UX issues using the heading `## 7. Problemas Encontrados e Observações`.
+- **CRITICAL RULE (Idioma 100% Português — ClickUp-Ready & SEM Blockquotes `>`):** Todos os textos gerados nas Seções 7 e 8 — cabeçalhos, tags, rótulos de campos, explicações e atribuições — DEVEM ser escritos **obrigatoriamente em Português (PT-BR)** para que o QA possa copiar e colar diretamente no ClickUp para desenvolvedores brasileiros. NUNCA use citações em bloco do GitHub (`> [!BUG]`, `> [!WARNING]`, `> - ...`), pois cada prefixo `>` polui a cópia. Formate cada problema com título de nível 3 (`### 🐞 [BUG] ...` ou `### ⚠️ [ALERTA] ...`), bullets simples (`- **Campo:** ...`) e separador `---` entre os itens.
+- **Categorização:** Categorize os problemas com tags em Português: `[UX/UI]`, `[Regra de Negócio / Backend]`, `[Banco de Dados]` ou `[Lacuna na Especificação]`.
+- **CRITICAL RULE (Atribuição do Comportamento Esperado):** NUNCA diga apenas "conforme OpenSpec" de forma genérica. Se o comportamento esperado vier da documentação, cite exatamente: `(conforme OpenSpec: spec.md L.XX)` ou `(conforme contrato ...)`. Se foi inferido por ausência de especificação, use: `(inferência de UX — Lacuna na Especificação)`.
+- **CRITICAL RULE (Formato do Relato de Bug — 100% Português):** Todo bug deve seguir exatamente o template limpo abaixo (sem prefixos `>` e com todos os rótulos em Português):
+  ```markdown
+  ### 🐞 [BUG] [Categoria] Título curto do problema
+
+  - **Título:** Descrição clara e direta da falha encontrada.
+  - **Contexto / Causa Raiz:** Explicação técnica de *por que* o erro acontece (ex.: arquivo, linha, variável ou fluxo de serialização no backend/frontend).
+  - **Comportamento Esperado:** O que a tela/API deveria fazer (com atribuição à spec ou inferência).
+  - **Contorno Temporário:** Caso o bug bloqueie o fluxo de testes, explique como contornar temporariamente para o QA conseguir seguir testando (ou remova/informe impacto se não houver bloqueio).
+  - **Evidência:** ![Descrição](../evidencias/...)
+  ```
 - **CRITICAL RULE (Anti-Falso-Positivo / Schema Drift de Banco de Dados):**
   - Ao identificar erros de banco de dados (`IntegrityError`, `NotNullViolation`, `UndefinedColumn`):
   - A IA **DEVE** verificar obrigatoriamente se a coluna/campo existe no modelo Django da branch atual (`models.py`).
@@ -198,11 +203,11 @@ Reserve a dedicated section to document any bugs or UX issues.
   - **COMUNICAÇÃO OBRIGATÓRIA AO USUÁRIO:** A IA deve relatar prontamente o diagnóstico ao desenvolvedor com o formato:
     `"⚠️ QA, encontrei um campo residual no banco de dados local que não pertence a esta branch e está quebrando a execução. O campo é '<coluna>' na tabela '<tabela>'. Comando sugerido para sua revisão: ALTER TABLE <tabela> DROP COLUMN IF EXISTS <coluna>;"`
 
-## 8. Future Improvements & Tech Debt (Melhorias Futuras)
-Reserve a separate section (independent from critical bugs) to document items that do not break the current release but should be tracked:
-- **Formatting:** Use GitHub-style alerts `> [!NOTE]` for each item to maintain visual consistency.
-- **WONTFIX / Deferred Items:** Known flaws or internal UX issues ignored for the current release.
-- **Scope Gaps (Feature Requests):** Logical UI elements (like a missing 'Delete' button) that weren't in the spec but are missing from the user experience.
+## 8. Melhorias Futuras e Dívida Técnica (Future Improvements & Tech Debt)
+Reserve a separate section (`## 8. Melhorias Futuras e Dívida Técnica`, independent from critical bugs) to document items in **Português (PT-BR)** that do not break the current release but should be tracked:
+- **Formatação (100% Português & ClickUp-Ready — SEM Blockquotes `>`):** Use títulos de nível 3 (`### 📝 [MELHORIA] [Categoria] Título` ou `### 📝 [NOTA] [Categoria] Título`) e texto/bullets simples em Markdown em Português (nunca `> [!NOTE]` com prefixos `>`), facilitando copiar direto para o ClickUp.
+- **Itens Postergados / Não Bloqueantes:** Falhas conhecidas de baixo impacto ou pontos de UX adiados para entregas futuras.
+- **Lacunas de Escopo (Sugestões de Funcionalidade):** Elementos lógicos de UI/fluxo (ex.: botão de exclusão ou campo administrativo) que não faziam parte do escopo v1, mas agregam valor à experiência.
 
 ## 8.1. Knowledge Base Notes (Mapeamento Contínuo de Usabilidade)
 **CRITICAL RULE:** Do NOT bloat the QA Test Plan with endless DOM selectors. The mapping of DOM elements, URLs, and API Routes specifically designed for future Playwright automation must be **centralized and incremental**.
