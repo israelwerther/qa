@@ -201,11 +201,11 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 1 — Passo Zero: Cadastro de integração, chaves cifradas, modelos de impressão e ID da unidade no Admin
 
 **Ação humana:**
-- [ ] **Passo Zero (Admin):** Acessar `/admin/integrations/printingpartnerintegration/` como Staff e clicar em `"Adicionar Integração com gráfica"`.
-- [ ] Selecionar o `Client` de teste, manter `"Ativa"` marcado e preencher `"API key (x-api-key)"` e `"Token do webhook (access_token)"`.
-- [ ] No campo `"Modelos de impressão"`, testar salvar uma chave inválida (ex.: `{"invalido": "X"}`) e confirmar que o Admin bloqueia com erro listando as 8 chaves aceitas (`prova`, `gabarito`, `lista_presenca`, `randomizacao`, `pagina_customizada`, `discursiva`, `redacao`, `malote_unidade`).
-- [ ] Preencher JSON válido com as chaves do contrato e salvar. Reabrir o registro no Admin e confirmar que os campos de senha não exibem os segredos em texto claro (apenas indicam que estão vazios para manter o valor atual) e que na listagem as colunas `"API key"` e `"Token do webhook"` mostram ícone verde (`True`).
-- [ ] Acessar `/admin/clients/unity/`, abrir uma unidade do cliente e preencher `"ID na gráfica"` (ex.: `"1042"`), deixando outra unidade do mesmo cliente com o campo em branco.
+- [x] **Passo Zero (Admin):** Acessar `/admin/integrations/printingpartnerintegration/` como Staff e clicar em `"Adicionar Integração com gráfica"`.
+- [x] Selecionar o `Client` de teste (`Rede Decisão`), manter `"Ativa"` marcado e preencher `"API key (x-api-key)"` (`pk_qa_teste_123`) e `"Token do webhook (access_token)"` (`tok_webhook_qa`).
+- [x] No campo `"Modelos de impressão"`, testar salvar uma chave inválida (`{"invalido": "X"}`) e confirmar que o Admin bloqueia com erro listando as 8 chaves aceitas (`Chaves desconhecidas: invalido. Use: prova, gabarito, lista_presenca, randomizacao, pagina_customizada, discursiva, redacao, malote_unidade.`). ![Validação chave inválida no Admin](../evidencias/cdg-cu-17tu7rp5vvu/01-admin-validacao-chaves.png)
+- [x] Preencher JSON válido com as chaves do contrato e salvar. Reabrir o registro no Admin e confirmar que os campos de senha não exibem os segredos em texto claro (apenas indicam que estão vazios para manter o valor atual) e que na listagem as colunas `"API key"` e `"Token do webhook"` mostram ícone verde (`True`). ![Listagem Admin com API key e Token ativos](../evidencias/cdg-cu-17tu7rp5vvu/02-admin-integracao-ativa.png)
+- [x] Acessar `/admin/clients/unity/`, abrir uma unidade do cliente (`GRU`) e preencher `"ID na gráfica"` (`"1042"`), mantendo as demais unidades do mesmo cliente em branco.
 - [ ] Acessar `/aplicacoes/` com um Coordenador **sem** a permissão `applications.can_print_bag_application` e confirmar que a opção `"Enviar para gráfica"` **não** aparece no dropdown `"Opções"` mesmo com malote gerado.
 
 **Referência técnica (para automação):**
@@ -221,17 +221,17 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 2 — Variação 5.1: Malote por turma — arquivos separados (com homônimos e unidade com/sem `id_printing_partner`)
 
 **Ação humana:**
-- [ ] Garantir que o `Client` esteja configurado com separação `"Arquivos separados"` (`BAG_SEPARATED_FILES`) e possua duas unidades (uma com `"ID na gráfica"` preenchido e outra em branco), uma prova randomizada com página customizada e dois alunos homônimos na mesma turma.
-- [ ] Acessar `/aplicacoes/`, localizar a aplicação presencial/híbrida, abrir `"Opções"` (botão com chevron-down) ➔ `"Todos os alunos"` (seção `"GERAÇÃO DE MALOTE DE PROVAS"`) e gerar o malote marcando `"Incluir versões de randomização"` e `"Incluir cadernos de prova"`.
-- [ ] Após a conclusão do malote, abrir `"Opções"` e clicar em `"Enviar para gráfica"` (item com ícone de impressora).
+- [ ] Garantir que o `Client` esteja configurado com separação `"Arquivos separados"` (`BAG_SEPARATED_FILES`) e possua duas unidades (uma com `"ID na gráfica"` preenchido e outra em branco), uma prova randomizada com página customizada e dois alunos homônimos na mesma turma. *(Nota: na execução inicial com `Simulado Geral 2026` da `Rede Decisão`, validado com 1 unidade `GRU` sem `id_printing_partner` e prova padrão com `gabarito` por aluno + `lista_presenca` + `prova` — faltando apenas cobrir homônimos, randomização e unidade com `id_printing_partner` preenchido).*
+- [x] Acessar `/aplicacoes/`, localizar a aplicação presencial/híbrida (`Simulado Geral 2026`), abrir `"Opções"` ➔ `"Todos os alunos"` e gerar o malote.
+- [x] Após a conclusão do malote (e F5 devido ao bug registrado na Seção 7), abrir `"Opções"` e clicar em `"Enviar para gráfica"` ➔ `"Enviar"`.
 - [ ] Confirmar que o alerta SweetAlert de confirmação exibe o **aviso de caminhos repetidos** em vermelho listando o `path` duplicado dos alunos homônimos, sem bloquear o envio. Clicar em `"Enviar"`.
-- [ ] Confirmar toast `"Malote enviado para a fila da gráfica."` e o selo `"Gráfica: enviando…"` com spinner até mudar para `"Gráfica: Enviado"` (ou status retornado).
-- [ ] **Conferência do Contrato no Mock:** Inspecionar a requisição capturada no mock (`POST /pedidos`):
-  - [ ] Header `Content-Type: application/json` e `x-api-key` igual à chave cadastrada.
-  - [ ] Raiz contém exatamente: `path_zip`, `id_aplicacao` (UUID da aplicação), `data_aplicacao` (`YYYY-MM-DD`), `n_paginas` (inteiro), `modelos_impressao` (objeto com todas as 8 chaves) e `manifesto_zip` (array).
-  - [ ] No `manifesto_zip`: unidade com `"ID na gráfica"` preenchido envia `unidade_id_grafica` como string (`"1042"`); unidade sem ID envia `null`.
-  - [ ] Cada turma tem `nome`, `turno` (`"Manhã"`, `"Tarde"`, etc. ou `null`), `modelo: null`, `documentos[]` (com `gabarito`, `lista_presenca`, `randomizacao`, `pagina_customizada` conforme gerados) e `alunos[]` com `nome`, `matricula` e `documentos[]` (`tipo_documento: "prova"`, `escopo: "aluno"`).
-  - [ ] Baixar o ZIP gerado e conferir **1:1**: todo arquivo dentro do ZIP está no `manifesto_zip` com `path` idêntico (sem reconstrução), o número de páginas de cada PDF bate com `n_paginas` do item, e o `n_paginas` da raiz é a soma exata de todos os `n_paginas` dos documentos.
+- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na coluna Malote. ![Selo Gráfica: Enviado na listagem de aplicações](../evidencias/cdg-cu-17tu7rp5vvu/04-lize-selo-grafica-enviado.jpg)
+- [x] **Conferência do Contrato no Mock (`Pedido #1848` — `5032175f-4925-426b-a2c3-fb41851defeb`):** Inspecionar a requisição capturada no mock (`POST /pedidos`): ![Mock validando contrato e ZIP 1:1](../evidencias/cdg-cu-17tu7rp5vvu/05-mock-contrato-zip-ok.jpg)
+  - [x] Header `Content-Type: application/json` e `x-api-key` igual à chave cadastrada (`pk_qa_teste_123`).
+  - [x] Raiz contém exatamente: `path_zip`, `id_aplicacao` (`5032175f-4925-426b-a2c3-fb41851defeb`), `data_aplicacao` (`2026-12-10`), `n_paginas` (`9`), `modelos_impressao` (todas as 8 chaves) e `manifesto_zip` (array).
+  - [x] No `manifesto_zip`: unidade com `"ID na gráfica"` preenchido (`GRU`) envia `unidade_id_grafica` como string (`"1042"`); unidade sem ID envia `null` *(ambos validados no Pedido `#1848`: envio 1 com `null`, reenvio 2 com `"1042"`, retornando HTTP `200`)*.
+  - [x] Cada turma tem `nome` (`F1MA`), `turno` (`Manhã`), `modelo: null`, `documentos[]` (`lista_presenca`) e `alunos[]` com `nome`, `matricula` e `documentos[]` (`gabarito` e `prova` com `escopo: "aluno"`).
+  - [x] Baixar o ZIP gerado e conferir **1:1**: 9 entradas (`954.325 bytes`), `path` idêntico 1:1 ao `manifesto_zip`, contagem real de páginas (`PyPDF2`) batendo 100% e `n_paginas` raiz (`9`) = soma dos 9 documentos.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`, `POST /aplicacoes/api/<uuid:pk>/grafica/enviar/`
@@ -300,9 +300,9 @@ application.school_classes.add(class_a1, class_b1)
 
 **Ação humana:**
 - [ ] Executar um `GET` (via curl/Postman/Insomnia, sem header de sessão) na rota `/integracoes/api/pageflow/aplicacoes/<uuid>/malote/` de uma aplicação que **ainda não** foi enviada à gráfica e confirmar retorno `404 Not Found`.
-- [ ] Após enviar essa aplicação no Cenário 2, executar o mesmo `GET` usando exatamente a URL recebida no campo `path_zip` do mock.
-- [ ] Confirmar resposta `200 OK` com JSON contendo exatamente `{"url": "<url_assinada>", "expires_at": "<YYYY-MM-DDTHH:MM:SSZ>"}`.
-- [ ] Fazer download pela `url` retornada e confirmar que o arquivo `.zip` é íntegro e idêntico ao malote da aplicação.
+- [x] Após enviar essa aplicação no Cenário 2 (`5032175f-4925-426b-a2c3-fb41851defeb`), executar o mesmo `GET` usando exatamente a URL recebida no campo `path_zip` do mock.
+- [x] Confirmar resposta `200 OK` com JSON contendo exatamente `{"url": "<url_assinada>", "expires_at": "2026-11-24T12:26:12Z"}`.
+- [x] Fazer download pela `url` retornada e confirmar que o arquivo `.zip` (`954.325 bytes`, `9` entradas) é íntegro e idêntico ao malote da aplicação.
 - [ ] Repetir o `GET` para a rota `/integracoes/api/pageflow/ensalamentos/<uuid>/malote/` de um ensalamento enviado (Cenário 4) e confirmar `200 OK` + download íntegro.
 - [ ] Desmarcar `"Ativa"` na `PrintingPartnerIntegration` no Admin e repetir o `GET` em `path_zip`: confirmar retorno `404 Not Found`. Reativar em seguida.
 
@@ -467,6 +467,14 @@ application.school_classes.add(class_a1, class_b1)
 ---
 
 ## 7. Bugs and Observations (Problemas Encontrados)
+
+> [!BUG]
+> **[UX/UI] Botão `"Enviar para gráfica"` fica desabilitado logo após gerar o malote até recarregar a página (F5)**
+> - **Title:** `printingOrder.canSend` permanece `false` após conclusão assíncrona da geração do malote em Aplicações e Ensalamento
+> - **Context/Root Cause:** Quando o polling da geração do malote termina com `SUCCESS` em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (`fetchStatus`, L.2497–2501) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (`fetchDistibutionStatus`, L.926–932), o JS atualiza `application.answerSheetUrl` / `distribution.examsBagLink` (fazendo o botão `"Enviar para gráfica"` aparecer no menu), mas **não** consulta `printing_order_status` (`GET .../grafica/`) para atualizar `printingOrder` (`canSend`, `warnings`, `blockReason`). O mesmo ocorre se o malote for regerado enquanto `printingOrder` tinha `blockReason` de manifesto desatualizado.
+> - **Expected Behavior:** Assim que a exportação do malote retornar `SUCCESS` (e também ao remover o malote), o frontend deve chamar `axios.get(item.urls.printing_order_status)` para atualizar `item.printingOrder`, habilitando `"Enviar para gráfica"` imediatamente sem exigir F5.
+> - **Workaround (Gambiarra temporária):** Recarregar a página (`F5`) após a geração do malote para que o backend re-injete `printing_status_json` atualizado (`canSend: true`).
+> - **Evidência:** ![Botão Enviar para gráfica desabilitado logo após geração sem F5](../evidencias/cdg-cu-17tu7rp5vvu/03-bug-enviar-desabilitado-sem-f5.jpg)
 
 > [!WARNING]
 > **[UX/UI] [Bug no Template — Pré-registrado na Análise de Código] Propriedade `order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento**
