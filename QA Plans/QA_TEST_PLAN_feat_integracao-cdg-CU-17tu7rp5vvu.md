@@ -206,7 +206,7 @@ application.school_classes.add(class_a1, class_b1)
 - [x] No campo `"Modelos de impressão"`, testar salvar uma chave inválida (`{"invalido": "X"}`) e confirmar que o Admin bloqueia com erro listando as 8 chaves aceitas (`Chaves desconhecidas: invalido. Use: prova, gabarito, lista_presenca, randomizacao, pagina_customizada, discursiva, redacao, malote_unidade.`). ![Validação chave inválida no Admin](../evidencias/cdg-cu-17tu7rp5vvu/01-admin-validacao-chaves.png)
 - [x] Preencher JSON válido com as chaves do contrato e salvar. Reabrir o registro no Admin e confirmar que os campos de senha não exibem os segredos em texto claro (apenas indicam que estão vazios para manter o valor atual) e que na listagem as colunas `"API key"` e `"Token do webhook"` mostram ícone verde (`True`). ![Listagem Admin com API key e Token ativos](../evidencias/cdg-cu-17tu7rp5vvu/02-admin-integracao-ativa.png)
 - [x] Acessar `/admin/clients/unity/`, abrir uma unidade do cliente (`GRU`) e preencher `"ID na gráfica"` (`"1042"`), mantendo as demais unidades do mesmo cliente em branco.
-- [ ] Acessar `/aplicacoes/` com um Coordenador **sem** a permissão `applications.can_print_bag_application` e confirmar que a opção `"Enviar para gráfica"` **não** aparece no dropdown `"Opções"` mesmo com malote gerado.
+- [x] Acessar `/aplicacoes/` com um Coordenador **sem** a permissão `applications.can_print_bag_application` e confirmado via `TestClient` que `printing-send` **não** é renderizado no HTML (`HTML_HAS_BTN: False`) e `POST .../grafica/enviar/` retorna `403`.
 
 **Referência técnica (para automação):**
 - URL: `/admin/integrations/printingpartnerintegration/add/`, `/admin/clients/unity/`
@@ -269,7 +269,7 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
   - [x] `id_aplicacao` é o UUID do `RoomDistribution` (`750ee39f-fa37-427c-9a4c-634b3c1addc3`) e `path_zip` aponta para `/integracoes/api/pageflow/ensalamentos/750ee39f-fa37-427c-9a4c-634b3c1addc3/malote/`.
   - [x] Em `manifesto_zip[].turmas[]`, cada sala aparece como item com `nome` = nome da sala (`3 ANO B - Ensino Médio - 3ª Série`), `turno: null`, `modelo: null`.
   - [x] Os documentos da sala (`lista_presenca`) vêm com `"escopo": "turma"` (não `"sala"`, conforme contrato seção 4.6).
-  - [ ] O aluno que realiza 2 provas aparece **uma única vez** em `alunos[]` com **dois itens** `"tipo_documento": "prova"` em `alunos[].documentos[]` (um por caderno) *(pendente testar ensalamento com 2 provas)*.
+  - [x] O aluno que realiza 2 provas aparece **uma única vez** em `alunos[]` com **dois itens** `"tipo_documento": "prova"` em `alunos[].documentos[]` (um por caderno) *(validado via suíte automatizada `test_printing_payload.py::test_room_distribution_payload_uses_rooms_and_applications` — PASSED)*.
   - [x] Conferência 1:1 com o ZIP do ensalamento (`1.437.727 bytes`, `7` entradas, `PyPDF2` 100%) e soma de `n_paginas` (`13`).
 
 **Referência técnica (para automação):**
@@ -304,7 +304,7 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
 - [x] Confirmar resposta `200 OK` com JSON contendo exatamente `{"url": "<url_assinada>", "expires_at": "2026-11-24T12:26:12Z"}`.
 - [x] Fazer download pela `url` retornada e confirmar que o arquivo `.zip` (`954.325 bytes`, `9` entradas) é íntegro e idêntico ao malote da aplicação.
 - [x] Repetir o `GET` para a rota `/integracoes/api/pageflow/ensalamentos/<uuid>/malote/` de um ensalamento enviado (Cenário 4 — `750ee39f-...`) e confirmado `200 OK` + download íntegro (`1.437.727 bytes`, `7` entradas).
-- [ ] Desmarcar `"Ativa"` na `PrintingPartnerIntegration` no Admin e repetir o `GET` em `path_zip`: confirmar retorno `404 Not Found`. Reativar em seguida.
+- [x] Desmarcar `"Ativa"` na `PrintingPartnerIntegration` no Admin e repetir o `GET` em `path_zip`: confirmado retorno `404 Not Found` (`is_active=False`), voltando a `200 OK` após reativar (`is_active=True`).
 
 **Referência técnica (para automação):**
 - URL: `GET /integracoes/api/pageflow/aplicacoes/<uuid:pk>/malote/` e `GET /integracoes/api/pageflow/ensalamentos/<uuid:pk>/malote/`
@@ -342,7 +342,7 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
   - [x] Confirmado em `/aplicacoes/` (selo laranja `"Gráfica: Em Produção"`, `10-lize-selo-laranja-em-producao.jpg`), em `/aplicacoes/impressao/` (ícone de impressora + `"Gráfica: Em Produção"`, `13-impressao-selo-grafica.png`) e em `/ensalamento/` (`18-ensalamento-em-producao.png`). ![Selo em /aplicacoes/impressao/](../evidencias/cdg-cu-17tu7rp5vvu/13-impressao-selo-grafica.png) ![Selo em produção em /ensalamento/](../evidencias/cdg-cu-17tu7rp5vvu/18-ensalamento-em-producao.png)
   - [x] Em `/aplicacoes/`, abrir `"Opções"` e verificar que `"Reenviar para gráfica"` aparece visualmente esmaecido (`opacity-50`, cursor `not-allowed`) *(falta conferir em `/ensalamento/`)*.
   - [x] Clicar em `"Reenviar para gráfica"` quando bloqueado: reproduzido o bug `bproductionWarning` — o modal `"Não é possível enviar"` abriu **sem texto explicativo** (`11-bug-modal-bloqueio-sem-texto.jpg`, registrado como `[BUG]` na Seção 7).
-  - [ ] Tentar enviar `POST` direto para `/aplicacoes/api/<uuid>/grafica/enviar/` e confirmar `400 Bad Request` com mensagem `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`.
+  - [x] Tentar enviar `POST` direto para `/aplicacoes/api/5032175f-4925-426b-a2c3-fb41851defeb/grafica/enviar/` em produção: confirmado `400 Bad Request` com `{'detail': 'A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar.'}`.
   - [x] Clicar em `"Todos os alunos"` (para regerar malote) ou `"Remover malote gerado"`: confirmado que aparece o modal de **aviso** `"A gráfica já está produzindo"` com opções `"Continuar mesmo assim"` e `"Cancelar"`, permitindo prosseguir sem travar o malote no Lize (`12-aviso-grafica-ja-esta-produzindo.jpg`). ![Aviso A gráfica já está produzindo](../evidencias/cdg-cu-17tu7rp5vvu/12-aviso-grafica-ja-esta-produzindo.jpg)
   - [ ] Se o malote for regerado após o envio, confirmar que `"Enviar/Reenviar para gráfica"` passa a exigir nova geração (caso `bag_manifest` fique dessincronizado) ou bloqueia reenvio se já em produção.
 - [x] Disparar webhook com `status_id: 5`, `status: "Enviado"`, `data` posterior (Pedido `#1849`) e confirmado que o selo muda para estilo verde `"Gráfica: Enviado"` (`09-lize-selo-verde-enviado.jpg`).
@@ -359,7 +359,7 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
 
 **Ação humana:**
 - [ ] **Cross-order:** Enviar um **Ensalamento** para a gráfica (Cenário 4 — `750ee39f-...`) e colocá-lo em `status_id: 3` via webhook. Acessar `/aplicacoes/`, localizar uma aplicação participante desse ensalamento (`[QA] Caderno 2` de `20/10/2026` — `e4f0391c-...`) e confirmado que o selo mostra `"Gráfica: Em Produção (ensalamento)"` (`19-aplicacao-em-producao-ensalamento.png`). ![Selo Gráfica: Em Produção (ensalamento) em Aplicações](../evidencias/cdg-cu-17tu7rp5vvu/19-aplicacao-em-producao-ensalamento.png) *(Falta gerar o malote individual dessa aplicação para testar o bloqueio HTTP `400` de envio individual e testar o caminho inverso: aplicação enviada bloqueando ensalamento).*
-- [ ] **Malote ELIT:** Gerar um malote ELIT em `/aplicacoes/` (se aplicável ao cliente) e confirmar que a API `/grafica/enviar/` bloqueia com `400` (`"Malote ELIT não é enviado à gráfica nesta versão."`).
+- [x] **Malote ELIT:** Confirmado bloqueio via `test_printing_payload.py::test_elit_bag` (`PASSED` — `MSG_ELIT` / `400`).
 - [x] **Preservação de `room_distribution` no Edit Form:** Pegar uma aplicação vinculada a um ensalamento (`e4f0391c-...`), acessar `/aplicacoes/<uuid>/editar`, salvar e confirmado no banco (`room_distribution_id = 750ee39f-...`, `updated_at = 2026-11-24 11:42:23-03:00`) e na tela de `/ensalamento/` (`20-ensalamento-preservado-pos-edicao.png`) que a aplicação **não** perdeu o vínculo com `room_distribution`. ![Ensalamento preservado após editar aplicação](../evidencias/cdg-cu-17tu7rp5vvu/20-ensalamento-preservado-pos-edicao.png)
 
 **Referência técnica (para automação):**
@@ -376,8 +376,8 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
 
 **Ação humana:**
 - [x] Configurar o mock para retornar `400` (`mode=400`, retornando `{"sucesso": false, "mensagem": "Erro 400 simulado pelo mock"}`) e disparar envio na UI (`5b295799-...`).
-- [x] Confirmado que o selo atualiza para vermelho `"Gráfica: erro no envio"` (`15-selo-vermelho-erro-no-envio.png`) e o `title` nativo exibe a mensagem retornada pela gráfica (`"A gráfica respondeu 400: Erro 400 simulado pelo mock"`, embora gere o bug visual da seta Tippy vazia descrito na Seção 7 — `16-bug-tooltip-seta-desalinhada.png`). *(Falta testar `"Gráfica: erro no reenvio"` após status anterior).*
-- [ ] Repetir simulando no mock: `401`, `409` (`{"sucesso": false, "mensagem": "Já em produção", "codigo": "PEDIDO_EM_PRODUCAO"}`), `500` e timeout (> `PRINTING_PARTNER_REQUEST_TIMEOUT`).
+- [x] Confirmado que o selo atualiza para vermelho `"Gráfica: erro no envio"` (`15-selo-vermelho-erro-no-envio.png`) e o `title` nativo exibe a mensagem retornada pela gráfica (`"A gráfica respondeu 400: Erro 400 simulado pelo mock"`, embora gere o bug visual da seta Tippy vazia descrito na Seção 7 — `16-bug-tooltip-seta-desalinhada.png`). Também validado `"erro no reenvio"` após `statusId=2` (`send_status='error'` mantendo `statusId=2`).
+- [x] Repetir simulando no mock: `401` (`'A gráfica respondeu 401: API Key inválida (simulado)'`), `409` (`'A gráfica respondeu 409: Pedido já está em produção (simulado)'`), `500` (`'A gráfica respondeu 500: Erro interno simulado no PageFlow'`) no Pedido `#1850`, e timeout validado via `test_printing_send.py::test_timeout_and_connection_error` (`PASSED`).
 - [x] **Auditoria no Admin:** Acessar `/admin/integrations/printingorder/`, abrir o pedido (`Pedido #1849` — `e2d5236a-...`) e confirmar: ![Auditoria no Admin - eventos somente leitura](../evidencias/cdg-cu-17tu7rp5vvu/14-admin-eventos-somente-leitura.jpg)
   - [x] Todos os campos do pedido estão **somente leitura** (sem botão Salvar/Adicionar).
   - [x] `Último payload` e `Última resposta` contêm respectivamente o JSON enviado e o retorno do mock.
