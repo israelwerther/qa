@@ -127,8 +127,9 @@ mixer.blend(ApplicationStudent, application=application, student=student)
 | Ação "Todos os alunos" (imprimir malote) | `a:has-text("Todos os alunos")` (`@click="showPrintModal(application)"`) | Abre o modal `#configurePrintModal` |
 | Ação "Detalhes" | `a[href*="/detalhes/"]` | Relatório e métricas da aplicação |
 | Ação "Editar" | `a[href*="/editar/"]` | Abre tela de edição da aplicação |
-| Selo "Gráfica: ..." (CDG/PageFlow) | `[data-test="printing-badge"]` | Exibido quando `application.printingOrder && (hasOrder \|\| inProduction)` |
+| Selo "Gráfica: ..." (CDG/PageFlow) | `[data-test="printing-badge"]` | Exibido quando `application.printingOrder && (hasOrder \|\| inProduction)`; atenção ao bug Tippy (`.tooltips` + `:title` em vez de `:data-tippy-content`) |
 | Ação "Enviar/Reenviar para gráfica" (CDG/PageFlow) | `[data-test="printing-send"]` | Visível se `applications.can_print_bag_application`, integração ativa e `answerSheetUrl != ''`; atenção ao bug `order.bproductionWarning` (deveria ser `order.blockReason`) |
+| Confirmar envio no modal SweetAlert | `.swal2-confirm:has-text("Enviar")` | Confirma disparo para `POST /aplicacoes/api/<uuid:pk>/grafica/enviar/`; exibe aviso quando há caminhos duplicados (homônimos) |
 
 ### Modal de Impressão de Malote (`#configurePrintModal`)
 
@@ -163,5 +164,27 @@ mixer.blend(ApplicationStudent, application=application, student=student)
     }
     ```
   - Regra de bloqueio no Backend (`ExportApplicationExamsBagAPIView`): Se `application.category == Application.HYBRID` e `timezone.localtime(timezone.now()) >= application.date_time_start_tz`, retorna `HTTP 401 UNAUTHORIZED` com mensagem `"O caderno não pode ser impresso porque a aplicação já iniciou."`.
-- Entidades envolvidas: `Application`, `Exam`, `ApplicationStudent`, `ApplicationRandomizationVersion`, `RandomizationVersion`.
+- Entidades envolvidas: `Application`, `Exam`, `ApplicationStudent`, `ApplicationRandomizationVersion`, `RandomizationVersion`, `PrintingOrder`, `PrintingPartnerIntegration`.
+- Rotas CDG/PageFlow associadas:
+  - `GET /aplicacoes/api/<uuid:pk>/grafica/` (`printing_order_status`)
+  - `POST /aplicacoes/api/<uuid:pk>/grafica/enviar/` (`printing_order_send`)
+  - `GET /integracoes/api/pageflow/aplicacoes/<uuid:pk>/malote/` (retorna `{ "url", "expires_at" }` para a gráfica baixar o ZIP após envio com `is_active=True`)
 - Tasks Celery envolvidas: `fiscallizeon.omr.tasks.export_answer_sheet` e `group_answer_sheet_files`.
+
+---
+
+## 5. Grafo de Dependências e Impacto Cruzado (Upstream & Downstream)
+
+- **⬆️ Fontes Irmãs de Entrada:** Edição de aplicação em `/aplicacoes/<uuid>/editar/` (`ApplicationEditForm` deve preservar `room_distribution`), webhooks da gráfica em `POST /integracoes/api/pageflow/webhook/`.
+- **⬇️ Consumidores Diretos:** [distribution_list.md](./distribution_list.md) (ensalamentos que reúnem a aplicação) e [print_applications_list.md](./print_applications_list.md) (exibe o selo `[data-test="printing-badge"]` quando `hasOrder === true`).
+- **🧩 Partials e JS Compartilhados:** Polling assíncrono `fetchStatus` no template; injeção inicial via `printing_orders.attach_status_json`.
+- **🚫 Telas Irmãs Descontinuadas:** Nenhuma mapeada.
+
+---
+
+## 6. Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA (Histórico de Reviews)
+
+- **Botão `"Enviar para gráfica"` desabilitado sem F5 (`fetchStatus`):** Ao concluir `export_answer_sheet` com `SUCCESS`, `fetchStatus` atualiza `answerSheetUrl`, mas não consulta `printing_order_status` (`GET .../grafica/`), mantendo `printingOrder.canSend === false` até recarregar a página (`F5`).
+- **Modal `"Não é possível enviar"` e tooltip vazios (`bproductionWarning`):** Quando `canSend === false`, o template referencia `printingOrder.bproductionWarning` em vez da chave real `blockReason` retornada pela API.
+- **Seta preta órfã no selo `[data-test="printing-badge"]`:** O elemento combina classe `.tooltips` (Tippy.js) com `:title` em vez de `:data-tippy-content`, abrindo seta vazia do Tippy junto com o tooltip nativo.
+- **Cross-order com Ensalamento:** Quando a aplicação pertence a um `RoomDistribution` já enviado para a gráfica, esta tela exibe `"Gráfica: Em Produção (ensalamento)"` (`inProductionByOtherOrder === true`) e bloqueia o envio individual (`HTTP 400`).

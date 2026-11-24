@@ -176,3 +176,30 @@ mixer.blend(RoomDistributionStudent, distribution=distribution, room=room, appli
     - colunas `'two'` → `two_columns=true`
     - params combináveis com `&`
   - Abre em nova aba: `window.open(url, '_blank')`
+
+---
+
+## 4. API Interception & Fixtures (rotas e entidades críticas)
+
+- `POST /ensalamento/api/exportar/malote/<uuid:distribution_id>/` (geração de malote do ensalamento)
+- `GET /ensalamento/api/ensalamentos/<uuid:pk>/grafica/` (`printing_order_status`)
+- `POST /ensalamento/api/ensalamentos/<uuid:pk>/grafica/enviar/` (`printing_order_send`)
+- `GET /integracoes/api/pageflow/ensalamentos/<uuid:pk>/malote/` (retorna `{ "url", "expires_at" }` para a gráfica baixar o ZIP após envio com `is_active=True`)
+- Entidades envolvidas: `RoomDistribution`, `RoomDistributionStudent`, `Room`, `Application`, `PrintingOrder`, `PrintingPartnerIntegration`.
+
+---
+
+## 5. Grafo de Dependências e Impacto Cruzado (Upstream & Downstream)
+
+- **⬆️ Fontes Irmãs de Entrada:** Aplicações listadas em [application_list_new.md](./application_list_new.md) (inclusão/edição de `Application` vinculada a `RoomDistribution`), webhooks em `POST /integracoes/api/pageflow/webhook/`.
+- **⬇️ Consumidores Diretos:** [application_list_new.md](./application_list_new.md) (aplicações participantes herdam bloqueio cross-order `inProductionByOtherOrder` e selo `(ensalamento)`).
+- **🧩 Partials e JS Compartilhados:** Polling assíncrono `fetchDistibutionStatus` no template; injeção inicial via `printing_orders.attach_status_json`.
+- **🚫 Telas Irmãs Descontinuadas:** Nenhuma mapeada.
+
+---
+
+## 6. Armadilhas Conhecidas e Cruzamentos Obrigatórios de QA (Histórico de Reviews)
+
+- **Botão `"Enviar para gráfica"` desabilitado sem F5 (`fetchDistibutionStatus`):** Após concluir a geração assíncrona do malote com `SUCCESS`, o polling atualiza `examsBagLink`, mas não recarrega `printing_order_status`, exigindo `F5` para `printingOrder.canSend` virar `true`.
+- **Modal `"Não é possível enviar"` e tooltip vazios (`bproductionWarning`):** Quando `canSend === false`, o template referencia `printingOrder.bproductionWarning` em vez de `printingOrder.blockReason`.
+- **ApplicationEditForm × vínculo de ensalamento:** Ao editar uma `Application` vinculada em `/aplicacoes/<uuid>/editar`, confirmar que `room_distribution_id` é preservado após salvar.
