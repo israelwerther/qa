@@ -244,12 +244,12 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
 #### Cenário 3 — Variação 5.2: Malote por turma — arquivos juntos (`malote_unidade`)
 
 **Ação humana:**
-- [ ] Alterar o `Client` para separação padrão (`BAG_DEFAULT` — um PDF por unidade) e gerar novamente o malote da aplicação em `/aplicacoes/`.
-- [ ] Clicar em `"Opções"` ➔ `"Enviar para gráfica"` (ou `"Reenviar para gráfica"`).
-- [ ] **Conferência do Contrato no Mock:** Inspecionar o JSON capturado em `POST /pedidos`:
-  - [ ] Cada item de `manifesto_zip` possui `turmas: []` (array vazio).
-  - [ ] Cada item de `manifesto_zip` possui `documentos: [{ "tipo_documento": "malote_unidade", "escopo": "unidade", "path": "...", "n_paginas": <int> }]`.
-  - [ ] O `path` corresponde exatamente ao PDF único da unidade dentro do ZIP e `n_paginas` da raiz soma os PDFs das unidades.
+- [x] Alterar o `Client` (`Rede Decisão`) para separação padrão (`BAG_DEFAULT` — um PDF por unidade) e gerar o malote da aplicação (`[QA] Caderno 4 - Redação e Discursiva`, `fb32eed0-...`) em `/aplicacoes/`.
+- [x] Clicar em `"Opções"` ➔ `"Enviar para gráfica"` (`201 Created`).
+- [x] **Conferência do Contrato no Mock (`Pedido #1853` — `fb32eed0-...`):** Inspecionar o JSON capturado em `POST /pedidos`:
+  - [x] Cada item de `manifesto_zip` (`GRU`, `id_grafica: "1042"`) possui `turmas: []` (array vazio).
+  - [x] Cada item de `manifesto_zip` possui `documentos: [{ "tipo_documento": "malote_unidade", "escopo": "unidade", "path": "GRU-QA_Caderno_4__Redao_e_Discursiva.pdf", "n_paginas": 3 }]`.
+  - [x] O `path` corresponde exatamente ao PDF único da unidade dentro do ZIP (`93.533 bytes`, `1` entrada, `PyPDF2` 100%) e `n_paginas` da raiz (`3`) soma os PDFs das unidades.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`, `POST /aplicacoes/api/<uuid:pk>/grafica/enviar/`
@@ -283,8 +283,8 @@ rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na col
 #### Cenário 5 — Variação 5.4: Malote por sala (Ensalamento) — arquivos juntos (`malote_unidade`)
 
 **Ação humana:**
-- [ ] Com o `Client` em `BAG_DEFAULT`, regerar o malote do ensalamento em `/ensalamento/` e clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"`.
-- [ ] **Conferência do Contrato no Mock:** Confirmar que `manifesto_zip[]` traz `turmas: []` e `documentos` com `tipo_documento: "malote_unidade"` e `escopo: "unidade"`, batendo 1:1 com o ZIP gerado.
+- [x] Com o `Client` em `BAG_DEFAULT`, gerar o malote do ensalamento (`[QA] CADERNO 3 - OBJETIVAS 10Q`, `d4706dc5-...`) em `/ensalamento/` e clicar em `"Enviar para gráfica"` (`201 Created`).
+- [x] **Conferência do Contrato no Mock (`Pedido #1852` — `d4706dc5-...`):** Confirmado que `manifesto_zip[]` (`GRU`, `id_grafica: "1042"`) traz `turmas: []` e `documentos: [{ "tipo_documento": "malote_unidade", "escopo": "unidade", "path": "GRU.pdf", "n_paginas": 7 }]`, batendo 1:1 com o ZIP gerado (`371.384 bytes`, `1` entrada, `PyPDF2` 100%).
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/`
