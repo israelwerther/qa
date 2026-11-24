@@ -483,13 +483,15 @@ application.school_classes.add(class_a1, class_b1)
 > - **Expected Behavior:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, cross-order ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason`.
 > - **Workaround (Gambiarra temporária):** Validar a mensagem real de bloqueio diretamente na resposta da API `GET /aplicacoes/api/<uuid>/grafica/` (`blockReason`) ou `POST .../grafica/enviar/` (`detail`), e reportar ao dev para corrigir `bproductionWarning` ➔ `blockReason` nos dois templates antes do merge/produção.
 
-> [!NOTE]
-> **[Blind Spot / Verificação no Admin] Exposição de `Unity.id_printing_partner` apenas no Django Admin**
-> - O campo `id_printing_partner` (`"ID na gráfica"`) foi adicionado em `fiscallizeon.clients.models.Unity` e fica editável via Django Admin (`/admin/clients/unity/` e inline de `Client`), sem tela dedicada no dashboard do cliente. Confirmar no Cenário 1 se a operação pela equipe Lize via Admin atende ao fluxo esperado da v1 (conforme seção 4.3 do `contrato-integracao-grafica.pdf`).
-
 ---
 
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
+
+> [!NOTE]
+> **[UX / Desambiguação de Homônimos no ZIP]** Na v1, alunos homônimos na mesma turma geram caminhos idênticos dentro do ZIP (ex.: `caderno_joao-victor-ferreira-do-nascimento.pdf`), o que exige que a gráfica leia as entradas do ZIP sem sobrescrever arquivos em disco e exibe apenas um aviso ao coordenador (`06-aviso-caminhos-repetidos.jpg`). Como melhoria futura, incluir a matrícula ou sufixo único no nome do arquivo dentro do ZIP para eliminar o risco de colisão na extração. Além disso, no modal de aviso de caminhos repetidos, ajustar `overflow-wrap: anywhere` / formatação da lista para evitar quebra no meio de palavras curtas (ex.: `f-erreira`) e avaliar o comportamento legado de `safe_string` que remove vogais acentuadas (ex.: `Ensino_Mdio`).
+
+> [!NOTE]
+> **[UX / Operação — ID da Unidade na Gráfica]** O campo `Unity.id_printing_partner` (`"ID na gráfica"`) está exposto apenas no Django Admin (`/admin/clients/unity/`). Embora atenda à v1 (operação pela equipe Lize conforme `contrato-integracao-grafica.pdf` seção 4.3), como melhoria futura pode ser exposto no cadastro de unidades do dashboard ou sincronizado automaticamente caso o PageFlow forneça endpoint.
 
 > [!NOTE]
 > **[Scope Gap / v2 do Contrato]** Suporte a `modelo_impressao` granular por documento individual (previsto inicialmente na descrição do card para `redacao`/`discursiva`, mas explicitamente postergado na seção 4.2 do `contrato-integracao-grafica.pdf` v1) e suporte a malotes `ELIT`.
