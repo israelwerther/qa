@@ -299,7 +299,7 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 6 — Retorno válido (`200`) e proteção (`404`) nas rotas de download de Aplicação e Ensalamento
 
 **Ação humana:**
-- [ ] Executar um `GET` (via curl/Postman/Insomnia, sem header de sessão) na rota `/integracoes/api/pageflow/aplicacoes/<uuid>/malote/` de uma aplicação que **ainda não** foi enviada à gráfica e confirmar retorno `404 Not Found`.
+- [x] Executar um `GET` (via curl/Postman/Insomnia, sem header de sessão) na rota `/integracoes/api/pageflow/aplicacoes/<uuid>/malote/` de uma aplicação que **ainda não** foi enviada à gráfica (`0863b1d7-...`) e confirmado retorno `404 Not Found`.
 - [x] Após enviar essa aplicação no Cenário 2 (`5032175f-4925-426b-a2c3-fb41851defeb`), executar o mesmo `GET` usando exatamente a URL recebida no campo `path_zip` do mock.
 - [x] Confirmar resposta `200 OK` com JSON contendo exatamente `{"url": "<url_assinada>", "expires_at": "2026-11-24T12:26:12Z"}`.
 - [x] Fazer download pela `url` retornada e confirmar que o arquivo `.zip` (`954.325 bytes`, `9` entradas) é íntegro e idêntico ao malote da aplicação.
@@ -339,11 +339,11 @@ application.school_classes.add(class_a1, class_b1)
 - [ ] Com status `2` (`Aguardando Aprovação`): verificar em `/aplicacoes/` (ou `/ensalamento/`) e em `/aplicacoes/impressao/` que o selo exibe `"Gráfica: Aguardando Aprovação"` e que `"Reenviar para gráfica"` permanece habilitado e funcional.
 - [x] Disparar webhook com `status_id: 3`, `status: "Em Produção"`, `data` posterior (Pedido `#1848`).
 - [ ] Recarregar `/aplicacoes/`, `/aplicacoes/impressao/` e `/ensalamento/`:
-  - [x] Confirmado em `/aplicacoes/` que o selo muda para destaque laranja com texto `"Gráfica: Em Produção"` (pendente conferir `/aplicacoes/impressao/` e `/ensalamento/`). ![Selo laranja Gráfica: Em Produção](../evidencias/cdg-cu-17tu7rp5vvu/10-lize-selo-laranja-em-producao.jpg)
+  - [x] Confirmado em `/aplicacoes/` (selo laranja `"Gráfica: Em Produção"`, `10-lize-selo-laranja-em-producao.jpg`) e em `/aplicacoes/impressao/` (ícone de impressora + `"Gráfica: Em Produção"`, `13-impressao-selo-grafica.png`) *(falta conferir em `/ensalamento/`)*. ![Selo em /aplicacoes/impressao/](../evidencias/cdg-cu-17tu7rp5vvu/13-impressao-selo-grafica.png)
   - [x] Em `/aplicacoes/`, abrir `"Opções"` e verificar que `"Reenviar para gráfica"` aparece visualmente esmaecido (`opacity-50`, cursor `not-allowed`) *(falta conferir em `/ensalamento/`)*.
   - [x] Clicar em `"Reenviar para gráfica"` quando bloqueado: reproduzido o bug `bproductionWarning` — o modal `"Não é possível enviar"` abriu **sem texto explicativo** (`11-bug-modal-bloqueio-sem-texto.jpg`, registrado como `[BUG]` na Seção 7).
   - [ ] Tentar enviar `POST` direto para `/aplicacoes/api/<uuid>/grafica/enviar/` e confirmar `400 Bad Request` com mensagem `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`.
-  - [ ] Clicar em `"Todos os alunos"` (para regerar malote) ou `"Remover malote gerado"`: confirmar que aparece o modal de **aviso** `"A gráfica já está produzindo"` com opções `"Continuar mesmo assim"` e `"Cancelar"`, permitindo prosseguir ao confirmar (sem travar o malote no Lize, conforme contrato seção 8).
+  - [x] Clicar em `"Todos os alunos"` (para regerar malote) ou `"Remover malote gerado"`: confirmado que aparece o modal de **aviso** `"A gráfica já está produzindo"` com opções `"Continuar mesmo assim"` e `"Cancelar"`, permitindo prosseguir sem travar o malote no Lize (`12-aviso-grafica-ja-esta-produzindo.jpg`). ![Aviso A gráfica já está produzindo](../evidencias/cdg-cu-17tu7rp5vvu/12-aviso-grafica-ja-esta-produzindo.jpg)
   - [ ] Se o malote for regerado após o envio, confirmar que `"Enviar/Reenviar para gráfica"` passa a exigir nova geração (caso `bag_manifest` fique dessincronizado) ou bloqueia reenvio se já em produção.
 - [x] Disparar webhook com `status_id: 5`, `status: "Enviado"`, `data` posterior (Pedido `#1849`) e confirmado que o selo muda para estilo verde `"Gráfica: Enviado"` (`09-lize-selo-verde-enviado.jpg`).
 
