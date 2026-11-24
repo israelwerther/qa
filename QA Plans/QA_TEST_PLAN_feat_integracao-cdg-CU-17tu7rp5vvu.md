@@ -337,11 +337,11 @@ application.school_classes.add(class_a1, class_b1)
 
 **Ação humana:**
 - [ ] Com status `2` (`Aguardando Aprovação`): verificar em `/aplicacoes/` (ou `/ensalamento/`) e em `/aplicacoes/impressao/` que o selo exibe `"Gráfica: Aguardando Aprovação"` e que `"Reenviar para gráfica"` permanece habilitado e funcional.
-- [ ] Disparar webhook com `status_id: 3`, `status: "Em Produção"`, `data` posterior.
+- [x] Disparar webhook com `status_id: 3`, `status: "Em Produção"`, `data` posterior (Pedido `#1848`).
 - [ ] Recarregar `/aplicacoes/`, `/aplicacoes/impressao/` e `/ensalamento/`:
-  - [ ] Confirmar que o selo muda para destaque laranja com texto `"Gráfica: Em Produção"` (e em `/aplicacoes/impressao/`, exibe o ícone de impressora + `"Gráfica: Em Produção"`).
-  - [ ] Em `/aplicacoes/` (ou `/ensalamento/`), abrir `"Opções"` e verificar que `"Reenviar para gráfica"` aparece visualmente esmaecido (`opacity-50`, cursor `not-allowed`).
-  - [ ] Clicar em `"Reenviar para gráfica"` quando bloqueado e verificar o modal `"Não é possível enviar"` (**Atenção QA:** validar se o texto de motivo aparece ou se ocorre o bug `bproductionWarning` registrado na Seção 7).
+  - [x] Confirmado em `/aplicacoes/` que o selo muda para destaque laranja com texto `"Gráfica: Em Produção"` (pendente conferir `/aplicacoes/impressao/` e `/ensalamento/`). ![Selo laranja Gráfica: Em Produção](../evidencias/cdg-cu-17tu7rp5vvu/10-lize-selo-laranja-em-producao.jpg)
+  - [x] Em `/aplicacoes/`, abrir `"Opções"` e verificar que `"Reenviar para gráfica"` aparece visualmente esmaecido (`opacity-50`, cursor `not-allowed`) *(falta conferir em `/ensalamento/`)*.
+  - [x] Clicar em `"Reenviar para gráfica"` quando bloqueado: reproduzido o bug `bproductionWarning` — o modal `"Não é possível enviar"` abriu **sem texto explicativo** (`11-bug-modal-bloqueio-sem-texto.jpg`, registrado como `[BUG]` na Seção 7).
   - [ ] Tentar enviar `POST` direto para `/aplicacoes/api/<uuid>/grafica/enviar/` e confirmar `400 Bad Request` com mensagem `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`.
   - [ ] Clicar em `"Todos os alunos"` (para regerar malote) ou `"Remover malote gerado"`: confirmar que aparece o modal de **aviso** `"A gráfica já está produzindo"` com opções `"Continuar mesmo assim"` e `"Cancelar"`, permitindo prosseguir ao confirmar (sem travar o malote no Lize, conforme contrato seção 8).
   - [ ] Se o malote for regerado após o envio, confirmar que `"Enviar/Reenviar para gráfica"` passa a exigir nova geração (caso `bag_manifest` fique dessincronizado) ou bloqueia reenvio se já em produção.
@@ -476,12 +476,13 @@ application.school_classes.add(class_a1, class_b1)
 > - **Workaround (Gambiarra temporária):** Recarregar a página (`F5`) após a geração do malote para que o backend re-injete `printing_status_json` atualizado (`canSend: true`).
 > - **Evidência:** ![Botão Enviar para gráfica desabilitado logo após geração sem F5](../evidencias/cdg-cu-17tu7rp5vvu/03-bug-enviar-desabilitado-sem-f5.jpg)
 
-> [!WARNING]
-> **[UX/UI] [Bug no Template — Pré-registrado na Análise de Código] Propriedade `order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento**
+> [!BUG]
+> **[UX/UI] Modal `"Não é possível enviar"` e tooltip ficam sem texto (`order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento)**
 > - **Title:** Modal e tooltip de bloqueio de envio exibem mensagem vazia (`undefined`) quando `canSend === false`
 > - **Context/Root Cause:** No backend (`fiscallizeon/integrations/services/printing/orders.py`, método `order_status`, L.374), a chave retornada no JSON é `'blockReason'`. Porém, nos templates `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.560 e L.2206) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (L.319 e L.1054), o Vue referencia `printingOrder.bproductionWarning` (typo provável de substituição de `blockReason` por `productionWarning`).
-> - **Expected Behavior:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, cross-order ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason`.
+> - **Expected Behavior:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, cross-order ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason` (ex.: `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`).
 > - **Workaround (Gambiarra temporária):** Validar a mensagem real de bloqueio diretamente na resposta da API `GET /aplicacoes/api/<uuid>/grafica/` (`blockReason`) ou `POST .../grafica/enviar/` (`detail`), e reportar ao dev para corrigir `bproductionWarning` ➔ `blockReason` nos dois templates antes do merge/produção.
+> - **Evidência:** ![Modal Não é possível enviar sem texto explicativo](../evidencias/cdg-cu-17tu7rp5vvu/11-bug-modal-bloqueio-sem-texto.jpg)
 
 ---
 
