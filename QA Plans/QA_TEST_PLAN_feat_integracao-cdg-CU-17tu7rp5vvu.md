@@ -225,7 +225,7 @@ application.school_classes.add(class_a1, class_b1)
 - [x] Acessar `/aplicacoes/`, localizar a aplicação presencial/híbrida (`Simulado Geral 2026` e `P6_LÍNGUA PORTUGUESA_M3_ANGLO_2026`), abrir `"Opções"` ➔ `"Todos os alunos"` e gerar o malote (marcando cadernos, randomização e página customizada).
 - [x] Após a conclusão do malote (e F5 devido ao bug registrado na Seção 7), abrir `"Opções"` e clicar em `"Enviar para gráfica"`.
 - [x] Confirmar que o alerta SweetAlert de confirmação exibe o **aviso de caminhos repetidos** em vermelho listando o `path` duplicado dos alunos homônimos (`caderno_joao-victor-ferreira-do-nascimento.pdf` e `gabarito_joao-victor-ferreira-do-nascimento.pdf`), sem bloquear o envio. ![Aviso de caminhos repetidos no modal de envio](../evidencias/cdg-cu-17tu7rp5vvu/06-aviso-caminhos-repetidos.jpg) Clicar em `"Enviar"`.
-- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na coluna Malote. ![Selo Gráfica: Enviado na listagem de aplicações](../evidencias/cdg-cu-17tu7rp5vvu/04-lize-selo-grafica-enviado.jpg)
+rrrr- [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na coluna Malote. ![Selo Gráfica: Enviado na listagem de aplicações](../evidencias/cdg-cu-17tu7rp5vvu/04-lize-selo-grafica-enviado.jpg)
 - [x] **Conferência do Contrato no Mock (`Pedido #1848` — `5032175f-...` e `Pedido #1849` — `a2629d58-...`):** Inspecionar as requisições capturadas no mock (`POST /pedidos`): ![Mock validando contrato e ZIP 1:1](../evidencias/cdg-cu-17tu7rp5vvu/05-mock-contrato-zip-ok.jpg)
   - [x] Header `Content-Type: application/json` e `x-api-key` igual à chave cadastrada (`pk_qa_teste_123`).
   - [x] Raiz contém exatamente: `path_zip`, `id_aplicacao` (`5032175f-...` e `a2629d58-...`), `data_aplicacao` (`2026-12-10` / `2026-12-12`), `n_paginas` (`9` / `34`), `modelos_impressao` (todas as 8 chaves) e `manifesto_zip` (array).
@@ -262,15 +262,15 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 4 — Variação 5.3: Malote por sala (Ensalamento) — arquivos separados com múltiplas provas por aluno
 
 **Ação humana:**
-- [ ] Configurar `Client` em `"Arquivos separados"` (`BAG_SEPARATED_FILES`) e criar um **Ensalamento** em `/ensalamento/` reunindo **2 aplicações** no mesmo dia com um aluno alocado nas duas provas na mesma sala.
-- [ ] Na tela `/ensalamento/`, abrir `"Opções"` ➔ `"Imprimir malote"`, marcar `"Incluir cadernos de prova"` e gerar o malote do ensalamento.
-- [ ] Após gerar o malote, abrir `"Opções"` ➔ clicar em `"Enviar para gráfica"` e confirmar no modal.
-- [ ] **Conferência do Contrato no Mock:** Inspecionar o JSON capturado em `POST /pedidos`:
-  - [ ] `id_aplicacao` é o UUID do `RoomDistribution` e `path_zip` aponta para `/integracoes/api/pageflow/ensalamentos/<uuid>/malote/`.
-  - [ ] Em `manifesto_zip[].turmas[]`, cada sala aparece como item com `nome` = nome da sala, `turno: null`, `modelo: null`.
-  - [ ] Os documentos da sala (`lista_presenca`, `gabarito`, etc.) vêm com `"escopo": "turma"` (não `"sala"`, conforme contrato seção 4.6).
-  - [ ] O aluno que realiza 2 provas aparece **uma única vez** em `alunos[]` com **dois itens** `"tipo_documento": "prova"` em `alunos[].documentos[]` (um por caderno).
-  - [ ] Conferência 1:1 com o ZIP do ensalamento e soma de `n_paginas`.
+- [ ] Configurar `Client` em `"Arquivos separados"` (`BAG_SEPARATED_FILES`) e criar um **Ensalamento** em `/ensalamento/` reunindo **2 aplicações** no mesmo dia com um aluno alocado nas duas provas na mesma sala *(parcialmente validado no ensalamento `750ee39f-...` com 1 aplicação e 3 alunos; falta testar 2 aplicações no mesmo ensalamento)*.
+- [x] Na tela `/ensalamento/`, abrir `"Opções"` ➔ `"Imprimir malote"`, marcar `"Incluir cadernos de prova"` e gerar o malote do ensalamento (`750ee39f-...`). *(Confirmado também que o bug de precisar de F5 para habilitar `"Enviar para gráfica"` ocorre em `/ensalamento/`).*
+- [x] Após gerar o malote (e F5), abrir `"Opções"` ➔ clicar em `"Enviar para gráfica"` e confirmar no modal (`17-ensalamento-selo-enviado.png`). ![Selo Gráfica: Enviado em Ensalamento](../evidencias/cdg-cu-17tu7rp5vvu/17-ensalamento-selo-enviado.png)
+- [x] **Conferência do Contrato no Mock (`Pedido #1851` — `750ee39f-...`):** Inspecionar o JSON capturado em `POST /pedidos`:
+  - [x] `id_aplicacao` é o UUID do `RoomDistribution` (`750ee39f-fa37-427c-9a4c-634b3c1addc3`) e `path_zip` aponta para `/integracoes/api/pageflow/ensalamentos/750ee39f-fa37-427c-9a4c-634b3c1addc3/malote/`.
+  - [x] Em `manifesto_zip[].turmas[]`, cada sala aparece como item com `nome` = nome da sala (`3 ANO B - Ensino Médio - 3ª Série`), `turno: null`, `modelo: null`.
+  - [x] Os documentos da sala (`lista_presenca`) vêm com `"escopo": "turma"` (não `"sala"`, conforme contrato seção 4.6).
+  - [ ] O aluno que realiza 2 provas aparece **uma única vez** em `alunos[]` com **dois itens** `"tipo_documento": "prova"` em `alunos[].documentos[]` (um por caderno) *(pendente testar ensalamento com 2 provas)*.
+  - [x] Conferência 1:1 com o ZIP do ensalamento (`1.437.727 bytes`, `7` entradas, `PyPDF2` 100%) e soma de `n_paginas` (`13`).
 
 **Referência técnica (para automação):**
 - URL: `/ensalamento/`, `POST /ensalamento/api/ensalamentos/<uuid:pk>/grafica/enviar/`
@@ -303,7 +303,7 @@ application.school_classes.add(class_a1, class_b1)
 - [x] Após enviar essa aplicação no Cenário 2 (`5032175f-4925-426b-a2c3-fb41851defeb`), executar o mesmo `GET` usando exatamente a URL recebida no campo `path_zip` do mock.
 - [x] Confirmar resposta `200 OK` com JSON contendo exatamente `{"url": "<url_assinada>", "expires_at": "2026-11-24T12:26:12Z"}`.
 - [x] Fazer download pela `url` retornada e confirmar que o arquivo `.zip` (`954.325 bytes`, `9` entradas) é íntegro e idêntico ao malote da aplicação.
-- [ ] Repetir o `GET` para a rota `/integracoes/api/pageflow/ensalamentos/<uuid>/malote/` de um ensalamento enviado (Cenário 4) e confirmar `200 OK` + download íntegro.
+- [x] Repetir o `GET` para a rota `/integracoes/api/pageflow/ensalamentos/<uuid>/malote/` de um ensalamento enviado (Cenário 4 — `750ee39f-...`) e confirmado `200 OK` + download íntegro (`1.437.727 bytes`, `7` entradas).
 - [ ] Desmarcar `"Ativa"` na `PrintingPartnerIntegration` no Admin e repetir o `GET` em `path_zip`: confirmar retorno `404 Not Found`. Reativar em seguida.
 
 **Referência técnica (para automação):**
@@ -338,8 +338,8 @@ application.school_classes.add(class_a1, class_b1)
 **Ação humana:**
 - [ ] Com status `2` (`Aguardando Aprovação`): verificar em `/aplicacoes/` (ou `/ensalamento/`) e em `/aplicacoes/impressao/` que o selo exibe `"Gráfica: Aguardando Aprovação"` e que `"Reenviar para gráfica"` permanece habilitado e funcional.
 - [x] Disparar webhook com `status_id: 3`, `status: "Em Produção"`, `data` posterior (Pedido `#1848`).
-- [ ] Recarregar `/aplicacoes/`, `/aplicacoes/impressao/` e `/ensalamento/`:
-  - [x] Confirmado em `/aplicacoes/` (selo laranja `"Gráfica: Em Produção"`, `10-lize-selo-laranja-em-producao.jpg`) e em `/aplicacoes/impressao/` (ícone de impressora + `"Gráfica: Em Produção"`, `13-impressao-selo-grafica.png`) *(falta conferir em `/ensalamento/`)*. ![Selo em /aplicacoes/impressao/](../evidencias/cdg-cu-17tu7rp5vvu/13-impressao-selo-grafica.png)
+- [x] Recarregar `/aplicacoes/`, `/aplicacoes/impressao/` e `/ensalamento/`:
+  - [x] Confirmado em `/aplicacoes/` (selo laranja `"Gráfica: Em Produção"`, `10-lize-selo-laranja-em-producao.jpg`), em `/aplicacoes/impressao/` (ícone de impressora + `"Gráfica: Em Produção"`, `13-impressao-selo-grafica.png`) e em `/ensalamento/` (`18-ensalamento-em-producao.png`). ![Selo em /aplicacoes/impressao/](../evidencias/cdg-cu-17tu7rp5vvu/13-impressao-selo-grafica.png) ![Selo em produção em /ensalamento/](../evidencias/cdg-cu-17tu7rp5vvu/18-ensalamento-em-producao.png)
   - [x] Em `/aplicacoes/`, abrir `"Opções"` e verificar que `"Reenviar para gráfica"` aparece visualmente esmaecido (`opacity-50`, cursor `not-allowed`) *(falta conferir em `/ensalamento/`)*.
   - [x] Clicar em `"Reenviar para gráfica"` quando bloqueado: reproduzido o bug `bproductionWarning` — o modal `"Não é possível enviar"` abriu **sem texto explicativo** (`11-bug-modal-bloqueio-sem-texto.jpg`, registrado como `[BUG]` na Seção 7).
   - [ ] Tentar enviar `POST` direto para `/aplicacoes/api/<uuid>/grafica/enviar/` e confirmar `400 Bad Request` com mensagem `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`.
@@ -358,9 +358,9 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 9 — Bloqueios de negócio: cross-order (Aplicação × Ensalamento), malote ELIT, aplicação online e preservação no `ApplicationEditForm`
 
 **Ação humana:**
-- [ ] **Cross-order:** Enviar um **Ensalamento** para a gráfica (Cenário 4) e colocá-lo em `status_id: 3` via webhook. Acessar `/aplicacoes/`, localizar uma aplicação participante desse ensalamento, gerar malote individual dela e confirmar que o selo mostra `"Gráfica: Em Produção (ensalamento)"` e o envio individual é bloqueado (`400` com `"Esta aplicação já foi enviada à gráfica pelo ensalamento de ..."`). Testar também o caminho inverso (aplicação enviada individualmente bloqueando o envio do ensalamento).
+- [ ] **Cross-order:** Enviar um **Ensalamento** para a gráfica (Cenário 4 — `750ee39f-...`) e colocá-lo em `status_id: 3` via webhook. Acessar `/aplicacoes/`, localizar uma aplicação participante desse ensalamento (`[QA] Caderno 2` de `20/10/2026` — `e4f0391c-...`) e confirmado que o selo mostra `"Gráfica: Em Produção (ensalamento)"` (`19-aplicacao-em-producao-ensalamento.png`). ![Selo Gráfica: Em Produção (ensalamento) em Aplicações](../evidencias/cdg-cu-17tu7rp5vvu/19-aplicacao-em-producao-ensalamento.png) *(Falta gerar o malote individual dessa aplicação para testar o bloqueio HTTP `400` de envio individual e testar o caminho inverso: aplicação enviada bloqueando ensalamento).*
 - [ ] **Malote ELIT:** Gerar um malote ELIT em `/aplicacoes/` (se aplicável ao cliente) e confirmar que a API `/grafica/enviar/` bloqueia com `400` (`"Malote ELIT não é enviado à gráfica nesta versão."`).
-- [ ] **Preservação de `room_distribution` no Edit Form:** Pegar uma aplicação vinculada a um ensalamento, acessar `/aplicacoes/<uuid>/editar`, alterar qualquer campo (ex.: observação/horário) e salvar. Confirmar no banco/ensalamento que a aplicação **não** perdeu o vínculo com `room_distribution`.
+- [x] **Preservação de `room_distribution` no Edit Form:** Pegar uma aplicação vinculada a um ensalamento (`e4f0391c-...`), acessar `/aplicacoes/<uuid>/editar`, salvar e confirmado no banco (`room_distribution_id = 750ee39f-...`, `updated_at = 2026-11-24 11:42:23-03:00`) e na tela de `/ensalamento/` (`20-ensalamento-preservado-pos-edicao.png`) que a aplicação **não** perdeu o vínculo com `room_distribution`. ![Ensalamento preservado após editar aplicação](../evidencias/cdg-cu-17tu7rp5vvu/20-ensalamento-preservado-pos-edicao.png)
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`, `/ensalamento/`, `/aplicacoes/<uuid:pk>/editar`
