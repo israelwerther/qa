@@ -226,12 +226,12 @@ application.school_classes.add(class_a1, class_b1)
 - [x] Após a conclusão do malote (e F5 devido ao bug registrado na Seção 7), abrir `"Opções"` e clicar em `"Enviar para gráfica"`.
 - [x] Confirmar que o alerta SweetAlert de confirmação exibe o **aviso de caminhos repetidos** em vermelho listando o `path` duplicado dos alunos homônimos (`caderno_joao-victor-ferreira-do-nascimento.pdf` e `gabarito_joao-victor-ferreira-do-nascimento.pdf`), sem bloquear o envio. ![Aviso de caminhos repetidos no modal de envio](../evidencias/cdg-cu-17tu7rp5vvu/06-aviso-caminhos-repetidos.jpg) Clicar em `"Enviar"`.
 - [x] Confirmar envio concluído e selo `"Gráfica: Enviado"` exibido na coluna Malote. ![Selo Gráfica: Enviado na listagem de aplicações](../evidencias/cdg-cu-17tu7rp5vvu/04-lize-selo-grafica-enviado.jpg)
-- [x] **Conferência do Contrato no Mock (`Pedido #1848` — `5032175f-4925-426b-a2c3-fb41851defeb`):** Inspecionar a requisição capturada no mock (`POST /pedidos`): ![Mock validando contrato e ZIP 1:1](../evidencias/cdg-cu-17tu7rp5vvu/05-mock-contrato-zip-ok.jpg)
+- [x] **Conferência do Contrato no Mock (`Pedido #1848` — `5032175f-...` e `Pedido #1849` — `a2629d58-...`):** Inspecionar as requisições capturadas no mock (`POST /pedidos`): ![Mock validando contrato e ZIP 1:1](../evidencias/cdg-cu-17tu7rp5vvu/05-mock-contrato-zip-ok.jpg)
   - [x] Header `Content-Type: application/json` e `x-api-key` igual à chave cadastrada (`pk_qa_teste_123`).
-  - [x] Raiz contém exatamente: `path_zip`, `id_aplicacao` (`5032175f-4925-426b-a2c3-fb41851defeb`), `data_aplicacao` (`2026-12-10`), `n_paginas` (`9`), `modelos_impressao` (todas as 8 chaves) e `manifesto_zip` (array).
-  - [x] No `manifesto_zip`: unidade com `"ID na gráfica"` preenchido (`GRU`) envia `unidade_id_grafica` como string (`"1042"`); unidade sem ID envia `null` *(ambos validados no Pedido `#1848`: envio 1 com `null`, reenvio 2 com `"1042"`, retornando HTTP `200`)*.
-  - [x] Cada turma tem `nome` (`F1MA`), `turno` (`Manhã`), `modelo: null`, `documentos[]` (`lista_presenca`) e `alunos[]` com `nome`, `matricula` e `documentos[]` (`gabarito` e `prova` com `escopo: "aluno"`).
-  - [x] Baixar o ZIP gerado e conferir **1:1**: 9 entradas (`954.325 bytes`), `path` idêntico 1:1 ao `manifesto_zip`, contagem real de páginas (`PyPDF2`) batendo 100% e `n_paginas` raiz (`9`) = soma dos 9 documentos.
+  - [x] Raiz contém exatamente: `path_zip`, `id_aplicacao` (`5032175f-...` e `a2629d58-...`), `data_aplicacao` (`2026-12-10` / `2026-12-12`), `n_paginas` (`9` / `34`), `modelos_impressao` (todas as 8 chaves) e `manifesto_zip` (array).
+  - [x] No `manifesto_zip`: unidade com `"ID na gráfica"` preenchido (`GRU` `"1042"`, `CAV` `"2042"`) envia `unidade_id_grafica` como string; unidade sem ID (`DEC`) envia `null` no mesmo pedido.
+  - [x] Cada turma tem `nome` (`F1MA`, `M3MB`, `M2MB`), `turno` (`Manhã`), `modelo: null`, `documentos[]` (`lista_presenca`, `randomizacao`, `pagina_customizada`) e `alunos[]` com `nome`, `matricula` e `documentos[]` (`gabarito` e `prova` com `escopo: "aluno"`).
+  - [x] Baixar o ZIP gerado e conferir **1:1**: Pedido `#1848` (`954.325 bytes`, `9` entradas) e Pedido `#1849` (`4.937.339 bytes`, `18` entradas) com `path` idêntico 1:1 ao `manifesto_zip`, `n_paginas` raiz (`9` / `34`) = soma exata dos documentos e contagem real de páginas (`PyPDF2`) batendo como multiconjunto *(obs.: nos dois homônimos `João Victor Ferreira do Nascimento` com provas randomizadas de 3 e 4 páginas, a ordem dentro do ZIP vem por ordem de geração enquanto no JSON os alunos vêm ordenados por matrícula — registrado na Seção 8)*.
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`, `POST /aplicacoes/api/<uuid:pk>/grafica/enviar/`
@@ -319,11 +319,11 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 7 — Validações de erro do Webhook (`400`, `401`, `404`) e eventos fora de ordem (`ignored: true`)
 
 **Ação humana:**
-- [ ] Enviar `POST /integracoes/api/pageflow/webhook/` com corpo sem `json.numero_pedido` ou com `status_id: "abc"` ➔ confirmar `400 Bad Request`.
-- [ ] Enviar com `numero_pedido` inexistente (UUID aleatório) ➔ confirmar `404 Not Found`.
-- [ ] Enviar com `numero_pedido` válido (igual ao `id_aplicacao` enviado) e `access_token` incorreto ➔ confirmar `401 Unauthorized`.
-- [ ] Enviar com `access_token` correto, `status_id: 2`, `status: "Aguardando Aprovação"`, `casa_grafica_id: "1848"` e `data` recente ➔ confirmar `200 OK` com `{"ok": true, "ignored": false}`.
-- [ ] Enviar novamente um evento com `data` **anterior** à do evento já salvo (ex.: 1 hora antes, `status_id: 1`) ➔ confirmar `200 OK` com `{"ok": true, "ignored": true}` e verificar na UI que o status **não** regrediu.
+- [x] Enviar `POST /integracoes/api/pageflow/webhook/` com corpo sem `json.numero_pedido` ou com `status_id: "abc"` ➔ confirmado `400 Bad Request` (`{"ok": false, "detail": "Corpo inválido."}`). ![Webhook HTTP 400 e status 5 no Mock](../evidencias/cdg-cu-17tu7rp5vvu/08-webhook-http-400-e-status-5.jpg)
+- [x] Enviar com `numero_pedido` inexistente (UUID aleatório) ➔ confirmado `404 Not Found` (`{"ok": false, "detail": "Pedido não encontrado."}`).
+- [x] Enviar com `numero_pedido` válido (igual ao `id_aplicacao` enviado) e `access_token` incorreto ➔ confirmado `401 Unauthorized` (`{"ok": false, "detail": "Token inválido."}`).
+- [x] Enviar com `access_token` correto (`tok_webhook_qa`), `status_id: 2` (e `1..5` no Pedido `#1849`), `casa_grafica_id: "1849"` e `data` recente ➔ confirmado `200 OK` com `{"ok": true, "ignored": false}`.
+- [x] Enviar novamente um evento com `data` **anterior** à do evento já salvo (`-120 min`, `status_id: 1`) ➔ confirmado `200 OK` com `{"ok": true, "ignored": true}` e verificado na UI que o selo permaneceu verde (`Gráfica: Enviado`), sem regredir. ![Selo verde Gráfica: Enviado sem regressão](../evidencias/cdg-cu-17tu7rp5vvu/09-lize-selo-verde-enviado.jpg)
 
 **Referência técnica (para automação):**
 - URL: `POST /integracoes/api/pageflow/webhook/`
@@ -345,7 +345,7 @@ application.school_classes.add(class_a1, class_b1)
   - [ ] Tentar enviar `POST` direto para `/aplicacoes/api/<uuid>/grafica/enviar/` e confirmar `400 Bad Request` com mensagem `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`.
   - [ ] Clicar em `"Todos os alunos"` (para regerar malote) ou `"Remover malote gerado"`: confirmar que aparece o modal de **aviso** `"A gráfica já está produzindo"` com opções `"Continuar mesmo assim"` e `"Cancelar"`, permitindo prosseguir ao confirmar (sem travar o malote no Lize, conforme contrato seção 8).
   - [ ] Se o malote for regerado após o envio, confirmar que `"Enviar/Reenviar para gráfica"` passa a exigir nova geração (caso `bag_manifest` fique dessincronizado) ou bloqueia reenvio se já em produção.
-- [ ] Disparar webhook com `status_id: 5`, `status: "Enviado"`, `data` posterior e confirmar que o selo muda para estilo verde `"Gráfica: Enviado"`.
+- [x] Disparar webhook com `status_id: 5`, `status: "Enviado"`, `data` posterior (Pedido `#1849`) e confirmado que o selo muda para estilo verde `"Gráfica: Enviado"` (`09-lize-selo-verde-enviado.jpg`).
 
 **Referência técnica (para automação):**
 - URL: `/aplicacoes/`, `/aplicacoes/impressao/`, `/ensalamento/`
@@ -488,7 +488,7 @@ application.school_classes.add(class_a1, class_b1)
 ## 8. Future Improvements & Tech Debt (Melhorias Futuras)
 
 > [!NOTE]
-> **[UX / Desambiguação de Homônimos no ZIP]** Na v1, alunos homônimos na mesma turma geram caminhos idênticos dentro do ZIP (ex.: `caderno_joao-victor-ferreira-do-nascimento.pdf`), o que exige que a gráfica leia as entradas do ZIP sem sobrescrever arquivos em disco e exibe apenas um aviso ao coordenador (`06-aviso-caminhos-repetidos.jpg`). Como melhoria futura, incluir a matrícula ou sufixo único no nome do arquivo dentro do ZIP para eliminar o risco de colisão na extração. Além disso, no modal de aviso de caminhos repetidos, ajustar `overflow-wrap: anywhere` / formatação da lista para evitar quebra no meio de palavras curtas (ex.: `f-erreira`) e avaliar o comportamento legado de `safe_string` que remove vogais acentuadas (ex.: `Ensino_Mdio`).
+> **[UX / Desambiguação de Homônimos no ZIP]** Na v1, alunos homônimos na mesma turma geram caminhos idênticos dentro do ZIP (ex.: `caderno_joao-victor-ferreira-do-nascimento.pdf`), o que exige que a gráfica leia as entradas do ZIP sem sobrescrever arquivos em disco e exibe apenas um aviso ao coordenador (`06-aviso-caminhos-repetidos.jpg`). Além disso, no Pedido `#1849` observou-se que os dois homônimos possuem versões randomizadas com quantidades de páginas diferentes (3 e 4 páginas): como `alunos[]` no manifesto é ordenado por `(nome, matricula)` enquanto as entradas do ZIP seguem a ordem de geração, não há como a gráfica saber qual das duas entradas repetidas no ZIP pertence a qual matrícula apenas pelo `path`. Como melhoria futura, incluir a matrícula ou sufixo único no nome do arquivo dentro do ZIP para eliminar colisões e ambiguidade. ![Divergência de ordem entre ZIP e manifesto em homônimos](../evidencias/cdg-cu-17tu7rp5vvu/07-mock-homonimos-ordem-zip.jpg) Além disso, no modal de aviso de caminhos repetidos, ajustar `overflow-wrap: anywhere` / formatação da lista para evitar quebra no meio de palavras curtas (ex.: `f-erreira`) e avaliar o comportamento legado de `safe_string` que remove vogais acentuadas (ex.: `Ensino_Mdio`).
 
 > [!NOTE]
 > **[UX / Operação — ID da Unidade na Gráfica]** O campo `Unity.id_printing_partner` (`"ID na gráfica"`) está exposto apenas no Django Admin (`/admin/clients/unity/`). Embora atenda à v1 (operação pela equipe Lize conforme `contrato-integracao-grafica.pdf` seção 4.3), como melhoria futura pode ser exposto no cadastro de unidades do dashboard ou sincronizado automaticamente caso o PageFlow forneça endpoint.
