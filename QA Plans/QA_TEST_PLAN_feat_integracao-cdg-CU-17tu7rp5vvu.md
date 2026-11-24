@@ -375,13 +375,13 @@ application.school_classes.add(class_a1, class_b1)
 #### Cenário 10 — Respostas `400`, `401/403`, `409`, `500` e Timeout no Mock + Auditoria (`PrintingOrder` / `PrintingOrderEvent`)
 
 **Ação humana:**
-- [ ] Configurar o mock para retornar `400` com `{"sucesso": false, "mensagem": "Campo inválido no teste"}` e disparar envio na UI.
-- [ ] Confirmar que o selo atualiza para vermelho `"Gráfica: erro no envio"` (se primeiro envio) ou `"Gráfica: erro no reenvio"` (se já tinha status anterior) e o `title`/tooltip exibe a mensagem retornada pela gráfica.
+- [x] Configurar o mock para retornar `400` (`mode=400`, retornando `{"sucesso": false, "mensagem": "Erro 400 simulado pelo mock"}`) e disparar envio na UI (`5b295799-...`).
+- [x] Confirmado que o selo atualiza para vermelho `"Gráfica: erro no envio"` (`15-selo-vermelho-erro-no-envio.png`) e o `title` nativo exibe a mensagem retornada pela gráfica (`"A gráfica respondeu 400: Erro 400 simulado pelo mock"`, embora gere o bug visual da seta Tippy vazia descrito na Seção 7 — `16-bug-tooltip-seta-desalinhada.png`). *(Falta testar `"Gráfica: erro no reenvio"` após status anterior).*
 - [ ] Repetir simulando no mock: `401`, `409` (`{"sucesso": false, "mensagem": "Já em produção", "codigo": "PEDIDO_EM_PRODUCAO"}`), `500` e timeout (> `PRINTING_PARTNER_REQUEST_TIMEOUT`).
-- [ ] **Auditoria no Admin:** Acessar `/admin/integrations/printingorder/`, abrir o pedido e confirmar:
-  - [ ] Todos os campos do pedido estão **somente leitura** (sem botão Salvar/Adicionar).
-  - [ ] `Último payload` e `Última resposta` contêm respectivamente o JSON enviado e o retorno do mock.
-  - [ ] Na tabela inline `"Eventos de pedidos de impressão"`, existem registros cronológicos de `Envio` (`http_status`, `correlation_id`, `ok`) e `Webhook` (`status_id`, `status_name`, `occurred_at`).
+- [x] **Auditoria no Admin:** Acessar `/admin/integrations/printingorder/`, abrir o pedido (`Pedido #1849` — `e2d5236a-...`) e confirmar: ![Auditoria no Admin - eventos somente leitura](../evidencias/cdg-cu-17tu7rp5vvu/14-admin-eventos-somente-leitura.jpg)
+  - [x] Todos os campos do pedido estão **somente leitura** (sem botão Salvar/Adicionar).
+  - [x] `Último payload` e `Última resposta` contêm respectivamente o JSON enviado e o retorno do mock.
+  - [x] Na tabela inline `"Eventos de pedidos de impressão"`, existem registros cronológicos de `Envio` (`http_status = 201`, `correlation_id`, `ok`) e `Webhook` (`status_id` 1..5, `status_name`, `occurred_at`, e o evento antigo marcado com `ignored_as_stale: true` e `ok = False`).
 
 **Referência técnica (para automação):**
 - URL: `/admin/integrations/printingorder/<uuid:pk>/change/`
@@ -483,6 +483,14 @@ application.school_classes.add(class_a1, class_b1)
 > - **Expected Behavior:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, cross-order ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason` (ex.: `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`).
 > - **Workaround (Gambiarra temporária):** Validar a mensagem real de bloqueio diretamente na resposta da API `GET /aplicacoes/api/<uuid>/grafica/` (`blockReason`) ou `POST .../grafica/enviar/` (`detail`), e reportar ao dev para corrigir `bproductionWarning` ➔ `blockReason` nos dois templates antes do merge/produção.
 > - **Evidência:** ![Modal Não é possível enviar sem texto explicativo](../evidencias/cdg-cu-17tu7rp5vvu/11-bug-modal-bloqueio-sem-texto.jpg)
+
+> [!BUG]
+> **[UX/UI] Seta preta órfã (Tippy vazio + tooltip nativo duplicado) ao passar o mouse no selo `"Gráfica: ..."`**
+> - **Title:** Elemento com classe `.tooltips` usa `:title` em vez de `:data-tippy-content`, exibindo seta preta vazia abaixo do selo junto com o tooltip nativo
+> - **Context/Root Cause:** Em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.361), o selo `[data-test="printing-badge"]` recebeu a classe `tooltips` (que inicializa o Tippy.js, como nos selos irmãos das L.309/316/342/353), mas recebeu `:title="printingBadgeTitle(application.printingOrder)"` em vez de `:data-tippy-content`. Ao fazer hover, o Tippy renderiza uma caixinha/seta preta vazia abaixo de `"Grá"` enquanto o navegador abre o `title` nativo separado.
+> - **Expected Behavior:** Usar `:data-tippy-content="printingBadgeTitle(application.printingOrder)"` (sem `:title`) ou remover a classe `tooltips`, exibindo apenas um tooltip limpo e centralizado.
+> - **Workaround (Gambiarra temporária):** O conteúdo do erro ainda pode ser lido normalmente no tooltip nativo exibido ao lado da seta vazia.
+> - **Evidência:** ![Seta preta do Tippy vazia junto ao tooltip nativo](../evidencias/cdg-cu-17tu7rp5vvu/16-bug-tooltip-seta-desalinhada.png)
 
 ---
 
