@@ -468,8 +468,9 @@ application.school_classes.add(class_a1, class_b1)
 
 ## 7. Problemas Encontrados e Observações
 
-### 🐞 [BUG] [UX/UI] Botão `"Enviar para gráfica"` fica desabilitado logo após gerar o malote até recarregar a página (F5)
+### ✅ [BUG RESOLVIDO] [UX/UI] Botão `"Enviar para gráfica"` fica desabilitado logo após gerar o malote até recarregar a página (F5)
 
+- **Status / Validação:** ✅ Corrigido no commit `5a3e29a8b2` (`refreshPrintingOrder(...)` chamado ao concluir a exportação em `fetchStatus` e `fetchDistibutionStatusBag`) e validado em reteste no navegador (manual + Playwright) em `/aplicacoes/` e `/ensalamento/` em 25/11/2026.
 - **Título:** `printingOrder.canSend` permanece `false` após conclusão assíncrona da geração do malote em Aplicações e Ensalamento
 - **Contexto / Causa Raiz:** Quando o polling da geração do malote termina com `SUCCESS` em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (`fetchStatus`, L.2497–2501) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (`fetchDistibutionStatus`, L.926–932), o JS atualiza `application.answerSheetUrl` / `distribution.examsBagLink` (fazendo o botão `"Enviar para gráfica"` aparecer no menu), mas **não** consulta `printing_order_status` (`GET .../grafica/`) para atualizar `printingOrder` (`canSend`, `warnings`, `blockReason`). O mesmo ocorre se o malote for regerado enquanto `printingOrder` tinha `blockReason` de manifesto desatualizado.
 - **Comportamento Esperado:** Assim que a exportação do malote retornar `SUCCESS` (e também ao remover o malote), o frontend deve chamar `axios.get(item.urls.printing_order_status)` para atualizar `item.printingOrder`, habilitando `"Enviar para gráfica"` imediatamente sem exigir F5 (inferência de UX — Lacuna na Especificação).
@@ -478,8 +479,9 @@ application.school_classes.add(class_a1, class_b1)
 
 ---
 
-### 🐞 [BUG] [UX/UI] Modal `"Não é possível enviar"` e tooltip ficam sem texto (`order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento)
+### ✅ [BUG RESOLVIDO] [UX/UI] Modal `"Não é possível enviar"` e tooltip ficam sem texto (`order.bproductionWarning` inexistente nos templates de Aplicações e Ensalamento)
 
+- **Status / Validação:** ✅ Corrigido no commit `13bfd8cb25` (`order.bproductionWarning` corrigido para `order.blockReason` nos dois templates + teste de contrato em `test_printing_views.py`) e validado em reteste no navegador (manual + Playwright) em `/aplicacoes/` e `/ensalamento/` em 25/11/2026.
 - **Título:** Modal e tooltip de bloqueio de envio exibem mensagem vazia (`undefined`) quando `canSend === false`
 - **Contexto / Causa Raiz:** No backend (`fiscallizeon/integrations/services/printing/orders.py`, método `order_status`, L.374), a chave retornada no JSON é `'blockReason'`. Porém, nos templates `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.560 e L.2206) e `fiscallizeon/distribution/templates/distribution/distribution_list.html` (L.319 e L.1054), o Vue referencia `printingOrder.bproductionWarning` (provável erro de digitação ao substituir `blockReason` por `productionWarning`).
 - **Comportamento Esperado:** Ao passar o mouse ou clicar em `"Enviar para gráfica"` / `"Reenviar para gráfica"` quando `canSend === false` (ex.: pedido já em produção, malote desatualizado, pedido cruzado entre aplicação/ensalamento ou URL da API não configurada), o tooltip e o alerta SweetAlert `"Não é possível enviar"` deveriam exibir `order.blockReason` (ex.: `"A gráfica já está produzindo este pedido (Em Produção). Não é possível reenviar."`) (conforme contrato `contrato-integracao-grafica.pdf` Seção 8).
@@ -488,8 +490,9 @@ application.school_classes.add(class_a1, class_b1)
 
 ---
 
-### 🐞 [BUG] [UX/UI] Seta preta órfã (Tippy vazio + tooltip nativo duplicado) ao passar o mouse no selo `"Gráfica: ..."`
+### ✅ [BUG RESOLVIDO] [UX/UI] Seta preta órfã (Tippy vazio + tooltip nativo duplicado) ao passar o mouse no selo `"Gráfica: ..."`
 
+- **Status / Validação:** ✅ Corrigido no commit `92d7879382` (removida a classe `tooltips` de `[data-test="printing-badge"]` em `application_list_new.html`) e validado em reteste no navegador (manual + Playwright) em 25/11/2026.
 - **Título:** Elemento com classe `.tooltips` usa `:title` em vez de `:data-tippy-content`, exibindo seta preta vazia abaixo do selo junto com o tooltip nativo
 - **Contexto / Causa Raiz:** Em `fiscallizeon/applications/templates/dashboard/applications/application_list_new.html` (L.361), o selo `[data-test="printing-badge"]` recebeu a classe `tooltips` (que inicializa o Tippy.js, como nos selos irmãos das L.309/316/342/353), mas recebeu `:title="printingBadgeTitle(application.printingOrder)"` em vez de `:data-tippy-content`. Ao passar o mouse, o Tippy renderiza uma caixinha/seta preta vazia abaixo de `"Grá"` enquanto o navegador abre o `title` nativo separado.
 - **Comportamento Esperado:** Usar `:data-tippy-content="printingBadgeTitle(application.printingOrder)"` (sem `:title`) ou remover a classe `tooltips`, exibindo apenas um tooltip limpo e centralizado (inferência de UX — Lacuna na Especificação).
